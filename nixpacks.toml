@@ -1,11 +1,11 @@
 [phases.setup]
-nixPkgs = ["nodejs_22", "pnpm"]
+nixPkgs = ["nodejs_22"]
 
 [phases.install]
-cmds = ["pnpm install"]
+cmds = ["corepack enable", "corepack prepare pnpm@9.0.0 --activate", "pnpm install --frozen-lockfile"]
 
 [phases.build]
-cmds = ["pnpm build"]
+cmds = ["pnpm turbo build --filter=@lubia/web"]
 
 [start]
 cmd = "pnpm --filter @lubia/web start"
