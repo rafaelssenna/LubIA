@@ -9,17 +9,17 @@
         },
         "install": {
           "dependsOn": ["setup"],
-          "cmds": ["corepack enable", "corepack prepare pnpm@9.0.0 --activate", "cd ../.. && pnpm install --force"]
+          "cmds": ["corepack enable", "corepack prepare pnpm@9.0.0 --activate", "pnpm install --force"]
         },
         "build": {
           "dependsOn": ["install"],
-          "cmds": ["cd ../.. && pnpm run build --filter=@lubia/web"]
+          "cmds": ["pnpm turbo build --filter=@lubia/web"]
         }
       }
     }
   },
   "deploy": {
-    "startCommand": "cd ../.. && pnpm --filter @lubia/web start",
+    "startCommand": "pnpm --filter @lubia/web start",
     "restartPolicyType": "ON_FAILURE",
     "restartPolicyMaxRetries": 10
   }
