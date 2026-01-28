@@ -1,0 +1,135 @@
+// Prisma schema for LubIA - Sistema de Gestão de Oficinas
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// Cliente da oficina
+model Cliente {
+  id        Int       @id @default(autoincrement())
+  nome      String
+  telefone  String
+  email     String?
+  cpf       String?   @unique
+  endereco  String?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  veiculos  Veiculo[]
+
+  @@map("clientes")
+}
+
+// Veículo do cliente
+model Veiculo {
+  id           Int      @id @default(autoincrement())
+  placa        String   @unique
+  marca        String
+  modelo       String
+  ano          Int?
+  cor          String?
+  kmAtual      Int?
+  clienteId    Int
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  cliente      Cliente       @relation(fields: [clienteId], references: [id], onDelete: Cascade)
+  ordens       OrdemServico[]
+  lembretes    Lembrete[]
+
+  @@map("veiculos")
+}
+
+// Tipos de serviço oferecidos
+model Servico {
+  id          Int      @id @default(autoincrement())
+  nome        String
+  descricao   String?
+  precoBase   Decimal  @db.Decimal(10, 2)
+  duracaoMin  Int?     // duração estimada em minutos
+  ativo       Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  itensOrdem  ItemOrdem[]
+
+  @@map("servicos")
+}
+
+// Ordem de serviço
+model OrdemServico {
+  id          Int         @id @default(autoincrement())
+  numero      String      @unique @default(cuid())
+  veiculoId   Int
+  status      StatusOS    @default(AGENDADO)
+  dataAgendada DateTime?
+  dataInicio   DateTime?
+  dataConclusao DateTime?
+  kmEntrada   Int?
+  observacoes String?
+  total       Decimal     @db.Decimal(10, 2) @default(0)
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+
+  veiculo     Veiculo     @relation(fields: [veiculoId], references: [id], onDelete: Cascade)
+  itens       ItemOrdem[]
+
+  @@map("ordens_servico")
+}
+
+// Itens da ordem de serviço
+model ItemOrdem {
+  id            Int          @id @default(autoincrement())
+  ordemId       Int
+  servicoId     Int
+  quantidade    Int          @default(1)
+  precoUnitario Decimal      @db.Decimal(10, 2)
+  desconto      Decimal      @db.Decimal(10, 2) @default(0)
+  subtotal      Decimal      @db.Decimal(10, 2)
+
+  ordem         OrdemServico @relation(fields: [ordemId], references: [id], onDelete: Cascade)
+  servico       Servico      @relation(fields: [servicoId], references: [id])
+
+  @@map("itens_ordem")
+}
+
+// Lembretes de manutenção
+model Lembrete {
+  id            Int           @id @default(autoincrement())
+  veiculoId     Int
+  tipo          TipoLembrete
+  dataLembrete  DateTime
+  kmLembrete    Int?
+  mensagem      String?
+  enviado       Boolean       @default(false)
+  dataEnvio     DateTime?
+  createdAt     DateTime      @default(now())
+
+  veiculo       Veiculo       @relation(fields: [veiculoId], references: [id], onDelete: Cascade)
+
+  @@map("lembretes")
+}
+
+// Status da ordem de serviço
+enum StatusOS {
+  AGENDADO
+  AGUARDANDO_PECAS
+  EM_ANDAMENTO
+  CONCLUIDO
+  CANCELADO
+  ENTREGUE
+}
+
+// Tipo de lembrete
+enum TipoLembrete {
+  TROCA_OLEO
+  REVISAO
+  FILTROS
+  PNEUS
+  FREIOS
+  OUTRO
+}
