@@ -285,6 +285,323 @@ fastify.get('/api/lembretes', async () => {
   };
 });
 
+// ============ ESTOQUE / PRODUTOS ============
+
+// Listar produtos
+fastify.get<{ Querystring: { categoria?: string; marca?: string; busca?: string; estoqueBaixo?: string } }>(
+  '/api/produtos',
+  async (request) => {
+    const { categoria, marca, busca, estoqueBaixo } = request.query;
+
+    const where: any = { ativo: true };
+
+    if (categoria) {
+      where.categoria = categoria.toUpperCase();
+    }
+    if (marca) {
+      where.marca = { contains: marca, mode: 'insensitive' };
+    }
+    if (busca) {
+      where.OR = [
+        { nome: { contains: busca, mode: 'insensitive' } },
+        { codigo: { contains: busca, mode: 'insensitive' } },
+        { marca: { contains: busca, mode: 'insensitive' } }
+      ];
+    }
+
+    const produtos = await prisma.produto.findMany({
+      where,
+      orderBy: [{ categoria: 'asc' }, { marca: 'asc' }, { nome: 'asc' }]
+    });
+
+    let data = produtos.map(p => ({
+      id: p.id,
+      codigo: p.codigo,
+      nome: p.nome,
+      marca: p.marca,
+      categoria: p.categoria.toLowerCase(),
+      unidade: p.unidade.toLowerCase(),
+      quantidade: Number(p.quantidade),
+      estoqueMinimo: Number(p.estoqueMinimo),
+      precoCompra: Number(p.precoCompra),
+      precoCompraAtual: Number(p.precoCompraAtual),
+      precoVenda: Number(p.precoVenda),
+      precoGranel: p.precoGranel ? Number(p.precoGranel) : null,
+      localizacao: p.localizacao,
+      estoqueBaixo: Number(p.quantidade) <= Number(p.estoqueMinimo)
+    }));
+
+    // Filtrar por estoque baixo se solicitado
+    if (estoqueBaixo === 'true') {
+      data = data.filter(p => p.estoqueBaixo);
+    }
+
+    return { data, total: data.length };
+  }
+);
+
+// Buscar produto por ID
+fastify.get<{ Params: { id: string } }>('/api/produtos/:id', async (request, reply) => {
+  const produto = await prisma.produto.findUnique({
+    where: { id: Number(request.params.id) },
+    include: {
+      movimentacoes: {
+        orderBy: { createdAt: 'desc' },
+        take: 20
+      }
+    }
+  });
+
+  if (!produto) {
+    reply.code(404);
+    return { error: 'Produto não encontrado' };
+  }
+
+  return {
+    data: {
+      ...produto,
+      quantidade: Number(produto.quantidade),
+      estoqueMinimo: Number(produto.estoqueMinimo),
+      precoCompra: Number(produto.precoCompra),
+      precoCompraAtual: Number(produto.precoCompraAtual),
+      precoVenda: Number(produto.precoVenda),
+      precoGranel: produto.precoGranel ? Number(produto.precoGranel) : null,
+      movimentacoes: produto.movimentacoes.map(m => ({
+        id: m.id,
+        tipo: m.tipo.toLowerCase(),
+        quantidade: Number(m.quantidade),
+        precoUnit: m.precoUnit ? Number(m.precoUnit) : null,
+        motivo: m.motivo,
+        documento: m.documento,
+        data: m.createdAt.toISOString()
+      }))
+    }
+  };
+});
+
+// Criar produto
+fastify.post<{
+  Body: {
+    codigo: string;
+    nome: string;
+    marca: string;
+    categoria: string;
+    unidade?: string;
+    quantidade?: number;
+    estoqueMinimo?: number;
+    precoCompra?: number;
+    precoCompraAtual?: number;
+    precoVenda?: number;
+    precoGranel?: number;
+    localizacao?: string;
+  };
+}>('/api/produtos', async (request, reply) => {
+  const {
+    codigo, nome, marca, categoria, unidade,
+    quantidade, estoqueMinimo, precoCompra,
+    precoCompraAtual, precoVenda, precoGranel, localizacao
+  } = request.body;
+
+  try {
+    const produto = await prisma.produto.create({
+      data: {
+        codigo,
+        nome,
+        marca,
+        categoria: categoria.toUpperCase() as any,
+        unidade: (unidade?.toUpperCase() || 'UNIDADE') as any,
+        quantidade: quantidade || 0,
+        estoqueMinimo: estoqueMinimo || 0,
+        precoCompra: precoCompra || 0,
+        precoCompraAtual: precoCompraAtual || precoCompra || 0,
+        precoVenda: precoVenda || 0,
+        precoGranel,
+        localizacao
+      }
+    });
+
+    reply.code(201);
+    return { data: produto };
+  } catch (error: any) {
+    if (error.code === 'P2002') {
+      reply.code(400);
+      return { error: 'Código do produto já existe' };
+    }
+    throw error;
+  }
+});
+
+// Atualizar produto
+fastify.put<{
+  Params: { id: string };
+  Body: {
+    codigo?: string;
+    nome?: string;
+    marca?: string;
+    categoria?: string;
+    unidade?: string;
+    estoqueMinimo?: number;
+    precoCompra?: number;
+    precoCompraAtual?: number;
+    precoVenda?: number;
+    precoGranel?: number;
+    localizacao?: string;
+    ativo?: boolean;
+  };
+}>('/api/produtos/:id', async (request, reply) => {
+  const { id } = request.params;
+  const data = request.body;
+
+  try {
+    const updateData: any = { ...data };
+    if (data.categoria) updateData.categoria = data.categoria.toUpperCase();
+    if (data.unidade) updateData.unidade = data.unidade.toUpperCase();
+
+    const produto = await prisma.produto.update({
+      where: { id: Number(id) },
+      data: updateData
+    });
+
+    return { data: produto };
+  } catch (error: any) {
+    if (error.code === 'P2025') {
+      reply.code(404);
+      return { error: 'Produto não encontrado' };
+    }
+    if (error.code === 'P2002') {
+      reply.code(400);
+      return { error: 'Código do produto já existe' };
+    }
+    throw error;
+  }
+});
+
+// Deletar produto (soft delete)
+fastify.delete<{ Params: { id: string } }>('/api/produtos/:id', async (request, reply) => {
+  try {
+    await prisma.produto.update({
+      where: { id: Number(request.params.id) },
+      data: { ativo: false }
+    });
+    return { success: true };
+  } catch {
+    reply.code(404);
+    return { error: 'Produto não encontrado' };
+  }
+});
+
+// Movimentação de estoque (entrada/saída)
+fastify.post<{
+  Params: { id: string };
+  Body: {
+    tipo: string;
+    quantidade: number;
+    precoUnit?: number;
+    motivo?: string;
+    documento?: string;
+  };
+}>('/api/produtos/:id/movimentacao', async (request, reply) => {
+  const { id } = request.params;
+  const { tipo, quantidade, precoUnit, motivo, documento } = request.body;
+
+  const produto = await prisma.produto.findUnique({
+    where: { id: Number(id) }
+  });
+
+  if (!produto) {
+    reply.code(404);
+    return { error: 'Produto não encontrado' };
+  }
+
+  const tipoUpper = tipo.toUpperCase() as 'ENTRADA' | 'SAIDA' | 'AJUSTE' | 'DEVOLUCAO';
+  let novaQuantidade = Number(produto.quantidade);
+
+  if (tipoUpper === 'ENTRADA' || tipoUpper === 'DEVOLUCAO') {
+    novaQuantidade += quantidade;
+  } else if (tipoUpper === 'SAIDA') {
+    novaQuantidade -= quantidade;
+    if (novaQuantidade < 0) {
+      reply.code(400);
+      return { error: 'Quantidade insuficiente em estoque' };
+    }
+  } else if (tipoUpper === 'AJUSTE') {
+    novaQuantidade = quantidade; // Ajuste define quantidade absoluta
+  }
+
+  // Transação para atualizar quantidade e registrar movimentação
+  const [movimentacao] = await prisma.$transaction([
+    prisma.movimentacaoEstoque.create({
+      data: {
+        produtoId: Number(id),
+        tipo: tipoUpper,
+        quantidade,
+        precoUnit,
+        motivo,
+        documento
+      }
+    }),
+    prisma.produto.update({
+      where: { id: Number(id) },
+      data: {
+        quantidade: novaQuantidade,
+        ...(tipoUpper === 'ENTRADA' && precoUnit ? { precoCompraAtual: precoUnit } : {})
+      }
+    })
+  ]);
+
+  reply.code(201);
+  return {
+    data: {
+      movimentacao: {
+        id: movimentacao.id,
+        tipo: movimentacao.tipo.toLowerCase(),
+        quantidade: Number(movimentacao.quantidade),
+        precoUnit: movimentacao.precoUnit ? Number(movimentacao.precoUnit) : null
+      },
+      novaQuantidade
+    }
+  };
+});
+
+// Listar categorias disponíveis
+fastify.get('/api/produtos/categorias', async () => {
+  return {
+    data: [
+      { value: 'OLEO_LUBRIFICANTE', label: 'Óleo Lubrificante' },
+      { value: 'ADITIVO', label: 'Aditivo' },
+      { value: 'GRAXA', label: 'Graxa' },
+      { value: 'FILTRO_OLEO', label: 'Filtro de Óleo' },
+      { value: 'FILTRO_AR', label: 'Filtro de Ar' },
+      { value: 'FILTRO_AR_CONDICIONADO', label: 'Filtro de Ar Condicionado' },
+      { value: 'FILTRO_COMBUSTIVEL', label: 'Filtro de Combustível' },
+      { value: 'ACESSORIO', label: 'Acessório' },
+      { value: 'OUTRO', label: 'Outro' }
+    ]
+  };
+});
+
+// Produtos com estoque baixo (para alertas)
+fastify.get('/api/estoque/alertas', async () => {
+  const produtos = await prisma.$queryRaw`
+    SELECT * FROM produtos
+    WHERE ativo = true AND quantidade <= estoque_minimo
+    ORDER BY categoria, marca, nome
+  ` as any[];
+
+  return {
+    data: produtos.map(p => ({
+      id: p.id,
+      codigo: p.codigo,
+      nome: p.nome,
+      marca: p.marca,
+      categoria: p.categoria.toLowerCase(),
+      quantidade: Number(p.quantidade),
+      estoqueMinimo: Number(p.estoque_minimo)
+    })),
+    total: produtos.length
+  };
+});
+
 // Start server
 const start = async () => {
   try {

@@ -75,8 +75,9 @@ model OrdemServico {
   createdAt   DateTime    @default(now())
   updatedAt   DateTime    @updatedAt
 
-  veiculo     Veiculo     @relation(fields: [veiculoId], references: [id], onDelete: Cascade)
-  itens       ItemOrdem[]
+  veiculo       Veiculo            @relation(fields: [veiculoId], references: [id], onDelete: Cascade)
+  itens         ItemOrdem[]
+  itensProduto  ItemOrdemProduto[]
 
   @@map("ordens_servico")
 }
@@ -132,4 +133,90 @@ enum TipoLembrete {
   PNEUS
   FREIOS
   OUTRO
+}
+
+// Categoria de produto no estoque
+enum CategoriaProduto {
+  OLEO_LUBRIFICANTE
+  ADITIVO
+  GRAXA
+  FILTRO_OLEO
+  FILTRO_AR
+  FILTRO_AR_CONDICIONADO
+  FILTRO_COMBUSTIVEL
+  ACESSORIO
+  OUTRO
+}
+
+// Unidade de medida
+enum UnidadeMedida {
+  LITRO
+  UNIDADE
+  KG
+  METRO
+}
+
+// Produto no estoque
+model Produto {
+  id                Int              @id @default(autoincrement())
+  codigo            String           @unique
+  nome              String
+  marca             String
+  categoria         CategoriaProduto
+  unidade           UnidadeMedida    @default(UNIDADE)
+  quantidade        Decimal          @db.Decimal(10, 2) @default(0)
+  estoqueMinimo     Decimal          @db.Decimal(10, 2) @default(0)
+  precoCompra       Decimal          @db.Decimal(10, 2) @default(0)
+  precoCompraAtual  Decimal          @db.Decimal(10, 2) @default(0)
+  precoVenda        Decimal          @db.Decimal(10, 2) @default(0)
+  precoGranel       Decimal?         @db.Decimal(10, 2) // preço por litro (para óleos)
+  localizacao       String?          // localização no estoque
+  ativo             Boolean          @default(true)
+  createdAt         DateTime         @default(now())
+  updatedAt         DateTime         @updatedAt
+
+  movimentacoes     MovimentacaoEstoque[]
+  itensOrdem        ItemOrdemProduto[]
+
+  @@map("produtos")
+}
+
+// Movimentação de estoque (entradas e saídas)
+model MovimentacaoEstoque {
+  id           Int              @id @default(autoincrement())
+  produtoId    Int
+  tipo         TipoMovimentacao
+  quantidade   Decimal          @db.Decimal(10, 2)
+  precoUnit    Decimal?         @db.Decimal(10, 2)
+  motivo       String?
+  documento    String?          // nota fiscal, ordem de serviço, etc.
+  createdAt    DateTime         @default(now())
+
+  produto      Produto          @relation(fields: [produtoId], references: [id], onDelete: Cascade)
+
+  @@map("movimentacoes_estoque")
+}
+
+// Tipo de movimentação
+enum TipoMovimentacao {
+  ENTRADA
+  SAIDA
+  AJUSTE
+  DEVOLUCAO
+}
+
+// Produtos usados em ordem de serviço
+model ItemOrdemProduto {
+  id            Int          @id @default(autoincrement())
+  ordemId       Int
+  produtoId     Int
+  quantidade    Decimal      @db.Decimal(10, 2)
+  precoUnitario Decimal      @db.Decimal(10, 2)
+  desconto      Decimal      @db.Decimal(10, 2) @default(0)
+  subtotal      Decimal      @db.Decimal(10, 2)
+
+  ordem         OrdemServico @relation(fields: [ordemId], references: [id], onDelete: Cascade)
+  produto       Produto      @relation(fields: [produtoId], references: [id])
+
+  @@map("itens_ordem_produto")
 }

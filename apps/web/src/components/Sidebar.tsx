@@ -16,6 +16,7 @@ import {
   ChevronLeft,
   ChevronRight,
   MessageCircle,
+  Package,
 } from 'lucide-react';
 import { useSidebar } from '@/contexts/SidebarContext';
 
@@ -26,6 +27,7 @@ const menuItems = [
   { icon: ClipboardList, label: 'Ordens de Serviço', href: '/ordens' },
   { icon: Calendar, label: 'Agenda', href: '/agenda' },
   { icon: Wrench, label: 'Serviços', href: '/servicos' },
+  { icon: Package, label: 'Estoque', href: '/estoque' },
   { icon: Bell, label: 'Lembretes', href: '/lembretes' },
   { icon: MessageCircle, label: 'WhatsApp', href: '/whatsapp' },
 ];
