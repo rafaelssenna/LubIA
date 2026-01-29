@@ -1,13 +1,22 @@
 import 'dotenv/config';
 import Fastify from 'fastify';
 import cors from '@fastify/cors';
+import multipart from '@fastify/multipart';
 import { prisma } from './lib/prisma';
+import { extractPlate, extractInvoiceData, extractDocumentData } from './services/ocr';
 
 const fastify = Fastify({ logger: true });
 
 // CORS
 fastify.register(cors, {
   origin: ['http://localhost:3000', 'http://localhost:3001'],
+});
+
+// Multipart para upload de arquivos
+fastify.register(multipart, {
+  limits: {
+    fileSize: 10 * 1024 * 1024, // 10MB max
+  },
 });
 
 // Health check
@@ -599,6 +608,69 @@ fastify.get('/api/estoque/alertas', async () => {
       estoqueMinimo: Number(p.estoque_minimo)
     })),
     total: produtos.length
+  };
+});
+
+// ============ OCR ============
+
+// Ler placa de veículo
+fastify.post('/api/ocr/placa', async (request, reply) => {
+  const file = await request.file();
+
+  if (!file) {
+    reply.code(400);
+    return { error: 'Nenhuma imagem enviada' };
+  }
+
+  const buffer = await file.toBuffer();
+  const result = await extractPlate(buffer);
+
+  if (!result) {
+    return {
+      success: false,
+      message: 'Não foi possível identificar uma placa na imagem'
+    };
+  }
+
+  return {
+    success: true,
+    data: result
+  };
+});
+
+// Ler nota fiscal
+fastify.post('/api/ocr/nota-fiscal', async (request, reply) => {
+  const file = await request.file();
+
+  if (!file) {
+    reply.code(400);
+    return { error: 'Nenhuma imagem enviada' };
+  }
+
+  const buffer = await file.toBuffer();
+  const result = await extractInvoiceData(buffer);
+
+  return {
+    success: true,
+    data: result
+  };
+});
+
+// Ler documento (CNH ou CRLV)
+fastify.post('/api/ocr/documento', async (request, reply) => {
+  const file = await request.file();
+
+  if (!file) {
+    reply.code(400);
+    return { error: 'Nenhuma imagem enviada' };
+  }
+
+  const buffer = await file.toBuffer();
+  const result = await extractDocumentData(buffer);
+
+  return {
+    success: true,
+    data: result
   };
 });
 

@@ -13,8 +13,10 @@ import {
   Filter,
   DollarSign,
   Droplets,
+  FileText,
 } from 'lucide-react';
 import { useState, useEffect } from 'react';
+import OCRScanner from '@/components/OCRScanner';
 
 interface Produto {
   id: number;
@@ -79,6 +81,8 @@ export default function EstoquePage() {
   const [movTipo, setMovTipo] = useState<'ENTRADA' | 'SAIDA'>('ENTRADA');
   const [movQuantidade, setMovQuantidade] = useState('');
   const [movMotivo, setMovMotivo] = useState('');
+  const [showOCR, setShowOCR] = useState(false);
+  const [ocrResult, setOcrResult] = useState<any>(null);
 
   // Form state
   const [form, setForm] = useState({
@@ -259,13 +263,23 @@ export default function EstoquePage() {
               ))}
             </select>
           </div>
-          <button
-            onClick={() => setShowModal(true)}
-            className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-[#22c55e] to-[#166534] rounded-xl text-white font-medium hover:opacity-90 transition-opacity"
-          >
-            <Plus size={20} />
-            Novo Produto
-          </button>
+          <div className="flex gap-3">
+            <button
+              onClick={() => setShowOCR(true)}
+              className="flex items-center gap-2 px-6 py-3 border border-[#333333] rounded-xl text-[#94a3b8] hover:bg-[#333333] transition-colors"
+              title="Escanear nota fiscal"
+            >
+              <FileText size={20} />
+              Escanear NF
+            </button>
+            <button
+              onClick={() => setShowModal(true)}
+              className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-[#22c55e] to-[#166534] rounded-xl text-white font-medium hover:opacity-90 transition-opacity"
+            >
+              <Plus size={20} />
+              Novo Produto
+            </button>
+          </div>
         </div>
 
         {/* Tabela de Produtos */}
@@ -566,6 +580,22 @@ export default function EstoquePage() {
             </div>
           </div>
         </div>
+      )}
+
+      {/* OCR Scanner para Nota Fiscal */}
+      {showOCR && (
+        <OCRScanner
+          type="nota-fiscal"
+          onResult={(data) => {
+            setOcrResult(data);
+            setShowOCR(false);
+            // Mostra os dados extraídos em um alert por enquanto
+            if (data.itens?.length > 0) {
+              alert(`NF ${data.numeroNF || 'sem número'}\n${data.itens.length} itens encontrados\nTotal: R$ ${data.valorTotal?.toFixed(2) || '0.00'}`);
+            }
+          }}
+          onClose={() => setShowOCR(false)}
+        />
       )}
     </div>
   );
