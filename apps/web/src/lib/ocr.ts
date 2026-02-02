@@ -13,6 +13,17 @@ console.log('========================================');
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || '');
 
+// Helper function to safely parse JSON
+function tryParseJSON(text: string): any | null {
+  try {
+    // Remove markdown code blocks if present
+    const cleanText = text.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
+    return JSON.parse(cleanText);
+  } catch {
+    return null;
+  }
+}
+
 export interface PlateResult {
   plate: string;
   format: 'antiga' | 'mercosul';
@@ -33,6 +44,7 @@ export interface InvoiceData {
     valorUnitario?: number;
     valorTotal?: number;
   }>;
+  erro?: string;
 }
 
 export interface DocumentData {
@@ -52,6 +64,7 @@ export interface DocumentData {
   anoFabricacao?: string;
   anoModelo?: string;
   cor?: string;
+  erro?: string;
 }
 
 export async function extractPlate(imageBuffer: Buffer): Promise<PlateResult | null> {
@@ -67,21 +80,19 @@ export async function extractPlate(imageBuffer: Buffer): Promise<PlateResult | n
 
     const prompt = `Analise esta imagem e extraia a placa do veículo brasileiro.
 
-Responda APENAS em JSON válido, sem markdown, no formato:
-{
-  "encontrou": true/false,
-  "placa": "ABC1D23" ou "ABC-1234",
-  "formato": "mercosul" ou "antiga",
-  "confianca": "alta", "media" ou "baixa"
-}
+IMPORTANTE: Responda APENAS com JSON válido, sem nenhum texto adicional.
 
-Se não encontrar placa, retorne: {"encontrou": false}
+Se encontrar uma placa, responda:
+{"encontrou": true, "placa": "ABC1D23", "formato": "mercosul", "confianca": "alta"}
+
+Se NÃO encontrar uma placa (imagem não contém veículo/placa), responda:
+{"encontrou": false}
 
 Regras:
 - Placa Mercosul: 3 letras + 1 número + 1 letra + 2 números (ex: ABC1D23)
 - Placa Antiga: 3 letras + 4 números com hífen (ex: ABC-1234)
-- Retorne a placa SEM espaços extras
-- Se a imagem estiver borrada ou ilegível, confiança = "baixa"`;
+- formato: "mercosul" ou "antiga"
+- confianca: "alta", "media" ou "baixa"`;
 
     console.log('[OCR extractPlate] Enviando requisição para Gemini...');
     const result = await model.generateContent([
@@ -98,10 +109,14 @@ Regras:
     const text = result.response.text().trim();
     console.log('[OCR extractPlate] Texto da resposta:', text);
 
-    const jsonText = text.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
-    console.log('[OCR extractPlate] JSON limpo:', jsonText);
+    const data = tryParseJSON(text);
 
-    const data = JSON.parse(jsonText);
+    if (!data) {
+      console.log('[OCR extractPlate] Resposta não é JSON válido, retornando null');
+      console.log('========================================');
+      return null;
+    }
+
     console.log('[OCR extractPlate] JSON parseado:', JSON.stringify(data, null, 2));
 
     if (!data.encontrou) {
@@ -124,8 +139,6 @@ Regras:
     console.error('[OCR extractPlate] ERRO CAPTURADO!');
     console.error('[OCR extractPlate] Tipo do erro:', error?.constructor?.name);
     console.error('[OCR extractPlate] Mensagem:', error?.message);
-    console.error('[OCR extractPlate] Stack:', error?.stack);
-    console.error('[OCR extractPlate] Erro completo:', JSON.stringify(error, Object.getOwnPropertyNames(error), 2));
     console.error('========================================');
     return null;
   }
@@ -142,10 +155,13 @@ export async function extractInvoiceData(imageBuffer: Buffer): Promise<InvoiceDa
     const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' });
     console.log('[OCR extractInvoiceData] Modelo obtido com sucesso');
 
-    const prompt = `Analise esta imagem de nota fiscal/cupom fiscal brasileiro e extraia os dados.
+    const prompt = `Analise esta imagem e extraia dados de nota fiscal/cupom fiscal brasileiro.
 
-Responda APENAS em JSON válido, sem markdown, no formato:
+IMPORTANTE: Responda APENAS com JSON válido, sem nenhum texto adicional.
+
+Se for uma nota fiscal válida, responda no formato:
 {
+  "valido": true,
   "fornecedor": "Nome da empresa",
   "cnpj": "00.000.000/0000-00",
   "dataEmissao": "DD/MM/AAAA",
@@ -154,21 +170,23 @@ Responda APENAS em JSON válido, sem markdown, no formato:
   "itens": [
     {
       "descricao": "Nome do produto",
-      "codigo": "código se houver",
+      "codigo": "código",
       "quantidade": 1,
-      "unidade": "UN/LT/KG/PC",
+      "unidade": "UN",
       "valorUnitario": 50.00,
       "valorTotal": 50.00
     }
   ]
 }
 
+Se a imagem NÃO for uma nota fiscal (é outra coisa), responda:
+{"valido": false, "motivo": "descrição breve do que é a imagem"}
+
 Regras:
 - Extraia TODOS os itens/produtos listados
-- Valores numéricos sem "R$" (apenas números)
+- Valores numéricos sem "R$"
 - Se não conseguir ler algum campo, omita-o
-- Para óleos lubrificantes, tente identificar a viscosidade (5W30, 10W40, etc)
-- CNPJ deve estar no formato com pontuação`;
+- Para óleos, identifique a viscosidade (5W30, 10W40, etc)`;
 
     console.log('[OCR extractInvoiceData] Enviando requisição para Gemini...');
     const result = await model.generateContent([
@@ -183,12 +201,30 @@ Regras:
 
     console.log('[OCR extractInvoiceData] Resposta recebida do Gemini');
     const text = result.response.text().trim();
-    console.log('[OCR extractInvoiceData] Texto da resposta:', text.substring(0, 500) + '...');
+    console.log('[OCR extractInvoiceData] Texto da resposta:', text.substring(0, 500));
 
-    const jsonText = text.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
-    console.log('[OCR extractInvoiceData] JSON limpo (primeiros 500 chars):', jsonText.substring(0, 500));
+    const data = tryParseJSON(text);
 
-    const data = JSON.parse(jsonText);
+    if (!data) {
+      console.log('[OCR extractInvoiceData] Resposta não é JSON válido');
+      console.log('[OCR extractInvoiceData] Texto recebido:', text.substring(0, 200));
+      console.log('========================================');
+      return {
+        itens: [],
+        erro: 'Não foi possível processar a imagem. Certifique-se de enviar uma foto de nota fiscal.'
+      };
+    }
+
+    // Check if the image is not a valid invoice
+    if (data.valido === false) {
+      console.log('[OCR extractInvoiceData] Imagem não é nota fiscal:', data.motivo);
+      console.log('========================================');
+      return {
+        itens: [],
+        erro: `Esta imagem não parece ser uma nota fiscal. ${data.motivo || ''}`
+      };
+    }
+
     console.log('[OCR extractInvoiceData] JSON parseado - fornecedor:', data.fornecedor);
     console.log('[OCR extractInvoiceData] JSON parseado - itens count:', data.itens?.length || 0);
 
@@ -209,10 +245,8 @@ Regras:
     console.error('[OCR extractInvoiceData] ERRO CAPTURADO!');
     console.error('[OCR extractInvoiceData] Tipo do erro:', error?.constructor?.name);
     console.error('[OCR extractInvoiceData] Mensagem:', error?.message);
-    console.error('[OCR extractInvoiceData] Stack:', error?.stack);
-    console.error('[OCR extractInvoiceData] Erro completo:', JSON.stringify(error, Object.getOwnPropertyNames(error), 2));
     console.error('========================================');
-    return { itens: [] };
+    return { itens: [], erro: 'Erro ao processar a imagem. Tente novamente.' };
   }
 }
 
@@ -227,46 +261,23 @@ export async function extractDocumentData(imageBuffer: Buffer): Promise<Document
     const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' });
     console.log('[OCR extractDocumentData] Modelo obtido com sucesso');
 
-    const prompt = `Analise esta imagem de documento brasileiro (CNH ou CRLV) e extraia os dados.
+    const prompt = `Analise esta imagem e extraia dados de documento brasileiro (CNH ou CRLV).
 
-Responda APENAS em JSON válido, sem markdown, no formato:
+IMPORTANTE: Responda APENAS com JSON válido, sem nenhum texto adicional.
 
-Para CNH:
-{
-  "tipo": "CNH",
-  "nome": "Nome completo",
-  "cpf": "000.000.000-00",
-  "rg": "00.000.000-0",
-  "dataNascimento": "DD/MM/AAAA",
-  "cnh": "00000000000",
-  "categoria": "AB",
-  "validade": "DD/MM/AAAA"
-}
+Para CNH, responda:
+{"tipo": "CNH", "nome": "Nome", "cpf": "000.000.000-00", "rg": "00.000.000-0", "dataNascimento": "DD/MM/AAAA", "cnh": "00000000000", "categoria": "AB", "validade": "DD/MM/AAAA"}
 
-Para CRLV:
-{
-  "tipo": "CRLV",
-  "nome": "Nome do proprietário",
-  "cpf": "000.000.000-00",
-  "placa": "ABC1D23",
-  "renavam": "00000000000",
-  "chassi": "XXXXXXXXXXXXXXXXX",
-  "marca": "MARCA",
-  "modelo": "MODELO",
-  "anoFabricacao": "2020",
-  "anoModelo": "2021",
-  "cor": "PRATA"
-}
+Para CRLV, responda:
+{"tipo": "CRLV", "nome": "Nome", "cpf": "000.000.000-00", "placa": "ABC1D23", "renavam": "00000000000", "chassi": "XXX", "marca": "MARCA", "modelo": "MODELO", "anoFabricacao": "2020", "anoModelo": "2021", "cor": "PRATA"}
 
-Se não conseguir identificar o tipo de documento:
-{
-  "tipo": "DESCONHECIDO"
-}
+Se NÃO conseguir identificar como CNH ou CRLV, responda:
+{"tipo": "DESCONHECIDO", "motivo": "descrição do que é a imagem"}
 
 Regras:
 - CPF com pontuação
-- Placa no formato correto (Mercosul ou antiga)
-- Se não conseguir ler algum campo, omita-o`;
+- Placa no formato correto
+- Omita campos que não conseguir ler`;
 
     console.log('[OCR extractDocumentData] Enviando requisição para Gemini...');
     const result = await model.generateContent([
@@ -283,13 +294,27 @@ Regras:
     const text = result.response.text().trim();
     console.log('[OCR extractDocumentData] Texto da resposta:', text);
 
-    const jsonText = text.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
-    console.log('[OCR extractDocumentData] JSON limpo:', jsonText);
+    const data = tryParseJSON(text);
 
-    const data = JSON.parse(jsonText);
+    if (!data) {
+      console.log('[OCR extractDocumentData] Resposta não é JSON válido');
+      console.log('========================================');
+      return {
+        tipo: 'DESCONHECIDO',
+        erro: 'Não foi possível processar a imagem. Certifique-se de enviar uma foto de CNH ou CRLV.'
+      };
+    }
+
     console.log('[OCR extractDocumentData] JSON parseado - tipo:', data.tipo);
     console.log('[OCR extractDocumentData] JSON parseado:', JSON.stringify(data, null, 2));
     console.log('========================================');
+
+    if (data.tipo === 'DESCONHECIDO' && data.motivo) {
+      return {
+        ...data,
+        erro: `Esta imagem não parece ser CNH ou CRLV. ${data.motivo}`
+      };
+    }
 
     return data;
   } catch (error: any) {
@@ -297,9 +322,7 @@ Regras:
     console.error('[OCR extractDocumentData] ERRO CAPTURADO!');
     console.error('[OCR extractDocumentData] Tipo do erro:', error?.constructor?.name);
     console.error('[OCR extractDocumentData] Mensagem:', error?.message);
-    console.error('[OCR extractDocumentData] Stack:', error?.stack);
-    console.error('[OCR extractDocumentData] Erro completo:', JSON.stringify(error, Object.getOwnPropertyNames(error), 2));
     console.error('========================================');
-    return { tipo: 'DESCONHECIDO' };
+    return { tipo: 'DESCONHECIDO', erro: 'Erro ao processar a imagem. Tente novamente.' };
   }
 }
