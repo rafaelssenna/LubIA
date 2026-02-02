@@ -4,14 +4,16 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "prisma generate && next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "postinstall": "prisma generate"
   },
   "dependencies": {
     "@google/generative-ai": "^0.24.1",
     "@lubia/ui": "workspace:*",
     "@lubia/types": "workspace:*",
+    "@prisma/client": "^6.6.0",
     "lucide-react": "^0.468.0",
     "next": "^15.1.5",
     "react": "^19.0.0",
@@ -23,6 +25,7 @@
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "postcss": "^8",
+    "prisma": "^6.6.0",
     "tailwindcss": "^4.0.0",
     "typescript": "^5"
   }

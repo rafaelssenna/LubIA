@@ -35,7 +35,7 @@ interface Produto {
   estoqueBaixo: boolean;
 }
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3333';
+// Usa API routes do Next.js (mesmo domínio)
 
 const categorias = [
   { value: '', label: 'Todas Categorias' },
@@ -104,7 +104,7 @@ export default function EstoquePage() {
       if (searchTerm) params.append('busca', searchTerm);
       if (categoriaFilter) params.append('categoria', categoriaFilter);
 
-      const res = await fetch(`${API_URL}/api/produtos?${params}`);
+      const res = await fetch(`/api/produtos?${params}`);
       const data = await res.json();
       setProdutos(data.data || []);
     } catch (error) {
@@ -120,7 +120,7 @@ export default function EstoquePage() {
 
   const handleSubmit = async () => {
     try {
-      const res = await fetch(`${API_URL}/api/produtos`, {
+      const res = await fetch(`/api/produtos`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -159,7 +159,7 @@ export default function EstoquePage() {
     if (!selectedProduto) return;
 
     try {
-      const res = await fetch(`${API_URL}/api/produtos/${selectedProduto.id}/movimentacao`, {
+      const res = await fetch(`/api/produtos/${selectedProduto.id}/movimentacao`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
