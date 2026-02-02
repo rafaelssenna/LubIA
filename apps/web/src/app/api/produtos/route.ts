@@ -2,10 +2,19 @@ import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 
 export async function GET(request: NextRequest) {
+  console.log('========================================');
+  console.log('[PRODUTOS API] GET request iniciado');
+  console.log('[PRODUTOS API] URL:', request.url);
+  console.log('[PRODUTOS API] DATABASE_URL exists:', !!process.env.DATABASE_URL);
+  console.log('[PRODUTOS API] DATABASE_URL preview:', process.env.DATABASE_URL?.substring(0, 30) + '...');
+
   try {
     const { searchParams } = new URL(request.url);
     const busca = searchParams.get('busca') || '';
     const categoria = searchParams.get('categoria') || '';
+
+    console.log('[PRODUTOS API] Params - busca:', busca, 'categoria:', categoria);
+    console.log('[PRODUTOS API] Tentando conectar ao banco...');
 
     const produtos = await prisma.produto.findMany({
       where: {
@@ -21,6 +30,9 @@ export async function GET(request: NextRequest) {
       },
       orderBy: { nome: 'asc' },
     });
+
+    console.log('[PRODUTOS API] Query executada com sucesso!');
+    console.log('[PRODUTOS API] Produtos encontrados:', produtos.length);
 
     const data = produtos.map((p) => ({
       id: p.id,
@@ -39,16 +51,37 @@ export async function GET(request: NextRequest) {
       estoqueBaixo: Number(p.quantidade) <= Number(p.estoqueMinimo),
     }));
 
+    console.log('[PRODUTOS API] Dados mapeados, retornando resposta...');
+    console.log('========================================');
+
     return NextResponse.json({ data, total: data.length });
-  } catch (error) {
-    console.error('Erro ao buscar produtos:', error);
-    return NextResponse.json({ error: 'Erro ao buscar produtos' }, { status: 500 });
+  } catch (error: any) {
+    console.error('========================================');
+    console.error('[PRODUTOS API] ERRO CAPTURADO!');
+    console.error('[PRODUTOS API] Tipo do erro:', error?.constructor?.name);
+    console.error('[PRODUTOS API] Mensagem:', error?.message);
+    console.error('[PRODUTOS API] Code:', error?.code);
+    console.error('[PRODUTOS API] Stack:', error?.stack);
+    console.error('[PRODUTOS API] Erro completo:', JSON.stringify(error, null, 2));
+    console.error('========================================');
+
+    return NextResponse.json({
+      error: 'Erro ao buscar produtos',
+      details: error?.message,
+      code: error?.code,
+      type: error?.constructor?.name
+    }, { status: 500 });
   }
 }
 
 export async function POST(request: NextRequest) {
+  console.log('========================================');
+  console.log('[PRODUTOS API] POST request iniciado');
+  console.log('[PRODUTOS API] DATABASE_URL exists:', !!process.env.DATABASE_URL);
+
   try {
     const body = await request.json();
+    console.log('[PRODUTOS API] Body recebido:', JSON.stringify(body, null, 2));
 
     const produto = await prisma.produto.create({
       data: {
@@ -67,9 +100,23 @@ export async function POST(request: NextRequest) {
       },
     });
 
+    console.log('[PRODUTOS API] Produto criado com sucesso! ID:', produto.id);
+    console.log('========================================');
+
     return NextResponse.json({ data: produto }, { status: 201 });
-  } catch (error) {
-    console.error('Erro ao criar produto:', error);
-    return NextResponse.json({ error: 'Erro ao criar produto' }, { status: 500 });
+  } catch (error: any) {
+    console.error('========================================');
+    console.error('[PRODUTOS API POST] ERRO CAPTURADO!');
+    console.error('[PRODUTOS API POST] Tipo:', error?.constructor?.name);
+    console.error('[PRODUTOS API POST] Mensagem:', error?.message);
+    console.error('[PRODUTOS API POST] Code:', error?.code);
+    console.error('[PRODUTOS API POST] Stack:', error?.stack);
+    console.error('========================================');
+
+    return NextResponse.json({
+      error: 'Erro ao criar produto',
+      details: error?.message,
+      code: error?.code
+    }, { status: 500 });
   }
 }
