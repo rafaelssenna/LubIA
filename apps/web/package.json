@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@google/generative-ai": "^0.24.1",
     "@lubia/ui": "workspace:*",
     "@lubia/types": "workspace:*",
     "lucide-react": "^0.468.0",

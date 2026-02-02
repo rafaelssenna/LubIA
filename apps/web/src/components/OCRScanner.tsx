@@ -9,7 +9,7 @@ interface OCRScannerProps {
   onClose?: () => void;
 }
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3333';
+// Usa API routes do Next.js (mesmo domínio)
 
 const titles = {
   'placa': 'Ler Placa do Veículo',
@@ -94,7 +94,7 @@ export default function OCRScanner({ type, onResult, onClose }: OCRScannerProps)
       const formData = new FormData();
       formData.append('file', file);
 
-      const response = await fetch(`${API_URL}/api/ocr/${type}`, {
+      const response = await fetch(`/api/ocr/${type}`, {
         method: 'POST',
         body: formData,
       });

@@ -60,6 +60,9 @@ importers:
 
   apps/web:
     dependencies:
+      '@google/generative-ai':
+        specifier: ^0.24.1
+        version: 0.24.1
       '@lubia/types':
         specifier: workspace:*
         version: link:../../packages/types
