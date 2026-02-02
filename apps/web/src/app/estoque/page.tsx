@@ -83,6 +83,9 @@ export default function EstoquePage() {
   const [movMotivo, setMovMotivo] = useState('');
   const [showOCR, setShowOCR] = useState(false);
   const [ocrResult, setOcrResult] = useState<any>(null);
+  const [showOcrItems, setShowOcrItems] = useState(false);
+  const [ocrItems, setOcrItems] = useState<any[]>([]);
+  const [savingOcr, setSavingOcr] = useState(false);
 
   // Form state
   const [form, setForm] = useState({
@@ -589,13 +592,195 @@ export default function EstoquePage() {
           onResult={(data) => {
             setOcrResult(data);
             setShowOCR(false);
-            // Mostra os dados extraídos em um alert por enquanto
             if (data.itens?.length > 0) {
-              alert(`NF ${data.numeroNF || 'sem número'}\n${data.itens.length} itens encontrados\nTotal: R$ ${data.valorTotal?.toFixed(2) || '0.00'}`);
+              // Prepara os itens para revisão
+              const items = data.itens.map((item: any, index: number) => ({
+                ...item,
+                selected: true,
+                codigo: item.codigo || `NF-${data.numeroNF || 'AUTO'}-${index + 1}`,
+                categoria: 'OUTRO',
+                unidade: item.unidade || 'UNIDADE',
+                quantidade: item.quantidade || 1,
+                estoqueMinimo: 5,
+                precoCompra: item.valorUnitario || 0,
+                precoVenda: (item.valorUnitario || 0) * 1.3, // 30% markup default
+              }));
+              setOcrItems(items);
+              setShowOcrItems(true);
+            } else if (data.erro) {
+              alert(data.erro);
+            } else {
+              alert('Nenhum item encontrado na nota fiscal');
             }
           }}
           onClose={() => setShowOCR(false)}
         />
+      )}
+
+      {/* Modal para revisar itens da NF */}
+      {showOcrItems && ocrItems.length > 0 && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-[#1F1F1F] border border-[#333333] rounded-2xl w-full max-w-3xl animate-fade-in max-h-[90vh] overflow-hidden flex flex-col">
+            <div className="p-6 border-b border-[#333333]">
+              <h2 className="text-xl font-semibold text-white">Itens da Nota Fiscal</h2>
+              <p className="text-sm text-[#6B7280] mt-1">
+                {ocrResult?.numeroNF && `NF: ${ocrResult.numeroNF} • `}
+                {ocrResult?.fornecedor && `${ocrResult.fornecedor} • `}
+                {ocrItems.filter(i => i.selected).length} itens selecionados
+              </p>
+            </div>
+            <div className="flex-1 overflow-y-auto p-6 space-y-4">
+              {ocrItems.map((item, index) => (
+                <div
+                  key={index}
+                  className={`p-4 rounded-xl border transition-colors ${
+                    item.selected
+                      ? 'bg-[#22c55e]/10 border-[#22c55e]/50'
+                      : 'bg-[#000000] border-[#333333]'
+                  }`}
+                >
+                  <div className="flex items-start gap-4">
+                    <input
+                      type="checkbox"
+                      checked={item.selected}
+                      onChange={(e) => {
+                        const newItems = [...ocrItems];
+                        newItems[index].selected = e.target.checked;
+                        setOcrItems(newItems);
+                      }}
+                      className="mt-1 w-5 h-5 accent-[#22c55e]"
+                    />
+                    <div className="flex-1 space-y-3">
+                      <div>
+                        <label className="block text-xs text-[#6B7280] mb-1">Descrição</label>
+                        <input
+                          type="text"
+                          value={item.descricao}
+                          onChange={(e) => {
+                            const newItems = [...ocrItems];
+                            newItems[index].descricao = e.target.value;
+                            setOcrItems(newItems);
+                          }}
+                          className="w-full bg-[#1F1F1F] border border-[#333333] rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-[#22c55e]"
+                        />
+                      </div>
+                      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                        <div>
+                          <label className="block text-xs text-[#6B7280] mb-1">Código</label>
+                          <input
+                            type="text"
+                            value={item.codigo}
+                            onChange={(e) => {
+                              const newItems = [...ocrItems];
+                              newItems[index].codigo = e.target.value;
+                              setOcrItems(newItems);
+                            }}
+                            className="w-full bg-[#1F1F1F] border border-[#333333] rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-[#22c55e]"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-xs text-[#6B7280] mb-1">Quantidade</label>
+                          <input
+                            type="number"
+                            value={item.quantidade}
+                            onChange={(e) => {
+                              const newItems = [...ocrItems];
+                              newItems[index].quantidade = parseFloat(e.target.value) || 0;
+                              setOcrItems(newItems);
+                            }}
+                            className="w-full bg-[#1F1F1F] border border-[#333333] rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-[#22c55e]"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-xs text-[#6B7280] mb-1">Preço Compra</label>
+                          <input
+                            type="number"
+                            step="0.01"
+                            value={item.precoCompra}
+                            onChange={(e) => {
+                              const newItems = [...ocrItems];
+                              newItems[index].precoCompra = parseFloat(e.target.value) || 0;
+                              setOcrItems(newItems);
+                            }}
+                            className="w-full bg-[#1F1F1F] border border-[#333333] rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-[#22c55e]"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-xs text-[#6B7280] mb-1">Preço Venda</label>
+                          <input
+                            type="number"
+                            step="0.01"
+                            value={item.precoVenda}
+                            onChange={(e) => {
+                              const newItems = [...ocrItems];
+                              newItems[index].precoVenda = parseFloat(e.target.value) || 0;
+                              setOcrItems(newItems);
+                            }}
+                            className="w-full bg-[#1F1F1F] border border-[#333333] rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-[#22c55e]"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+            <div className="p-6 border-t border-[#333333] flex gap-3 justify-between">
+              <button
+                onClick={() => {
+                  setShowOcrItems(false);
+                  setOcrItems([]);
+                  setOcrResult(null);
+                }}
+                className="px-6 py-3 border border-[#333333] rounded-xl text-[#94a3b8] hover:bg-[#333333] transition-colors"
+              >
+                Cancelar
+              </button>
+              <button
+                onClick={async () => {
+                  setSavingOcr(true);
+                  const selectedItems = ocrItems.filter(i => i.selected);
+                  let successCount = 0;
+
+                  for (const item of selectedItems) {
+                    try {
+                      const res = await fetch('/api/produtos', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                          codigo: item.codigo,
+                          nome: item.descricao,
+                          marca: ocrResult?.fornecedor || 'NF Import',
+                          categoria: item.categoria,
+                          unidade: item.unidade,
+                          quantidade: item.quantidade,
+                          estoqueMinimo: item.estoqueMinimo,
+                          precoCompra: item.precoCompra,
+                          precoCompraAtual: item.precoCompra,
+                          precoVenda: item.precoVenda,
+                        }),
+                      });
+                      if (res.ok) successCount++;
+                    } catch (error) {
+                      console.error('Erro ao salvar item:', error);
+                    }
+                  }
+
+                  setSavingOcr(false);
+                  setShowOcrItems(false);
+                  setOcrItems([]);
+                  setOcrResult(null);
+                  fetchProdutos();
+                  alert(`${successCount} de ${selectedItems.length} produtos cadastrados com sucesso!`);
+                }}
+                disabled={savingOcr || ocrItems.filter(i => i.selected).length === 0}
+                className="px-6 py-3 bg-gradient-to-r from-[#22c55e] to-[#166534] rounded-xl text-white font-medium hover:opacity-90 transition-opacity disabled:opacity-50"
+              >
+                {savingOcr ? 'Salvando...' : `Adicionar ${ocrItems.filter(i => i.selected).length} Produtos`}
+              </button>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );
