@@ -13,7 +13,7 @@
         },
         "build": {
           "dependsOn": ["install"],
-          "cmds": ["pnpm turbo build --filter=@lubia/web"]
+          "cmds": ["cd apps/web && npx prisma generate && cd ../.. && pnpm turbo build --filter=@lubia/web"]
         }
       }
     }
