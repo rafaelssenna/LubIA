@@ -21,7 +21,7 @@ export async function POST(request: NextRequest) {
       console.log('[OCR NOTA-FISCAL API] ERRO: Nenhum arquivo enviado');
       console.log('========================================');
       return NextResponse.json(
-        { error: 'Nenhuma imagem enviada' },
+        { error: 'Nenhum arquivo enviado' },
         { status: 400 }
       );
     }
@@ -34,8 +34,12 @@ export async function POST(request: NextRequest) {
     const buffer = Buffer.from(await file.arrayBuffer());
     console.log('[OCR NOTA-FISCAL API] Buffer criado, tamanho:', buffer.length, 'bytes');
 
+    // Determine MIME type
+    const mimeType = file.type || 'image/jpeg';
+    console.log('[OCR NOTA-FISCAL API] MIME type:', mimeType);
+
     console.log('[OCR NOTA-FISCAL API] Chamando extractInvoiceData...');
-    const result = await extractInvoiceData(buffer);
+    const result = await extractInvoiceData(buffer, mimeType);
     console.log('[OCR NOTA-FISCAL API] extractInvoiceData retornou - fornecedor:', result.fornecedor);
     console.log('[OCR NOTA-FISCAL API] extractInvoiceData retornou - itens:', result.itens?.length || 0);
 
@@ -56,7 +60,7 @@ export async function POST(request: NextRequest) {
     console.error('========================================');
     return NextResponse.json(
       {
-        error: 'Erro ao processar imagem',
+        error: 'Erro ao processar arquivo',
         details: error?.message,
         type: error?.constructor?.name
       },

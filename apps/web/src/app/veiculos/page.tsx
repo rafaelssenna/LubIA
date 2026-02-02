@@ -1,57 +1,269 @@
 'use client';
 
 import Header from '@/components/Header';
-import { Plus, Search, Car, User, ClipboardList, X, Camera } from 'lucide-react';
-import { useState } from 'react';
+import { Plus, Search, Car, User, ClipboardList, X, Camera, Edit, Trash2, Loader2, Gauge } from 'lucide-react';
+import { useState, useEffect } from 'react';
 import OCRScanner from '@/components/OCRScanner';
+import { useToast } from '@/components/Toast';
 
-const veiculos = [
-  { id: 1, placa: 'ABC-1234', modelo: 'Honda Civic', ano: 2020, cliente: 'João Silva', km: '45.230' },
-  { id: 2, placa: 'DEF-5678', modelo: 'Toyota Corolla', ano: 2019, cliente: 'Maria Santos', km: '62.450' },
-  { id: 3, placa: 'GHI-9012', modelo: 'VW Golf', ano: 2021, cliente: 'Pedro Oliveira', km: '28.100' },
-  { id: 4, placa: 'JKL-3456', modelo: 'Fiat Argo', ano: 2022, cliente: 'Ana Costa', km: '15.800' },
-  { id: 5, placa: 'MNO-7890', modelo: 'Chevrolet Onix', ano: 2020, cliente: 'Carlos Ferreira', km: '52.340' },
-];
+interface Cliente {
+  id: number;
+  nome: string;
+  telefone: string;
+}
+
+interface Veiculo {
+  id: number;
+  placa: string;
+  marca: string;
+  modelo: string;
+  ano: number | null;
+  cor: string | null;
+  kmAtual: number | null;
+  clienteId: number;
+  cliente: Cliente;
+}
 
 export default function VeiculosPage() {
+  const toast = useToast();
+  const [veiculos, setVeiculos] = useState<Veiculo[]>([]);
+  const [clientes, setClientes] = useState<Cliente[]>([]);
+  const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [showModal, setShowModal] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [showOCR, setShowOCR] = useState(false);
-  const [formData, setFormData] = useState({
+  const [selectedVeiculo, setSelectedVeiculo] = useState<Veiculo | null>(null);
+  const [saving, setSaving] = useState(false);
+
+  const [form, setForm] = useState({
     placa: '',
     marca: '',
     modelo: '',
     ano: '',
+    cor: '',
+    kmAtual: '',
     clienteId: '',
   });
 
+  const fetchVeiculos = async () => {
+    try {
+      const params = new URLSearchParams();
+      if (searchTerm) params.append('busca', searchTerm);
+
+      const res = await fetch(`/api/veiculos?${params}`);
+      const data = await res.json();
+      setVeiculos(data.data || []);
+    } catch (error) {
+      console.error('Erro ao buscar veículos:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchClientes = async () => {
+    try {
+      const res = await fetch('/api/clientes');
+      const data = await res.json();
+      setClientes(data.data || []);
+    } catch (error) {
+      console.error('Erro ao buscar clientes:', error);
+    }
+  };
+
+  useEffect(() => {
+    fetchVeiculos();
+    fetchClientes();
+  }, [searchTerm]);
+
+  const resetForm = () => {
+    setForm({
+      placa: '',
+      marca: '',
+      modelo: '',
+      ano: '',
+      cor: '',
+      kmAtual: '',
+      clienteId: '',
+    });
+  };
+
+  const handleSubmit = async () => {
+    if (!form.placa || !form.marca || !form.modelo || !form.clienteId) {
+      toast.warning('Placa, marca, modelo e cliente são obrigatórios');
+      return;
+    }
+
+    setSaving(true);
+    try {
+      const res = await fetch('/api/veiculos', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(form),
+      });
+
+      const data = await res.json();
+
+      if (res.ok) {
+        setShowModal(false);
+        resetForm();
+        fetchVeiculos();
+      } else {
+        toast.error(data.error || 'Erro ao cadastrar veículo');
+      }
+    } catch (error) {
+      console.error('Erro ao cadastrar veículo:', error);
+      toast.error('Erro ao cadastrar veículo');
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const openEditModal = (veiculo: Veiculo) => {
+    setSelectedVeiculo(veiculo);
+    setForm({
+      placa: veiculo.placa,
+      marca: veiculo.marca,
+      modelo: veiculo.modelo,
+      ano: veiculo.ano?.toString() || '',
+      cor: veiculo.cor || '',
+      kmAtual: veiculo.kmAtual?.toString() || '',
+      clienteId: veiculo.clienteId.toString(),
+    });
+    setShowEditModal(true);
+  };
+
+  const handleEditSubmit = async () => {
+    if (!selectedVeiculo) return;
+
+    setSaving(true);
+    try {
+      const res = await fetch(`/api/veiculos/${selectedVeiculo.id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(form),
+      });
+
+      const data = await res.json();
+
+      if (res.ok) {
+        setShowEditModal(false);
+        setSelectedVeiculo(null);
+        resetForm();
+        fetchVeiculos();
+      } else {
+        toast.error(data.error || 'Erro ao atualizar veículo');
+      }
+    } catch (error) {
+      console.error('Erro ao atualizar veículo:', error);
+      toast.error('Erro ao atualizar veículo');
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleDelete = async () => {
+    if (!selectedVeiculo) return;
+
+    setSaving(true);
+    try {
+      const res = await fetch(`/api/veiculos/${selectedVeiculo.id}`, {
+        method: 'DELETE',
+      });
+
+      const data = await res.json();
+
+      if (res.ok) {
+        setShowDeleteConfirm(false);
+        setSelectedVeiculo(null);
+        fetchVeiculos();
+      } else {
+        toast.error(data.error || 'Erro ao excluir veículo');
+      }
+    } catch (error) {
+      console.error('Erro ao excluir veículo:', error);
+      toast.error('Erro ao excluir veículo');
+    } finally {
+      setSaving(false);
+    }
+  };
+
   const handleOCRResult = (data: any) => {
     if (data.plate) {
-      setFormData(prev => ({ ...prev, placa: data.plate }));
+      setForm(prev => ({ ...prev, placa: data.plate }));
     }
     setShowOCR(false);
+  };
+
+  const formatPlate = (placa: string) => {
+    const cleaned = placa.replace(/[^A-Za-z0-9]/g, '').toUpperCase();
+    if (cleaned.length === 7) {
+      return cleaned;
+    }
+    return placa;
   };
 
   return (
     <div className="min-h-screen bg-[#000000]">
       <Header title="Veículos" subtitle="Cadastro de veículos" />
 
-      <div className="p-6 space-y-6">
+      <div className="p-6 space-y-6 animate-fade-in">
+        {/* Stats */}
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+          <div className="bg-[#1F1F1F] border border-[#333333] rounded-xl p-4">
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-[#22c55e]/20 rounded-lg">
+                <Car size={20} className="text-[#22c55e]" />
+              </div>
+              <div>
+                <p className="text-2xl font-bold text-white">{veiculos.length}</p>
+                <p className="text-xs text-[#6B7280]">Total Veículos</p>
+              </div>
+            </div>
+          </div>
+          <div className="bg-[#1F1F1F] border border-[#333333] rounded-xl p-4">
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-blue-500/20 rounded-lg">
+                <User size={20} className="text-blue-400" />
+              </div>
+              <div>
+                <p className="text-2xl font-bold text-white">{clientes.length}</p>
+                <p className="text-xs text-[#6B7280]">Clientes</p>
+              </div>
+            </div>
+          </div>
+          <div className="bg-[#1F1F1F] border border-[#333333] rounded-xl p-4 hidden md:block">
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-amber-500/20 rounded-lg">
+                <ClipboardList size={20} className="text-amber-400" />
+              </div>
+              <div>
+                <p className="text-2xl font-bold text-white">0</p>
+                <p className="text-xs text-[#6B7280]">OS Abertas</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
         {/* Toolbar */}
         <div className="flex flex-col md:flex-row gap-4 justify-between">
           <div className="relative flex-1 max-w-md">
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-[#6B7280]" size={18} />
             <input
               type="text"
-              placeholder="Buscar por placa ou modelo..."
+              placeholder="Buscar por placa, marca ou modelo..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full bg-black/50 border border-white/10 rounded-xl pl-11 pr-4 py-3 text-sm text-white placeholder-[#6B7280] focus:outline-none focus:border-[#22c55e]/50"
+              className="w-full bg-[#1F1F1F] border border-[#333333] rounded-xl pl-11 pr-4 py-3 text-sm text-white placeholder-[#6B7280] focus:outline-none focus:border-[#22c55e] transition-colors"
             />
           </div>
           <button
-            onClick={() => setShowModal(true)}
-            className="btn-primary flex items-center gap-2 px-5 py-3 rounded-xl text-white font-medium"
+            onClick={() => {
+              resetForm();
+              setShowModal(true);
+            }}
+            className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-[#22c55e] to-[#166534] rounded-xl text-white font-medium hover:opacity-90 transition-opacity"
           >
             <Plus size={18} />
             Novo Veículo
@@ -59,78 +271,123 @@ export default function VeiculosPage() {
         </div>
 
         {/* Grid de Veículos */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {veiculos.map((veiculo) => (
-            <div key={veiculo.id} className="glass-card rounded-2xl p-5">
-              <div className="flex items-start justify-between mb-4">
-                <div className="flex items-center gap-3">
-                  <div className="p-3 rounded-xl bg-gradient-to-br from-[#22c55e] to-[#166534]">
-                    <Car size={20} className="text-white" />
+        {loading ? (
+          <div className="flex items-center justify-center py-12">
+            <Loader2 className="animate-spin text-[#22c55e]" size={32} />
+          </div>
+        ) : veiculos.length === 0 ? (
+          <div className="bg-[#1F1F1F] border border-[#333333] rounded-2xl p-8 text-center">
+            <Car size={48} className="mx-auto mb-4 text-[#6B7280]" />
+            <p className="text-[#6B7280]">Nenhum veículo encontrado</p>
+            <p className="text-sm text-[#6B7280] mt-1">Cadastre o primeiro veículo clicando no botão acima</p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {veiculos.map((veiculo) => (
+              <div key={veiculo.id} className="bg-[#1F1F1F] border border-[#333333] rounded-2xl p-5 hover:border-[#22c55e]/30 transition-colors">
+                <div className="flex items-start justify-between mb-4">
+                  <div className="flex items-center gap-3">
+                    <div className="p-3 rounded-xl bg-gradient-to-br from-[#22c55e] to-[#166534]">
+                      <Car size={20} className="text-white" />
+                    </div>
+                    <div>
+                      <h3 className="font-bold text-white">{veiculo.marca} {veiculo.modelo}</h3>
+                      <p className="text-sm text-[#6B7280]">{veiculo.ano || 'Ano não informado'}</p>
+                    </div>
                   </div>
-                  <div>
-                    <h3 className="font-bold text-white">{veiculo.modelo}</h3>
-                    <p className="text-sm text-[#6B7280]">{veiculo.ano}</p>
-                  </div>
-                </div>
-                <span className="px-3 py-1.5 bg-[#22c55e]/20 text-[#22c55e] rounded-lg text-sm font-mono font-bold">
-                  {veiculo.placa}
-                </span>
-              </div>
-
-              <div className="space-y-3 mb-4">
-                <div className="flex items-center justify-between text-sm">
-                  <span className="text-[#6B7280] flex items-center gap-2">
-                    <User size={14} /> Proprietário
+                  <span className="px-3 py-1.5 bg-[#22c55e]/20 text-[#22c55e] rounded-lg text-sm font-mono font-bold">
+                    {formatPlate(veiculo.placa)}
                   </span>
-                  <span className="text-white">{veiculo.cliente}</span>
                 </div>
-                <div className="flex items-center justify-between text-sm">
-                  <span className="text-[#6B7280]">KM Atual</span>
-                  <span className="text-white">{veiculo.km} km</span>
+
+                <div className="space-y-3 mb-4">
+                  <div className="flex items-center justify-between text-sm">
+                    <span className="text-[#6B7280] flex items-center gap-2">
+                      <User size={14} /> Proprietário
+                    </span>
+                    <span className="text-white">{veiculo.cliente.nome}</span>
+                  </div>
+                  {veiculo.kmAtual && (
+                    <div className="flex items-center justify-between text-sm">
+                      <span className="text-[#6B7280] flex items-center gap-2">
+                        <Gauge size={14} /> KM Atual
+                      </span>
+                      <span className="text-white">{veiculo.kmAtual.toLocaleString('pt-BR')} km</span>
+                    </div>
+                  )}
+                  {veiculo.cor && (
+                    <div className="flex items-center justify-between text-sm">
+                      <span className="text-[#6B7280]">Cor</span>
+                      <span className="text-white">{veiculo.cor}</span>
+                    </div>
+                  )}
+                </div>
+
+                <div className="flex gap-2">
+                  <button className="flex-1 flex items-center justify-center gap-2 py-2.5 bg-gradient-to-r from-[#22c55e] to-[#166534] rounded-xl text-white text-sm font-medium hover:opacity-90 transition-opacity">
+                    <ClipboardList size={16} />
+                    Nova OS
+                  </button>
+                  <button
+                    onClick={() => openEditModal(veiculo)}
+                    className="p-2.5 bg-[#333333] hover:bg-[#444444] rounded-xl text-[#94a3b8] hover:text-white transition-colors"
+                    title="Editar"
+                  >
+                    <Edit size={16} />
+                  </button>
+                  <button
+                    onClick={() => {
+                      setSelectedVeiculo(veiculo);
+                      setShowDeleteConfirm(true);
+                    }}
+                    className="p-2.5 bg-[#333333] hover:bg-red-500/20 rounded-xl text-[#94a3b8] hover:text-red-400 transition-colors"
+                    title="Excluir"
+                  >
+                    <Trash2 size={16} />
+                  </button>
                 </div>
               </div>
-
-              <button className="w-full flex items-center justify-center gap-2 py-2.5 bg-gradient-to-r from-[#22c55e] to-[#166534] rounded-xl text-white text-sm font-medium hover:opacity-90 transition-opacity">
-                <ClipboardList size={16} />
-                Nova OS
-              </button>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        )}
       </div>
 
       {/* Modal Novo Veículo */}
       {showModal && (
-        <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="glass-card rounded-2xl w-full max-w-md overflow-hidden">
-            <div className="p-5 border-b border-white/5 flex items-center justify-between">
-              <h2 className="text-xl font-bold text-white">Novo Veículo</h2>
-              <button onClick={() => setShowModal(false)} className="p-2 hover:bg-white/10 rounded-lg text-[#6B7280] hover:text-white">
+        <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4">
+          <div className="bg-[#1F1F1F] border border-[#333333] rounded-2xl w-full max-w-md animate-fade-in max-h-[90vh] overflow-y-auto">
+            <div className="p-6 border-b border-[#333333] flex items-center justify-between">
+              <div>
+                <h2 className="text-xl font-semibold text-white">Novo Veículo</h2>
+                <p className="text-sm text-[#6B7280] mt-1">Cadastre um novo veículo</p>
+              </div>
+              <button onClick={() => setShowModal(false)} className="p-2 hover:bg-[#333333] rounded-lg text-[#6B7280] hover:text-white transition-colors">
                 <X size={20} />
               </button>
             </div>
-            <div className="p-5 space-y-4">
+            <div className="p-6 space-y-4">
               <div>
-                <label className="block text-sm font-medium text-[#94a3b8] mb-2">Cliente</label>
+                <label className="block text-sm font-medium text-[#94a3b8] mb-2">Cliente *</label>
                 <select
-                  value={formData.clienteId}
-                  onChange={(e) => setFormData({ ...formData, clienteId: e.target.value })}
-                  className="w-full bg-black/50 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-[#22c55e]/50"
+                  value={form.clienteId}
+                  onChange={(e) => setForm({ ...form, clienteId: e.target.value })}
+                  className="w-full bg-[#000000] border border-[#333333] rounded-xl px-4 py-3 text-white focus:outline-none focus:border-[#22c55e]"
                 >
-                  <option value="">Selecione</option>
-                  <option value="1">João Silva</option>
-                  <option value="2">Maria Santos</option>
+                  <option value="">Selecione o cliente</option>
+                  {clientes.map((cliente) => (
+                    <option key={cliente.id} value={cliente.id}>{cliente.nome}</option>
+                  ))}
                 </select>
               </div>
               <div>
-                <label className="block text-sm font-medium text-[#94a3b8] mb-2">Placa</label>
+                <label className="block text-sm font-medium text-[#94a3b8] mb-2">Placa *</label>
                 <div className="flex gap-2">
                   <input
                     type="text"
-                    placeholder="ABC-1234"
-                    value={formData.placa}
-                    onChange={(e) => setFormData({ ...formData, placa: e.target.value.toUpperCase() })}
-                    className="flex-1 bg-black/50 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-[#6B7280] focus:outline-none focus:border-[#22c55e]/50 uppercase font-mono"
+                    placeholder="ABC1D23"
+                    value={form.placa}
+                    onChange={(e) => setForm({ ...form, placa: e.target.value.toUpperCase() })}
+                    className="flex-1 bg-[#000000] border border-[#333333] rounded-xl px-4 py-3 text-white placeholder-[#6B7280] focus:outline-none focus:border-[#22c55e] uppercase font-mono"
                   />
                   <button
                     type="button"
@@ -144,13 +401,13 @@ export default function VeiculosPage() {
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-[#94a3b8] mb-2">Marca</label>
+                  <label className="block text-sm font-medium text-[#94a3b8] mb-2">Marca *</label>
                   <input
                     type="text"
                     placeholder="Ex: Honda"
-                    value={formData.marca}
-                    onChange={(e) => setFormData({ ...formData, marca: e.target.value })}
-                    className="w-full bg-black/50 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-[#6B7280] focus:outline-none focus:border-[#22c55e]/50"
+                    value={form.marca}
+                    onChange={(e) => setForm({ ...form, marca: e.target.value })}
+                    className="w-full bg-[#000000] border border-[#333333] rounded-xl px-4 py-3 text-white placeholder-[#6B7280] focus:outline-none focus:border-[#22c55e]"
                   />
                 </div>
                 <div>
@@ -158,29 +415,206 @@ export default function VeiculosPage() {
                   <input
                     type="text"
                     placeholder="2020"
-                    value={formData.ano}
-                    onChange={(e) => setFormData({ ...formData, ano: e.target.value })}
-                    className="w-full bg-black/50 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-[#6B7280] focus:outline-none focus:border-[#22c55e]/50"
+                    value={form.ano}
+                    onChange={(e) => setForm({ ...form, ano: e.target.value })}
+                    className="w-full bg-[#000000] border border-[#333333] rounded-xl px-4 py-3 text-white placeholder-[#6B7280] focus:outline-none focus:border-[#22c55e]"
                   />
                 </div>
               </div>
               <div>
-                <label className="block text-sm font-medium text-[#94a3b8] mb-2">Modelo</label>
+                <label className="block text-sm font-medium text-[#94a3b8] mb-2">Modelo *</label>
                 <input
                   type="text"
                   placeholder="Ex: Civic EXL"
-                  value={formData.modelo}
-                  onChange={(e) => setFormData({ ...formData, modelo: e.target.value })}
-                  className="w-full bg-black/50 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-[#6B7280] focus:outline-none focus:border-[#22c55e]/50"
+                  value={form.modelo}
+                  onChange={(e) => setForm({ ...form, modelo: e.target.value })}
+                  className="w-full bg-[#000000] border border-[#333333] rounded-xl px-4 py-3 text-white placeholder-[#6B7280] focus:outline-none focus:border-[#22c55e]"
                 />
               </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-[#94a3b8] mb-2">Cor</label>
+                  <input
+                    type="text"
+                    placeholder="Ex: Prata"
+                    value={form.cor}
+                    onChange={(e) => setForm({ ...form, cor: e.target.value })}
+                    className="w-full bg-[#000000] border border-[#333333] rounded-xl px-4 py-3 text-white placeholder-[#6B7280] focus:outline-none focus:border-[#22c55e]"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-[#94a3b8] mb-2">KM Atual</label>
+                  <input
+                    type="text"
+                    placeholder="45000"
+                    value={form.kmAtual}
+                    onChange={(e) => setForm({ ...form, kmAtual: e.target.value })}
+                    className="w-full bg-[#000000] border border-[#333333] rounded-xl px-4 py-3 text-white placeholder-[#6B7280] focus:outline-none focus:border-[#22c55e]"
+                  />
+                </div>
+              </div>
             </div>
-            <div className="p-5 border-t border-white/5 flex gap-3 justify-end">
-              <button onClick={() => setShowModal(false)} className="px-5 py-2.5 border border-white/10 rounded-xl text-[#94a3b8] hover:bg-white/5">
+            <div className="p-6 border-t border-[#333333] flex gap-3 justify-end">
+              <button
+                onClick={() => setShowModal(false)}
+                className="px-6 py-3 border border-[#333333] rounded-xl text-[#94a3b8] hover:bg-[#333333] transition-colors"
+              >
                 Cancelar
               </button>
-              <button className="btn-primary px-5 py-2.5 rounded-xl text-white font-medium">
-                Cadastrar
+              <button
+                onClick={handleSubmit}
+                disabled={saving}
+                className="px-6 py-3 bg-gradient-to-r from-[#22c55e] to-[#166534] rounded-xl text-white font-medium hover:opacity-90 transition-opacity disabled:opacity-50"
+              >
+                {saving ? 'Salvando...' : 'Cadastrar'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Modal Editar Veículo */}
+      {showEditModal && selectedVeiculo && (
+        <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4">
+          <div className="bg-[#1F1F1F] border border-[#333333] rounded-2xl w-full max-w-md animate-fade-in max-h-[90vh] overflow-y-auto">
+            <div className="p-6 border-b border-[#333333] flex items-center justify-between">
+              <div>
+                <h2 className="text-xl font-semibold text-white">Editar Veículo</h2>
+                <p className="text-sm text-[#6B7280] mt-1">Atualize as informações do veículo</p>
+              </div>
+              <button onClick={() => setShowEditModal(false)} className="p-2 hover:bg-[#333333] rounded-lg text-[#6B7280] hover:text-white transition-colors">
+                <X size={20} />
+              </button>
+            </div>
+            <div className="p-6 space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-[#94a3b8] mb-2">Cliente *</label>
+                <select
+                  value={form.clienteId}
+                  onChange={(e) => setForm({ ...form, clienteId: e.target.value })}
+                  className="w-full bg-[#000000] border border-[#333333] rounded-xl px-4 py-3 text-white focus:outline-none focus:border-[#22c55e]"
+                >
+                  <option value="">Selecione o cliente</option>
+                  {clientes.map((cliente) => (
+                    <option key={cliente.id} value={cliente.id}>{cliente.nome}</option>
+                  ))}
+                </select>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-[#94a3b8] mb-2">Placa *</label>
+                <input
+                  type="text"
+                  value={form.placa}
+                  onChange={(e) => setForm({ ...form, placa: e.target.value.toUpperCase() })}
+                  className="w-full bg-[#000000] border border-[#333333] rounded-xl px-4 py-3 text-white focus:outline-none focus:border-[#22c55e] uppercase font-mono"
+                />
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-[#94a3b8] mb-2">Marca *</label>
+                  <input
+                    type="text"
+                    value={form.marca}
+                    onChange={(e) => setForm({ ...form, marca: e.target.value })}
+                    className="w-full bg-[#000000] border border-[#333333] rounded-xl px-4 py-3 text-white focus:outline-none focus:border-[#22c55e]"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-[#94a3b8] mb-2">Ano</label>
+                  <input
+                    type="text"
+                    value={form.ano}
+                    onChange={(e) => setForm({ ...form, ano: e.target.value })}
+                    className="w-full bg-[#000000] border border-[#333333] rounded-xl px-4 py-3 text-white focus:outline-none focus:border-[#22c55e]"
+                  />
+                </div>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-[#94a3b8] mb-2">Modelo *</label>
+                <input
+                  type="text"
+                  value={form.modelo}
+                  onChange={(e) => setForm({ ...form, modelo: e.target.value })}
+                  className="w-full bg-[#000000] border border-[#333333] rounded-xl px-4 py-3 text-white focus:outline-none focus:border-[#22c55e]"
+                />
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-[#94a3b8] mb-2">Cor</label>
+                  <input
+                    type="text"
+                    value={form.cor}
+                    onChange={(e) => setForm({ ...form, cor: e.target.value })}
+                    className="w-full bg-[#000000] border border-[#333333] rounded-xl px-4 py-3 text-white focus:outline-none focus:border-[#22c55e]"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-[#94a3b8] mb-2">KM Atual</label>
+                  <input
+                    type="text"
+                    value={form.kmAtual}
+                    onChange={(e) => setForm({ ...form, kmAtual: e.target.value })}
+                    className="w-full bg-[#000000] border border-[#333333] rounded-xl px-4 py-3 text-white focus:outline-none focus:border-[#22c55e]"
+                  />
+                </div>
+              </div>
+            </div>
+            <div className="p-6 border-t border-[#333333] flex gap-3 justify-end">
+              <button
+                onClick={() => setShowEditModal(false)}
+                className="px-6 py-3 border border-[#333333] rounded-xl text-[#94a3b8] hover:bg-[#333333] transition-colors"
+              >
+                Cancelar
+              </button>
+              <button
+                onClick={handleEditSubmit}
+                disabled={saving}
+                className="px-6 py-3 bg-gradient-to-r from-[#22c55e] to-[#166534] rounded-xl text-white font-medium hover:opacity-90 transition-opacity disabled:opacity-50"
+              >
+                {saving ? 'Salvando...' : 'Salvar Alterações'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Modal Confirmar Exclusão */}
+      {showDeleteConfirm && selectedVeiculo && (
+        <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4">
+          <div className="bg-[#1F1F1F] border border-[#333333] rounded-2xl w-full max-w-md animate-fade-in">
+            <div className="p-6 border-b border-[#333333]">
+              <h2 className="text-xl font-semibold text-white">Confirmar Exclusão</h2>
+            </div>
+            <div className="p-6">
+              <div className="flex items-center gap-4 mb-4">
+                <div className="p-3 bg-red-500/20 rounded-xl">
+                  <Trash2 size={24} className="text-red-400" />
+                </div>
+                <div>
+                  <p className="text-white font-medium">{selectedVeiculo.marca} {selectedVeiculo.modelo}</p>
+                  <p className="text-sm text-[#22c55e] font-mono">{selectedVeiculo.placa}</p>
+                </div>
+              </div>
+              <p className="text-[#94a3b8] text-sm">
+                Tem certeza que deseja excluir este veículo? Esta ação não pode ser desfeita.
+              </p>
+            </div>
+            <div className="p-6 border-t border-[#333333] flex gap-3 justify-end">
+              <button
+                onClick={() => {
+                  setShowDeleteConfirm(false);
+                  setSelectedVeiculo(null);
+                }}
+                className="px-6 py-3 border border-[#333333] rounded-xl text-[#94a3b8] hover:bg-[#333333] transition-colors"
+              >
+                Cancelar
+              </button>
+              <button
+                onClick={handleDelete}
+                disabled={saving}
+                className="px-6 py-3 bg-gradient-to-r from-red-500 to-red-700 rounded-xl text-white font-medium hover:opacity-90 transition-opacity disabled:opacity-50"
+              >
+                {saving ? 'Excluindo...' : 'Excluir Veículo'}
               </button>
             </div>
           </div>

@@ -144,10 +144,11 @@ Regras:
   }
 }
 
-export async function extractInvoiceData(imageBuffer: Buffer): Promise<InvoiceData> {
+export async function extractInvoiceData(imageBuffer: Buffer, mimeType: string = 'image/jpeg'): Promise<InvoiceData> {
   console.log('========================================');
   console.log('[OCR extractInvoiceData] Função iniciada');
   console.log('[OCR extractInvoiceData] Buffer size:', imageBuffer.length, 'bytes');
+  console.log('[OCR extractInvoiceData] MIME type:', mimeType);
   console.log('[OCR extractInvoiceData] GEMINI_API_KEY exists:', !!process.env.GEMINI_API_KEY);
 
   try {
@@ -155,7 +156,7 @@ export async function extractInvoiceData(imageBuffer: Buffer): Promise<InvoiceDa
     const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' });
     console.log('[OCR extractInvoiceData] Modelo obtido com sucesso');
 
-    const prompt = `Analise esta imagem e extraia dados de nota fiscal/cupom fiscal brasileiro.
+    const prompt = `Analise este documento (imagem ou PDF) e extraia dados de nota fiscal/cupom fiscal brasileiro.
 
 IMPORTANTE: Responda APENAS com JSON válido, sem nenhum texto adicional.
 
@@ -193,7 +194,7 @@ Regras:
       prompt,
       {
         inlineData: {
-          mimeType: 'image/jpeg',
+          mimeType: mimeType,
           data: imageBuffer.toString('base64'),
         },
       },
@@ -211,7 +212,7 @@ Regras:
       console.log('========================================');
       return {
         itens: [],
-        erro: 'Não foi possível processar a imagem. Certifique-se de enviar uma foto de nota fiscal.'
+        erro: 'Não foi possível processar o arquivo. Certifique-se de enviar uma foto ou PDF de nota fiscal.'
       };
     }
 

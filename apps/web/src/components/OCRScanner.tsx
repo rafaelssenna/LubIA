@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useRef } from 'react';
-import { Camera, Upload, X, Loader2, Check } from 'lucide-react';
+import { Camera, Upload, X, Loader2, Check, FileText } from 'lucide-react';
 
 interface OCRScannerProps {
   type: 'placa' | 'nota-fiscal' | 'documento';
@@ -19,13 +19,15 @@ const titles = {
 
 const descriptions = {
   'placa': 'Tire uma foto ou envie uma imagem da placa do veículo',
-  'nota-fiscal': 'Tire uma foto ou envie uma imagem da nota fiscal',
+  'nota-fiscal': 'Envie uma imagem ou PDF da nota fiscal',
   'documento': 'Tire uma foto ou envie uma imagem do documento',
 };
 
 export default function OCRScanner({ type, onResult, onClose }: OCRScannerProps) {
   const [loading, setLoading] = useState(false);
   const [preview, setPreview] = useState<string | null>(null);
+  const [isPdf, setIsPdf] = useState(false);
+  const [pdfName, setPdfName] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<any>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -37,10 +39,21 @@ export default function OCRScanner({ type, onResult, onClose }: OCRScannerProps)
     const file = e.target.files?.[0];
     if (!file) return;
 
-    // Preview
-    const reader = new FileReader();
-    reader.onload = (e) => setPreview(e.target?.result as string);
-    reader.readAsDataURL(file);
+    // Check if it's a PDF
+    const isPdfFile = file.type === 'application/pdf';
+    setIsPdf(isPdfFile);
+
+    if (isPdfFile) {
+      // For PDF, just show the filename
+      setPdfName(file.name);
+      setPreview('pdf');
+    } else {
+      // Preview image
+      setPdfName(null);
+      const reader = new FileReader();
+      reader.onload = (e) => setPreview(e.target?.result as string);
+      reader.readAsDataURL(file);
+    }
 
     await processImage(file);
   };
@@ -116,6 +129,8 @@ export default function OCRScanner({ type, onResult, onClose }: OCRScannerProps)
 
   const reset = () => {
     setPreview(null);
+    setIsPdf(false);
+    setPdfName(null);
     setResult(null);
     setError(null);
     stopCamera();
@@ -168,16 +183,24 @@ export default function OCRScanner({ type, onResult, onClose }: OCRScannerProps)
             </div>
           ) : preview ? (
             <div className="space-y-4">
-              <img
-                src={preview}
-                alt="Preview"
-                className="w-full rounded-xl max-h-64 object-contain bg-black"
-              />
+              {isPdf ? (
+                <div className="w-full rounded-xl p-8 bg-[#2a2a2a] flex flex-col items-center justify-center gap-3">
+                  <FileText size={48} className="text-red-400" />
+                  <p className="text-white font-medium">{pdfName}</p>
+                  <p className="text-sm text-[#6B7280]">Arquivo PDF</p>
+                </div>
+              ) : (
+                <img
+                  src={preview}
+                  alt="Preview"
+                  className="w-full rounded-xl max-h-64 object-contain bg-black"
+                />
+              )}
 
               {loading && (
                 <div className="flex items-center justify-center gap-2 text-[#22c55e]">
                   <Loader2 className="animate-spin" size={20} />
-                  <span>Processando imagem...</span>
+                  <span>{isPdf ? 'Processando PDF...' : 'Processando imagem...'}</span>
                 </div>
               )}
 
@@ -230,14 +253,18 @@ export default function OCRScanner({ type, onResult, onClose }: OCRScannerProps)
                 className="border-2 border-dashed border-[#333333] rounded-xl p-8 text-center cursor-pointer hover:border-[#22c55e]/50 transition-colors"
               >
                 <Upload className="mx-auto mb-4 text-[#6B7280]" size={40} />
-                <p className="text-[#94a3b8]">Clique para selecionar uma imagem</p>
+                <p className="text-[#94a3b8]">
+                  {type === 'nota-fiscal'
+                    ? 'Clique para selecionar uma imagem ou PDF'
+                    : 'Clique para selecionar uma imagem'}
+                </p>
                 <p className="text-sm text-[#6B7280] mt-1">ou arraste e solte aqui</p>
               </div>
 
               <input
                 ref={fileInputRef}
                 type="file"
-                accept="image/*"
+                accept={type === 'nota-fiscal' ? 'image/*,.pdf,application/pdf' : 'image/*'}
                 onChange={handleFileSelect}
                 className="hidden"
               />
