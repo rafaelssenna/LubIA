@@ -1,18 +1,11 @@
-import Tesseract from 'tesseract.js';
+import { GoogleGenerativeAI } from '@google/generative-ai';
 
-// Regex para placa brasileira (antiga e Mercosul)
-const PLATE_REGEX_OLD = /[A-Z]{3}[-\s]?\d{4}/gi;
-const PLATE_REGEX_MERCOSUL = /[A-Z]{3}\d[A-Z]\d{2}/gi;
-
-export interface OCRResult {
-  text: string;
-  confidence: number;
-}
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || '');
 
 export interface PlateResult {
   plate: string;
-  format: 'old' | 'mercosul';
-  confidence: number;
+  format: 'antiga' | 'mercosul';
+  confidence: 'alta' | 'media' | 'baixa';
 }
 
 export interface InvoiceData {
@@ -23,179 +16,210 @@ export interface InvoiceData {
   valorTotal?: number;
   itens: Array<{
     descricao: string;
+    codigo?: string;
     quantidade?: number;
+    unidade?: string;
     valorUnitario?: number;
     valorTotal?: number;
   }>;
-  rawText: string;
 }
 
 export interface DocumentData {
-  tipo: 'CNH' | 'CRLV' | 'UNKNOWN';
+  tipo: 'CNH' | 'CRLV' | 'DESCONHECIDO';
   nome?: string;
   cpf?: string;
   rg?: string;
   dataNascimento?: string;
+  cnh?: string;
+  categoria?: string;
+  validade?: string;
   placa?: string;
   renavam?: string;
   chassi?: string;
   marca?: string;
   modelo?: string;
-  ano?: string;
-  rawText: string;
+  anoFabricacao?: string;
+  anoModelo?: string;
+  cor?: string;
 }
 
-// OCR básico - retorna texto extraído
-export async function extractText(imageBuffer: Buffer): Promise<OCRResult> {
-  const result = await Tesseract.recognize(imageBuffer, 'por', {
-    logger: () => {}, // Silencia logs
-  });
-
-  return {
-    text: result.data.text,
-    confidence: result.data.confidence,
-  };
-}
-
-// Extrai placa de veículo
+// Extrai placa de veículo usando Gemini Vision
 export async function extractPlate(imageBuffer: Buffer): Promise<PlateResult | null> {
-  const result = await Tesseract.recognize(imageBuffer, 'por', {
-    logger: () => {},
-  });
+  try {
+    const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' });
 
-  const text = result.data.text.toUpperCase().replace(/\s+/g, '');
+    const prompt = `Analise esta imagem e extraia a placa do veículo brasileiro.
 
-  // Tenta encontrar placa Mercosul primeiro (mais nova)
-  const mercosulMatch = text.match(PLATE_REGEX_MERCOSUL);
-  if (mercosulMatch) {
-    return {
-      plate: mercosulMatch[0],
-      format: 'mercosul',
-      confidence: result.data.confidence,
-    };
-  }
-
-  // Tenta encontrar placa antiga
-  const oldMatch = text.match(PLATE_REGEX_OLD);
-  if (oldMatch) {
-    const plate = oldMatch[0].replace(/[-\s]/g, '');
-    return {
-      plate: `${plate.slice(0, 3)}-${plate.slice(3)}`,
-      format: 'old',
-      confidence: result.data.confidence,
-    };
-  }
-
-  return null;
+Responda APENAS em JSON válido, sem markdown, no formato:
+{
+  "encontrou": true/false,
+  "placa": "ABC1D23" ou "ABC-1234",
+  "formato": "mercosul" ou "antiga",
+  "confianca": "alta", "media" ou "baixa"
 }
 
-// Extrai dados de nota fiscal
+Se não encontrar placa, retorne: {"encontrou": false}
+
+Regras:
+- Placa Mercosul: 3 letras + 1 número + 1 letra + 2 números (ex: ABC1D23)
+- Placa Antiga: 3 letras + 4 números com hífen (ex: ABC-1234)
+- Retorne a placa SEM espaços extras
+- Se a imagem estiver borrada ou ilegível, confiança = "baixa"`;
+
+    const result = await model.generateContent([
+      prompt,
+      {
+        inlineData: {
+          mimeType: 'image/jpeg',
+          data: imageBuffer.toString('base64'),
+        },
+      },
+    ]);
+
+    const text = result.response.text().trim();
+    // Remove possíveis marcadores de código markdown
+    const jsonText = text.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
+    const data = JSON.parse(jsonText);
+
+    if (!data.encontrou) {
+      return null;
+    }
+
+    return {
+      plate: data.placa,
+      format: data.formato,
+      confidence: data.confianca,
+    };
+  } catch (error) {
+    console.error('Erro ao extrair placa:', error);
+    return null;
+  }
+}
+
+// Extrai dados de nota fiscal usando Gemini Vision
 export async function extractInvoiceData(imageBuffer: Buffer): Promise<InvoiceData> {
-  const result = await Tesseract.recognize(imageBuffer, 'por', {
-    logger: () => {},
-  });
+  try {
+    const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' });
 
-  const text = result.data.text;
-  const lines = text.split('\n').filter(l => l.trim());
+    const prompt = `Analise esta imagem de nota fiscal/cupom fiscal brasileiro e extraia os dados.
 
-  const data: InvoiceData = {
-    itens: [],
-    rawText: text,
-  };
-
-  // Tenta extrair CNPJ
-  const cnpjMatch = text.match(/\d{2}\.\d{3}\.\d{3}\/\d{4}-\d{2}/);
-  if (cnpjMatch) {
-    data.cnpj = cnpjMatch[0];
-  }
-
-  // Tenta extrair número da NF
-  const nfMatch = text.match(/(?:NF|NOTA FISCAL|N[°º])\s*:?\s*(\d+)/i);
-  if (nfMatch) {
-    data.numeroNF = nfMatch[1];
-  }
-
-  // Tenta extrair data
-  const dateMatch = text.match(/(\d{2}\/\d{2}\/\d{4})/);
-  if (dateMatch) {
-    data.dataEmissao = dateMatch[1];
-  }
-
-  // Tenta extrair valor total
-  const totalMatch = text.match(/(?:TOTAL|VALOR TOTAL)[:\s]*R?\$?\s*([\d.,]+)/i);
-  if (totalMatch) {
-    data.valorTotal = parseFloat(totalMatch[1].replace(/\./g, '').replace(',', '.'));
-  }
-
-  // Extrai possíveis itens (linhas com valores monetários)
-  const itemRegex = /(.+?)\s+(\d+(?:[.,]\d+)?)\s*(?:UN|PC|LT|KG|CX)?\s*R?\$?\s*([\d.,]+)/gi;
-  let match;
-  while ((match = itemRegex.exec(text)) !== null) {
-    data.itens.push({
-      descricao: match[1].trim(),
-      quantidade: parseFloat(match[2].replace(',', '.')),
-      valorTotal: parseFloat(match[3].replace(/\./g, '').replace(',', '.')),
-    });
-  }
-
-  return data;
+Responda APENAS em JSON válido, sem markdown, no formato:
+{
+  "fornecedor": "Nome da empresa",
+  "cnpj": "00.000.000/0000-00",
+  "dataEmissao": "DD/MM/AAAA",
+  "numeroNF": "123456",
+  "valorTotal": 150.00,
+  "itens": [
+    {
+      "descricao": "Nome do produto",
+      "codigo": "código se houver",
+      "quantidade": 1,
+      "unidade": "UN/LT/KG/PC",
+      "valorUnitario": 50.00,
+      "valorTotal": 50.00
+    }
+  ]
 }
 
-// Extrai dados de documento (CNH ou CRLV)
-export async function extractDocumentData(imageBuffer: Buffer): Promise<DocumentData> {
-  const result = await Tesseract.recognize(imageBuffer, 'por', {
-    logger: () => {},
-  });
+Regras:
+- Extraia TODOS os itens/produtos listados
+- Valores numéricos sem "R$" (apenas números)
+- Se não conseguir ler algum campo, omita-o
+- Para óleos lubrificantes, tente identificar a viscosidade (5W30, 10W40, etc)
+- CNPJ deve estar no formato com pontuação`;
 
-  const text = result.data.text;
-  const upperText = text.toUpperCase();
+    const result = await model.generateContent([
+      prompt,
+      {
+        inlineData: {
+          mimeType: 'image/jpeg',
+          data: imageBuffer.toString('base64'),
+        },
+      },
+    ]);
 
-  const data: DocumentData = {
-    tipo: 'UNKNOWN',
-    rawText: text,
-  };
+    const text = result.response.text().trim();
+    const jsonText = text.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
+    const data = JSON.parse(jsonText);
 
-  // Detecta tipo de documento
-  if (upperText.includes('HABILITAÇÃO') || upperText.includes('CNH')) {
-    data.tipo = 'CNH';
-
-    // Extrai dados da CNH
-    const cpfMatch = text.match(/\d{3}\.\d{3}\.\d{3}-\d{2}/);
-    if (cpfMatch) data.cpf = cpfMatch[0];
-
-    const rgMatch = text.match(/(?:RG|IDENTIDADE)[:\s]*(\d[\d.\-]+)/i);
-    if (rgMatch) data.rg = rgMatch[1];
-
-    const dateMatch = text.match(/(?:NASC|NASCIMENTO)[:\s]*(\d{2}\/\d{2}\/\d{4})/i);
-    if (dateMatch) data.dataNascimento = dateMatch[1];
-
-  } else if (upperText.includes('CRLV') || upperText.includes('LICENCIAMENTO') || upperText.includes('RENAVAM')) {
-    data.tipo = 'CRLV';
-
-    // Extrai placa
-    const plateMatch = text.match(/[A-Z]{3}[-\s]?\d[A-Z0-9]\d{2}/i);
-    if (plateMatch) data.placa = plateMatch[0].toUpperCase();
-
-    // Extrai RENAVAM
-    const renavamMatch = text.match(/(?:RENAVAM)[:\s]*(\d{9,11})/i);
-    if (renavamMatch) data.renavam = renavamMatch[1];
-
-    // Extrai chassi
-    const chassiMatch = text.match(/(?:CHASSI)[:\s]*([A-Z0-9]{17})/i);
-    if (chassiMatch) data.chassi = chassiMatch[1].toUpperCase();
-
-    // Extrai marca/modelo
-    const marcaMatch = text.match(/(?:MARCA|MODELO)[:\s]*([A-Z][A-Z\s\/]+)/i);
-    if (marcaMatch) data.marca = marcaMatch[1].trim();
-
-    // Extrai ano
-    const anoMatch = text.match(/(?:ANO|FAB)[:\s]*(\d{4})/i);
-    if (anoMatch) data.ano = anoMatch[1];
+    return {
+      fornecedor: data.fornecedor,
+      cnpj: data.cnpj,
+      dataEmissao: data.dataEmissao,
+      numeroNF: data.numeroNF,
+      valorTotal: data.valorTotal,
+      itens: data.itens || [],
+    };
+  } catch (error) {
+    console.error('Erro ao extrair nota fiscal:', error);
+    return { itens: [] };
   }
+}
 
-  // Tenta extrair nome (comum a ambos)
-  const nomeMatch = text.match(/(?:NOME|PROPRIETÁRIO)[:\s]*([A-ZÀ-Ú\s]+)/i);
-  if (nomeMatch) data.nome = nomeMatch[1].trim();
+// Extrai dados de documento (CNH ou CRLV) usando Gemini Vision
+export async function extractDocumentData(imageBuffer: Buffer): Promise<DocumentData> {
+  try {
+    const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' });
 
-  return data;
+    const prompt = `Analise esta imagem de documento brasileiro (CNH ou CRLV) e extraia os dados.
+
+Responda APENAS em JSON válido, sem markdown, no formato:
+
+Para CNH:
+{
+  "tipo": "CNH",
+  "nome": "Nome completo",
+  "cpf": "000.000.000-00",
+  "rg": "00.000.000-0",
+  "dataNascimento": "DD/MM/AAAA",
+  "cnh": "00000000000",
+  "categoria": "AB",
+  "validade": "DD/MM/AAAA"
+}
+
+Para CRLV:
+{
+  "tipo": "CRLV",
+  "nome": "Nome do proprietário",
+  "cpf": "000.000.000-00",
+  "placa": "ABC1D23",
+  "renavam": "00000000000",
+  "chassi": "XXXXXXXXXXXXXXXXX",
+  "marca": "MARCA",
+  "modelo": "MODELO",
+  "anoFabricacao": "2020",
+  "anoModelo": "2021",
+  "cor": "PRATA"
+}
+
+Se não conseguir identificar o tipo de documento:
+{
+  "tipo": "DESCONHECIDO"
+}
+
+Regras:
+- CPF com pontuação
+- Placa no formato correto (Mercosul ou antiga)
+- Se não conseguir ler algum campo, omita-o`;
+
+    const result = await model.generateContent([
+      prompt,
+      {
+        inlineData: {
+          mimeType: 'image/jpeg',
+          data: imageBuffer.toString('base64'),
+        },
+      },
+    ]);
+
+    const text = result.response.text().trim();
+    const jsonText = text.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
+    const data = JSON.parse(jsonText);
+
+    return data;
+  } catch (error) {
+    console.error('Erro ao extrair documento:', error);
+    return { tipo: 'DESCONHECIDO' };
+  }
 }
