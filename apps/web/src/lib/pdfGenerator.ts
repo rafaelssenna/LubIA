@@ -313,9 +313,9 @@ export function generateOrdemPDF(ordem: OrdemPDF) {
   }
 
   // ============ TOTAL ============
-  yPos += 5;
+  yPos += 10;
 
-  // Box do total
+  // Box do total (alinhado à direita)
   const totalBoxWidth = 90;
   const totalBoxX = pageWidth - margin - totalBoxWidth;
 
@@ -330,39 +330,43 @@ export function generateOrdemPDF(ordem: OrdemPDF) {
   doc.setFontSize(18);
   doc.text(formatCurrency(ordem.total), totalBoxX + totalBoxWidth / 2, yPos + 22, { align: 'center' });
 
+  yPos += 45;
+
   // ============ ASSINATURA ============
-  const signatureY = pageHeight - 55;
+  // Garantir espaço mínimo para assinatura e footer
+  const minSignatureY = yPos;
+  const maxSignatureY = pageHeight - 50;
+  const signatureY = Math.max(minSignatureY, Math.min(yPos, maxSignatureY));
 
   doc.setTextColor(100, 100, 100);
   doc.setFontSize(8);
   doc.setFont('helvetica', 'normal');
-  doc.text('Declaro que os serviços acima foram executados conforme solicitado.', margin, signatureY - 8);
+  doc.text('Declaro que os serviços acima foram executados conforme solicitado.', margin, signatureY);
 
   // Linha de assinatura cliente
   doc.setDrawColor(180, 180, 180);
   doc.setLineWidth(0.3);
-  doc.line(margin, signatureY + 15, margin + 75, signatureY + 15);
+  doc.line(margin, signatureY + 20, margin + 70, signatureY + 20);
   doc.setFontSize(9);
-  doc.text('Assinatura do Cliente', margin + 37.5, signatureY + 22, { align: 'center' });
+  doc.text('Assinatura do Cliente', margin + 35, signatureY + 27, { align: 'center' });
+
+  // Data (no meio)
+  doc.line(pageWidth / 2 - 30, signatureY + 20, pageWidth / 2 + 30, signatureY + 20);
+  doc.text('Data: ____/____/____', pageWidth / 2, signatureY + 27, { align: 'center' });
 
   // Linha de assinatura oficina
-  doc.line(pageWidth - margin - 75, signatureY + 15, pageWidth - margin, signatureY + 15);
-  doc.text('Assinatura da Oficina', pageWidth - margin - 37.5, signatureY + 22, { align: 'center' });
-
-  // Data
-  doc.text(`Data: ____/____/________`, pageWidth / 2, signatureY + 22, { align: 'center' });
+  doc.line(pageWidth - margin - 70, signatureY + 20, pageWidth - margin, signatureY + 20);
+  doc.text('Carimbo/Assinatura', pageWidth - margin - 35, signatureY + 27, { align: 'center' });
 
   // ============ FOOTER ============
   doc.setDrawColor(220, 220, 220);
   doc.setLineWidth(0.3);
-  doc.line(margin, pageHeight - 18, pageWidth - margin, pageHeight - 18);
+  doc.line(margin, pageHeight - 15, pageWidth - margin, pageHeight - 15);
 
   doc.setTextColor(150, 150, 150);
   doc.setFontSize(7);
-  doc.text(OFICINA_CONFIG.endereco, margin, pageHeight - 12);
-  doc.text(`${OFICINA_CONFIG.email} | ${OFICINA_CONFIG.telefone}`, margin, pageHeight - 8);
-
-  doc.text(`Documento gerado em ${new Date().toLocaleString('pt-BR')}`, pageWidth - margin, pageHeight - 10, { align: 'right' });
+  doc.text(`${OFICINA_CONFIG.endereco} | ${OFICINA_CONFIG.email} | ${OFICINA_CONFIG.telefone}`, pageWidth / 2, pageHeight - 10, { align: 'center' });
+  doc.text(`Gerado em ${new Date().toLocaleString('pt-BR')}`, pageWidth / 2, pageHeight - 6, { align: 'center' });
 
   return doc;
 }
