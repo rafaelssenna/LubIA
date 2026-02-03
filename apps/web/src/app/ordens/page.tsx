@@ -6,7 +6,7 @@ import {
   Play, CheckCircle, Pause, XCircle, Truck, Filter, Eye, Edit,
   Trash2, Loader2, Package, Wrench, DollarSign
 } from 'lucide-react';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { useToast } from '@/components/Toast';
 
@@ -85,7 +85,7 @@ const statusConfig: Record<string, { label: string; color: string; icon: any; bg
   ENTREGUE: { label: 'Entregue', color: 'text-cyan-400', icon: Truck, bg: 'bg-cyan-500/20' },
 };
 
-export default function OrdensPage() {
+function OrdensPageContent() {
   const toast = useToast();
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -998,5 +998,20 @@ export default function OrdensPage() {
         </div>
       )}
     </div>
+  );
+}
+
+export default function OrdensPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-[#000000]">
+        <Header title="Ordens de Serviço" subtitle="Gerencie suas O.S." />
+        <div className="p-6 flex items-center justify-center">
+          <Loader2 className="animate-spin text-[#22c55e]" size={32} />
+        </div>
+      </div>
+    }>
+      <OrdensPageContent />
+    </Suspense>
   );
 }
