@@ -45,16 +45,30 @@ model Veiculo {
   @@map("veiculos")
 }
 
+// Categoria de serviço
+enum CategoriaServico {
+  TROCA_OLEO
+  FILTROS
+  PNEUS
+  REVISOES
+  FREIOS
+  SUSPENSAO
+  ELETRICA
+  AR_CONDICIONADO
+  OUTROS
+}
+
 // Tipos de serviço oferecidos
 model Servico {
-  id          Int      @id @default(autoincrement())
+  id          Int              @id @default(autoincrement())
   nome        String
   descricao   String?
-  precoBase   Decimal  @db.Decimal(10, 2)
-  duracaoMin  Int?     // duração estimada em minutos
-  ativo       Boolean  @default(true)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  categoria   CategoriaServico @default(OUTROS)
+  precoBase   Decimal          @db.Decimal(10, 2)
+  duracaoMin  Int?             // duração estimada em minutos
+  ativo       Boolean          @default(true)
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
 
   itensOrdem  ItemOrdem[]
 
