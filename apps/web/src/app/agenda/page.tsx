@@ -278,7 +278,7 @@ export default function AgendaPage() {
                         </button>
                       )}
                       <button className="px-4 py-2 bg-[#000000] text-[#94a3b8] rounded-lg text-sm hover:bg-[#333333] hover:text-white transition-colors">
-                        Abrir OS
+                        Abrir O.S.
                       </button>
                     </div>
                   </div>

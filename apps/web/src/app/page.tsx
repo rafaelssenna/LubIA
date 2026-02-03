@@ -16,7 +16,7 @@ import {
 const stats = [
   { label: 'Clientes', value: '247', icon: Users, color: 'from-blue-500 to-blue-600' },
   { label: 'Veículos', value: '312', icon: Car, color: 'from-purple-500 to-purple-600' },
-  { label: 'OS do Mês', value: '89', icon: ClipboardList, color: 'from-[#22c55e] to-[#166534]' },
+  { label: 'O.S. do Mês', value: '89', icon: ClipboardList, color: 'from-[#22c55e] to-[#166534]' },
   { label: 'Faturamento', value: 'R$ 24.580', icon: DollarSign, color: 'from-amber-500 to-amber-600' },
 ];
 
@@ -71,7 +71,7 @@ export default function Dashboard() {
             <h2 className="text-lg font-bold text-white">Serviços de Hoje</h2>
             <button className="btn-primary flex items-center gap-2 px-4 py-2 rounded-xl text-sm">
               <Plus size={16} />
-              Nova OS
+              Nova O.S.
             </button>
           </div>
           <div className="divide-y divide-white/5">
@@ -100,7 +100,7 @@ export default function Dashboard() {
         {/* Ações Rápidas */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           {[
-            { icon: ClipboardList, label: 'Nova OS', color: 'from-[#22c55e] to-[#166534]' },
+            { icon: ClipboardList, label: 'Nova O.S.', color: 'from-[#22c55e] to-[#166534]' },
             { icon: Users, label: 'Novo Cliente', color: 'from-blue-500 to-blue-600' },
             { icon: Calendar, label: 'Agendar', color: 'from-purple-500 to-purple-600' },
             { icon: Car, label: 'Novo Veículo', color: 'from-amber-500 to-amber-600' },

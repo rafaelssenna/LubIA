@@ -15,7 +15,7 @@ export default function Header({ title, subtitle }: HeaderProps) {
   const notifications = [
     { id: 1, text: 'Veículo ABC-1234 pronto para entrega', time: '5 min', type: 'success' },
     { id: 2, text: 'Lembrete: Troca de óleo - João Silva', time: '1h', type: 'warning' },
-    { id: 3, text: 'Nova OS criada #1234', time: '2h', type: 'info' },
+    { id: 3, text: 'Nova O.S. criada #1234', time: '2h', type: 'info' },
   ];
 
   const getTypeColor = (type: string) => {
@@ -48,7 +48,7 @@ export default function Header({ title, subtitle }: HeaderProps) {
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-[#6B7280] group-focus-within:text-[#22c55e] transition-colors" size={18} />
             <input
               type="text"
-              placeholder="Buscar cliente, placa, OS..."
+              placeholder="Buscar cliente, placa, O.S..."
               className="bg-black/50 border border-white/10 rounded-2xl pl-11 pr-4 py-3 w-80 text-sm text-white placeholder-[#6B7280] focus:outline-none focus:border-[#22c55e]/50 focus:bg-black/70 transition-all duration-300 focus:shadow-lg focus:shadow-[#22c55e]/10"
             />
           </div>

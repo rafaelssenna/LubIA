@@ -240,7 +240,7 @@ export default function VeiculosPage() {
               </div>
               <div>
                 <p className="text-2xl font-bold text-white">0</p>
-                <p className="text-xs text-[#6B7280]">OS Abertas</p>
+                <p className="text-xs text-[#6B7280]">O.S. Abertas</p>
               </div>
             </div>
           </div>
@@ -326,7 +326,7 @@ export default function VeiculosPage() {
                 <div className="flex gap-2">
                   <button className="flex-1 flex items-center justify-center gap-2 py-2.5 bg-gradient-to-r from-[#22c55e] to-[#166534] rounded-xl text-white text-sm font-medium hover:opacity-90 transition-opacity">
                     <ClipboardList size={16} />
-                    Nova OS
+                    Nova O.S.
                   </button>
                   <button
                     onClick={() => openEditModal(veiculo)}
