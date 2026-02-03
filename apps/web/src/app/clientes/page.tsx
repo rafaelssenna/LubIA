@@ -97,9 +97,9 @@ export default function ClientesPage() {
 
   const parseEndereco = (endereco: string) => {
     // Tenta extrair dados de um endereço existente
-    const cepMatch = endereco.match(/CEP:\s*(\d{5}-?\d{3})/);
-    return {
-      cep: cepMatch ? cepMatch[1] : '',
+    // Formato esperado: "Rua X, 123 - Compl - Bairro - Cidade/UF - CEP: 12345-678"
+    const result = {
+      cep: '',
       rua: '',
       numero: '',
       complemento: '',
@@ -107,6 +107,51 @@ export default function ClientesPage() {
       cidade: '',
       uf: '',
     };
+
+    if (!endereco) return result;
+
+    // Extrai CEP
+    const cepMatch = endereco.match(/CEP:\s*(\d{5}-?\d{3})/);
+    if (cepMatch) {
+      result.cep = cepMatch[1];
+    }
+
+    // Remove o CEP da string para processar o resto
+    let resto = endereco.replace(/\s*-?\s*CEP:\s*\d{5}-?\d{3}/, '').trim();
+
+    // Extrai Cidade/UF (último item antes do CEP)
+    const cidadeUfMatch = resto.match(/([^-]+)\/([A-Z]{2})$/i);
+    if (cidadeUfMatch) {
+      result.cidade = cidadeUfMatch[1].trim();
+      result.uf = cidadeUfMatch[2].toUpperCase();
+      resto = resto.replace(/\s*-?\s*[^-]+\/[A-Z]{2}$/i, '').trim();
+    }
+
+    // Divide o resto por " - "
+    const partes = resto.split(/\s*-\s*/);
+
+    if (partes.length >= 1 && partes[0]) {
+      // Primeira parte: Rua e número
+      const ruaNumero = partes[0].match(/^(.+?),\s*(\d+\w*)$/);
+      if (ruaNumero) {
+        result.rua = ruaNumero[1].trim();
+        result.numero = ruaNumero[2].trim();
+      } else {
+        result.rua = partes[0].trim();
+      }
+    }
+
+    if (partes.length >= 2 && partes[1]) {
+      // Segunda parte pode ser complemento ou bairro
+      if (partes.length >= 3 && partes[2]) {
+        result.complemento = partes[1].trim();
+        result.bairro = partes[2].trim();
+      } else {
+        result.bairro = partes[1].trim();
+      }
+    }
+
+    return result;
   };
 
   const fetchClientes = async () => {
