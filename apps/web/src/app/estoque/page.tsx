@@ -1162,7 +1162,7 @@ export default function EstoquePage() {
                   quantidade: item.quantidade || 1,
                   estoqueMinimo: 5,
                   precoCompra: Math.round((item.valorUnitario || 0) * 100) / 100,
-                  precoVenda: 0, // Usuário preenche manualmente
+                  precoVenda: existingProduct?.precoVenda || 0,
                   existingProduct: existingProduct,
                   updateExisting: !!existingProduct, // Default to update if exists
                 };
