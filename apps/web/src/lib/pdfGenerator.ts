@@ -37,6 +37,16 @@ interface OrdemPDF {
   }[];
 }
 
+// Configuração da oficina (pode ser movido para config futuramente)
+const OFICINA_CONFIG = {
+  nome: 'LubIA',
+  subtitulo: 'Centro Automotivo',
+  cnpj: '00.000.000/0001-00',
+  telefone: '(31) 0000-0000',
+  endereco: 'Rua Exemplo, 123 - Belo Horizonte/MG',
+  email: 'contato@lubia.com.br',
+};
+
 const statusLabels: Record<string, string> = {
   AGENDADO: 'Agendado',
   AGUARDANDO_PECAS: 'Aguardando Peças',
@@ -44,11 +54,6 @@ const statusLabels: Record<string, string> = {
   CONCLUIDO: 'Concluído',
   CANCELADO: 'Cancelado',
   ENTREGUE: 'Entregue',
-};
-
-const formatDate = (date: string | null) => {
-  if (!date) return '-';
-  return new Date(date).toLocaleDateString('pt-BR');
 };
 
 const formatDateTime = (date: string | null) => {
@@ -63,88 +68,152 @@ const formatCurrency = (value: number) => {
 export function generateOrdemPDF(ordem: OrdemPDF) {
   const doc = new jsPDF();
   const pageWidth = doc.internal.pageSize.getWidth();
+  const pageHeight = doc.internal.pageSize.getHeight();
+  const margin = 14;
 
-  // Header
-  doc.setFillColor(34, 197, 94); // Green
-  doc.rect(0, 0, pageWidth, 40, 'F');
+  // ============ HEADER ============
+  doc.setFillColor(34, 197, 94);
+  doc.rect(0, 0, pageWidth, 45, 'F');
 
+  // Logo/Nome da oficina
   doc.setTextColor(255, 255, 255);
-  doc.setFontSize(24);
+  doc.setFontSize(28);
   doc.setFont('helvetica', 'bold');
-  doc.text('LubIA', 14, 20);
+  doc.text(OFICINA_CONFIG.nome, margin, 18);
 
+  doc.setFontSize(11);
+  doc.setFont('helvetica', 'normal');
+  doc.text(OFICINA_CONFIG.subtitulo, margin, 26);
+
+  // Dados da oficina no header
+  doc.setFontSize(8);
+  doc.text(`CNPJ: ${OFICINA_CONFIG.cnpj}`, margin, 34);
+  doc.text(`Tel: ${OFICINA_CONFIG.telefone}`, margin, 40);
+
+  // O.S. Number (lado direito)
+  doc.setFontSize(11);
+  doc.setFont('helvetica', 'bold');
+  doc.text('ORDEM DE SERVIÇO', pageWidth - margin, 14, { align: 'right' });
+
+  doc.setFontSize(20);
+  doc.text(`#${ordem.numero.slice(-8).toUpperCase()}`, pageWidth - margin, 26, { align: 'right' });
+
+  // Status badge
+  const statusText = statusLabels[ordem.status] || ordem.status;
   doc.setFontSize(10);
   doc.setFont('helvetica', 'normal');
-  doc.text('Sistema de Gestão de Oficinas', 14, 28);
+  doc.text(`Status: ${statusText}`, pageWidth - margin, 36, { align: 'right' });
 
-  // O.S. Number
-  doc.setFontSize(16);
+  // Data de emissão
+  doc.setFontSize(8);
+  doc.text(`Emitida: ${formatDateTime(ordem.createdAt)}`, pageWidth - margin, 42, { align: 'right' });
+
+  let yPos = 55;
+
+  // ============ DADOS DO CLIENTE ============
+  doc.setTextColor(34, 197, 94);
+  doc.setFontSize(11);
   doc.setFont('helvetica', 'bold');
-  doc.text(`O.S. #${ordem.numero.slice(-8).toUpperCase()}`, pageWidth - 14, 20, { align: 'right' });
+  doc.text('DADOS DO CLIENTE', margin, yPos);
 
-  doc.setFontSize(10);
-  doc.setFont('helvetica', 'normal');
-  doc.text(`Status: ${statusLabels[ordem.status] || ordem.status}`, pageWidth - 14, 28, { align: 'right' });
+  yPos += 3;
+  doc.setDrawColor(34, 197, 94);
+  doc.setLineWidth(0.5);
+  doc.line(margin, yPos, pageWidth - margin, yPos);
 
-  // Reset text color
-  doc.setTextColor(0, 0, 0);
-
-  let yPos = 50;
-
-  // Client and Vehicle Info
-  doc.setFillColor(245, 245, 245);
-  doc.rect(14, yPos, pageWidth - 28, 35, 'F');
-
-  doc.setFontSize(12);
-  doc.setFont('helvetica', 'bold');
-  doc.text('Informações do Cliente e Veículo', 18, yPos + 8);
-
-  doc.setFontSize(10);
-  doc.setFont('helvetica', 'normal');
-
-  doc.text(`Cliente: ${ordem.veiculo.cliente.nome}`, 18, yPos + 18);
-  doc.text(`Telefone: ${ordem.veiculo.cliente.telefone}`, 18, yPos + 26);
-
-  doc.text(`Veículo: ${ordem.veiculo.marca} ${ordem.veiculo.modelo}${ordem.veiculo.ano ? ` (${ordem.veiculo.ano})` : ''}`, pageWidth / 2 + 5, yPos + 18);
-  doc.text(`Placa: ${ordem.veiculo.placa}`, pageWidth / 2 + 5, yPos + 26);
-
-  yPos += 45;
-
-  // Dates Info
-  doc.setFillColor(245, 245, 245);
-  doc.rect(14, yPos, pageWidth - 28, 25, 'F');
-
-  doc.setFontSize(12);
-  doc.setFont('helvetica', 'bold');
-  doc.text('Datas', 18, yPos + 8);
-
+  yPos += 8;
+  doc.setTextColor(60, 60, 60);
   doc.setFontSize(10);
   doc.setFont('helvetica', 'normal');
 
-  doc.text(`Criada: ${formatDateTime(ordem.createdAt)}`, 18, yPos + 18);
-  if (ordem.dataInicio) {
-    doc.text(`Iniciada: ${formatDateTime(ordem.dataInicio)}`, pageWidth / 3, yPos + 18);
-  }
-  if (ordem.dataConclusao) {
-    doc.text(`Concluída: ${formatDateTime(ordem.dataConclusao)}`, (pageWidth / 3) * 2, yPos + 18);
-  }
+  doc.setFont('helvetica', 'bold');
+  doc.text('Nome:', margin, yPos);
+  doc.setFont('helvetica', 'normal');
+  doc.text(ordem.veiculo.cliente.nome, margin + 20, yPos);
+
+  doc.setFont('helvetica', 'bold');
+  doc.text('Telefone:', pageWidth / 2, yPos);
+  doc.setFont('helvetica', 'normal');
+  doc.text(ordem.veiculo.cliente.telefone, pageWidth / 2 + 25, yPos);
+
+  yPos += 12;
+
+  // ============ DADOS DO VEÍCULO ============
+  doc.setTextColor(34, 197, 94);
+  doc.setFontSize(11);
+  doc.setFont('helvetica', 'bold');
+  doc.text('DADOS DO VEÍCULO', margin, yPos);
+
+  yPos += 3;
+  doc.line(margin, yPos, pageWidth - margin, yPos);
+
+  yPos += 8;
+  doc.setTextColor(60, 60, 60);
+  doc.setFontSize(10);
+
+  // Placa com destaque
+  doc.setFillColor(240, 240, 240);
+  doc.roundedRect(margin, yPos - 5, 50, 14, 2, 2, 'F');
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(14);
+  doc.text(ordem.veiculo.placa, margin + 25, yPos + 4, { align: 'center' });
+
+  // Veículo info
+  doc.setFontSize(10);
+  doc.setFont('helvetica', 'bold');
+  doc.text('Veículo:', margin + 60, yPos);
+  doc.setFont('helvetica', 'normal');
+  const veiculoInfo = `${ordem.veiculo.marca} ${ordem.veiculo.modelo}${ordem.veiculo.ano ? ` (${ordem.veiculo.ano})` : ''}`;
+  doc.text(veiculoInfo, margin + 60 + 22, yPos);
+
+  // KM se disponível
   if (ordem.kmEntrada) {
-    doc.text(`KM Entrada: ${ordem.kmEntrada.toLocaleString('pt-BR')} km`, 18, yPos + 26);
+    doc.setFont('helvetica', 'bold');
+    doc.text('KM:', margin + 60, yPos + 8);
+    doc.setFont('helvetica', 'normal');
+    doc.text(`${ordem.kmEntrada.toLocaleString('pt-BR')} km`, margin + 60 + 12, yPos + 8);
   }
 
-  yPos += 35;
+  yPos += 22;
 
-  // Services Table
+  // ============ DATAS ============
+  if (ordem.dataInicio || ordem.dataConclusao) {
+    doc.setFillColor(248, 250, 252);
+    doc.roundedRect(margin, yPos - 2, pageWidth - margin * 2, 16, 2, 2, 'F');
+
+    doc.setTextColor(100, 100, 100);
+    doc.setFontSize(9);
+
+    let xOffset = margin + 5;
+    if (ordem.dataInicio) {
+      doc.setFont('helvetica', 'bold');
+      doc.text('Iniciada:', xOffset, yPos + 8);
+      doc.setFont('helvetica', 'normal');
+      doc.text(formatDateTime(ordem.dataInicio), xOffset + 22, yPos + 8);
+      xOffset += 75;
+    }
+    if (ordem.dataConclusao) {
+      doc.setFont('helvetica', 'bold');
+      doc.text('Concluída:', xOffset, yPos + 8);
+      doc.setFont('helvetica', 'normal');
+      doc.text(formatDateTime(ordem.dataConclusao), xOffset + 26, yPos + 8);
+    }
+
+    yPos += 22;
+  }
+
+  // ============ SERVIÇOS ============
   if (ordem.itens && ordem.itens.length > 0) {
-    doc.setFontSize(12);
+    doc.setTextColor(34, 197, 94);
+    doc.setFontSize(11);
     doc.setFont('helvetica', 'bold');
-    doc.text('Serviços', 14, yPos);
+    doc.text('SERVIÇOS', margin, yPos);
 
     yPos += 5;
 
     autoTable(doc, {
       startY: yPos,
-      head: [['Serviço', 'Qtd', 'Valor Unit.', 'Subtotal']],
+      head: [['Descrição do Serviço', 'Qtd', 'Valor Unit.', 'Subtotal']],
       body: ordem.itens.map(item => [
         item.servicoNome,
         item.quantidade.toString(),
@@ -156,32 +225,38 @@ export function generateOrdemPDF(ordem: OrdemPDF) {
         fillColor: [34, 197, 94],
         textColor: 255,
         fontStyle: 'bold',
+        fontSize: 9,
       },
       styles: {
         fontSize: 9,
+        cellPadding: 4,
       },
       columnStyles: {
         0: { cellWidth: 'auto' },
-        1: { cellWidth: 20, halign: 'center' },
-        2: { cellWidth: 35, halign: 'right' },
-        3: { cellWidth: 35, halign: 'right' },
+        1: { cellWidth: 18, halign: 'center' },
+        2: { cellWidth: 32, halign: 'right' },
+        3: { cellWidth: 32, halign: 'right', fontStyle: 'bold' },
+      },
+      alternateRowStyles: {
+        fillColor: [248, 250, 252],
       },
     });
 
-    yPos = (doc as any).lastAutoTable.finalY + 10;
+    yPos = (doc as any).lastAutoTable.finalY + 8;
   }
 
-  // Products Table
+  // ============ PRODUTOS ============
   if (ordem.itensProduto && ordem.itensProduto.length > 0) {
-    doc.setFontSize(12);
+    doc.setTextColor(59, 130, 246);
+    doc.setFontSize(11);
     doc.setFont('helvetica', 'bold');
-    doc.text('Produtos', 14, yPos);
+    doc.text('PEÇAS E PRODUTOS', margin, yPos);
 
     yPos += 5;
 
     autoTable(doc, {
       startY: yPos,
-      head: [['Produto', 'Qtd', 'Valor Unit.', 'Subtotal']],
+      head: [['Descrição do Produto', 'Qtd', 'Valor Unit.', 'Subtotal']],
       body: ordem.itensProduto.map(item => [
         item.produtoNome,
         item.quantidade.toString(),
@@ -193,54 +268,101 @@ export function generateOrdemPDF(ordem: OrdemPDF) {
         fillColor: [59, 130, 246],
         textColor: 255,
         fontStyle: 'bold',
+        fontSize: 9,
       },
       styles: {
         fontSize: 9,
+        cellPadding: 4,
       },
       columnStyles: {
         0: { cellWidth: 'auto' },
-        1: { cellWidth: 20, halign: 'center' },
-        2: { cellWidth: 35, halign: 'right' },
-        3: { cellWidth: 35, halign: 'right' },
+        1: { cellWidth: 18, halign: 'center' },
+        2: { cellWidth: 32, halign: 'right' },
+        3: { cellWidth: 32, halign: 'right', fontStyle: 'bold' },
+      },
+      alternateRowStyles: {
+        fillColor: [248, 250, 252],
       },
     });
 
-    yPos = (doc as any).lastAutoTable.finalY + 10;
+    yPos = (doc as any).lastAutoTable.finalY + 8;
   }
 
-  // Observations
+  // ============ OBSERVAÇÕES ============
   if (ordem.observacoes) {
-    doc.setFontSize(12);
+    doc.setTextColor(100, 100, 100);
+    doc.setFontSize(11);
     doc.setFont('helvetica', 'bold');
-    doc.text('Observações', 14, yPos);
+    doc.text('OBSERVAÇÕES', margin, yPos);
 
-    doc.setFontSize(10);
+    yPos += 5;
+    doc.setFillColor(255, 251, 235);
+    doc.setDrawColor(251, 191, 36);
+    doc.setLineWidth(0.3);
+
+    const splitText = doc.splitTextToSize(ordem.observacoes, pageWidth - margin * 2 - 10);
+    const obsHeight = splitText.length * 5 + 8;
+    doc.roundedRect(margin, yPos, pageWidth - margin * 2, obsHeight, 2, 2, 'FD');
+
+    doc.setTextColor(60, 60, 60);
+    doc.setFontSize(9);
     doc.setFont('helvetica', 'normal');
-    const splitText = doc.splitTextToSize(ordem.observacoes, pageWidth - 28);
-    doc.text(splitText, 14, yPos + 8);
+    doc.text(splitText, margin + 5, yPos + 6);
 
-    yPos += 8 + splitText.length * 5;
+    yPos += obsHeight + 8;
   }
 
-  // Total
+  // ============ TOTAL ============
   yPos += 5;
+
+  // Box do total
+  const totalBoxWidth = 90;
+  const totalBoxX = pageWidth - margin - totalBoxWidth;
+
   doc.setFillColor(34, 197, 94);
-  doc.rect(pageWidth - 80, yPos, 66, 20, 'F');
+  doc.roundedRect(totalBoxX, yPos, totalBoxWidth, 28, 3, 3, 'F');
 
   doc.setTextColor(255, 255, 255);
   doc.setFontSize(10);
   doc.setFont('helvetica', 'bold');
-  doc.text('TOTAL:', pageWidth - 75, yPos + 8);
+  doc.text('TOTAL A PAGAR', totalBoxX + totalBoxWidth / 2, yPos + 10, { align: 'center' });
 
-  doc.setFontSize(14);
-  doc.text(formatCurrency(ordem.total), pageWidth - 75, yPos + 16);
+  doc.setFontSize(18);
+  doc.text(formatCurrency(ordem.total), totalBoxX + totalBoxWidth / 2, yPos + 22, { align: 'center' });
 
-  // Footer
-  const pageHeight = doc.internal.pageSize.getHeight();
-  doc.setTextColor(128, 128, 128);
+  // ============ ASSINATURA ============
+  const signatureY = pageHeight - 55;
+
+  doc.setTextColor(100, 100, 100);
   doc.setFontSize(8);
   doc.setFont('helvetica', 'normal');
-  doc.text(`Documento gerado em ${new Date().toLocaleString('pt-BR')} - LubIA`, pageWidth / 2, pageHeight - 10, { align: 'center' });
+  doc.text('Declaro que os serviços acima foram executados conforme solicitado.', margin, signatureY - 8);
+
+  // Linha de assinatura cliente
+  doc.setDrawColor(180, 180, 180);
+  doc.setLineWidth(0.3);
+  doc.line(margin, signatureY + 15, margin + 75, signatureY + 15);
+  doc.setFontSize(9);
+  doc.text('Assinatura do Cliente', margin + 37.5, signatureY + 22, { align: 'center' });
+
+  // Linha de assinatura oficina
+  doc.line(pageWidth - margin - 75, signatureY + 15, pageWidth - margin, signatureY + 15);
+  doc.text('Assinatura da Oficina', pageWidth - margin - 37.5, signatureY + 22, { align: 'center' });
+
+  // Data
+  doc.text(`Data: ____/____/________`, pageWidth / 2, signatureY + 22, { align: 'center' });
+
+  // ============ FOOTER ============
+  doc.setDrawColor(220, 220, 220);
+  doc.setLineWidth(0.3);
+  doc.line(margin, pageHeight - 18, pageWidth - margin, pageHeight - 18);
+
+  doc.setTextColor(150, 150, 150);
+  doc.setFontSize(7);
+  doc.text(OFICINA_CONFIG.endereco, margin, pageHeight - 12);
+  doc.text(`${OFICINA_CONFIG.email} | ${OFICINA_CONFIG.telefone}`, margin, pageHeight - 8);
+
+  doc.text(`Documento gerado em ${new Date().toLocaleString('pt-BR')}`, pageWidth - margin, pageHeight - 10, { align: 'right' });
 
   return doc;
 }
