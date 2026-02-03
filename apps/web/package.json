@@ -11,9 +11,11 @@
   },
   "dependencies": {
     "@google/generative-ai": "^0.24.1",
-    "@lubia/ui": "workspace:*",
     "@lubia/types": "workspace:*",
+    "@lubia/ui": "workspace:*",
     "@prisma/client": "^6.6.0",
+    "jspdf": "^4.1.0",
+    "jspdf-autotable": "^5.0.7",
     "lucide-react": "^0.468.0",
     "next": "^15.1.5",
     "react": "^19.0.0",

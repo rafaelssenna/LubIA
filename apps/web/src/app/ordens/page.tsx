@@ -4,11 +4,12 @@ import Header from '@/components/Header';
 import {
   Plus, Search, X, ClipboardList, Car, User, Calendar, Clock,
   Play, CheckCircle, Pause, XCircle, Truck, Filter, Eye, Edit,
-  Trash2, Loader2, Package, Wrench, DollarSign
+  Trash2, Loader2, Package, Wrench, DollarSign, FileDown
 } from 'lucide-react';
 import { useState, useEffect, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { useToast } from '@/components/Toast';
+import { downloadOrdemPDF } from '@/lib/pdfGenerator';
 
 interface Cliente {
   id: number;
@@ -515,6 +516,13 @@ function OrdensPageContent() {
                         </button>
                       )}
                       <button
+                        onClick={() => downloadOrdemPDF(ordem)}
+                        className="p-2 hover:bg-[#22c55e]/20 rounded-lg text-[#94a3b8] hover:text-[#22c55e] transition-colors"
+                        title="Baixar PDF"
+                      >
+                        <FileDown size={18} />
+                      </button>
+                      <button
                         onClick={() => {
                           setSelectedOrdem(ordem);
                           setShowDetailModal(true);
@@ -944,6 +952,13 @@ function OrdensPageContent() {
               </div>
             </div>
             <div className="p-6 border-t border-[#333333] flex gap-3 justify-end">
+              <button
+                onClick={() => downloadOrdemPDF(selectedOrdem)}
+                className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-[#22c55e] to-[#166534] rounded-xl text-white font-medium hover:opacity-90 transition-opacity"
+              >
+                <FileDown size={18} />
+                Baixar PDF
+              </button>
               <button
                 onClick={() => setShowDetailModal(false)}
                 className="px-6 py-3 border border-[#333333] rounded-xl text-[#94a3b8] hover:bg-[#333333] transition-colors"
