@@ -7,6 +7,7 @@ import {
   Trash2, Loader2, Package, Wrench, DollarSign
 } from 'lucide-react';
 import { useState, useEffect } from 'react';
+import { useSearchParams, useRouter } from 'next/navigation';
 import { useToast } from '@/components/Toast';
 
 interface Cliente {
@@ -86,6 +87,8 @@ const statusConfig: Record<string, { label: string; color: string; icon: any; bg
 
 export default function OrdensPage() {
   const toast = useToast();
+  const searchParams = useSearchParams();
+  const router = useRouter();
   const [ordens, setOrdens] = useState<OrdemServico[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
@@ -161,6 +164,36 @@ export default function OrdensPage() {
   useEffect(() => {
     fetchOrdens();
   }, [searchTerm, statusFilter]);
+
+  // Check for veiculoId in URL to auto-open modal
+  useEffect(() => {
+    const veiculoIdParam = searchParams.get('veiculoId');
+    if (veiculoIdParam) {
+      const veiculoId = parseInt(veiculoIdParam);
+      if (!isNaN(veiculoId)) {
+        // Fetch data and open modal with pre-selected vehicle
+        Promise.all([
+          fetch('/api/veiculos').then(r => r.json()),
+          fetch('/api/servicos?ativo=true').then(r => r.json()),
+          fetch('/api/produtos?ativo=true').then(r => r.json()),
+        ]).then(([veiculosData, servicosData, produtosData]) => {
+          setVeiculos(veiculosData.data || []);
+          setServicos(servicosData.data || []);
+          setProdutos(produtosData.data || []);
+          setSelectedVeiculoId(veiculoId);
+          setKmEntrada('');
+          setObservacoes('');
+          setSelectedServicos([]);
+          setSelectedProdutos([]);
+          setSearchVeiculo('');
+          setStep(1);
+          setShowModal(true);
+          // Clean URL
+          router.replace('/ordens');
+        });
+      }
+    }
+  }, [searchParams]);
 
   const openNewModal = () => {
     fetchVeiculos();

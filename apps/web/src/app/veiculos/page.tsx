@@ -3,6 +3,7 @@
 import Header from '@/components/Header';
 import { Plus, Search, Car, User, ClipboardList, X, Camera, Edit, Trash2, Loader2, Gauge } from 'lucide-react';
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import OCRScanner from '@/components/OCRScanner';
 import { useToast } from '@/components/Toast';
 
@@ -26,6 +27,7 @@ interface Veiculo {
 
 export default function VeiculosPage() {
   const toast = useToast();
+  const router = useRouter();
   const [veiculos, setVeiculos] = useState<Veiculo[]>([]);
   const [clientes, setClientes] = useState<Cliente[]>([]);
   const [loading, setLoading] = useState(true);
@@ -324,7 +326,10 @@ export default function VeiculosPage() {
                 </div>
 
                 <div className="flex gap-2">
-                  <button className="flex-1 flex items-center justify-center gap-2 py-2.5 bg-gradient-to-r from-[#22c55e] to-[#166534] rounded-xl text-white text-sm font-medium hover:opacity-90 transition-opacity">
+                  <button
+                    onClick={() => router.push(`/ordens?veiculoId=${veiculo.id}`)}
+                    className="flex-1 flex items-center justify-center gap-2 py-2.5 bg-gradient-to-r from-[#22c55e] to-[#166534] rounded-xl text-white text-sm font-medium hover:opacity-90 transition-opacity"
+                  >
                     <ClipboardList size={16} />
                     Nova O.S.
                   </button>
