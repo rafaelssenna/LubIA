@@ -1,18 +1,9 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 
-// POST - Seed initial services
+// POST - Seed initial services (always adds, even if services exist)
 export async function POST() {
   try {
-    // Check if services already exist
-    const existingCount = await prisma.servico.count();
-    if (existingCount > 0) {
-      return NextResponse.json({
-        message: `Já existem ${existingCount} serviços cadastrados`,
-        skipped: true,
-      });
-    }
-
     // Initial services to seed
     const servicos = [
       {
