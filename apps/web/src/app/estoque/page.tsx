@@ -10,12 +10,17 @@ import {
   AlertTriangle,
   ArrowDownCircle,
   ArrowUpCircle,
-  Filter,
   DollarSign,
   Droplets,
   FileText,
   Download,
   FileSpreadsheet,
+  ChevronUp,
+  ChevronDown,
+  ChevronLeft,
+  ChevronRight,
+  History,
+  X,
 } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import OCRScanner from '@/components/OCRScanner';
@@ -173,6 +178,24 @@ export default function EstoquePage() {
     precoGranel: '',
   });
 
+  // Sorting state
+  const [sortBy, setSortBy] = useState<'nome' | 'quantidade' | 'precoCompra' | 'precoVenda'>('nome');
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
+
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage] = useState(10);
+
+  // Low stock filter
+  const [showOnlyLowStock, setShowOnlyLowStock] = useState(false);
+
+  // History modal
+  const [showHistoryModal, setShowHistoryModal] = useState(false);
+  const [historyProduto, setHistoryProduto] = useState<Produto | null>(null);
+  const [movimentacoes, setMovimentacoes] = useState<any[]>([]);
+  const [loadingHistory, setLoadingHistory] = useState(false);
+
+  
   // Form state
   const [form, setForm] = useState({
     codigo: '',
@@ -206,6 +229,77 @@ export default function EstoquePage() {
   useEffect(() => {
     fetchProdutos();
   }, [searchTerm, categoriaFilter]);
+
+  // Reset to page 1 when filters change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm, categoriaFilter, showOnlyLowStock, sortBy, sortOrder]);
+
+  // Fetch movimentações for history
+  const fetchMovimentacoes = async (produtoId: number) => {
+    setLoadingHistory(true);
+    try {
+      const res = await fetch(`/api/produtos/${produtoId}/movimentacao`);
+      const data = await res.json();
+      setMovimentacoes(data.data || []);
+    } catch (error) {
+      console.error('Erro ao buscar movimentações:', error);
+      setMovimentacoes([]);
+    } finally {
+      setLoadingHistory(false);
+    }
+  };
+
+  const openHistoryModal = (produto: Produto) => {
+    setHistoryProduto(produto);
+    setShowHistoryModal(true);
+    fetchMovimentacoes(produto.id);
+  };
+
+  // Sorting function
+  const handleSort = (column: 'nome' | 'quantidade' | 'precoCompra' | 'precoVenda') => {
+    if (sortBy === column) {
+      setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
+    } else {
+      setSortBy(column);
+      setSortOrder('asc');
+    }
+  };
+
+  // Sort and filter products
+  const processedProducts = [...produtos]
+    .filter(p => !showOnlyLowStock || p.estoqueBaixo)
+    .sort((a, b) => {
+      let comparison = 0;
+      switch (sortBy) {
+        case 'nome':
+          comparison = a.nome.localeCompare(b.nome);
+          break;
+        case 'quantidade':
+          comparison = a.quantidade - b.quantidade;
+          break;
+        case 'precoCompra':
+          comparison = a.precoCompraAtual - b.precoCompraAtual;
+          break;
+        case 'precoVenda':
+          comparison = a.precoVenda - b.precoVenda;
+          break;
+      }
+      return sortOrder === 'asc' ? comparison : -comparison;
+    });
+
+  // Pagination
+  const totalPages = Math.ceil(processedProducts.length / itemsPerPage);
+  const paginatedProducts = processedProducts.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
+
+  // Sort icon component
+  const SortIcon = ({ column }: { column: string }) => {
+    if (sortBy !== column) return null;
+    return sortOrder === 'asc' ? <ChevronUp size={14} /> : <ChevronDown size={14} />;
+  };
 
   const handleSubmit = async () => {
     try {
@@ -526,6 +620,29 @@ export default function EstoquePage() {
           </div>
         </div>
 
+        {/* Low Stock Alert Banner */}
+        {estoqueBaixoCount > 0 && !showOnlyLowStock && (
+          <div className="bg-red-500/10 border border-red-500/30 rounded-xl p-4 flex items-center justify-between animate-fade-in">
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-red-500/20 rounded-lg">
+                <AlertTriangle size={20} className="text-red-400" />
+              </div>
+              <div>
+                <p className="text-white font-medium">
+                  {estoqueBaixoCount} {estoqueBaixoCount === 1 ? 'produto está' : 'produtos estão'} com estoque baixo
+                </p>
+                <p className="text-sm text-red-300/70">Verifique os itens que precisam de reposição</p>
+              </div>
+            </div>
+            <button
+              onClick={() => setShowOnlyLowStock(true)}
+              className="px-4 py-2 bg-red-500/20 hover:bg-red-500/30 border border-red-500/30 rounded-lg text-red-400 text-sm font-medium transition-colors"
+            >
+              Ver produtos
+            </button>
+          </div>
+        )}
+
         {/* Toolbar */}
         <div className="flex flex-col md:flex-row gap-4 justify-between">
           <div className="flex gap-3 flex-1">
@@ -548,6 +665,21 @@ export default function EstoquePage() {
                 <option key={cat.value} value={cat.value}>{cat.label}</option>
               ))}
             </select>
+            <button
+              onClick={() => setShowOnlyLowStock(!showOnlyLowStock)}
+              className={`flex items-center gap-2 px-4 py-3 rounded-xl transition-colors ${
+                showOnlyLowStock
+                  ? 'bg-red-500/20 border border-red-500/50 text-red-400'
+                  : 'border border-[#333333] text-[#94a3b8] hover:bg-[#333333]'
+              }`}
+              title="Filtrar estoque baixo"
+            >
+              <AlertTriangle size={18} />
+              <span className="hidden md:inline">Estoque Baixo</span>
+              {showOnlyLowStock && (
+                <X size={14} className="ml-1" />
+              )}
+            </button>
           </div>
           <div className="flex gap-3">
             <button
@@ -591,11 +723,43 @@ export default function EstoquePage() {
               <thead>
                 <tr className="border-b border-[#333333]">
                   <th className="text-left px-6 py-4 text-sm font-medium text-[#6B7280]">Código</th>
-                  <th className="text-left px-6 py-4 text-sm font-medium text-[#6B7280]">Produto</th>
+                  <th
+                    className="text-left px-6 py-4 text-sm font-medium text-[#6B7280] cursor-pointer hover:text-white transition-colors select-none"
+                    onClick={() => handleSort('nome')}
+                  >
+                    <div className="flex items-center gap-1">
+                      Produto
+                      <SortIcon column="nome" />
+                    </div>
+                  </th>
                   <th className="text-left px-6 py-4 text-sm font-medium text-[#6B7280]">Categoria</th>
-                  <th className="text-right px-6 py-4 text-sm font-medium text-[#6B7280]">Qtd</th>
-                  <th className="text-right px-6 py-4 text-sm font-medium text-[#6B7280]">Preço Compra</th>
-                  <th className="text-right px-6 py-4 text-sm font-medium text-[#6B7280]">Preço Venda</th>
+                  <th
+                    className="text-right px-6 py-4 text-sm font-medium text-[#6B7280] cursor-pointer hover:text-white transition-colors select-none"
+                    onClick={() => handleSort('quantidade')}
+                  >
+                    <div className="flex items-center justify-end gap-1">
+                      Qtd
+                      <SortIcon column="quantidade" />
+                    </div>
+                  </th>
+                  <th
+                    className="text-right px-6 py-4 text-sm font-medium text-[#6B7280] cursor-pointer hover:text-white transition-colors select-none"
+                    onClick={() => handleSort('precoCompra')}
+                  >
+                    <div className="flex items-center justify-end gap-1">
+                      Preço Compra
+                      <SortIcon column="precoCompra" />
+                    </div>
+                  </th>
+                  <th
+                    className="text-right px-6 py-4 text-sm font-medium text-[#6B7280] cursor-pointer hover:text-white transition-colors select-none"
+                    onClick={() => handleSort('precoVenda')}
+                  >
+                    <div className="flex items-center justify-end gap-1">
+                      Preço Venda
+                      <SortIcon column="precoVenda" />
+                    </div>
+                  </th>
                   <th className="text-center px-6 py-4 text-sm font-medium text-[#6B7280]">Ações</th>
                 </tr>
               </thead>
@@ -604,12 +768,14 @@ export default function EstoquePage() {
                   <tr>
                     <td colSpan={7} className="text-center py-8 text-[#6B7280]">Carregando...</td>
                   </tr>
-                ) : produtos.length === 0 ? (
+                ) : paginatedProducts.length === 0 ? (
                   <tr>
-                    <td colSpan={7} className="text-center py-8 text-[#6B7280]">Nenhum produto encontrado</td>
+                    <td colSpan={7} className="text-center py-8 text-[#6B7280]">
+                      {showOnlyLowStock ? 'Nenhum produto com estoque baixo' : 'Nenhum produto encontrado'}
+                    </td>
                   </tr>
                 ) : (
-                  produtos.map((produto) => (
+                  paginatedProducts.map((produto) => (
                     <tr key={produto.id} className="border-b border-[#333333]/50 hover:bg-white/5 transition-colors">
                       <td className="px-6 py-4">
                         <span className="text-sm font-mono text-[#94a3b8]">{produto.codigo}</span>
@@ -667,6 +833,13 @@ export default function EstoquePage() {
                             <ArrowUpCircle size={18} />
                           </button>
                           <button
+                            onClick={() => openHistoryModal(produto)}
+                            className="p-2 hover:bg-blue-500/20 rounded-lg transition-colors text-[#94a3b8] hover:text-blue-400"
+                            title="Histórico"
+                          >
+                            <History size={16} />
+                          </button>
+                          <button
                             onClick={() => openEditModal(produto)}
                             className="p-2 hover:bg-[#333333] rounded-lg transition-colors text-[#94a3b8] hover:text-white"
                             title="Editar"
@@ -691,6 +864,58 @@ export default function EstoquePage() {
               </tbody>
             </table>
           </div>
+
+          {/* Pagination */}
+          {totalPages > 1 && (
+            <div className="px-6 py-4 border-t border-[#333333] flex items-center justify-between">
+              <p className="text-sm text-[#6B7280]">
+                Mostrando {((currentPage - 1) * itemsPerPage) + 1} a {Math.min(currentPage * itemsPerPage, processedProducts.length)} de {processedProducts.length} produtos
+              </p>
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                  disabled={currentPage === 1}
+                  className="p-2 border border-[#333333] rounded-lg text-[#94a3b8] hover:bg-[#333333] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                >
+                  <ChevronLeft size={18} />
+                </button>
+                <div className="flex items-center gap-1">
+                  {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+                    let pageNum;
+                    if (totalPages <= 5) {
+                      pageNum = i + 1;
+                    } else if (currentPage <= 3) {
+                      pageNum = i + 1;
+                    } else if (currentPage >= totalPages - 2) {
+                      pageNum = totalPages - 4 + i;
+                    } else {
+                      pageNum = currentPage - 2 + i;
+                    }
+                    return (
+                      <button
+                        key={pageNum}
+                        onClick={() => setCurrentPage(pageNum)}
+                        className={`w-8 h-8 rounded-lg text-sm font-medium transition-colors ${
+                          currentPage === pageNum
+                            ? 'bg-[#22c55e] text-white'
+                            : 'text-[#94a3b8] hover:bg-[#333333]'
+                        }`}
+                      >
+                        {pageNum}
+                      </button>
+                    );
+                  })}
+                </div>
+                <button
+                  onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                  disabled={currentPage === totalPages}
+                  className="p-2 border border-[#333333] rounded-lg text-[#94a3b8] hover:bg-[#333333] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                >
+                  <ChevronRight size={18} />
+                </button>
+              </div>
+            </div>
+          )}
         </div>
       </div>
 
@@ -1402,6 +1627,88 @@ export default function EstoquePage() {
                 className="px-6 py-3 bg-gradient-to-r from-red-500 to-red-700 rounded-xl text-white font-medium hover:opacity-90 transition-opacity"
               >
                 Excluir Produto
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Modal Histórico de Movimentações */}
+      {showHistoryModal && historyProduto && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-[#1F1F1F] border border-[#333333] rounded-2xl w-full max-w-2xl animate-fade-in max-h-[80vh] overflow-hidden flex flex-col">
+            <div className="p-6 border-b border-[#333333]">
+              <h2 className="text-xl font-semibold text-white">Histórico de Movimentações</h2>
+              <p className="text-sm text-[#6B7280] mt-1">{historyProduto.nome}</p>
+              <p className="text-xs text-[#6B7280]">
+                {historyProduto.codigo} • Estoque atual: {historyProduto.quantidade} {historyProduto.unidade}
+              </p>
+            </div>
+            <div className="flex-1 overflow-y-auto p-6">
+              {loadingHistory ? (
+                <div className="text-center py-8 text-[#6B7280]">Carregando...</div>
+              ) : movimentacoes.length === 0 ? (
+                <div className="text-center py-8 text-[#6B7280]">
+                  <History size={40} className="mx-auto mb-3 opacity-50" />
+                  <p>Nenhuma movimentação registrada</p>
+                </div>
+              ) : (
+                <div className="space-y-3">
+                  {movimentacoes.map((mov) => (
+                    <div
+                      key={mov.id}
+                      className={`p-4 rounded-xl border ${
+                        mov.tipo === 'ENTRADA'
+                          ? 'bg-[#22c55e]/10 border-[#22c55e]/30'
+                          : mov.tipo === 'SAIDA'
+                          ? 'bg-red-500/10 border-red-500/30'
+                          : 'bg-blue-500/10 border-blue-500/30'
+                      }`}
+                    >
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-3">
+                          {mov.tipo === 'ENTRADA' ? (
+                            <ArrowDownCircle size={20} className="text-[#22c55e]" />
+                          ) : mov.tipo === 'SAIDA' ? (
+                            <ArrowUpCircle size={20} className="text-red-400" />
+                          ) : (
+                            <History size={20} className="text-blue-400" />
+                          )}
+                          <div>
+                            <p className={`font-medium ${
+                              mov.tipo === 'ENTRADA' ? 'text-[#22c55e]' : mov.tipo === 'SAIDA' ? 'text-red-400' : 'text-blue-400'
+                            }`}>
+                              {mov.tipo === 'ENTRADA' ? '+' : mov.tipo === 'SAIDA' ? '-' : ''}{mov.quantidade} {historyProduto.unidade}
+                            </p>
+                            {mov.motivo && (
+                              <p className="text-sm text-[#94a3b8]">{mov.motivo}</p>
+                            )}
+                          </div>
+                        </div>
+                        <div className="text-right">
+                          <p className="text-sm text-[#6B7280]">
+                            {new Date(mov.createdAt).toLocaleDateString('pt-BR')}
+                          </p>
+                          <p className="text-xs text-[#6B7280]">
+                            {new Date(mov.createdAt).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+            <div className="p-6 border-t border-[#333333] flex justify-end">
+              <button
+                onClick={() => {
+                  setShowHistoryModal(false);
+                  setHistoryProduto(null);
+                  setMovimentacoes([]);
+                }}
+                className="px-6 py-3 border border-[#333333] rounded-xl text-[#94a3b8] hover:bg-[#333333] transition-colors"
+              >
+                Fechar
               </button>
             </div>
           </div>

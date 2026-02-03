@@ -1,6 +1,42 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 
+// GET - Buscar histórico de movimentações
+export async function GET(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  try {
+    const { id } = await params;
+    const produtoId = parseInt(id);
+
+    if (isNaN(produtoId)) {
+      return NextResponse.json({ error: 'ID do produto inválido' }, { status: 400 });
+    }
+
+    const movimentacoes = await prisma.movimentacaoEstoque.findMany({
+      where: { produtoId },
+      orderBy: { createdAt: 'desc' },
+      take: 50, // Últimas 50 movimentações
+    });
+
+    return NextResponse.json({
+      data: movimentacoes.map(m => ({
+        id: m.id,
+        tipo: m.tipo,
+        quantidade: Number(m.quantidade),
+        motivo: m.motivo,
+        documento: m.documento,
+        createdAt: m.createdAt,
+      })),
+    });
+  } catch (error: any) {
+    console.error('[MOVIMENTACAO API GET] Erro:', error?.message);
+    return NextResponse.json({ error: 'Erro ao buscar movimentações' }, { status: 500 });
+  }
+}
+
+// POST - Registrar nova movimentação
 export async function POST(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
