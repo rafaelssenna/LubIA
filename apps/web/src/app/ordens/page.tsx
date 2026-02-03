@@ -171,7 +171,7 @@ function OrdensPageContent() {
     if (veiculoIdParam) {
       const veiculoId = parseInt(veiculoIdParam);
       if (!isNaN(veiculoId)) {
-        // Fetch data and open modal with pre-selected vehicle
+        // Fetch data and open modal with pre-selected vehicle, skip to step 2
         Promise.all([
           fetch('/api/veiculos').then(r => r.json()),
           fetch('/api/servicos?ativo=true').then(r => r.json()),
@@ -186,7 +186,7 @@ function OrdensPageContent() {
           setSelectedServicos([]);
           setSelectedProdutos([]);
           setSearchVeiculo('');
-          setStep(1);
+          setStep(2); // Skip to services selection since vehicle is pre-selected
           setShowModal(true);
           // Clean URL
           router.replace('/ordens');
