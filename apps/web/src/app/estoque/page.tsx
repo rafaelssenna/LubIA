@@ -1337,7 +1337,13 @@ export default function EstoquePage() {
                           />
                         </div>
                         <div>
-                          <label className="block text-xs text-[#6B7280] mb-1">Preço Venda</label>
+                          <label className={`block text-xs mb-1 ${
+                            item.selected && !item.updateExisting && !item.precoVenda
+                              ? 'text-red-400'
+                              : 'text-[#6B7280]'
+                          }`}>
+                            Preço Venda {item.selected && !item.updateExisting && <span className="text-red-400">*</span>}
+                          </label>
                           <input
                             type="number"
                             step="0.01"
@@ -1347,7 +1353,12 @@ export default function EstoquePage() {
                               newItems[index].precoVenda = parseFloat(e.target.value) || 0;
                               setOcrItems(newItems);
                             }}
-                            className="w-full bg-[#1F1F1F] border border-[#333333] rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-[#22c55e]"
+                            className={`w-full bg-[#1F1F1F] rounded-lg px-3 py-2 text-white text-sm focus:outline-none ${
+                              item.selected && !item.updateExisting && !item.precoVenda
+                                ? 'border-2 border-red-500 focus:border-red-500'
+                                : 'border border-[#333333] focus:border-[#22c55e]'
+                            }`}
+                            placeholder={item.selected && !item.updateExisting ? 'Obrigatório' : '0.00'}
                           />
                         </div>
                         <div>
@@ -1382,8 +1393,16 @@ export default function EstoquePage() {
               </button>
               <button
                 onClick={async () => {
-                  setSavingOcr(true);
+                  // Validate that all new products have a sale price
                   const selectedItems = ocrItems.filter(i => i.selected);
+                  const itemsNeedingPrice = selectedItems.filter(i => !i.updateExisting && !i.precoVenda);
+
+                  if (itemsNeedingPrice.length > 0) {
+                    toast.error(`Preencha o preço de venda de ${itemsNeedingPrice.length} produto(s)`);
+                    return;
+                  }
+
+                  setSavingOcr(true);
                   let successCount = 0;
                   let updatedCount = 0;
 
@@ -1441,10 +1460,18 @@ export default function EstoquePage() {
                   }
                   toast.success(message + ' com sucesso!');
                 }}
-                disabled={savingOcr || ocrItems.filter(i => i.selected).length === 0}
+                disabled={
+                  savingOcr ||
+                  ocrItems.filter(i => i.selected).length === 0 ||
+                  ocrItems.some(i => i.selected && !i.updateExisting && !i.precoVenda)
+                }
                 className="px-6 py-3 bg-gradient-to-r from-[#22c55e] to-[#166534] rounded-xl text-white font-medium hover:opacity-90 transition-opacity disabled:opacity-50"
               >
-                {savingOcr ? 'Salvando...' : `Adicionar ${ocrItems.filter(i => i.selected).length} Produtos`}
+                {savingOcr
+                  ? 'Salvando...'
+                  : ocrItems.some(i => i.selected && !i.updateExisting && !i.precoVenda)
+                    ? 'Preencha os preços de venda'
+                    : `Adicionar ${ocrItems.filter(i => i.selected).length} Produtos`}
               </button>
             </div>
           </div>
