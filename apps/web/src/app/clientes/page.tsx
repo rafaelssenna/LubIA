@@ -43,6 +43,72 @@ export default function ClientesPage() {
     endereco: '',
   });
 
+  const [enderecoForm, setEnderecoForm] = useState({
+    cep: '',
+    rua: '',
+    numero: '',
+    complemento: '',
+    bairro: '',
+    cidade: '',
+    uf: '',
+  });
+
+  const [buscandoCep, setBuscandoCep] = useState(false);
+
+  const buscarCep = async (cep: string) => {
+    const cepLimpo = cep.replace(/\D/g, '');
+    if (cepLimpo.length !== 8) return;
+
+    setBuscandoCep(true);
+    try {
+      const res = await fetch(`https://viacep.com.br/ws/${cepLimpo}/json/`);
+      const data = await res.json();
+      if (!data.erro) {
+        setEnderecoForm(prev => ({
+          ...prev,
+          rua: data.logradouro || '',
+          bairro: data.bairro || '',
+          cidade: data.localidade || '',
+          uf: data.uf || '',
+        }));
+      }
+    } catch (error) {
+      console.error('Erro ao buscar CEP:', error);
+    } finally {
+      setBuscandoCep(false);
+    }
+  };
+
+  const montarEndereco = () => {
+    const partes = [];
+    if (enderecoForm.rua) {
+      let rua = enderecoForm.rua;
+      if (enderecoForm.numero) rua += `, ${enderecoForm.numero}`;
+      if (enderecoForm.complemento) rua += ` - ${enderecoForm.complemento}`;
+      partes.push(rua);
+    }
+    if (enderecoForm.bairro) partes.push(enderecoForm.bairro);
+    if (enderecoForm.cidade && enderecoForm.uf) {
+      partes.push(`${enderecoForm.cidade}/${enderecoForm.uf}`);
+    }
+    if (enderecoForm.cep) partes.push(`CEP: ${enderecoForm.cep}`);
+    return partes.join(' - ');
+  };
+
+  const parseEndereco = (endereco: string) => {
+    // Tenta extrair dados de um endereço existente
+    const cepMatch = endereco.match(/CEP:\s*(\d{5}-?\d{3})/);
+    return {
+      cep: cepMatch ? cepMatch[1] : '',
+      rua: '',
+      numero: '',
+      complemento: '',
+      bairro: '',
+      cidade: '',
+      uf: '',
+    };
+  };
+
   const fetchClientes = async () => {
     try {
       const params = new URLSearchParams();
@@ -70,10 +136,11 @@ export default function ClientesPage() {
 
     setSaving(true);
     try {
+      const enderecoCompleto = montarEndereco();
       const res = await fetch('/api/clientes', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(form),
+        body: JSON.stringify({ ...form, endereco: enderecoCompleto }),
       });
 
       const data = await res.json();
@@ -81,6 +148,7 @@ export default function ClientesPage() {
       if (res.ok) {
         setShowModal(false);
         setForm({ nome: '', telefone: '', email: '', cpf: '', endereco: '' });
+        setEnderecoForm({ cep: '', rua: '', numero: '', complemento: '', bairro: '', cidade: '', uf: '' });
         fetchClientes();
       } else {
         toast.error(data.error || 'Erro ao cadastrar cliente');
@@ -102,6 +170,8 @@ export default function ClientesPage() {
       cpf: cliente.cpf || '',
       endereco: cliente.endereco || '',
     });
+    // Parse existing address or reset
+    setEnderecoForm(parseEndereco(cliente.endereco || ''));
     setShowEditModal(true);
   };
 
@@ -110,10 +180,11 @@ export default function ClientesPage() {
 
     setSaving(true);
     try {
+      const enderecoCompleto = montarEndereco() || form.endereco;
       const res = await fetch(`/api/clientes/${selectedCliente.id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(form),
+        body: JSON.stringify({ ...form, endereco: enderecoCompleto }),
       });
 
       const data = await res.json();
@@ -122,6 +193,7 @@ export default function ClientesPage() {
         setShowEditModal(false);
         setSelectedCliente(null);
         setForm({ nome: '', telefone: '', email: '', cpf: '', endereco: '' });
+        setEnderecoForm({ cep: '', rua: '', numero: '', complemento: '', bairro: '', cidade: '', uf: '' });
         fetchClientes();
       } else {
         toast.error(data.error || 'Erro ao atualizar cliente');
@@ -248,6 +320,7 @@ export default function ClientesPage() {
           <button
             onClick={() => {
               setForm({ nome: '', telefone: '', email: '', cpf: '', endereco: '' });
+              setEnderecoForm({ cep: '', rua: '', numero: '', complemento: '', bairro: '', cidade: '', uf: '' });
               setShowModal(true);
             }}
             className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-[#22c55e] to-[#166534] rounded-xl text-white font-medium hover:opacity-90 transition-opacity"
@@ -417,15 +490,90 @@ export default function ClientesPage() {
                   className="w-full bg-[#000000] border border-[#333333] rounded-xl px-4 py-3 text-white placeholder-[#6B7280] focus:outline-none focus:border-[#22c55e]"
                 />
               </div>
-              <div>
-                <label className="block text-sm font-medium text-[#94a3b8] mb-2">Endereço</label>
-                <input
-                  type="text"
-                  value={form.endereco}
-                  onChange={(e) => setForm({ ...form, endereco: e.target.value })}
-                  placeholder="Rua, número, bairro, cidade"
-                  className="w-full bg-[#000000] border border-[#333333] rounded-xl px-4 py-3 text-white placeholder-[#6B7280] focus:outline-none focus:border-[#22c55e]"
-                />
+              {/* Endereço */}
+              <div className="pt-2 border-t border-[#333333]">
+                <label className="block text-sm font-medium text-[#94a3b8] mb-3">Endereço</label>
+                <div className="space-y-3">
+                  <div className="grid grid-cols-3 gap-3">
+                    <div className="col-span-1">
+                      <input
+                        type="text"
+                        value={enderecoForm.cep}
+                        onChange={(e) => {
+                          const value = e.target.value.replace(/\D/g, '').slice(0, 8);
+                          const formatted = value.length > 5 ? `${value.slice(0, 5)}-${value.slice(5)}` : value;
+                          setEnderecoForm({ ...enderecoForm, cep: formatted });
+                          if (value.length === 8) buscarCep(value);
+                        }}
+                        placeholder="CEP"
+                        className="w-full bg-[#000000] border border-[#333333] rounded-xl px-4 py-3 text-white placeholder-[#6B7280] focus:outline-none focus:border-[#22c55e] text-sm"
+                      />
+                    </div>
+                    <div className="col-span-2">
+                      <input
+                        type="text"
+                        value={enderecoForm.rua}
+                        onChange={(e) => setEnderecoForm({ ...enderecoForm, rua: e.target.value })}
+                        placeholder={buscandoCep ? 'Buscando...' : 'Rua'}
+                        disabled={buscandoCep}
+                        className="w-full bg-[#000000] border border-[#333333] rounded-xl px-4 py-3 text-white placeholder-[#6B7280] focus:outline-none focus:border-[#22c55e] text-sm disabled:opacity-50"
+                      />
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-3 gap-3">
+                    <div>
+                      <input
+                        type="text"
+                        value={enderecoForm.numero}
+                        onChange={(e) => setEnderecoForm({ ...enderecoForm, numero: e.target.value })}
+                        placeholder="Nº"
+                        className="w-full bg-[#000000] border border-[#333333] rounded-xl px-4 py-3 text-white placeholder-[#6B7280] focus:outline-none focus:border-[#22c55e] text-sm"
+                      />
+                    </div>
+                    <div className="col-span-2">
+                      <input
+                        type="text"
+                        value={enderecoForm.complemento}
+                        onChange={(e) => setEnderecoForm({ ...enderecoForm, complemento: e.target.value })}
+                        placeholder="Complemento"
+                        className="w-full bg-[#000000] border border-[#333333] rounded-xl px-4 py-3 text-white placeholder-[#6B7280] focus:outline-none focus:border-[#22c55e] text-sm"
+                      />
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-3 gap-3">
+                    <div className="col-span-1">
+                      <input
+                        type="text"
+                        value={enderecoForm.bairro}
+                        onChange={(e) => setEnderecoForm({ ...enderecoForm, bairro: e.target.value })}
+                        placeholder="Bairro"
+                        disabled={buscandoCep}
+                        className="w-full bg-[#000000] border border-[#333333] rounded-xl px-4 py-3 text-white placeholder-[#6B7280] focus:outline-none focus:border-[#22c55e] text-sm disabled:opacity-50"
+                      />
+                    </div>
+                    <div>
+                      <input
+                        type="text"
+                        value={enderecoForm.cidade}
+                        onChange={(e) => setEnderecoForm({ ...enderecoForm, cidade: e.target.value })}
+                        placeholder="Cidade"
+                        disabled={buscandoCep}
+                        className="w-full bg-[#000000] border border-[#333333] rounded-xl px-4 py-3 text-white placeholder-[#6B7280] focus:outline-none focus:border-[#22c55e] text-sm disabled:opacity-50"
+                      />
+                    </div>
+                    <div>
+                      <input
+                        type="text"
+                        value={enderecoForm.uf}
+                        onChange={(e) => setEnderecoForm({ ...enderecoForm, uf: e.target.value.toUpperCase().slice(0, 2) })}
+                        placeholder="UF"
+                        maxLength={2}
+                        disabled={buscandoCep}
+                        className="w-full bg-[#000000] border border-[#333333] rounded-xl px-4 py-3 text-white placeholder-[#6B7280] focus:outline-none focus:border-[#22c55e] text-sm disabled:opacity-50"
+                      />
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
             <div className="p-6 border-t border-[#333333] flex gap-3 justify-end">
@@ -497,14 +645,90 @@ export default function ClientesPage() {
                   className="w-full bg-[#000000] border border-[#333333] rounded-xl px-4 py-3 text-white placeholder-[#6B7280] focus:outline-none focus:border-[#22c55e]"
                 />
               </div>
-              <div>
-                <label className="block text-sm font-medium text-[#94a3b8] mb-2">Endereço</label>
-                <input
-                  type="text"
-                  value={form.endereco}
-                  onChange={(e) => setForm({ ...form, endereco: e.target.value })}
-                  className="w-full bg-[#000000] border border-[#333333] rounded-xl px-4 py-3 text-white placeholder-[#6B7280] focus:outline-none focus:border-[#22c55e]"
-                />
+              {/* Endereço */}
+              <div className="pt-2 border-t border-[#333333]">
+                <label className="block text-sm font-medium text-[#94a3b8] mb-3">Endereço</label>
+                <div className="space-y-3">
+                  <div className="grid grid-cols-3 gap-3">
+                    <div className="col-span-1">
+                      <input
+                        type="text"
+                        value={enderecoForm.cep}
+                        onChange={(e) => {
+                          const value = e.target.value.replace(/\D/g, '').slice(0, 8);
+                          const formatted = value.length > 5 ? `${value.slice(0, 5)}-${value.slice(5)}` : value;
+                          setEnderecoForm({ ...enderecoForm, cep: formatted });
+                          if (value.length === 8) buscarCep(value);
+                        }}
+                        placeholder="CEP"
+                        className="w-full bg-[#000000] border border-[#333333] rounded-xl px-4 py-3 text-white placeholder-[#6B7280] focus:outline-none focus:border-[#22c55e] text-sm"
+                      />
+                    </div>
+                    <div className="col-span-2">
+                      <input
+                        type="text"
+                        value={enderecoForm.rua}
+                        onChange={(e) => setEnderecoForm({ ...enderecoForm, rua: e.target.value })}
+                        placeholder={buscandoCep ? 'Buscando...' : 'Rua'}
+                        disabled={buscandoCep}
+                        className="w-full bg-[#000000] border border-[#333333] rounded-xl px-4 py-3 text-white placeholder-[#6B7280] focus:outline-none focus:border-[#22c55e] text-sm disabled:opacity-50"
+                      />
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-3 gap-3">
+                    <div>
+                      <input
+                        type="text"
+                        value={enderecoForm.numero}
+                        onChange={(e) => setEnderecoForm({ ...enderecoForm, numero: e.target.value })}
+                        placeholder="Nº"
+                        className="w-full bg-[#000000] border border-[#333333] rounded-xl px-4 py-3 text-white placeholder-[#6B7280] focus:outline-none focus:border-[#22c55e] text-sm"
+                      />
+                    </div>
+                    <div className="col-span-2">
+                      <input
+                        type="text"
+                        value={enderecoForm.complemento}
+                        onChange={(e) => setEnderecoForm({ ...enderecoForm, complemento: e.target.value })}
+                        placeholder="Complemento"
+                        className="w-full bg-[#000000] border border-[#333333] rounded-xl px-4 py-3 text-white placeholder-[#6B7280] focus:outline-none focus:border-[#22c55e] text-sm"
+                      />
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-3 gap-3">
+                    <div className="col-span-1">
+                      <input
+                        type="text"
+                        value={enderecoForm.bairro}
+                        onChange={(e) => setEnderecoForm({ ...enderecoForm, bairro: e.target.value })}
+                        placeholder="Bairro"
+                        disabled={buscandoCep}
+                        className="w-full bg-[#000000] border border-[#333333] rounded-xl px-4 py-3 text-white placeholder-[#6B7280] focus:outline-none focus:border-[#22c55e] text-sm disabled:opacity-50"
+                      />
+                    </div>
+                    <div>
+                      <input
+                        type="text"
+                        value={enderecoForm.cidade}
+                        onChange={(e) => setEnderecoForm({ ...enderecoForm, cidade: e.target.value })}
+                        placeholder="Cidade"
+                        disabled={buscandoCep}
+                        className="w-full bg-[#000000] border border-[#333333] rounded-xl px-4 py-3 text-white placeholder-[#6B7280] focus:outline-none focus:border-[#22c55e] text-sm disabled:opacity-50"
+                      />
+                    </div>
+                    <div>
+                      <input
+                        type="text"
+                        value={enderecoForm.uf}
+                        onChange={(e) => setEnderecoForm({ ...enderecoForm, uf: e.target.value.toUpperCase().slice(0, 2) })}
+                        placeholder="UF"
+                        maxLength={2}
+                        disabled={buscandoCep}
+                        className="w-full bg-[#000000] border border-[#333333] rounded-xl px-4 py-3 text-white placeholder-[#6B7280] focus:outline-none focus:border-[#22c55e] text-sm disabled:opacity-50"
+                      />
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
             <div className="p-6 border-t border-[#333333] flex gap-3 justify-end">
