@@ -936,8 +936,8 @@ export default function EstoquePage() {
                   unidade: unidadeDetectada,
                   quantidade: item.quantidade || 1,
                   estoqueMinimo: 5,
-                  precoCompra: item.valorUnitario || 0,
-                  precoVenda: (item.valorUnitario || 0) * 1.3, // 30% markup default
+                  precoCompra: Math.round((item.valorUnitario || 0) * 100) / 100,
+                  precoVenda: 0, // Usuário preenche manualmente
                   existingProduct: existingProduct,
                   updateExisting: !!existingProduct, // Default to update if exists
                 };
