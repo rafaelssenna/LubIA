@@ -61,9 +61,9 @@ export default function ClientesPage() {
 
     setBuscandoCep(true);
     try {
-      const res = await fetch(`https://viacep.com.br/ws/${cepLimpo}/json/`);
+      const res = await fetch(`/api/cep/${cepLimpo}`);
       const data = await res.json();
-      if (!data.erro) {
+      if (res.ok) {
         setEnderecoForm(prev => ({
           ...prev,
           rua: data.logradouro || '',
