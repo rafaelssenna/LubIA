@@ -357,53 +357,57 @@ function OrdensPageContent() {
   );
 
   return (
-    <div className="min-h-screen bg-[#000000]">
+    <div className="min-h-screen bg-gradient-to-br from-[#0a0a0a] via-[#0f0f0f] to-[#0a0a0a]">
       <Header title="Ordens de Serviço" subtitle="Gerencie suas O.S." />
 
       <div className="p-6 space-y-6 animate-fade-in">
         {/* Stats */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <div className="bg-[#1F1F1F] border border-[#333333] rounded-xl p-4">
-            <div className="flex items-center gap-3">
-              <div className="p-2 bg-[#22c55e]/20 rounded-lg">
-                <ClipboardList size={20} className="text-[#22c55e]" />
+          <div className="group relative bg-gradient-to-br from-[#1a1a1a] to-[#141414] rounded-2xl p-5 border border-[#2a2a2a] hover:border-[#22c55e]/30 transition-all duration-300 hover:shadow-lg hover:shadow-[#22c55e]/5">
+            <div className="absolute inset-0 bg-gradient-to-br from-[#22c55e]/5 to-transparent rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+            <div className="relative flex items-center gap-4">
+              <div className="p-3 bg-gradient-to-br from-[#22c55e]/20 to-[#22c55e]/5 rounded-xl ring-1 ring-[#22c55e]/20">
+                <ClipboardList size={22} className="text-[#22c55e]" />
               </div>
               <div>
-                <p className="text-2xl font-bold text-white">{stats.total}</p>
-                <p className="text-xs text-[#6B7280]">Total O.S.</p>
+                <p className="text-3xl font-bold text-white tracking-tight">{stats.total}</p>
+                <p className="text-sm text-[#888888] font-medium">Total O.S.</p>
               </div>
             </div>
           </div>
-          <div className="bg-[#1F1F1F] border border-[#333333] rounded-xl p-4">
-            <div className="flex items-center gap-3">
-              <div className="p-2 bg-purple-500/20 rounded-lg">
-                <Play size={20} className="text-purple-400" />
+          <div className="group relative bg-gradient-to-br from-[#1a1a1a] to-[#141414] rounded-2xl p-5 border border-[#2a2a2a] hover:border-purple-500/30 transition-all duration-300 hover:shadow-lg hover:shadow-purple-500/5">
+            <div className="absolute inset-0 bg-gradient-to-br from-purple-500/5 to-transparent rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+            <div className="relative flex items-center gap-4">
+              <div className="p-3 bg-gradient-to-br from-purple-500/20 to-purple-500/5 rounded-xl ring-1 ring-purple-500/20">
+                <Play size={22} className="text-purple-400" />
               </div>
               <div>
-                <p className="text-2xl font-bold text-white">{stats.abertas}</p>
-                <p className="text-xs text-[#6B7280]">Em Aberto</p>
+                <p className="text-3xl font-bold text-white tracking-tight">{stats.abertas}</p>
+                <p className="text-sm text-[#888888] font-medium">Em Aberto</p>
               </div>
             </div>
           </div>
-          <div className="bg-[#1F1F1F] border border-[#333333] rounded-xl p-4">
-            <div className="flex items-center gap-3">
-              <div className="p-2 bg-cyan-500/20 rounded-lg">
-                <CheckCircle size={20} className="text-cyan-400" />
+          <div className="group relative bg-gradient-to-br from-[#1a1a1a] to-[#141414] rounded-2xl p-5 border border-[#2a2a2a] hover:border-cyan-500/30 transition-all duration-300 hover:shadow-lg hover:shadow-cyan-500/5">
+            <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/5 to-transparent rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+            <div className="relative flex items-center gap-4">
+              <div className="p-3 bg-gradient-to-br from-cyan-500/20 to-cyan-500/5 rounded-xl ring-1 ring-cyan-500/20">
+                <CheckCircle size={22} className="text-cyan-400" />
               </div>
               <div>
-                <p className="text-2xl font-bold text-white">{stats.concluidas}</p>
-                <p className="text-xs text-[#6B7280]">Concluídas</p>
+                <p className="text-3xl font-bold text-white tracking-tight">{stats.concluidas}</p>
+                <p className="text-sm text-[#888888] font-medium">Concluídas</p>
               </div>
             </div>
           </div>
-          <div className="bg-[#1F1F1F] border border-[#333333] rounded-xl p-4">
-            <div className="flex items-center gap-3">
-              <div className="p-2 bg-blue-500/20 rounded-lg">
-                <Calendar size={20} className="text-blue-400" />
+          <div className="group relative bg-gradient-to-br from-[#1a1a1a] to-[#141414] rounded-2xl p-5 border border-[#2a2a2a] hover:border-blue-500/30 transition-all duration-300 hover:shadow-lg hover:shadow-blue-500/5">
+            <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-transparent rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+            <div className="relative flex items-center gap-4">
+              <div className="p-3 bg-gradient-to-br from-blue-500/20 to-blue-500/5 rounded-xl ring-1 ring-blue-500/20">
+                <Calendar size={22} className="text-blue-400" />
               </div>
               <div>
-                <p className="text-2xl font-bold text-white">{stats.hoje}</p>
-                <p className="text-xs text-[#6B7280]">Hoje</p>
+                <p className="text-3xl font-bold text-white tracking-tight">{stats.hoje}</p>
+                <p className="text-sm text-[#888888] font-medium">Hoje</p>
               </div>
             </div>
           </div>
@@ -412,20 +416,20 @@ function OrdensPageContent() {
         {/* Toolbar */}
         <div className="flex flex-col md:flex-row gap-4 justify-between">
           <div className="flex flex-1 gap-4">
-            <div className="relative flex-1 max-w-md">
-              <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-[#6B7280]" size={18} />
+            <div className="relative flex-1 max-w-md group">
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-[#666666] group-focus-within:text-[#22c55e] transition-colors" size={18} />
               <input
                 type="text"
                 placeholder="Buscar por número, placa ou cliente..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full bg-[#1F1F1F] border border-[#333333] rounded-xl pl-11 pr-4 py-3 text-sm text-white placeholder-[#6B7280] focus:outline-none focus:border-[#22c55e] transition-colors"
+                className="w-full bg-[#141414] border border-[#2a2a2a] rounded-xl pl-11 pr-4 py-3.5 text-sm text-white placeholder-[#555555] focus:outline-none focus:border-[#22c55e]/50 focus:ring-2 focus:ring-[#22c55e]/10 transition-all duration-200"
               />
             </div>
             <select
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
-              className="bg-[#1F1F1F] border border-[#333333] rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-[#22c55e]"
+              className="bg-[#141414] border border-[#2a2a2a] rounded-xl px-4 py-3.5 text-sm text-white focus:outline-none focus:border-[#22c55e]/50 focus:ring-2 focus:ring-[#22c55e]/10 transition-all duration-200 cursor-pointer"
             >
               <option value="">Todos os Status</option>
               {Object.entries(statusConfig).map(([key, config]) => (
@@ -435,57 +439,70 @@ function OrdensPageContent() {
           </div>
           <button
             onClick={openNewModal}
-            className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-[#22c55e] to-[#166534] rounded-xl text-white font-medium hover:opacity-90 transition-opacity"
+            className="flex items-center gap-2 px-6 py-3.5 bg-gradient-to-r from-[#22c55e] to-[#16a34a] rounded-xl text-white font-semibold shadow-lg shadow-[#22c55e]/20 hover:shadow-xl hover:shadow-[#22c55e]/30 hover:scale-[1.02] active:scale-[0.98] transition-all duration-200"
           >
-            <Plus size={18} />
+            <Plus size={18} strokeWidth={2.5} />
             Nova O.S.
           </button>
         </div>
 
         {/* Lista de O.S. */}
-        <div className="space-y-4">
+        <div className="space-y-3">
           {loading ? (
-            <div className="bg-[#1F1F1F] border border-[#333333] rounded-2xl p-8 text-center">
-              <Loader2 className="animate-spin mx-auto mb-2 text-[#22c55e]" size={32} />
-              <p className="text-[#6B7280]">Carregando...</p>
+            <div className="bg-gradient-to-br from-[#1a1a1a] to-[#141414] border border-[#2a2a2a] rounded-2xl p-12 text-center">
+              <Loader2 className="animate-spin mx-auto mb-3 text-[#22c55e]" size={36} />
+              <p className="text-[#666666]">Carregando...</p>
             </div>
           ) : ordens.length === 0 ? (
-            <div className="bg-[#1F1F1F] border border-[#333333] rounded-2xl p-8 text-center">
-              <ClipboardList className="mx-auto mb-2 text-[#6B7280]" size={48} />
-              <p className="text-[#6B7280]">Nenhuma O.S. encontrada</p>
+            <div className="bg-gradient-to-br from-[#1a1a1a] to-[#141414] border border-[#2a2a2a] rounded-2xl p-12 text-center">
+              <div className="w-16 h-16 mx-auto mb-4 bg-[#222222] rounded-2xl flex items-center justify-center">
+                <ClipboardList className="text-[#444444]" size={32} />
+              </div>
+              <p className="text-[#666666] font-medium">Nenhuma O.S. encontrada</p>
+              <p className="text-[#444444] text-sm mt-1">Crie uma nova ordem de serviço</p>
             </div>
           ) : (
             ordens.map((ordem) => {
               const status = statusConfig[ordem.status] || statusConfig.AGENDADO;
               const StatusIcon = status.icon;
               return (
-                <div key={ordem.id} className="bg-[#1F1F1F] border border-[#333333] rounded-2xl p-5 hover:border-[#444444] transition-colors">
+                <div
+                  key={ordem.id}
+                  className="group relative bg-gradient-to-br from-[#1a1a1a] to-[#141414] border border-[#2a2a2a] rounded-2xl p-5 hover:border-[#3a3a3a] hover:shadow-xl hover:shadow-black/20 transition-all duration-300"
+                >
                   <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                     <div className="flex items-start gap-4">
-                      <div className={`p-3 ${status.bg} rounded-xl`}>
+                      <div className={`p-3.5 ${status.bg} rounded-xl ring-1 ring-white/5`}>
                         <StatusIcon size={24} className={status.color} />
                       </div>
-                      <div>
-                        <div className="flex items-center gap-3 mb-1">
-                          <span className="text-lg font-bold text-white">#{ordem.numero.slice(-8).toUpperCase()}</span>
-                          <span className={`px-2 py-0.5 ${status.bg} rounded-full text-xs font-medium ${status.color}`}>
+                      <div className="space-y-1.5">
+                        <div className="flex items-center gap-3">
+                          <span className="text-lg font-bold text-white tracking-tight">#{ordem.numero.slice(-8).toUpperCase()}</span>
+                          <span className={`px-2.5 py-1 ${status.bg} rounded-lg text-xs font-semibold ${status.color} ring-1 ring-white/10`}>
                             {status.label}
                           </span>
                         </div>
-                        <div className="flex items-center gap-4 text-sm text-[#94a3b8]">
-                          <span className="flex items-center gap-1">
+                        <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-[#999999]">
+                          <span className="flex items-center gap-1.5">
                             <Car size={14} className="text-[#22c55e]" />
-                            {ordem.veiculo.placa} - {ordem.veiculo.marca} {ordem.veiculo.modelo}
+                            <span className="font-medium text-white/80">{ordem.veiculo.placa}</span>
+                            <span className="text-[#666666]">•</span>
+                            {ordem.veiculo.marca} {ordem.veiculo.modelo}
                           </span>
-                          <span className="flex items-center gap-1">
+                          <span className="flex items-center gap-1.5">
                             <User size={14} className="text-blue-400" />
                             {ordem.veiculo.cliente.nome}
                           </span>
                         </div>
-                        <div className="flex items-center gap-4 mt-2 text-xs text-[#6B7280]">
-                          <span>Criada: {formatDateTime(ordem.createdAt)}</span>
-                          {ordem.dataAgendada && <span>Agendada: {formatDate(ordem.dataAgendada)}</span>}
-                          <span className="text-[#22c55e] font-medium">{formatCurrency(ordem.total)}</span>
+                        <div className="flex items-center gap-4 text-xs text-[#666666]">
+                          <span>{formatDateTime(ordem.createdAt)}</span>
+                          {ordem.dataAgendada && (
+                            <>
+                              <span className="text-[#333333]">•</span>
+                              <span>Agendada: {formatDate(ordem.dataAgendada)}</span>
+                            </>
+                          )}
+                          <span className="text-[#22c55e] font-bold text-sm">{formatCurrency(ordem.total)}</span>
                         </div>
                       </div>
                     </div>
@@ -494,7 +511,7 @@ function OrdensPageContent() {
                       {ordem.status === 'AGENDADO' && (
                         <button
                           onClick={() => handleStatusChange(ordem, 'EM_ANDAMENTO')}
-                          className="px-3 py-2 bg-purple-500/20 text-purple-400 rounded-lg text-sm hover:bg-purple-500/30 transition-colors"
+                          className="px-4 py-2 bg-purple-500/10 text-purple-400 rounded-lg text-sm font-medium hover:bg-purple-500/20 ring-1 ring-purple-500/20 hover:ring-purple-500/40 transition-all duration-200"
                         >
                           Iniciar
                         </button>
@@ -502,7 +519,7 @@ function OrdensPageContent() {
                       {ordem.status === 'EM_ANDAMENTO' && (
                         <button
                           onClick={() => handleStatusChange(ordem, 'CONCLUIDO')}
-                          className="px-3 py-2 bg-[#22c55e]/20 text-[#22c55e] rounded-lg text-sm hover:bg-[#22c55e]/30 transition-colors"
+                          className="px-4 py-2 bg-[#22c55e]/10 text-[#22c55e] rounded-lg text-sm font-medium hover:bg-[#22c55e]/20 ring-1 ring-[#22c55e]/20 hover:ring-[#22c55e]/40 transition-all duration-200"
                         >
                           Concluir
                         </button>
@@ -510,40 +527,42 @@ function OrdensPageContent() {
                       {ordem.status === 'CONCLUIDO' && (
                         <button
                           onClick={() => handleStatusChange(ordem, 'ENTREGUE')}
-                          className="px-3 py-2 bg-cyan-500/20 text-cyan-400 rounded-lg text-sm hover:bg-cyan-500/30 transition-colors"
+                          className="px-4 py-2 bg-cyan-500/10 text-cyan-400 rounded-lg text-sm font-medium hover:bg-cyan-500/20 ring-1 ring-cyan-500/20 hover:ring-cyan-500/40 transition-all duration-200"
                         >
                           Entregar
                         </button>
                       )}
-                      <button
-                        onClick={() => downloadOrdemPDF(ordem)}
-                        className="p-2 hover:bg-[#22c55e]/20 rounded-lg text-[#94a3b8] hover:text-[#22c55e] transition-colors"
-                        title="Baixar PDF"
-                      >
-                        <FileDown size={18} />
-                      </button>
-                      <button
-                        onClick={() => {
-                          setSelectedOrdem(ordem);
-                          setShowDetailModal(true);
-                        }}
-                        className="p-2 hover:bg-blue-500/20 rounded-lg text-[#94a3b8] hover:text-blue-400 transition-colors"
-                        title="Ver detalhes"
-                      >
-                        <Eye size={18} />
-                      </button>
-                      {ordem.status !== 'CONCLUIDO' && ordem.status !== 'ENTREGUE' && (
+                      <div className="flex items-center gap-1 ml-2 p-1 bg-[#1a1a1a] rounded-lg ring-1 ring-[#2a2a2a]">
+                        <button
+                          onClick={() => downloadOrdemPDF(ordem)}
+                          className="p-2 hover:bg-[#22c55e]/10 rounded-md text-[#666666] hover:text-[#22c55e] transition-all duration-200"
+                          title="Baixar PDF"
+                        >
+                          <FileDown size={18} />
+                        </button>
                         <button
                           onClick={() => {
                             setSelectedOrdem(ordem);
-                            setShowDeleteConfirm(true);
+                            setShowDetailModal(true);
                           }}
-                          className="p-2 hover:bg-red-500/20 rounded-lg text-[#94a3b8] hover:text-red-400 transition-colors"
-                          title="Excluir"
+                          className="p-2 hover:bg-blue-500/10 rounded-md text-[#666666] hover:text-blue-400 transition-all duration-200"
+                          title="Ver detalhes"
                         >
-                          <Trash2 size={18} />
+                          <Eye size={18} />
                         </button>
-                      )}
+                        {ordem.status !== 'CONCLUIDO' && ordem.status !== 'ENTREGUE' && (
+                          <button
+                            onClick={() => {
+                              setSelectedOrdem(ordem);
+                              setShowDeleteConfirm(true);
+                            }}
+                            className="p-2 hover:bg-red-500/10 rounded-md text-[#666666] hover:text-red-400 transition-all duration-200"
+                            title="Excluir"
+                          >
+                            <Trash2 size={18} />
+                          </button>
+                        )}
+                      </div>
                     </div>
                   </div>
                 </div>
