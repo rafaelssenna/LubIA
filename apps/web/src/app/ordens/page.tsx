@@ -4,7 +4,8 @@ import Header from '@/components/Header';
 import {
   Plus, Search, X, ClipboardList, Car, User, Calendar, Clock,
   Play, CheckCircle, Pause, XCircle, Truck, Filter, Eye, Edit,
-  Trash2, Loader2, Package, Wrench, DollarSign, FileDown
+  Trash2, Loader2, Package, Wrench, DollarSign, FileDown,
+  List, CalendarDays, ChevronLeft, ChevronRight
 } from 'lucide-react';
 import { useState, useEffect, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
@@ -86,6 +87,9 @@ const statusConfig: Record<string, { label: string; color: string; icon: any; bg
   ENTREGUE: { label: 'Entregue', color: 'text-cyan-400', icon: Truck, bg: 'bg-cyan-500/20' },
 };
 
+const diasSemana = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
+const horasTrabalho = ['07:00', '08:00', '09:00', '10:00', '11:00', '12:00', '13:00', '14:00', '15:00', '16:00', '17:00', '18:00'];
+
 function OrdensPageContent() {
   const toast = useToast();
   const searchParams = useSearchParams();
@@ -95,6 +99,8 @@ function OrdensPageContent() {
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
   const [stats, setStats] = useState({ total: 0, abertas: 0, concluidas: 0, hoje: 0 });
+  const [viewMode, setViewMode] = useState<'lista' | 'calendario'>('lista');
+  const [currentDate, setCurrentDate] = useState(new Date());
 
   // Modal states
   const [showModal, setShowModal] = useState(false);
@@ -356,6 +362,45 @@ function OrdensPageContent() {
     `${v.marca} ${v.modelo}`.toLowerCase().includes(searchVeiculo.toLowerCase())
   );
 
+  // Calendar helpers
+  const startOfWeek = new Date(currentDate);
+  startOfWeek.setDate(currentDate.getDate() - currentDate.getDay());
+
+  const weekDays = Array.from({ length: 7 }, (_, i) => {
+    const date = new Date(startOfWeek);
+    date.setDate(startOfWeek.getDate() + i);
+    return date;
+  });
+
+  const navigateWeek = (direction: number) => {
+    const newDate = new Date(currentDate);
+    newDate.setDate(currentDate.getDate() + (direction * 7));
+    setCurrentDate(newDate);
+  };
+
+  const isToday = (date: Date) => {
+    const today = new Date();
+    return date.getDate() === today.getDate() &&
+           date.getMonth() === today.getMonth() &&
+           date.getFullYear() === today.getFullYear();
+  };
+
+  const getOrdensForDateAndHour = (date: Date, hora: string) => {
+    return ordens.filter(o => {
+      if (!o.dataAgendada) return false;
+      const oDate = new Date(o.dataAgendada);
+      const oHora = oDate.toTimeString().slice(0, 5);
+      return oDate.getDate() === date.getDate() &&
+             oDate.getMonth() === date.getMonth() &&
+             oDate.getFullYear() === date.getFullYear() &&
+             oHora === hora;
+    });
+  };
+
+  const formatMonthYear = (date: Date) => {
+    return date.toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' });
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#0a0a0a] via-[#0f0f0f] to-[#0a0a0a]">
       <Header title="Ordens de Serviço" subtitle="Gerencie suas O.S." />
@@ -415,27 +460,81 @@ function OrdensPageContent() {
 
         {/* Toolbar */}
         <div className="flex flex-col md:flex-row gap-4 justify-between">
-          <div className="flex flex-1 gap-4">
-            <div className="relative flex-1 max-w-md group">
-              <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-[#666666] group-focus-within:text-[#22c55e] transition-colors" size={18} />
-              <input
-                type="text"
-                placeholder="Buscar por número, placa ou cliente..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full bg-[#141414] border border-[#2a2a2a] rounded-xl pl-11 pr-4 py-3.5 text-sm text-white placeholder-[#555555] focus:outline-none focus:border-[#22c55e]/50 focus:ring-2 focus:ring-[#22c55e]/10 transition-all duration-200"
-              />
+          <div className="flex flex-1 gap-4 items-center">
+            {/* View Mode Toggle */}
+            <div className="flex items-center gap-1 bg-gradient-to-br from-[#1a1a1a] to-[#141414] border border-[#2a2a2a] rounded-xl p-1">
+              <button
+                onClick={() => setViewMode('lista')}
+                className={`p-2.5 rounded-lg transition-all duration-200 ${
+                  viewMode === 'lista'
+                    ? 'bg-gradient-to-r from-[#22c55e] to-[#166534] text-white shadow-lg shadow-[#22c55e]/20'
+                    : 'text-[#666666] hover:text-white hover:bg-white/5'
+                }`}
+                title="Lista"
+              >
+                <List size={18} />
+              </button>
+              <button
+                onClick={() => setViewMode('calendario')}
+                className={`p-2.5 rounded-lg transition-all duration-200 ${
+                  viewMode === 'calendario'
+                    ? 'bg-gradient-to-r from-[#22c55e] to-[#166534] text-white shadow-lg shadow-[#22c55e]/20'
+                    : 'text-[#666666] hover:text-white hover:bg-white/5'
+                }`}
+                title="Calendário"
+              >
+                <CalendarDays size={18} />
+              </button>
             </div>
-            <select
-              value={statusFilter}
-              onChange={(e) => setStatusFilter(e.target.value)}
-              className="bg-[#141414] border border-[#2a2a2a] rounded-xl px-4 py-3.5 text-sm text-white focus:outline-none focus:border-[#22c55e]/50 focus:ring-2 focus:ring-[#22c55e]/10 transition-all duration-200 cursor-pointer"
-            >
-              <option value="">Todos os Status</option>
-              {Object.entries(statusConfig).map(([key, config]) => (
-                <option key={key} value={key}>{config.label}</option>
-              ))}
-            </select>
+
+            {viewMode === 'lista' ? (
+              <>
+                <div className="relative flex-1 max-w-md group">
+                  <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-[#666666] group-focus-within:text-[#22c55e] transition-colors" size={18} />
+                  <input
+                    type="text"
+                    placeholder="Buscar por número, placa ou cliente..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="w-full bg-[#141414] border border-[#2a2a2a] rounded-xl pl-11 pr-4 py-3.5 text-sm text-white placeholder-[#555555] focus:outline-none focus:border-[#22c55e]/50 focus:ring-2 focus:ring-[#22c55e]/10 transition-all duration-200"
+                  />
+                </div>
+                <select
+                  value={statusFilter}
+                  onChange={(e) => setStatusFilter(e.target.value)}
+                  className="bg-[#141414] border border-[#2a2a2a] rounded-xl px-4 py-3.5 text-sm text-white focus:outline-none focus:border-[#22c55e]/50 focus:ring-2 focus:ring-[#22c55e]/10 transition-all duration-200 cursor-pointer"
+                >
+                  <option value="">Todos os Status</option>
+                  {Object.entries(statusConfig).map(([key, config]) => (
+                    <option key={key} value={key}>{config.label}</option>
+                  ))}
+                </select>
+              </>
+            ) : (
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => navigateWeek(-1)}
+                  className="p-2.5 bg-gradient-to-br from-[#1a1a1a] to-[#141414] border border-[#2a2a2a] rounded-lg text-[#666666] hover:text-white hover:border-[#22c55e]/30 transition-all duration-200"
+                >
+                  <ChevronLeft size={18} />
+                </button>
+                <span className="text-white font-medium px-4 min-w-[160px] text-center capitalize">
+                  {formatMonthYear(currentDate)}
+                </span>
+                <button
+                  onClick={() => navigateWeek(1)}
+                  className="p-2.5 bg-gradient-to-br from-[#1a1a1a] to-[#141414] border border-[#2a2a2a] rounded-lg text-[#666666] hover:text-white hover:border-[#22c55e]/30 transition-all duration-200"
+                >
+                  <ChevronRight size={18} />
+                </button>
+                <button
+                  onClick={() => setCurrentDate(new Date())}
+                  className="px-4 py-2.5 bg-gradient-to-br from-[#1a1a1a] to-[#141414] border border-[#2a2a2a] rounded-lg text-[#666666] hover:text-[#22c55e] hover:border-[#22c55e]/30 transition-all duration-200 text-sm font-medium"
+                >
+                  Hoje
+                </button>
+              </div>
+            )}
           </div>
           <button
             onClick={openNewModal}
@@ -446,7 +545,72 @@ function OrdensPageContent() {
           </button>
         </div>
 
+        {/* Calendar View */}
+        {viewMode === 'calendario' && (
+          <div className="bg-gradient-to-br from-[#1a1a1a] to-[#141414] border border-[#2a2a2a] rounded-2xl overflow-hidden">
+            {/* Calendar Header */}
+            <div className="grid grid-cols-8 border-b border-[#2a2a2a]">
+              <div className="p-4 text-[#666666] text-sm font-medium">Horário</div>
+              {weekDays.map((date, idx) => {
+                const isTodayDate = isToday(date);
+                return (
+                  <div
+                    key={idx}
+                    className={`p-4 text-center border-l border-[#2a2a2a] ${isTodayDate ? 'bg-[#22c55e]/10' : ''}`}
+                  >
+                    <p className="text-[#666666] text-xs">{diasSemana[idx]}</p>
+                    <p className={`text-lg font-bold ${isTodayDate ? 'text-[#22c55e]' : 'text-white'}`}>
+                      {date.getDate()}
+                    </p>
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* Calendar Body */}
+            <div className="max-h-[600px] overflow-y-auto">
+              {horasTrabalho.map((hora) => (
+                <div key={hora} className="grid grid-cols-8 border-b border-[#2a2a2a]/50 min-h-[80px]">
+                  <div className="p-3 text-[#666666] text-sm border-r border-[#2a2a2a]/50">
+                    {hora}
+                  </div>
+                  {weekDays.map((date, idx) => {
+                    const diaOrdens = getOrdensForDateAndHour(date, hora);
+                    const isTodayDate = isToday(date);
+
+                    return (
+                      <div
+                        key={idx}
+                        className={`p-1 border-l border-[#2a2a2a]/50 relative ${isTodayDate ? 'bg-[#22c55e]/5' : ''} hover:bg-white/[0.02] transition-all duration-200`}
+                      >
+                        {diaOrdens.map((ordem) => {
+                          const status = statusConfig[ordem.status] || statusConfig.AGENDADO;
+                          return (
+                            <div
+                              key={ordem.id}
+                              onClick={() => {
+                                setSelectedOrdem(ordem);
+                                setShowDetailModal(true);
+                              }}
+                              className={`p-2 rounded-lg text-white text-xs ${status.bg} border border-white/10 mb-1 hover:scale-[1.02] transition-transform duration-200 cursor-pointer`}
+                            >
+                              <p className="font-semibold truncate">{ordem.veiculo.cliente.nome}</p>
+                              <p className="truncate opacity-90">{ordem.veiculo.placa}</p>
+                              <p className="truncate opacity-75">{ordem.itens[0]?.servicoNome || 'Serviço'}</p>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    );
+                  })}
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
         {/* Lista de O.S. */}
+        {viewMode === 'lista' && (
         <div className="space-y-3">
           {loading ? (
             <div className="bg-gradient-to-br from-[#1a1a1a] to-[#141414] border border-[#2a2a2a] rounded-2xl p-12 text-center">
@@ -570,6 +734,7 @@ function OrdensPageContent() {
             })
           )}
         </div>
+        )}
       </div>
 
       {/* Modal Nova O.S. */}
