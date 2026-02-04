@@ -96,8 +96,6 @@ export default function ClientesPage() {
   };
 
   const parseEndereco = (endereco: string) => {
-    // Tenta extrair dados de um endereço existente
-    // Formato esperado: "Rua X, 123 - Compl - Bairro - Cidade/UF - CEP: 12345-678"
     const result = {
       cep: '',
       rua: '',
@@ -110,16 +108,13 @@ export default function ClientesPage() {
 
     if (!endereco) return result;
 
-    // Extrai CEP
     const cepMatch = endereco.match(/CEP:\s*(\d{5}-?\d{3})/);
     if (cepMatch) {
       result.cep = cepMatch[1];
     }
 
-    // Remove o CEP da string para processar o resto
     let resto = endereco.replace(/\s*-?\s*CEP:\s*\d{5}-?\d{3}/, '').trim();
 
-    // Extrai Cidade/UF (último item antes do CEP)
     const cidadeUfMatch = resto.match(/([^-]+)\/([A-Z]{2})$/i);
     if (cidadeUfMatch) {
       result.cidade = cidadeUfMatch[1].trim();
@@ -127,11 +122,9 @@ export default function ClientesPage() {
       resto = resto.replace(/\s*-?\s*[^-]+\/[A-Z]{2}$/i, '').trim();
     }
 
-    // Divide o resto por " - "
     const partes = resto.split(/\s*-\s*/);
 
     if (partes.length >= 1 && partes[0]) {
-      // Primeira parte: Rua e número
       const ruaNumero = partes[0].match(/^(.+?),\s*(\d+\w*)$/);
       if (ruaNumero) {
         result.rua = ruaNumero[1].trim();
@@ -142,7 +135,6 @@ export default function ClientesPage() {
     }
 
     if (partes.length >= 2 && partes[1]) {
-      // Segunda parte pode ser complemento ou bairro
       if (partes.length >= 3 && partes[2]) {
         result.complemento = partes[1].trim();
         result.bairro = partes[2].trim();
@@ -215,7 +207,6 @@ export default function ClientesPage() {
       cpf: cliente.cpf || '',
       endereco: cliente.endereco || '',
     });
-    // Parse existing address or reset
     setEnderecoForm(parseEndereco(cliente.endereco || ''));
     setShowEditModal(true);
   };
@@ -307,44 +298,47 @@ export default function ClientesPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#000000]">
+    <div className="min-h-screen bg-gradient-to-br from-[#0a0a0a] via-[#0f0f0f] to-[#0a0a0a]">
       <Header title="Clientes" subtitle="Gerencie seus clientes" />
 
       <div className="p-6 space-y-6 animate-fade-in">
         {/* Stats */}
         <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-          <div className="bg-[#1F1F1F] border border-[#333333] rounded-xl p-4">
-            <div className="flex items-center gap-3">
-              <div className="p-2 bg-[#22c55e]/20 rounded-lg">
+          <div className="group relative bg-gradient-to-br from-[#1a1a1a] to-[#141414] rounded-2xl p-5 border border-[#2a2a2a] hover:border-[#22c55e]/30 transition-all duration-300 hover:shadow-lg hover:shadow-[#22c55e]/5">
+            <div className="absolute inset-0 bg-gradient-to-br from-[#22c55e]/5 to-transparent rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+            <div className="relative flex items-center gap-3">
+              <div className="p-3 bg-gradient-to-br from-[#22c55e]/20 to-[#22c55e]/5 rounded-xl ring-1 ring-[#22c55e]/20">
                 <User size={20} className="text-[#22c55e]" />
               </div>
               <div>
                 <p className="text-2xl font-bold text-white">{clientes.length}</p>
-                <p className="text-xs text-[#6B7280]">Total Clientes</p>
+                <p className="text-xs text-[#666666]">Total Clientes</p>
               </div>
             </div>
           </div>
-          <div className="bg-[#1F1F1F] border border-[#333333] rounded-xl p-4">
-            <div className="flex items-center gap-3">
-              <div className="p-2 bg-blue-500/20 rounded-lg">
+          <div className="group relative bg-gradient-to-br from-[#1a1a1a] to-[#141414] rounded-2xl p-5 border border-[#2a2a2a] hover:border-blue-500/30 transition-all duration-300 hover:shadow-lg hover:shadow-blue-500/5">
+            <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-transparent rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+            <div className="relative flex items-center gap-3">
+              <div className="p-3 bg-gradient-to-br from-blue-500/20 to-blue-500/5 rounded-xl ring-1 ring-blue-500/20">
                 <Car size={20} className="text-blue-400" />
               </div>
               <div>
                 <p className="text-2xl font-bold text-white">
                   {clientes.reduce((acc, c) => acc + c.veiculosCount, 0)}
                 </p>
-                <p className="text-xs text-[#6B7280]">Total Veículos</p>
+                <p className="text-xs text-[#666666]">Total Veículos</p>
               </div>
             </div>
           </div>
-          <div className="bg-[#1F1F1F] border border-[#333333] rounded-xl p-4 hidden md:block">
-            <div className="flex items-center gap-3">
-              <div className="p-2 bg-amber-500/20 rounded-lg">
+          <div className="group relative bg-gradient-to-br from-[#1a1a1a] to-[#141414] rounded-2xl p-5 border border-[#2a2a2a] hover:border-amber-500/30 transition-all duration-300 hover:shadow-lg hover:shadow-amber-500/5 hidden md:block">
+            <div className="absolute inset-0 bg-gradient-to-br from-amber-500/5 to-transparent rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+            <div className="relative flex items-center gap-3">
+              <div className="p-3 bg-gradient-to-br from-amber-500/20 to-amber-500/5 rounded-xl ring-1 ring-amber-500/20">
                 <MessageCircle size={20} className="text-amber-400" />
               </div>
               <div>
                 <p className="text-2xl font-bold text-white">0</p>
-                <p className="text-xs text-[#6B7280]">Msgs Enviadas (Hoje)</p>
+                <p className="text-xs text-[#666666]">Msgs Enviadas (Hoje)</p>
               </div>
             </div>
           </div>
@@ -353,13 +347,13 @@ export default function ClientesPage() {
         {/* Toolbar */}
         <div className="flex flex-col md:flex-row gap-4 justify-between">
           <div className="relative flex-1 max-w-md">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-[#6B7280]" size={18} />
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-[#666666]" size={18} />
             <input
               type="text"
               placeholder="Buscar cliente por nome, telefone ou CPF..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full bg-[#1F1F1F] border border-[#333333] rounded-xl pl-11 pr-4 py-3 text-sm text-white placeholder-[#6B7280] focus:outline-none focus:border-[#22c55e] transition-colors"
+              className="w-full bg-gradient-to-br from-[#1a1a1a] to-[#141414] border border-[#2a2a2a] rounded-xl pl-11 pr-4 py-3 text-sm text-white placeholder-[#666666] focus:outline-none focus:border-[#22c55e]/50 focus:ring-1 focus:ring-[#22c55e]/20 transition-all duration-200"
             />
           </div>
           <button
@@ -368,7 +362,7 @@ export default function ClientesPage() {
               setEnderecoForm({ cep: '', rua: '', numero: '', complemento: '', bairro: '', cidade: '', uf: '' });
               setShowModal(true);
             }}
-            className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-[#22c55e] to-[#166534] rounded-xl text-white font-medium hover:opacity-90 transition-opacity"
+            className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-[#22c55e] to-[#166534] rounded-xl text-white font-medium hover:shadow-lg hover:shadow-[#22c55e]/20 transition-all duration-300 hover:scale-[1.02]"
           >
             <Plus size={18} />
             Novo Cliente
@@ -376,44 +370,44 @@ export default function ClientesPage() {
         </div>
 
         {/* Lista de Clientes */}
-        <div className="bg-[#1F1F1F] border border-[#333333] rounded-2xl overflow-hidden">
+        <div className="bg-gradient-to-br from-[#1a1a1a] to-[#141414] border border-[#2a2a2a] rounded-2xl overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead>
-                <tr className="border-b border-[#333333]">
-                  <th className="text-left px-6 py-4 text-sm font-medium text-[#6B7280]">Cliente</th>
-                  <th className="text-left px-6 py-4 text-sm font-medium text-[#6B7280]">Telefone</th>
-                  <th className="text-left px-6 py-4 text-sm font-medium text-[#6B7280]">CPF</th>
-                  <th className="text-center px-6 py-4 text-sm font-medium text-[#6B7280]">Veículos</th>
-                  <th className="text-right px-6 py-4 text-sm font-medium text-[#6B7280]">Ações</th>
+                <tr className="border-b border-[#2a2a2a]">
+                  <th className="text-left px-6 py-4 text-sm font-medium text-[#666666]">Cliente</th>
+                  <th className="text-left px-6 py-4 text-sm font-medium text-[#666666]">Telefone</th>
+                  <th className="text-left px-6 py-4 text-sm font-medium text-[#666666]">CPF</th>
+                  <th className="text-center px-6 py-4 text-sm font-medium text-[#666666]">Veículos</th>
+                  <th className="text-right px-6 py-4 text-sm font-medium text-[#666666]">Ações</th>
                 </tr>
               </thead>
               <tbody>
                 {loading ? (
                   <tr>
-                    <td colSpan={5} className="text-center py-8 text-[#6B7280]">
+                    <td colSpan={5} className="text-center py-12 text-[#666666]">
                       <Loader2 className="animate-spin mx-auto mb-2" size={24} />
                       Carregando...
                     </td>
                   </tr>
                 ) : clientes.length === 0 ? (
                   <tr>
-                    <td colSpan={5} className="text-center py-8 text-[#6B7280]">
+                    <td colSpan={5} className="text-center py-12 text-[#666666]">
                       Nenhum cliente encontrado
                     </td>
                   </tr>
                 ) : (
                   clientes.map((cliente) => (
-                    <tr key={cliente.id} className="border-b border-[#333333]/50 hover:bg-white/5 transition-colors">
+                    <tr key={cliente.id} className="border-b border-[#2a2a2a]/50 hover:bg-white/[0.02] transition-all duration-200 group">
                       <td className="px-6 py-4">
                         <div className="flex items-center gap-3">
-                          <div className="w-10 h-10 bg-gradient-to-br from-[#22c55e] to-[#166534] rounded-xl flex items-center justify-center text-white font-bold">
+                          <div className="w-10 h-10 bg-gradient-to-br from-[#22c55e] to-[#166534] rounded-xl flex items-center justify-center text-white font-bold ring-2 ring-[#22c55e]/20">
                             {cliente.nome.charAt(0).toUpperCase()}
                           </div>
                           <div>
                             <span className="font-medium text-white">{cliente.nome}</span>
                             {cliente.email && (
-                              <p className="text-xs text-[#6B7280]">{cliente.email}</p>
+                              <p className="text-xs text-[#666666]">{cliente.email}</p>
                             )}
                           </div>
                         </div>
@@ -430,32 +424,32 @@ export default function ClientesPage() {
                         </span>
                       </td>
                       <td className="px-6 py-4 text-center">
-                        <div className="inline-flex items-center gap-2 px-3 py-1 bg-[#22c55e]/20 rounded-full">
+                        <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-[#22c55e]/10 rounded-lg ring-1 ring-[#22c55e]/20">
                           <Car size={14} className="text-[#22c55e]" />
                           <span className="text-[#22c55e] font-medium">{cliente.veiculosCount}</span>
                         </div>
                       </td>
                       <td className="px-6 py-4">
-                        <div className="flex items-center justify-end gap-1">
+                        <div className="flex items-center justify-end gap-1 p-1 bg-[#1a1a1a] rounded-lg ring-1 ring-[#2a2a2a] opacity-0 group-hover:opacity-100 transition-opacity duration-200">
                           <button
                             onClick={() => {
                               window.open(`https://wa.me/55${cliente.telefone.replace(/\D/g, '')}`, '_blank');
                             }}
-                            className="p-2 hover:bg-[#25D366]/20 rounded-lg text-[#94a3b8] hover:text-[#25D366] transition-colors"
+                            className="p-2 hover:bg-[#25D366]/10 rounded-md text-[#666666] hover:text-[#25D366] transition-all duration-200"
                             title="WhatsApp"
                           >
                             <MessageCircle size={16} />
                           </button>
                           <button
                             onClick={() => viewDetails(cliente)}
-                            className="p-2 hover:bg-blue-500/20 rounded-lg text-[#94a3b8] hover:text-blue-400 transition-colors"
+                            className="p-2 hover:bg-blue-500/10 rounded-md text-[#666666] hover:text-blue-400 transition-all duration-200"
                             title="Ver detalhes"
                           >
                             <Eye size={16} />
                           </button>
                           <button
                             onClick={() => openEditModal(cliente)}
-                            className="p-2 hover:bg-[#333333] rounded-lg text-[#94a3b8] hover:text-white transition-colors"
+                            className="p-2 hover:bg-white/5 rounded-md text-[#666666] hover:text-white transition-all duration-200"
                             title="Editar"
                           >
                             <Edit size={16} />
@@ -465,7 +459,7 @@ export default function ClientesPage() {
                               setSelectedCliente(cliente);
                               setShowDeleteConfirm(true);
                             }}
-                            className="p-2 hover:bg-red-500/20 rounded-lg text-[#94a3b8] hover:text-red-400 transition-colors"
+                            className="p-2 hover:bg-red-500/10 rounded-md text-[#666666] hover:text-red-400 transition-all duration-200"
                             title="Excluir"
                           >
                             <Trash2 size={16} />
@@ -483,18 +477,18 @@ export default function ClientesPage() {
 
       {/* Modal Novo Cliente */}
       {showModal && (
-        <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4">
-          <div className="bg-[#1F1F1F] border border-[#333333] rounded-2xl w-full max-w-md animate-fade-in">
-            <div className="p-6 border-b border-[#333333] flex items-center justify-between">
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="bg-gradient-to-br from-[#1a1a1a] to-[#141414] border border-[#2a2a2a] rounded-2xl w-full max-w-md animate-fade-in shadow-2xl">
+            <div className="p-6 border-b border-[#2a2a2a] flex items-center justify-between">
               <div>
                 <h2 className="text-xl font-semibold text-white">Novo Cliente</h2>
-                <p className="text-sm text-[#6B7280] mt-1">Cadastre um novo cliente</p>
+                <p className="text-sm text-[#666666] mt-1">Cadastre um novo cliente</p>
               </div>
-              <button onClick={() => setShowModal(false)} className="p-2 hover:bg-[#333333] rounded-lg text-[#6B7280] hover:text-white transition-colors">
+              <button onClick={() => setShowModal(false)} className="p-2 hover:bg-white/5 rounded-lg text-[#666666] hover:text-white transition-all duration-200">
                 <X size={20} />
               </button>
             </div>
-            <div className="p-6 space-y-4">
+            <div className="p-6 space-y-4 max-h-[60vh] overflow-y-auto">
               <div>
                 <label className="block text-sm font-medium text-[#94a3b8] mb-2">Nome *</label>
                 <input
@@ -502,7 +496,7 @@ export default function ClientesPage() {
                   value={form.nome}
                   onChange={(e) => setForm({ ...form, nome: e.target.value })}
                   placeholder="Nome completo"
-                  className="w-full bg-[#000000] border border-[#333333] rounded-xl px-4 py-3 text-white placeholder-[#6B7280] focus:outline-none focus:border-[#22c55e]"
+                  className="w-full bg-[#0f0f0f] border border-[#2a2a2a] rounded-xl px-4 py-3 text-white placeholder-[#666666] focus:outline-none focus:border-[#22c55e]/50 focus:ring-1 focus:ring-[#22c55e]/20 transition-all duration-200"
                 />
               </div>
               <div>
@@ -512,7 +506,7 @@ export default function ClientesPage() {
                   value={form.telefone}
                   onChange={(e) => setForm({ ...form, telefone: e.target.value })}
                   placeholder="(11) 99999-9999"
-                  className="w-full bg-[#000000] border border-[#333333] rounded-xl px-4 py-3 text-white placeholder-[#6B7280] focus:outline-none focus:border-[#22c55e]"
+                  className="w-full bg-[#0f0f0f] border border-[#2a2a2a] rounded-xl px-4 py-3 text-white placeholder-[#666666] focus:outline-none focus:border-[#22c55e]/50 focus:ring-1 focus:ring-[#22c55e]/20 transition-all duration-200"
                 />
               </div>
               <div>
@@ -522,7 +516,7 @@ export default function ClientesPage() {
                   value={form.email}
                   onChange={(e) => setForm({ ...form, email: e.target.value })}
                   placeholder="email@exemplo.com"
-                  className="w-full bg-[#000000] border border-[#333333] rounded-xl px-4 py-3 text-white placeholder-[#6B7280] focus:outline-none focus:border-[#22c55e]"
+                  className="w-full bg-[#0f0f0f] border border-[#2a2a2a] rounded-xl px-4 py-3 text-white placeholder-[#666666] focus:outline-none focus:border-[#22c55e]/50 focus:ring-1 focus:ring-[#22c55e]/20 transition-all duration-200"
                 />
               </div>
               <div>
@@ -532,11 +526,11 @@ export default function ClientesPage() {
                   value={form.cpf}
                   onChange={(e) => setForm({ ...form, cpf: e.target.value })}
                   placeholder="000.000.000-00"
-                  className="w-full bg-[#000000] border border-[#333333] rounded-xl px-4 py-3 text-white placeholder-[#6B7280] focus:outline-none focus:border-[#22c55e]"
+                  className="w-full bg-[#0f0f0f] border border-[#2a2a2a] rounded-xl px-4 py-3 text-white placeholder-[#666666] focus:outline-none focus:border-[#22c55e]/50 focus:ring-1 focus:ring-[#22c55e]/20 transition-all duration-200"
                 />
               </div>
               {/* Endereço */}
-              <div className="pt-2 border-t border-[#333333]">
+              <div className="pt-2 border-t border-[#2a2a2a]">
                 <label className="block text-sm font-medium text-[#94a3b8] mb-3">Endereço</label>
                 <div className="space-y-3">
                   <div className="grid grid-cols-3 gap-3">
@@ -551,7 +545,7 @@ export default function ClientesPage() {
                           if (value.length === 8) buscarCep(value);
                         }}
                         placeholder="CEP"
-                        className="w-full bg-[#000000] border border-[#333333] rounded-xl px-4 py-3 text-white placeholder-[#6B7280] focus:outline-none focus:border-[#22c55e] text-sm"
+                        className="w-full bg-[#0f0f0f] border border-[#2a2a2a] rounded-xl px-4 py-3 text-white placeholder-[#666666] focus:outline-none focus:border-[#22c55e]/50 text-sm"
                       />
                     </div>
                     <div className="col-span-2">
@@ -561,7 +555,7 @@ export default function ClientesPage() {
                         onChange={(e) => setEnderecoForm({ ...enderecoForm, rua: e.target.value })}
                         placeholder={buscandoCep ? 'Buscando...' : 'Rua'}
                         disabled={buscandoCep}
-                        className="w-full bg-[#000000] border border-[#333333] rounded-xl px-4 py-3 text-white placeholder-[#6B7280] focus:outline-none focus:border-[#22c55e] text-sm disabled:opacity-50"
+                        className="w-full bg-[#0f0f0f] border border-[#2a2a2a] rounded-xl px-4 py-3 text-white placeholder-[#666666] focus:outline-none focus:border-[#22c55e]/50 text-sm disabled:opacity-50"
                       />
                     </div>
                   </div>
@@ -572,7 +566,7 @@ export default function ClientesPage() {
                         value={enderecoForm.numero}
                         onChange={(e) => setEnderecoForm({ ...enderecoForm, numero: e.target.value })}
                         placeholder="Nº"
-                        className="w-full bg-[#000000] border border-[#333333] rounded-xl px-4 py-3 text-white placeholder-[#6B7280] focus:outline-none focus:border-[#22c55e] text-sm"
+                        className="w-full bg-[#0f0f0f] border border-[#2a2a2a] rounded-xl px-4 py-3 text-white placeholder-[#666666] focus:outline-none focus:border-[#22c55e]/50 text-sm"
                       />
                     </div>
                     <div className="col-span-2">
@@ -581,7 +575,7 @@ export default function ClientesPage() {
                         value={enderecoForm.complemento}
                         onChange={(e) => setEnderecoForm({ ...enderecoForm, complemento: e.target.value })}
                         placeholder="Complemento"
-                        className="w-full bg-[#000000] border border-[#333333] rounded-xl px-4 py-3 text-white placeholder-[#6B7280] focus:outline-none focus:border-[#22c55e] text-sm"
+                        className="w-full bg-[#0f0f0f] border border-[#2a2a2a] rounded-xl px-4 py-3 text-white placeholder-[#666666] focus:outline-none focus:border-[#22c55e]/50 text-sm"
                       />
                     </div>
                   </div>
@@ -593,7 +587,7 @@ export default function ClientesPage() {
                         onChange={(e) => setEnderecoForm({ ...enderecoForm, bairro: e.target.value })}
                         placeholder="Bairro"
                         disabled={buscandoCep}
-                        className="w-full bg-[#000000] border border-[#333333] rounded-xl px-4 py-3 text-white placeholder-[#6B7280] focus:outline-none focus:border-[#22c55e] text-sm disabled:opacity-50"
+                        className="w-full bg-[#0f0f0f] border border-[#2a2a2a] rounded-xl px-4 py-3 text-white placeholder-[#666666] focus:outline-none focus:border-[#22c55e]/50 text-sm disabled:opacity-50"
                       />
                     </div>
                     <div>
@@ -603,7 +597,7 @@ export default function ClientesPage() {
                         onChange={(e) => setEnderecoForm({ ...enderecoForm, cidade: e.target.value })}
                         placeholder="Cidade"
                         disabled={buscandoCep}
-                        className="w-full bg-[#000000] border border-[#333333] rounded-xl px-4 py-3 text-white placeholder-[#6B7280] focus:outline-none focus:border-[#22c55e] text-sm disabled:opacity-50"
+                        className="w-full bg-[#0f0f0f] border border-[#2a2a2a] rounded-xl px-4 py-3 text-white placeholder-[#666666] focus:outline-none focus:border-[#22c55e]/50 text-sm disabled:opacity-50"
                       />
                     </div>
                     <div>
@@ -614,24 +608,24 @@ export default function ClientesPage() {
                         placeholder="UF"
                         maxLength={2}
                         disabled={buscandoCep}
-                        className="w-full bg-[#000000] border border-[#333333] rounded-xl px-4 py-3 text-white placeholder-[#6B7280] focus:outline-none focus:border-[#22c55e] text-sm disabled:opacity-50"
+                        className="w-full bg-[#0f0f0f] border border-[#2a2a2a] rounded-xl px-4 py-3 text-white placeholder-[#666666] focus:outline-none focus:border-[#22c55e]/50 text-sm disabled:opacity-50"
                       />
                     </div>
                   </div>
                 </div>
               </div>
             </div>
-            <div className="p-6 border-t border-[#333333] flex gap-3 justify-end">
+            <div className="p-6 border-t border-[#2a2a2a] flex gap-3 justify-end">
               <button
                 onClick={() => setShowModal(false)}
-                className="px-6 py-3 border border-[#333333] rounded-xl text-[#94a3b8] hover:bg-[#333333] transition-colors"
+                className="px-6 py-3 border border-[#2a2a2a] rounded-xl text-[#94a3b8] hover:bg-white/5 transition-all duration-200"
               >
                 Cancelar
               </button>
               <button
                 onClick={handleSubmit}
                 disabled={saving}
-                className="px-6 py-3 bg-gradient-to-r from-[#22c55e] to-[#166534] rounded-xl text-white font-medium hover:opacity-90 transition-opacity disabled:opacity-50"
+                className="px-6 py-3 bg-gradient-to-r from-[#22c55e] to-[#166534] rounded-xl text-white font-medium hover:shadow-lg hover:shadow-[#22c55e]/20 transition-all duration-300 disabled:opacity-50"
               >
                 {saving ? 'Salvando...' : 'Cadastrar'}
               </button>
@@ -642,25 +636,25 @@ export default function ClientesPage() {
 
       {/* Modal Editar Cliente */}
       {showEditModal && selectedCliente && (
-        <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4">
-          <div className="bg-[#1F1F1F] border border-[#333333] rounded-2xl w-full max-w-md animate-fade-in">
-            <div className="p-6 border-b border-[#333333] flex items-center justify-between">
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="bg-gradient-to-br from-[#1a1a1a] to-[#141414] border border-[#2a2a2a] rounded-2xl w-full max-w-md animate-fade-in shadow-2xl">
+            <div className="p-6 border-b border-[#2a2a2a] flex items-center justify-between">
               <div>
                 <h2 className="text-xl font-semibold text-white">Editar Cliente</h2>
-                <p className="text-sm text-[#6B7280] mt-1">Atualize as informações do cliente</p>
+                <p className="text-sm text-[#666666] mt-1">Atualize as informações do cliente</p>
               </div>
-              <button onClick={() => setShowEditModal(false)} className="p-2 hover:bg-[#333333] rounded-lg text-[#6B7280] hover:text-white transition-colors">
+              <button onClick={() => setShowEditModal(false)} className="p-2 hover:bg-white/5 rounded-lg text-[#666666] hover:text-white transition-all duration-200">
                 <X size={20} />
               </button>
             </div>
-            <div className="p-6 space-y-4">
+            <div className="p-6 space-y-4 max-h-[60vh] overflow-y-auto">
               <div>
                 <label className="block text-sm font-medium text-[#94a3b8] mb-2">Nome *</label>
                 <input
                   type="text"
                   value={form.nome}
                   onChange={(e) => setForm({ ...form, nome: e.target.value })}
-                  className="w-full bg-[#000000] border border-[#333333] rounded-xl px-4 py-3 text-white placeholder-[#6B7280] focus:outline-none focus:border-[#22c55e]"
+                  className="w-full bg-[#0f0f0f] border border-[#2a2a2a] rounded-xl px-4 py-3 text-white placeholder-[#666666] focus:outline-none focus:border-[#22c55e]/50 focus:ring-1 focus:ring-[#22c55e]/20 transition-all duration-200"
                 />
               </div>
               <div>
@@ -669,7 +663,7 @@ export default function ClientesPage() {
                   type="text"
                   value={form.telefone}
                   onChange={(e) => setForm({ ...form, telefone: e.target.value })}
-                  className="w-full bg-[#000000] border border-[#333333] rounded-xl px-4 py-3 text-white placeholder-[#6B7280] focus:outline-none focus:border-[#22c55e]"
+                  className="w-full bg-[#0f0f0f] border border-[#2a2a2a] rounded-xl px-4 py-3 text-white placeholder-[#666666] focus:outline-none focus:border-[#22c55e]/50 focus:ring-1 focus:ring-[#22c55e]/20 transition-all duration-200"
                 />
               </div>
               <div>
@@ -678,7 +672,7 @@ export default function ClientesPage() {
                   type="email"
                   value={form.email}
                   onChange={(e) => setForm({ ...form, email: e.target.value })}
-                  className="w-full bg-[#000000] border border-[#333333] rounded-xl px-4 py-3 text-white placeholder-[#6B7280] focus:outline-none focus:border-[#22c55e]"
+                  className="w-full bg-[#0f0f0f] border border-[#2a2a2a] rounded-xl px-4 py-3 text-white placeholder-[#666666] focus:outline-none focus:border-[#22c55e]/50 focus:ring-1 focus:ring-[#22c55e]/20 transition-all duration-200"
                 />
               </div>
               <div>
@@ -687,11 +681,11 @@ export default function ClientesPage() {
                   type="text"
                   value={form.cpf}
                   onChange={(e) => setForm({ ...form, cpf: e.target.value })}
-                  className="w-full bg-[#000000] border border-[#333333] rounded-xl px-4 py-3 text-white placeholder-[#6B7280] focus:outline-none focus:border-[#22c55e]"
+                  className="w-full bg-[#0f0f0f] border border-[#2a2a2a] rounded-xl px-4 py-3 text-white placeholder-[#666666] focus:outline-none focus:border-[#22c55e]/50 focus:ring-1 focus:ring-[#22c55e]/20 transition-all duration-200"
                 />
               </div>
               {/* Endereço */}
-              <div className="pt-2 border-t border-[#333333]">
+              <div className="pt-2 border-t border-[#2a2a2a]">
                 <label className="block text-sm font-medium text-[#94a3b8] mb-3">Endereço</label>
                 <div className="space-y-3">
                   <div className="grid grid-cols-3 gap-3">
@@ -706,7 +700,7 @@ export default function ClientesPage() {
                           if (value.length === 8) buscarCep(value);
                         }}
                         placeholder="CEP"
-                        className="w-full bg-[#000000] border border-[#333333] rounded-xl px-4 py-3 text-white placeholder-[#6B7280] focus:outline-none focus:border-[#22c55e] text-sm"
+                        className="w-full bg-[#0f0f0f] border border-[#2a2a2a] rounded-xl px-4 py-3 text-white placeholder-[#666666] focus:outline-none focus:border-[#22c55e]/50 text-sm"
                       />
                     </div>
                     <div className="col-span-2">
@@ -716,7 +710,7 @@ export default function ClientesPage() {
                         onChange={(e) => setEnderecoForm({ ...enderecoForm, rua: e.target.value })}
                         placeholder={buscandoCep ? 'Buscando...' : 'Rua'}
                         disabled={buscandoCep}
-                        className="w-full bg-[#000000] border border-[#333333] rounded-xl px-4 py-3 text-white placeholder-[#6B7280] focus:outline-none focus:border-[#22c55e] text-sm disabled:opacity-50"
+                        className="w-full bg-[#0f0f0f] border border-[#2a2a2a] rounded-xl px-4 py-3 text-white placeholder-[#666666] focus:outline-none focus:border-[#22c55e]/50 text-sm disabled:opacity-50"
                       />
                     </div>
                   </div>
@@ -727,7 +721,7 @@ export default function ClientesPage() {
                         value={enderecoForm.numero}
                         onChange={(e) => setEnderecoForm({ ...enderecoForm, numero: e.target.value })}
                         placeholder="Nº"
-                        className="w-full bg-[#000000] border border-[#333333] rounded-xl px-4 py-3 text-white placeholder-[#6B7280] focus:outline-none focus:border-[#22c55e] text-sm"
+                        className="w-full bg-[#0f0f0f] border border-[#2a2a2a] rounded-xl px-4 py-3 text-white placeholder-[#666666] focus:outline-none focus:border-[#22c55e]/50 text-sm"
                       />
                     </div>
                     <div className="col-span-2">
@@ -736,7 +730,7 @@ export default function ClientesPage() {
                         value={enderecoForm.complemento}
                         onChange={(e) => setEnderecoForm({ ...enderecoForm, complemento: e.target.value })}
                         placeholder="Complemento"
-                        className="w-full bg-[#000000] border border-[#333333] rounded-xl px-4 py-3 text-white placeholder-[#6B7280] focus:outline-none focus:border-[#22c55e] text-sm"
+                        className="w-full bg-[#0f0f0f] border border-[#2a2a2a] rounded-xl px-4 py-3 text-white placeholder-[#666666] focus:outline-none focus:border-[#22c55e]/50 text-sm"
                       />
                     </div>
                   </div>
@@ -748,7 +742,7 @@ export default function ClientesPage() {
                         onChange={(e) => setEnderecoForm({ ...enderecoForm, bairro: e.target.value })}
                         placeholder="Bairro"
                         disabled={buscandoCep}
-                        className="w-full bg-[#000000] border border-[#333333] rounded-xl px-4 py-3 text-white placeholder-[#6B7280] focus:outline-none focus:border-[#22c55e] text-sm disabled:opacity-50"
+                        className="w-full bg-[#0f0f0f] border border-[#2a2a2a] rounded-xl px-4 py-3 text-white placeholder-[#666666] focus:outline-none focus:border-[#22c55e]/50 text-sm disabled:opacity-50"
                       />
                     </div>
                     <div>
@@ -758,7 +752,7 @@ export default function ClientesPage() {
                         onChange={(e) => setEnderecoForm({ ...enderecoForm, cidade: e.target.value })}
                         placeholder="Cidade"
                         disabled={buscandoCep}
-                        className="w-full bg-[#000000] border border-[#333333] rounded-xl px-4 py-3 text-white placeholder-[#6B7280] focus:outline-none focus:border-[#22c55e] text-sm disabled:opacity-50"
+                        className="w-full bg-[#0f0f0f] border border-[#2a2a2a] rounded-xl px-4 py-3 text-white placeholder-[#666666] focus:outline-none focus:border-[#22c55e]/50 text-sm disabled:opacity-50"
                       />
                     </div>
                     <div>
@@ -769,24 +763,24 @@ export default function ClientesPage() {
                         placeholder="UF"
                         maxLength={2}
                         disabled={buscandoCep}
-                        className="w-full bg-[#000000] border border-[#333333] rounded-xl px-4 py-3 text-white placeholder-[#6B7280] focus:outline-none focus:border-[#22c55e] text-sm disabled:opacity-50"
+                        className="w-full bg-[#0f0f0f] border border-[#2a2a2a] rounded-xl px-4 py-3 text-white placeholder-[#666666] focus:outline-none focus:border-[#22c55e]/50 text-sm disabled:opacity-50"
                       />
                     </div>
                   </div>
                 </div>
               </div>
             </div>
-            <div className="p-6 border-t border-[#333333] flex gap-3 justify-end">
+            <div className="p-6 border-t border-[#2a2a2a] flex gap-3 justify-end">
               <button
                 onClick={() => setShowEditModal(false)}
-                className="px-6 py-3 border border-[#333333] rounded-xl text-[#94a3b8] hover:bg-[#333333] transition-colors"
+                className="px-6 py-3 border border-[#2a2a2a] rounded-xl text-[#94a3b8] hover:bg-white/5 transition-all duration-200"
               >
                 Cancelar
               </button>
               <button
                 onClick={handleEditSubmit}
                 disabled={saving}
-                className="px-6 py-3 bg-gradient-to-r from-[#22c55e] to-[#166534] rounded-xl text-white font-medium hover:opacity-90 transition-opacity disabled:opacity-50"
+                className="px-6 py-3 bg-gradient-to-r from-[#22c55e] to-[#166534] rounded-xl text-white font-medium hover:shadow-lg hover:shadow-[#22c55e]/20 transition-all duration-300 disabled:opacity-50"
               >
                 {saving ? 'Salvando...' : 'Salvar Alterações'}
               </button>
@@ -797,23 +791,23 @@ export default function ClientesPage() {
 
       {/* Modal Confirmar Exclusão */}
       {showDeleteConfirm && selectedCliente && (
-        <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4">
-          <div className="bg-[#1F1F1F] border border-[#333333] rounded-2xl w-full max-w-md animate-fade-in">
-            <div className="p-6 border-b border-[#333333]">
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="bg-gradient-to-br from-[#1a1a1a] to-[#141414] border border-[#2a2a2a] rounded-2xl w-full max-w-md animate-fade-in shadow-2xl">
+            <div className="p-6 border-b border-[#2a2a2a]">
               <h2 className="text-xl font-semibold text-white">Confirmar Exclusão</h2>
             </div>
             <div className="p-6">
               <div className="flex items-center gap-4 mb-4">
-                <div className="p-3 bg-red-500/20 rounded-xl">
+                <div className="p-3 bg-red-500/10 rounded-xl ring-1 ring-red-500/20">
                   <Trash2 size={24} className="text-red-400" />
                 </div>
                 <div>
                   <p className="text-white font-medium">{selectedCliente.nome}</p>
-                  <p className="text-sm text-[#6B7280]">{formatPhone(selectedCliente.telefone)}</p>
+                  <p className="text-sm text-[#666666]">{formatPhone(selectedCliente.telefone)}</p>
                 </div>
               </div>
               {selectedCliente.veiculosCount > 0 ? (
-                <div className="p-4 bg-amber-500/20 border border-amber-500/30 rounded-xl text-amber-400 text-sm">
+                <div className="p-4 bg-amber-500/10 border border-amber-500/20 rounded-xl text-amber-400 text-sm">
                   Este cliente possui {selectedCliente.veiculosCount} veículo(s) cadastrado(s).
                   Remova os veículos primeiro para poder excluir o cliente.
                 </div>
@@ -823,13 +817,13 @@ export default function ClientesPage() {
                 </p>
               )}
             </div>
-            <div className="p-6 border-t border-[#333333] flex gap-3 justify-end">
+            <div className="p-6 border-t border-[#2a2a2a] flex gap-3 justify-end">
               <button
                 onClick={() => {
                   setShowDeleteConfirm(false);
                   setSelectedCliente(null);
                 }}
-                className="px-6 py-3 border border-[#333333] rounded-xl text-[#94a3b8] hover:bg-[#333333] transition-colors"
+                className="px-6 py-3 border border-[#2a2a2a] rounded-xl text-[#94a3b8] hover:bg-white/5 transition-all duration-200"
               >
                 Cancelar
               </button>
@@ -837,7 +831,7 @@ export default function ClientesPage() {
                 <button
                   onClick={handleDelete}
                   disabled={saving}
-                  className="px-6 py-3 bg-gradient-to-r from-red-500 to-red-700 rounded-xl text-white font-medium hover:opacity-90 transition-opacity disabled:opacity-50"
+                  className="px-6 py-3 bg-gradient-to-r from-red-500 to-red-700 rounded-xl text-white font-medium hover:shadow-lg hover:shadow-red-500/20 transition-all duration-300 disabled:opacity-50"
                 >
                   {saving ? 'Excluindo...' : 'Excluir Cliente'}
                 </button>
@@ -849,33 +843,33 @@ export default function ClientesPage() {
 
       {/* Modal Detalhes do Cliente */}
       {showDetailModal && selectedCliente && (
-        <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4">
-          <div className="bg-[#1F1F1F] border border-[#333333] rounded-2xl w-full max-w-lg animate-fade-in max-h-[90vh] overflow-y-auto">
-            <div className="p-6 border-b border-[#333333] flex items-center justify-between">
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="bg-gradient-to-br from-[#1a1a1a] to-[#141414] border border-[#2a2a2a] rounded-2xl w-full max-w-lg animate-fade-in max-h-[90vh] overflow-y-auto shadow-2xl">
+            <div className="p-6 border-b border-[#2a2a2a] flex items-center justify-between">
               <div className="flex items-center gap-4">
-                <div className="w-14 h-14 bg-gradient-to-br from-[#22c55e] to-[#166534] rounded-2xl flex items-center justify-center text-white text-2xl font-bold">
+                <div className="w-14 h-14 bg-gradient-to-br from-[#22c55e] to-[#166534] rounded-2xl flex items-center justify-center text-white text-2xl font-bold ring-2 ring-[#22c55e]/20">
                   {selectedCliente.nome.charAt(0).toUpperCase()}
                 </div>
                 <div>
                   <h2 className="text-xl font-semibold text-white">{selectedCliente.nome}</h2>
-                  <p className="text-sm text-[#6B7280]">Cliente #{selectedCliente.id}</p>
+                  <p className="text-sm text-[#666666]">Cliente #{selectedCliente.id}</p>
                 </div>
               </div>
-              <button onClick={() => setShowDetailModal(false)} className="p-2 hover:bg-[#333333] rounded-lg text-[#6B7280] hover:text-white transition-colors">
+              <button onClick={() => setShowDetailModal(false)} className="p-2 hover:bg-white/5 rounded-lg text-[#666666] hover:text-white transition-all duration-200">
                 <X size={20} />
               </button>
             </div>
             <div className="p-6 space-y-4">
               <div className="grid grid-cols-2 gap-4">
-                <div className="p-4 bg-[#000000] rounded-xl">
-                  <div className="flex items-center gap-2 text-[#6B7280] mb-1">
+                <div className="p-4 bg-[#0f0f0f] rounded-xl border border-[#2a2a2a]">
+                  <div className="flex items-center gap-2 text-[#666666] mb-1">
                     <Phone size={14} />
                     <span className="text-xs">Telefone</span>
                   </div>
                   <p className="text-white">{formatPhone(selectedCliente.telefone)}</p>
                 </div>
-                <div className="p-4 bg-[#000000] rounded-xl">
-                  <div className="flex items-center gap-2 text-[#6B7280] mb-1">
+                <div className="p-4 bg-[#0f0f0f] rounded-xl border border-[#2a2a2a]">
+                  <div className="flex items-center gap-2 text-[#666666] mb-1">
                     <Car size={14} />
                     <span className="text-xs">Veículos</span>
                   </div>
@@ -883,8 +877,8 @@ export default function ClientesPage() {
                 </div>
               </div>
               {selectedCliente.email && (
-                <div className="p-4 bg-[#000000] rounded-xl">
-                  <div className="flex items-center gap-2 text-[#6B7280] mb-1">
+                <div className="p-4 bg-[#0f0f0f] rounded-xl border border-[#2a2a2a]">
+                  <div className="flex items-center gap-2 text-[#666666] mb-1">
                     <Mail size={14} />
                     <span className="text-xs">Email</span>
                   </div>
@@ -892,8 +886,8 @@ export default function ClientesPage() {
                 </div>
               )}
               {selectedCliente.cpf && (
-                <div className="p-4 bg-[#000000] rounded-xl">
-                  <div className="flex items-center gap-2 text-[#6B7280] mb-1">
+                <div className="p-4 bg-[#0f0f0f] rounded-xl border border-[#2a2a2a]">
+                  <div className="flex items-center gap-2 text-[#666666] mb-1">
                     <CreditCard size={14} />
                     <span className="text-xs">CPF</span>
                   </div>
@@ -901,8 +895,8 @@ export default function ClientesPage() {
                 </div>
               )}
               {selectedCliente.endereco && (
-                <div className="p-4 bg-[#000000] rounded-xl">
-                  <div className="flex items-center gap-2 text-[#6B7280] mb-1">
+                <div className="p-4 bg-[#0f0f0f] rounded-xl border border-[#2a2a2a]">
+                  <div className="flex items-center gap-2 text-[#666666] mb-1">
                     <MapPin size={14} />
                     <span className="text-xs">Endereço</span>
                   </div>
@@ -916,9 +910,9 @@ export default function ClientesPage() {
                   <h3 className="text-sm font-medium text-[#94a3b8] mb-3">Veículos</h3>
                   <div className="space-y-2">
                     {selectedCliente.veiculos.map((veiculo) => (
-                      <div key={veiculo.id} className="p-4 bg-[#000000] rounded-xl flex items-center justify-between">
+                      <div key={veiculo.id} className="p-4 bg-[#0f0f0f] rounded-xl border border-[#2a2a2a] flex items-center justify-between">
                         <div className="flex items-center gap-3">
-                          <div className="p-2 bg-blue-500/20 rounded-lg">
+                          <div className="p-2 bg-blue-500/10 rounded-lg ring-1 ring-blue-500/20">
                             <Car size={16} className="text-blue-400" />
                           </div>
                           <div>
@@ -932,19 +926,19 @@ export default function ClientesPage() {
                 </div>
               )}
             </div>
-            <div className="p-6 border-t border-[#333333] flex gap-3 justify-end">
+            <div className="p-6 border-t border-[#2a2a2a] flex gap-3 justify-end">
               <button
                 onClick={() => {
                   window.open(`https://wa.me/55${selectedCliente.telefone.replace(/\D/g, '')}`, '_blank');
                 }}
-                className="flex items-center gap-2 px-6 py-3 bg-[#25D366] rounded-xl text-white font-medium hover:opacity-90 transition-opacity"
+                className="flex items-center gap-2 px-6 py-3 bg-[#25D366] rounded-xl text-white font-medium hover:shadow-lg hover:shadow-[#25D366]/20 transition-all duration-300"
               >
                 <MessageCircle size={18} />
                 WhatsApp
               </button>
               <button
                 onClick={() => setShowDetailModal(false)}
-                className="px-6 py-3 border border-[#333333] rounded-xl text-[#94a3b8] hover:bg-[#333333] transition-colors"
+                className="px-6 py-3 border border-[#2a2a2a] rounded-xl text-[#94a3b8] hover:bg-white/5 transition-all duration-200"
               >
                 Fechar
               </button>

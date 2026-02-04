@@ -38,15 +38,15 @@ export default function Sidebar() {
 
   return (
     <aside
-      className={`fixed left-0 top-0 h-screen glass border-r border-white/5 flex flex-col transition-all duration-300 z-50 ${
+      className={`fixed left-0 top-0 h-screen bg-gradient-to-b from-[#0f0f0f] to-[#0a0a0a] border-r border-[#1a1a1a] flex flex-col transition-all duration-300 z-50 ${
         collapsed ? 'w-20' : 'w-72'
       }`}
     >
       {/* Logo */}
-      <div className="p-5 border-b border-white/5">
+      <div className="p-5 border-b border-[#1a1a1a]">
         <div className={`flex items-center gap-4 ${collapsed ? 'justify-center' : ''}`}>
           <div className="relative">
-            <div className="w-12 h-12 rounded-2xl flex items-center justify-center shadow-lg shadow-[#22c55e]/30 overflow-hidden">
+            <div className="w-12 h-12 rounded-2xl flex items-center justify-center shadow-lg shadow-[#22c55e]/30 overflow-hidden ring-1 ring-[#22c55e]/20">
               <Image
                 src="/logo.png"
                 alt="LubIA Logo"
@@ -56,7 +56,7 @@ export default function Sidebar() {
                 priority
               />
             </div>
-            <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-[#22c55e] rounded-full border-2 border-[#111] animate-pulse"></div>
+            <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-[#22c55e] rounded-full border-2 border-[#0f0f0f] animate-pulse"></div>
           </div>
           {!collapsed && (
             <div className="animate-fade-in">
@@ -89,7 +89,7 @@ export default function Sidebar() {
               className={`flex items-center gap-3 px-4 py-3.5 rounded-xl transition-all duration-300 group relative overflow-hidden ${
                 isActive
                   ? 'bg-gradient-to-r from-[#22c55e] to-[#166534] text-white shadow-lg shadow-[#22c55e]/25'
-                  : 'text-[#94a3b8] hover:bg-white/5 hover:text-white'
+                  : 'text-[#94a3b8] hover:bg-[#1a1a1a] hover:text-white'
               } ${collapsed ? 'justify-center px-3' : ''}`}
               title={collapsed ? item.label : undefined}
               style={{ animationDelay: `${index * 0.05}s` }}
@@ -115,10 +115,10 @@ export default function Sidebar() {
       </nav>
 
       {/* Footer */}
-      <div className="p-4 border-t border-white/5 space-y-1.5">
+      <div className="p-4 border-t border-[#1a1a1a] space-y-1.5">
         <Link
           href="/configuracoes"
-          className={`flex items-center gap-3 px-4 py-3 rounded-xl text-[#94a3b8] hover:bg-white/5 hover:text-white transition-all duration-300 group ${
+          className={`flex items-center gap-3 px-4 py-3 rounded-xl text-[#94a3b8] hover:bg-[#1a1a1a] hover:text-white transition-all duration-300 group ${
             collapsed ? 'justify-center px-3' : ''
           }`}
           title={collapsed ? 'Configurações' : undefined}

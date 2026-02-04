@@ -207,42 +207,45 @@ export default function VeiculosPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#000000]">
+    <div className="min-h-screen bg-gradient-to-br from-[#0a0a0a] via-[#0f0f0f] to-[#0a0a0a]">
       <Header title="Veículos" subtitle="Cadastro de veículos" />
 
       <div className="p-6 space-y-6 animate-fade-in">
         {/* Stats */}
         <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-          <div className="bg-[#1F1F1F] border border-[#333333] rounded-xl p-4">
-            <div className="flex items-center gap-3">
-              <div className="p-2 bg-[#22c55e]/20 rounded-lg">
+          <div className="group relative bg-gradient-to-br from-[#1a1a1a] to-[#141414] rounded-2xl p-5 border border-[#2a2a2a] hover:border-[#22c55e]/30 transition-all duration-300 hover:shadow-lg hover:shadow-[#22c55e]/5">
+            <div className="absolute inset-0 bg-gradient-to-br from-[#22c55e]/5 to-transparent rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+            <div className="relative flex items-center gap-3">
+              <div className="p-3 bg-gradient-to-br from-[#22c55e]/20 to-[#22c55e]/5 rounded-xl ring-1 ring-[#22c55e]/20">
                 <Car size={20} className="text-[#22c55e]" />
               </div>
               <div>
                 <p className="text-2xl font-bold text-white">{veiculos.length}</p>
-                <p className="text-xs text-[#6B7280]">Total Veículos</p>
+                <p className="text-xs text-[#666666]">Total Veículos</p>
               </div>
             </div>
           </div>
-          <div className="bg-[#1F1F1F] border border-[#333333] rounded-xl p-4">
-            <div className="flex items-center gap-3">
-              <div className="p-2 bg-blue-500/20 rounded-lg">
+          <div className="group relative bg-gradient-to-br from-[#1a1a1a] to-[#141414] rounded-2xl p-5 border border-[#2a2a2a] hover:border-blue-500/30 transition-all duration-300 hover:shadow-lg hover:shadow-blue-500/5">
+            <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-transparent rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+            <div className="relative flex items-center gap-3">
+              <div className="p-3 bg-gradient-to-br from-blue-500/20 to-blue-500/5 rounded-xl ring-1 ring-blue-500/20">
                 <User size={20} className="text-blue-400" />
               </div>
               <div>
                 <p className="text-2xl font-bold text-white">{clientes.length}</p>
-                <p className="text-xs text-[#6B7280]">Clientes</p>
+                <p className="text-xs text-[#666666]">Clientes</p>
               </div>
             </div>
           </div>
-          <div className="bg-[#1F1F1F] border border-[#333333] rounded-xl p-4 hidden md:block">
-            <div className="flex items-center gap-3">
-              <div className="p-2 bg-amber-500/20 rounded-lg">
+          <div className="group relative bg-gradient-to-br from-[#1a1a1a] to-[#141414] rounded-2xl p-5 border border-[#2a2a2a] hover:border-amber-500/30 transition-all duration-300 hover:shadow-lg hover:shadow-amber-500/5 hidden md:block">
+            <div className="absolute inset-0 bg-gradient-to-br from-amber-500/5 to-transparent rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+            <div className="relative flex items-center gap-3">
+              <div className="p-3 bg-gradient-to-br from-amber-500/20 to-amber-500/5 rounded-xl ring-1 ring-amber-500/20">
                 <ClipboardList size={20} className="text-amber-400" />
               </div>
               <div>
                 <p className="text-2xl font-bold text-white">0</p>
-                <p className="text-xs text-[#6B7280]">O.S. Abertas</p>
+                <p className="text-xs text-[#666666]">O.S. Abertas</p>
               </div>
             </div>
           </div>
@@ -251,13 +254,13 @@ export default function VeiculosPage() {
         {/* Toolbar */}
         <div className="flex flex-col md:flex-row gap-4 justify-between">
           <div className="relative flex-1 max-w-md">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-[#6B7280]" size={18} />
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-[#666666]" size={18} />
             <input
               type="text"
               placeholder="Buscar por placa, marca ou modelo..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full bg-[#1F1F1F] border border-[#333333] rounded-xl pl-11 pr-4 py-3 text-sm text-white placeholder-[#6B7280] focus:outline-none focus:border-[#22c55e] transition-colors"
+              className="w-full bg-gradient-to-br from-[#1a1a1a] to-[#141414] border border-[#2a2a2a] rounded-xl pl-11 pr-4 py-3 text-sm text-white placeholder-[#666666] focus:outline-none focus:border-[#22c55e]/50 focus:ring-1 focus:ring-[#22c55e]/20 transition-all duration-200"
             />
           </div>
           <button
@@ -265,7 +268,7 @@ export default function VeiculosPage() {
               resetForm();
               setShowModal(true);
             }}
-            className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-[#22c55e] to-[#166534] rounded-xl text-white font-medium hover:opacity-90 transition-opacity"
+            className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-[#22c55e] to-[#166534] rounded-xl text-white font-medium hover:shadow-lg hover:shadow-[#22c55e]/20 transition-all duration-300 hover:scale-[1.02]"
           >
             <Plus size={18} />
             Novo Veículo
@@ -278,48 +281,50 @@ export default function VeiculosPage() {
             <Loader2 className="animate-spin text-[#22c55e]" size={32} />
           </div>
         ) : veiculos.length === 0 ? (
-          <div className="bg-[#1F1F1F] border border-[#333333] rounded-2xl p-8 text-center">
-            <Car size={48} className="mx-auto mb-4 text-[#6B7280]" />
-            <p className="text-[#6B7280]">Nenhum veículo encontrado</p>
-            <p className="text-sm text-[#6B7280] mt-1">Cadastre o primeiro veículo clicando no botão acima</p>
+          <div className="bg-gradient-to-br from-[#1a1a1a] to-[#141414] border border-[#2a2a2a] rounded-2xl p-12 text-center">
+            <div className="p-4 bg-gradient-to-br from-[#22c55e]/10 to-transparent rounded-2xl w-fit mx-auto mb-4">
+              <Car size={48} className="text-[#666666]" />
+            </div>
+            <p className="text-[#666666]">Nenhum veículo encontrado</p>
+            <p className="text-sm text-[#555555] mt-1">Cadastre o primeiro veículo clicando no botão acima</p>
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {veiculos.map((veiculo) => (
-              <div key={veiculo.id} className="bg-[#1F1F1F] border border-[#333333] rounded-2xl p-5 hover:border-[#22c55e]/30 transition-colors">
+              <div key={veiculo.id} className="group bg-gradient-to-br from-[#1a1a1a] to-[#141414] border border-[#2a2a2a] rounded-2xl p-5 hover:border-[#22c55e]/30 transition-all duration-300 hover:shadow-lg hover:shadow-[#22c55e]/5">
                 <div className="flex items-start justify-between mb-4">
                   <div className="flex items-center gap-3">
-                    <div className="p-3 rounded-xl bg-gradient-to-br from-[#22c55e] to-[#166534]">
+                    <div className="p-3 rounded-xl bg-gradient-to-br from-[#22c55e] to-[#166534] ring-2 ring-[#22c55e]/20 group-hover:ring-[#22c55e]/40 transition-all duration-300">
                       <Car size={20} className="text-white" />
                     </div>
                     <div>
                       <h3 className="font-bold text-white">{veiculo.marca} {veiculo.modelo}</h3>
-                      <p className="text-sm text-[#6B7280]">{veiculo.ano || 'Ano não informado'}</p>
+                      <p className="text-sm text-[#666666]">{veiculo.ano || 'Ano não informado'}</p>
                     </div>
                   </div>
-                  <span className="px-3 py-1.5 bg-[#22c55e]/20 text-[#22c55e] rounded-lg text-sm font-mono font-bold">
+                  <span className="px-3 py-1.5 bg-[#22c55e]/10 text-[#22c55e] rounded-lg text-sm font-mono font-bold ring-1 ring-[#22c55e]/20">
                     {formatPlate(veiculo.placa)}
                   </span>
                 </div>
 
                 <div className="space-y-3 mb-4">
-                  <div className="flex items-center justify-between text-sm">
-                    <span className="text-[#6B7280] flex items-center gap-2">
+                  <div className="flex items-center justify-between text-sm p-2 rounded-lg bg-[#0f0f0f]/50">
+                    <span className="text-[#666666] flex items-center gap-2">
                       <User size={14} /> Proprietário
                     </span>
                     <span className="text-white">{veiculo.cliente.nome}</span>
                   </div>
                   {veiculo.kmAtual && (
-                    <div className="flex items-center justify-between text-sm">
-                      <span className="text-[#6B7280] flex items-center gap-2">
+                    <div className="flex items-center justify-between text-sm p-2 rounded-lg bg-[#0f0f0f]/50">
+                      <span className="text-[#666666] flex items-center gap-2">
                         <Gauge size={14} /> KM Atual
                       </span>
                       <span className="text-white">{veiculo.kmAtual.toLocaleString('pt-BR')} km</span>
                     </div>
                   )}
                   {veiculo.cor && (
-                    <div className="flex items-center justify-between text-sm">
-                      <span className="text-[#6B7280]">Cor</span>
+                    <div className="flex items-center justify-between text-sm p-2 rounded-lg bg-[#0f0f0f]/50">
+                      <span className="text-[#666666]">Cor</span>
                       <span className="text-white">{veiculo.cor}</span>
                     </div>
                   )}
@@ -328,28 +333,30 @@ export default function VeiculosPage() {
                 <div className="flex gap-2">
                   <button
                     onClick={() => router.push(`/ordens?veiculoId=${veiculo.id}`)}
-                    className="flex-1 flex items-center justify-center gap-2 py-2.5 bg-gradient-to-r from-[#22c55e] to-[#166534] rounded-xl text-white text-sm font-medium hover:opacity-90 transition-opacity"
+                    className="flex-1 flex items-center justify-center gap-2 py-2.5 bg-gradient-to-r from-[#22c55e] to-[#166534] rounded-xl text-white text-sm font-medium hover:shadow-lg hover:shadow-[#22c55e]/20 transition-all duration-300"
                   >
                     <ClipboardList size={16} />
                     Nova O.S.
                   </button>
-                  <button
-                    onClick={() => openEditModal(veiculo)}
-                    className="p-2.5 bg-[#333333] hover:bg-[#444444] rounded-xl text-[#94a3b8] hover:text-white transition-colors"
-                    title="Editar"
-                  >
-                    <Edit size={16} />
-                  </button>
-                  <button
-                    onClick={() => {
-                      setSelectedVeiculo(veiculo);
-                      setShowDeleteConfirm(true);
-                    }}
-                    className="p-2.5 bg-[#333333] hover:bg-red-500/20 rounded-xl text-[#94a3b8] hover:text-red-400 transition-colors"
-                    title="Excluir"
-                  >
-                    <Trash2 size={16} />
-                  </button>
+                  <div className="flex gap-1 p-1 bg-[#0f0f0f] rounded-xl ring-1 ring-[#2a2a2a]">
+                    <button
+                      onClick={() => openEditModal(veiculo)}
+                      className="p-2 hover:bg-white/5 rounded-lg text-[#666666] hover:text-white transition-all duration-200"
+                      title="Editar"
+                    >
+                      <Edit size={16} />
+                    </button>
+                    <button
+                      onClick={() => {
+                        setSelectedVeiculo(veiculo);
+                        setShowDeleteConfirm(true);
+                      }}
+                      className="p-2 hover:bg-red-500/10 rounded-lg text-[#666666] hover:text-red-400 transition-all duration-200"
+                      title="Excluir"
+                    >
+                      <Trash2 size={16} />
+                    </button>
+                  </div>
                 </div>
               </div>
             ))}
@@ -359,14 +366,14 @@ export default function VeiculosPage() {
 
       {/* Modal Novo Veículo */}
       {showModal && (
-        <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4">
-          <div className="bg-[#1F1F1F] border border-[#333333] rounded-2xl w-full max-w-md animate-fade-in max-h-[90vh] overflow-y-auto">
-            <div className="p-6 border-b border-[#333333] flex items-center justify-between">
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="bg-gradient-to-br from-[#1a1a1a] to-[#141414] border border-[#2a2a2a] rounded-2xl w-full max-w-md animate-fade-in max-h-[90vh] overflow-y-auto shadow-2xl">
+            <div className="p-6 border-b border-[#2a2a2a] flex items-center justify-between">
               <div>
                 <h2 className="text-xl font-semibold text-white">Novo Veículo</h2>
-                <p className="text-sm text-[#6B7280] mt-1">Cadastre um novo veículo</p>
+                <p className="text-sm text-[#666666] mt-1">Cadastre um novo veículo</p>
               </div>
-              <button onClick={() => setShowModal(false)} className="p-2 hover:bg-[#333333] rounded-lg text-[#6B7280] hover:text-white transition-colors">
+              <button onClick={() => setShowModal(false)} className="p-2 hover:bg-white/5 rounded-lg text-[#666666] hover:text-white transition-all duration-200">
                 <X size={20} />
               </button>
             </div>
@@ -376,7 +383,7 @@ export default function VeiculosPage() {
                 <select
                   value={form.clienteId}
                   onChange={(e) => setForm({ ...form, clienteId: e.target.value })}
-                  className="w-full bg-[#000000] border border-[#333333] rounded-xl px-4 py-3 text-white focus:outline-none focus:border-[#22c55e]"
+                  className="w-full bg-[#0f0f0f] border border-[#2a2a2a] rounded-xl px-4 py-3 text-white focus:outline-none focus:border-[#22c55e]/50 focus:ring-1 focus:ring-[#22c55e]/20 transition-all duration-200"
                 >
                   <option value="">Selecione o cliente</option>
                   {clientes.map((cliente) => (
@@ -392,12 +399,12 @@ export default function VeiculosPage() {
                     placeholder="ABC1D23"
                     value={form.placa}
                     onChange={(e) => setForm({ ...form, placa: e.target.value.toUpperCase() })}
-                    className="flex-1 bg-[#000000] border border-[#333333] rounded-xl px-4 py-3 text-white placeholder-[#6B7280] focus:outline-none focus:border-[#22c55e] uppercase font-mono"
+                    className="flex-1 bg-[#0f0f0f] border border-[#2a2a2a] rounded-xl px-4 py-3 text-white placeholder-[#666666] focus:outline-none focus:border-[#22c55e]/50 focus:ring-1 focus:ring-[#22c55e]/20 uppercase font-mono transition-all duration-200"
                   />
                   <button
                     type="button"
                     onClick={() => setShowOCR(true)}
-                    className="px-4 py-3 bg-gradient-to-r from-[#22c55e] to-[#166534] rounded-xl text-white hover:opacity-90 transition-opacity"
+                    className="px-4 py-3 bg-gradient-to-r from-[#22c55e] to-[#166534] rounded-xl text-white hover:shadow-lg hover:shadow-[#22c55e]/20 transition-all duration-300"
                     title="Ler placa com câmera"
                   >
                     <Camera size={20} />
@@ -412,7 +419,7 @@ export default function VeiculosPage() {
                     placeholder="Ex: Honda"
                     value={form.marca}
                     onChange={(e) => setForm({ ...form, marca: e.target.value })}
-                    className="w-full bg-[#000000] border border-[#333333] rounded-xl px-4 py-3 text-white placeholder-[#6B7280] focus:outline-none focus:border-[#22c55e]"
+                    className="w-full bg-[#0f0f0f] border border-[#2a2a2a] rounded-xl px-4 py-3 text-white placeholder-[#666666] focus:outline-none focus:border-[#22c55e]/50 focus:ring-1 focus:ring-[#22c55e]/20 transition-all duration-200"
                   />
                 </div>
                 <div>
@@ -422,7 +429,7 @@ export default function VeiculosPage() {
                     placeholder="2020"
                     value={form.ano}
                     onChange={(e) => setForm({ ...form, ano: e.target.value })}
-                    className="w-full bg-[#000000] border border-[#333333] rounded-xl px-4 py-3 text-white placeholder-[#6B7280] focus:outline-none focus:border-[#22c55e]"
+                    className="w-full bg-[#0f0f0f] border border-[#2a2a2a] rounded-xl px-4 py-3 text-white placeholder-[#666666] focus:outline-none focus:border-[#22c55e]/50 focus:ring-1 focus:ring-[#22c55e]/20 transition-all duration-200"
                   />
                 </div>
               </div>
@@ -433,7 +440,7 @@ export default function VeiculosPage() {
                   placeholder="Ex: Civic EXL"
                   value={form.modelo}
                   onChange={(e) => setForm({ ...form, modelo: e.target.value })}
-                  className="w-full bg-[#000000] border border-[#333333] rounded-xl px-4 py-3 text-white placeholder-[#6B7280] focus:outline-none focus:border-[#22c55e]"
+                  className="w-full bg-[#0f0f0f] border border-[#2a2a2a] rounded-xl px-4 py-3 text-white placeholder-[#666666] focus:outline-none focus:border-[#22c55e]/50 focus:ring-1 focus:ring-[#22c55e]/20 transition-all duration-200"
                 />
               </div>
               <div className="grid grid-cols-2 gap-4">
@@ -444,7 +451,7 @@ export default function VeiculosPage() {
                     placeholder="Ex: Prata"
                     value={form.cor}
                     onChange={(e) => setForm({ ...form, cor: e.target.value })}
-                    className="w-full bg-[#000000] border border-[#333333] rounded-xl px-4 py-3 text-white placeholder-[#6B7280] focus:outline-none focus:border-[#22c55e]"
+                    className="w-full bg-[#0f0f0f] border border-[#2a2a2a] rounded-xl px-4 py-3 text-white placeholder-[#666666] focus:outline-none focus:border-[#22c55e]/50 focus:ring-1 focus:ring-[#22c55e]/20 transition-all duration-200"
                   />
                 </div>
                 <div>
@@ -454,22 +461,22 @@ export default function VeiculosPage() {
                     placeholder="45000"
                     value={form.kmAtual}
                     onChange={(e) => setForm({ ...form, kmAtual: e.target.value })}
-                    className="w-full bg-[#000000] border border-[#333333] rounded-xl px-4 py-3 text-white placeholder-[#6B7280] focus:outline-none focus:border-[#22c55e]"
+                    className="w-full bg-[#0f0f0f] border border-[#2a2a2a] rounded-xl px-4 py-3 text-white placeholder-[#666666] focus:outline-none focus:border-[#22c55e]/50 focus:ring-1 focus:ring-[#22c55e]/20 transition-all duration-200"
                   />
                 </div>
               </div>
             </div>
-            <div className="p-6 border-t border-[#333333] flex gap-3 justify-end">
+            <div className="p-6 border-t border-[#2a2a2a] flex gap-3 justify-end">
               <button
                 onClick={() => setShowModal(false)}
-                className="px-6 py-3 border border-[#333333] rounded-xl text-[#94a3b8] hover:bg-[#333333] transition-colors"
+                className="px-6 py-3 border border-[#2a2a2a] rounded-xl text-[#94a3b8] hover:bg-white/5 transition-all duration-200"
               >
                 Cancelar
               </button>
               <button
                 onClick={handleSubmit}
                 disabled={saving}
-                className="px-6 py-3 bg-gradient-to-r from-[#22c55e] to-[#166534] rounded-xl text-white font-medium hover:opacity-90 transition-opacity disabled:opacity-50"
+                className="px-6 py-3 bg-gradient-to-r from-[#22c55e] to-[#166534] rounded-xl text-white font-medium hover:shadow-lg hover:shadow-[#22c55e]/20 transition-all duration-300 disabled:opacity-50"
               >
                 {saving ? 'Salvando...' : 'Cadastrar'}
               </button>
@@ -480,14 +487,14 @@ export default function VeiculosPage() {
 
       {/* Modal Editar Veículo */}
       {showEditModal && selectedVeiculo && (
-        <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4">
-          <div className="bg-[#1F1F1F] border border-[#333333] rounded-2xl w-full max-w-md animate-fade-in max-h-[90vh] overflow-y-auto">
-            <div className="p-6 border-b border-[#333333] flex items-center justify-between">
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="bg-gradient-to-br from-[#1a1a1a] to-[#141414] border border-[#2a2a2a] rounded-2xl w-full max-w-md animate-fade-in max-h-[90vh] overflow-y-auto shadow-2xl">
+            <div className="p-6 border-b border-[#2a2a2a] flex items-center justify-between">
               <div>
                 <h2 className="text-xl font-semibold text-white">Editar Veículo</h2>
-                <p className="text-sm text-[#6B7280] mt-1">Atualize as informações do veículo</p>
+                <p className="text-sm text-[#666666] mt-1">Atualize as informações do veículo</p>
               </div>
-              <button onClick={() => setShowEditModal(false)} className="p-2 hover:bg-[#333333] rounded-lg text-[#6B7280] hover:text-white transition-colors">
+              <button onClick={() => setShowEditModal(false)} className="p-2 hover:bg-white/5 rounded-lg text-[#666666] hover:text-white transition-all duration-200">
                 <X size={20} />
               </button>
             </div>
@@ -497,7 +504,7 @@ export default function VeiculosPage() {
                 <select
                   value={form.clienteId}
                   onChange={(e) => setForm({ ...form, clienteId: e.target.value })}
-                  className="w-full bg-[#000000] border border-[#333333] rounded-xl px-4 py-3 text-white focus:outline-none focus:border-[#22c55e]"
+                  className="w-full bg-[#0f0f0f] border border-[#2a2a2a] rounded-xl px-4 py-3 text-white focus:outline-none focus:border-[#22c55e]/50 focus:ring-1 focus:ring-[#22c55e]/20 transition-all duration-200"
                 >
                   <option value="">Selecione o cliente</option>
                   {clientes.map((cliente) => (
@@ -511,7 +518,7 @@ export default function VeiculosPage() {
                   type="text"
                   value={form.placa}
                   onChange={(e) => setForm({ ...form, placa: e.target.value.toUpperCase() })}
-                  className="w-full bg-[#000000] border border-[#333333] rounded-xl px-4 py-3 text-white focus:outline-none focus:border-[#22c55e] uppercase font-mono"
+                  className="w-full bg-[#0f0f0f] border border-[#2a2a2a] rounded-xl px-4 py-3 text-white focus:outline-none focus:border-[#22c55e]/50 focus:ring-1 focus:ring-[#22c55e]/20 uppercase font-mono transition-all duration-200"
                 />
               </div>
               <div className="grid grid-cols-2 gap-4">
@@ -521,7 +528,7 @@ export default function VeiculosPage() {
                     type="text"
                     value={form.marca}
                     onChange={(e) => setForm({ ...form, marca: e.target.value })}
-                    className="w-full bg-[#000000] border border-[#333333] rounded-xl px-4 py-3 text-white focus:outline-none focus:border-[#22c55e]"
+                    className="w-full bg-[#0f0f0f] border border-[#2a2a2a] rounded-xl px-4 py-3 text-white focus:outline-none focus:border-[#22c55e]/50 focus:ring-1 focus:ring-[#22c55e]/20 transition-all duration-200"
                   />
                 </div>
                 <div>
@@ -530,7 +537,7 @@ export default function VeiculosPage() {
                     type="text"
                     value={form.ano}
                     onChange={(e) => setForm({ ...form, ano: e.target.value })}
-                    className="w-full bg-[#000000] border border-[#333333] rounded-xl px-4 py-3 text-white focus:outline-none focus:border-[#22c55e]"
+                    className="w-full bg-[#0f0f0f] border border-[#2a2a2a] rounded-xl px-4 py-3 text-white focus:outline-none focus:border-[#22c55e]/50 focus:ring-1 focus:ring-[#22c55e]/20 transition-all duration-200"
                   />
                 </div>
               </div>
@@ -540,7 +547,7 @@ export default function VeiculosPage() {
                   type="text"
                   value={form.modelo}
                   onChange={(e) => setForm({ ...form, modelo: e.target.value })}
-                  className="w-full bg-[#000000] border border-[#333333] rounded-xl px-4 py-3 text-white focus:outline-none focus:border-[#22c55e]"
+                  className="w-full bg-[#0f0f0f] border border-[#2a2a2a] rounded-xl px-4 py-3 text-white focus:outline-none focus:border-[#22c55e]/50 focus:ring-1 focus:ring-[#22c55e]/20 transition-all duration-200"
                 />
               </div>
               <div className="grid grid-cols-2 gap-4">
@@ -550,7 +557,7 @@ export default function VeiculosPage() {
                     type="text"
                     value={form.cor}
                     onChange={(e) => setForm({ ...form, cor: e.target.value })}
-                    className="w-full bg-[#000000] border border-[#333333] rounded-xl px-4 py-3 text-white focus:outline-none focus:border-[#22c55e]"
+                    className="w-full bg-[#0f0f0f] border border-[#2a2a2a] rounded-xl px-4 py-3 text-white focus:outline-none focus:border-[#22c55e]/50 focus:ring-1 focus:ring-[#22c55e]/20 transition-all duration-200"
                   />
                 </div>
                 <div>
@@ -559,22 +566,22 @@ export default function VeiculosPage() {
                     type="text"
                     value={form.kmAtual}
                     onChange={(e) => setForm({ ...form, kmAtual: e.target.value })}
-                    className="w-full bg-[#000000] border border-[#333333] rounded-xl px-4 py-3 text-white focus:outline-none focus:border-[#22c55e]"
+                    className="w-full bg-[#0f0f0f] border border-[#2a2a2a] rounded-xl px-4 py-3 text-white focus:outline-none focus:border-[#22c55e]/50 focus:ring-1 focus:ring-[#22c55e]/20 transition-all duration-200"
                   />
                 </div>
               </div>
             </div>
-            <div className="p-6 border-t border-[#333333] flex gap-3 justify-end">
+            <div className="p-6 border-t border-[#2a2a2a] flex gap-3 justify-end">
               <button
                 onClick={() => setShowEditModal(false)}
-                className="px-6 py-3 border border-[#333333] rounded-xl text-[#94a3b8] hover:bg-[#333333] transition-colors"
+                className="px-6 py-3 border border-[#2a2a2a] rounded-xl text-[#94a3b8] hover:bg-white/5 transition-all duration-200"
               >
                 Cancelar
               </button>
               <button
                 onClick={handleEditSubmit}
                 disabled={saving}
-                className="px-6 py-3 bg-gradient-to-r from-[#22c55e] to-[#166534] rounded-xl text-white font-medium hover:opacity-90 transition-opacity disabled:opacity-50"
+                className="px-6 py-3 bg-gradient-to-r from-[#22c55e] to-[#166534] rounded-xl text-white font-medium hover:shadow-lg hover:shadow-[#22c55e]/20 transition-all duration-300 disabled:opacity-50"
               >
                 {saving ? 'Salvando...' : 'Salvar Alterações'}
               </button>
@@ -585,14 +592,14 @@ export default function VeiculosPage() {
 
       {/* Modal Confirmar Exclusão */}
       {showDeleteConfirm && selectedVeiculo && (
-        <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4">
-          <div className="bg-[#1F1F1F] border border-[#333333] rounded-2xl w-full max-w-md animate-fade-in">
-            <div className="p-6 border-b border-[#333333]">
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="bg-gradient-to-br from-[#1a1a1a] to-[#141414] border border-[#2a2a2a] rounded-2xl w-full max-w-md animate-fade-in shadow-2xl">
+            <div className="p-6 border-b border-[#2a2a2a]">
               <h2 className="text-xl font-semibold text-white">Confirmar Exclusão</h2>
             </div>
             <div className="p-6">
               <div className="flex items-center gap-4 mb-4">
-                <div className="p-3 bg-red-500/20 rounded-xl">
+                <div className="p-3 bg-red-500/10 rounded-xl ring-1 ring-red-500/20">
                   <Trash2 size={24} className="text-red-400" />
                 </div>
                 <div>
@@ -604,20 +611,20 @@ export default function VeiculosPage() {
                 Tem certeza que deseja excluir este veículo? Esta ação não pode ser desfeita.
               </p>
             </div>
-            <div className="p-6 border-t border-[#333333] flex gap-3 justify-end">
+            <div className="p-6 border-t border-[#2a2a2a] flex gap-3 justify-end">
               <button
                 onClick={() => {
                   setShowDeleteConfirm(false);
                   setSelectedVeiculo(null);
                 }}
-                className="px-6 py-3 border border-[#333333] rounded-xl text-[#94a3b8] hover:bg-[#333333] transition-colors"
+                className="px-6 py-3 border border-[#2a2a2a] rounded-xl text-[#94a3b8] hover:bg-white/5 transition-all duration-200"
               >
                 Cancelar
               </button>
               <button
                 onClick={handleDelete}
                 disabled={saving}
-                className="px-6 py-3 bg-gradient-to-r from-red-500 to-red-700 rounded-xl text-white font-medium hover:opacity-90 transition-opacity disabled:opacity-50"
+                className="px-6 py-3 bg-gradient-to-r from-red-500 to-red-700 rounded-xl text-white font-medium hover:shadow-lg hover:shadow-red-500/20 transition-all duration-300 disabled:opacity-50"
               >
                 {saving ? 'Excluindo...' : 'Excluir Veículo'}
               </button>
