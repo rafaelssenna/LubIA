@@ -572,7 +572,7 @@ export default function EstoquePage() {
       <div className="p-6 space-y-6 animate-fade-in">
         {/* Stats */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <div className="bg-[#f2f4ee] border border-[#b8c4a8] rounded-xl p-4 hover:border-green-300 hover:shadow-lg hover:shadow-green-100 transition-all duration-300">
+          <div className="bg-[#dde2d4] border border-[#b8c4a8] rounded-xl p-4 hover:border-green-300 hover:shadow-lg hover:shadow-green-100 transition-all duration-300">
             <div className="flex items-center gap-3">
               <div className="p-2.5 bg-[#4A701C]/20 rounded-xl ring-1 ring-[#4A701C]/20">
                 <Package size={20} className="text-[#4A701C]" />
@@ -583,7 +583,7 @@ export default function EstoquePage() {
               </div>
             </div>
           </div>
-          <div className="bg-[#f2f4ee] border border-[#b8c4a8] rounded-xl p-4 hover:border-blue-500/30 hover:shadow-lg hover:shadow-blue-500/5 transition-all duration-300">
+          <div className="bg-[#dde2d4] border border-[#b8c4a8] rounded-xl p-4 hover:border-blue-500/30 hover:shadow-lg hover:shadow-blue-500/5 transition-all duration-300">
             <div className="flex items-center gap-3">
               <div className="p-2.5 bg-blue-50 rounded-xl ring-1 ring-blue-500/20">
                 <Droplets size={20} className="text-blue-600" />
@@ -594,7 +594,7 @@ export default function EstoquePage() {
               </div>
             </div>
           </div>
-          <div className="bg-[#f2f4ee] border border-[#b8c4a8] rounded-xl p-4 hover:border-amber-500/30 hover:shadow-lg hover:shadow-amber-500/5 transition-all duration-300">
+          <div className="bg-[#dde2d4] border border-[#b8c4a8] rounded-xl p-4 hover:border-amber-500/30 hover:shadow-lg hover:shadow-amber-500/5 transition-all duration-300">
             <div className="flex items-center gap-3">
               <div className="p-2.5 bg-amber-50 rounded-xl ring-1 ring-amber-500/20">
                 <DollarSign size={20} className="text-amber-600" />
@@ -607,7 +607,7 @@ export default function EstoquePage() {
               </div>
             </div>
           </div>
-          <div className="bg-[#f2f4ee] border border-[#b8c4a8] rounded-xl p-4 hover:border-red-500/30 hover:shadow-lg hover:shadow-red-500/5 transition-all duration-300">
+          <div className="bg-[#dde2d4] border border-[#b8c4a8] rounded-xl p-4 hover:border-red-500/30 hover:shadow-lg hover:shadow-red-500/5 transition-all duration-300">
             <div className="flex items-center gap-3">
               <div className={`p-2.5 rounded-xl ring-1 ${estoqueBaixoCount > 0 ? 'bg-red-50 ring-red-500/20' : 'bg-[#4A701C]/20 ring-[#4A701C]/20'}`}>
                 <AlertTriangle size={20} className={estoqueBaixoCount > 0 ? 'text-red-400' : 'text-[#4A701C]'} />
@@ -717,7 +717,7 @@ export default function EstoquePage() {
         </div>
 
         {/* Tabela de Produtos */}
-        <div className="bg-[#f2f4ee] border border-[#b8c4a8] rounded-2xl overflow-hidden">
+        <div className="bg-[#dde2d4] border border-[#b8c4a8] rounded-2xl overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead>
@@ -922,7 +922,7 @@ export default function EstoquePage() {
       {/* Modal Novo Produto */}
       {showModal && (
         <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-[#f2f4ee] border border-[#b8c4a8] rounded-2xl w-full max-w-lg animate-fade-in max-h-[90vh] overflow-y-auto shadow-2xl">
+          <div className="bg-[#dde2d4] border border-[#b8c4a8] rounded-2xl w-full max-w-lg animate-fade-in max-h-[90vh] overflow-y-auto shadow-2xl">
             <div className="p-6 border-b border-[#b8c4a8]">
               <h2 className="text-xl font-semibold text-[#284703]">Novo Produto</h2>
               <p className="text-sm text-[#6B7280] mt-1">Cadastre um novo produto no estoque</p>
@@ -1066,7 +1066,7 @@ export default function EstoquePage() {
       {/* Modal Movimentação */}
       {showMovModal && selectedProduto && (
         <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-[#f2f4ee] border border-[#b8c4a8] rounded-2xl w-full max-w-md animate-fade-in shadow-2xl">
+          <div className="bg-[#dde2d4] border border-[#b8c4a8] rounded-2xl w-full max-w-md animate-fade-in shadow-2xl">
             <div className="p-6 border-b border-[#b8c4a8]">
               <h2 className="text-xl font-semibold text-[#284703]">
                 {movTipo === 'ENTRADA' ? 'Entrada de Estoque' : 'Saída de Estoque'}
@@ -1182,7 +1182,7 @@ export default function EstoquePage() {
       {/* Modal para revisar itens da NF */}
       {showOcrItems && ocrItems.length > 0 && (
         <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-[#f2f4ee] border border-[#b8c4a8] rounded-2xl shadow-2xl w-full max-w-3xl animate-fade-in max-h-[90vh] overflow-hidden flex flex-col">
+          <div className="bg-[#dde2d4] border border-[#b8c4a8] rounded-2xl shadow-2xl w-full max-w-3xl animate-fade-in max-h-[90vh] overflow-hidden flex flex-col">
             <div className="p-6 border-b border-[#b8c4a8]">
               <h2 className="text-xl font-semibold text-[#284703]">Itens da Nota Fiscal</h2>
               <p className="text-sm text-[#6B7280] mt-1">
@@ -1257,7 +1257,7 @@ export default function EstoquePage() {
                             newItems[index].descricao = e.target.value;
                             setOcrItems(newItems);
                           }}
-                          className="w-full bg-[#f2f4ee] border border-[#b8c4a8] rounded-lg px-3 py-2 text-[#284703] text-sm focus:outline-none focus:border-[#4A701C]/50 focus:ring-1 focus:ring-[#4A701C]/20 transition-all duration-200"
+                          className="w-full bg-[#dde2d4] border border-[#b8c4a8] rounded-lg px-3 py-2 text-[#284703] text-sm focus:outline-none focus:border-[#4A701C]/50 focus:ring-1 focus:ring-[#4A701C]/20 transition-all duration-200"
                         />
                       </div>
                       <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
@@ -1270,7 +1270,7 @@ export default function EstoquePage() {
                               newItems[index].categoria = e.target.value;
                               setOcrItems(newItems);
                             }}
-                            className="w-full bg-[#f2f4ee] border border-[#b8c4a8] rounded-lg px-3 py-2 text-[#284703] text-sm focus:outline-none focus:border-[#4A701C]/50 focus:ring-1 focus:ring-[#4A701C]/20 transition-all duration-200"
+                            className="w-full bg-[#dde2d4] border border-[#b8c4a8] rounded-lg px-3 py-2 text-[#284703] text-sm focus:outline-none focus:border-[#4A701C]/50 focus:ring-1 focus:ring-[#4A701C]/20 transition-all duration-200"
                           >
                             {categorias.filter(c => c.value).map(cat => (
                               <option key={cat.value} value={cat.value}>{cat.label}</option>
@@ -1286,7 +1286,7 @@ export default function EstoquePage() {
                               newItems[index].unidade = e.target.value;
                               setOcrItems(newItems);
                             }}
-                            className="w-full bg-[#f2f4ee] border border-[#b8c4a8] rounded-lg px-3 py-2 text-[#284703] text-sm focus:outline-none focus:border-[#4A701C]/50 focus:ring-1 focus:ring-[#4A701C]/20 transition-all duration-200"
+                            className="w-full bg-[#dde2d4] border border-[#b8c4a8] rounded-lg px-3 py-2 text-[#284703] text-sm focus:outline-none focus:border-[#4A701C]/50 focus:ring-1 focus:ring-[#4A701C]/20 transition-all duration-200"
                           >
                             <option value="LITRO">Litro</option>
                             <option value="UNIDADE">Unidade</option>
@@ -1304,7 +1304,7 @@ export default function EstoquePage() {
                               newItems[index].codigo = e.target.value;
                               setOcrItems(newItems);
                             }}
-                            className="w-full bg-[#f2f4ee] border border-[#b8c4a8] rounded-lg px-3 py-2 text-[#284703] text-sm focus:outline-none focus:border-[#4A701C]/50 focus:ring-1 focus:ring-[#4A701C]/20 transition-all duration-200"
+                            className="w-full bg-[#dde2d4] border border-[#b8c4a8] rounded-lg px-3 py-2 text-[#284703] text-sm focus:outline-none focus:border-[#4A701C]/50 focus:ring-1 focus:ring-[#4A701C]/20 transition-all duration-200"
                           />
                         </div>
                       </div>
@@ -1319,7 +1319,7 @@ export default function EstoquePage() {
                               newItems[index].quantidade = parseFloat(e.target.value) || 0;
                               setOcrItems(newItems);
                             }}
-                            className="w-full bg-[#f2f4ee] border border-[#b8c4a8] rounded-lg px-3 py-2 text-[#284703] text-sm focus:outline-none focus:border-[#4A701C]/50 focus:ring-1 focus:ring-[#4A701C]/20 transition-all duration-200"
+                            className="w-full bg-[#dde2d4] border border-[#b8c4a8] rounded-lg px-3 py-2 text-[#284703] text-sm focus:outline-none focus:border-[#4A701C]/50 focus:ring-1 focus:ring-[#4A701C]/20 transition-all duration-200"
                           />
                         </div>
                         <div>
@@ -1333,7 +1333,7 @@ export default function EstoquePage() {
                               newItems[index].precoCompra = parseFloat(e.target.value) || 0;
                               setOcrItems(newItems);
                             }}
-                            className="w-full bg-[#f2f4ee] border border-[#b8c4a8] rounded-lg px-3 py-2 text-[#284703] text-sm focus:outline-none focus:border-[#4A701C]/50 focus:ring-1 focus:ring-[#4A701C]/20 transition-all duration-200"
+                            className="w-full bg-[#dde2d4] border border-[#b8c4a8] rounded-lg px-3 py-2 text-[#284703] text-sm focus:outline-none focus:border-[#4A701C]/50 focus:ring-1 focus:ring-[#4A701C]/20 transition-all duration-200"
                           />
                         </div>
                         <div>
@@ -1353,7 +1353,7 @@ export default function EstoquePage() {
                               newItems[index].precoVenda = parseFloat(e.target.value) || 0;
                               setOcrItems(newItems);
                             }}
-                            className={`w-full bg-[#f2f4ee] rounded-lg px-3 py-2 text-[#284703] text-sm focus:outline-none ${
+                            className={`w-full bg-[#dde2d4] rounded-lg px-3 py-2 text-[#284703] text-sm focus:outline-none ${
                               item.selected && !item.updateExisting && !item.precoVenda
                                 ? 'border-2 border-red-500 focus:border-red-500'
                                 : 'border border-[#b8c4a8] focus:border-[#4A701C]'
@@ -1371,7 +1371,7 @@ export default function EstoquePage() {
                               newItems[index].estoqueMinimo = parseFloat(e.target.value) || 0;
                               setOcrItems(newItems);
                             }}
-                            className="w-full bg-[#f2f4ee] border border-[#b8c4a8] rounded-lg px-3 py-2 text-[#284703] text-sm focus:outline-none focus:border-[#4A701C]/50 focus:ring-1 focus:ring-[#4A701C]/20 transition-all duration-200"
+                            className="w-full bg-[#dde2d4] border border-[#b8c4a8] rounded-lg px-3 py-2 text-[#284703] text-sm focus:outline-none focus:border-[#4A701C]/50 focus:ring-1 focus:ring-[#4A701C]/20 transition-all duration-200"
                           />
                         </div>
                       </div>
@@ -1481,7 +1481,7 @@ export default function EstoquePage() {
       {/* Modal Editar Produto */}
       {showEditModal && editingProduto && (
         <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-[#f2f4ee] border border-[#b8c4a8] rounded-2xl shadow-2xl w-full max-w-lg animate-fade-in max-h-[90vh] overflow-y-auto">
+          <div className="bg-[#dde2d4] border border-[#b8c4a8] rounded-2xl shadow-2xl w-full max-w-lg animate-fade-in max-h-[90vh] overflow-y-auto">
             <div className="p-6 border-b border-[#b8c4a8]">
               <h2 className="text-xl font-semibold text-[#284703]">Editar Produto</h2>
               <p className="text-sm text-[#6B7280] mt-1">Atualize as informações do produto</p>
@@ -1621,7 +1621,7 @@ export default function EstoquePage() {
       {/* Modal Confirmar Exclusão */}
       {showDeleteConfirm && deletingProduto && (
         <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-[#f2f4ee] border border-[#b8c4a8] rounded-2xl shadow-2xl w-full max-w-md animate-fade-in">
+          <div className="bg-[#dde2d4] border border-[#b8c4a8] rounded-2xl shadow-2xl w-full max-w-md animate-fade-in">
             <div className="p-6 border-b border-[#b8c4a8]">
               <h2 className="text-xl font-semibold text-[#284703]">Confirmar Exclusão</h2>
             </div>
@@ -1663,7 +1663,7 @@ export default function EstoquePage() {
       {/* Modal Histórico de Movimentações */}
       {showHistoryModal && historyProduto && (
         <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-[#f2f4ee] border border-[#b8c4a8] rounded-2xl shadow-2xl w-full max-w-2xl animate-fade-in max-h-[80vh] overflow-hidden flex flex-col">
+          <div className="bg-[#dde2d4] border border-[#b8c4a8] rounded-2xl shadow-2xl w-full max-w-2xl animate-fade-in max-h-[80vh] overflow-hidden flex flex-col">
             <div className="p-6 border-b border-[#b8c4a8]">
               <h2 className="text-xl font-semibold text-[#284703]">Histórico de Movimentações</h2>
               <p className="text-sm text-[#6B7280] mt-1">{historyProduto.nome}</p>

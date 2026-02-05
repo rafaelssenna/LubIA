@@ -129,7 +129,7 @@ export default function Dashboard() {
             return (
               <div
                 key={index}
-                className={`group relative bg-[#f2f4ee] rounded-2xl p-5 border border-[#b8c4a8] hover:border-[#88B257] transition-all duration-300 hover:shadow-lg ${colors.glow}`}
+                className={`group relative bg-[#dde2d4] rounded-2xl p-5 border border-[#b8c4a8] hover:border-[#88B257] transition-all duration-300 hover:shadow-lg ${colors.glow}`}
               >
                 <div className="relative flex items-center gap-4">
                   <div className={`p-3 bg-gradient-to-br ${colors.bg} rounded-xl ring-1 ${colors.ring}`}>
@@ -150,7 +150,7 @@ export default function Dashboard() {
         </div>
 
         {/* Serviços de Hoje */}
-        <div className="bg-[#f2f4ee] rounded-2xl border border-[#b8c4a8] overflow-hidden">
+        <div className="bg-[#dde2d4] rounded-2xl border border-[#b8c4a8] overflow-hidden">
           <div className="p-5 border-b border-[#b8c4a8] flex items-center justify-between">
             <div>
               <h2 className="text-lg font-bold text-[#284703]">Serviços de Hoje</h2>
@@ -227,7 +227,7 @@ export default function Dashboard() {
                 <Link
                   key={index}
                   href={action.href}
-                  className={`flex flex-col items-center gap-3 p-5 bg-[#f2f4ee] rounded-2xl border border-[#b8c4a8] hover:border-[#88B257] transition-all duration-300 group hover:shadow-lg ${colors.glow}`}
+                  className={`flex flex-col items-center gap-3 p-5 bg-[#dde2d4] rounded-2xl border border-[#b8c4a8] hover:border-[#88B257] transition-all duration-300 group hover:shadow-lg ${colors.glow}`}
                 >
                   <div className={`p-3 bg-gradient-to-br ${colors.gradient} rounded-xl ring-1 ${colors.ring} group-hover:scale-110 group-hover:rotate-3 transition-all duration-300`}>
                     <action.icon size={24} className="text-white" />

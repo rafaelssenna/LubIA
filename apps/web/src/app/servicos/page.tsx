@@ -261,7 +261,7 @@ export default function ServicosPage() {
       <div className="p-6 space-y-6 animate-fade-in">
         {/* Stats */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <div className="bg-[#f2f4ee] border border-[#b8c4a8] rounded-xl p-4 hover:border-green-300 hover:shadow-lg hover:shadow-green-100 transition-all duration-300">
+          <div className="bg-[#dde2d4] border border-[#b8c4a8] rounded-xl p-4 hover:border-green-300 hover:shadow-lg hover:shadow-green-100 transition-all duration-300">
             <div className="flex items-center gap-3">
               <div className="p-2.5 bg-[#4A701C]/20 rounded-xl ring-1 ring-[#4A701C]/20">
                 <Wrench size={20} className="text-[#4A701C]" />
@@ -272,7 +272,7 @@ export default function ServicosPage() {
               </div>
             </div>
           </div>
-          <div className="bg-[#f2f4ee] border border-[#b8c4a8] rounded-xl p-4 hover:border-amber-500/30 hover:shadow-lg hover:shadow-amber-500/5 transition-all duration-300">
+          <div className="bg-[#dde2d4] border border-[#b8c4a8] rounded-xl p-4 hover:border-amber-500/30 hover:shadow-lg hover:shadow-amber-500/5 transition-all duration-300">
             <div className="flex items-center gap-3">
               <div className="p-2.5 bg-amber-50 rounded-xl ring-1 ring-amber-500/20">
                 <Package size={20} className="text-amber-600" />
@@ -283,7 +283,7 @@ export default function ServicosPage() {
               </div>
             </div>
           </div>
-          <div className="bg-[#f2f4ee] border border-[#b8c4a8] rounded-xl p-4 hover:border-blue-500/30 hover:shadow-lg hover:shadow-blue-500/5 transition-all duration-300">
+          <div className="bg-[#dde2d4] border border-[#b8c4a8] rounded-xl p-4 hover:border-blue-500/30 hover:shadow-lg hover:shadow-blue-500/5 transition-all duration-300">
             <div className="flex items-center gap-3">
               <div className="p-2.5 bg-blue-50 rounded-xl ring-1 ring-blue-500/20">
                 <DollarSign size={20} className="text-blue-600" />
@@ -296,7 +296,7 @@ export default function ServicosPage() {
               </div>
             </div>
           </div>
-          <div className="bg-[#f2f4ee] border border-[#b8c4a8] rounded-xl p-4 hover:border-purple-500/30 hover:shadow-lg hover:shadow-purple-500/5 transition-all duration-300">
+          <div className="bg-[#dde2d4] border border-[#b8c4a8] rounded-xl p-4 hover:border-purple-500/30 hover:shadow-lg hover:shadow-purple-500/5 transition-all duration-300">
             <div className="flex items-center gap-3">
               <div className="p-2.5 bg-purple-50 rounded-xl ring-1 ring-purple-500/20">
                 <Clock size={20} className="text-purple-600" />
@@ -356,7 +356,7 @@ export default function ServicosPage() {
             {servicos.map((servico) => (
               <div
                 key={servico.id}
-                className={`bg-[#f2f4ee] border rounded-2xl p-6 transition-all duration-300 ${
+                className={`bg-[#dde2d4] border rounded-2xl p-6 transition-all duration-300 ${
                   servico.ativo
                     ? 'border-[#b8c4a8] hover:border-[#4A701C]/40 hover:shadow-lg hover:shadow-green-100'
                     : 'border-[#b8c4a8]/50 opacity-60'
@@ -419,7 +419,7 @@ export default function ServicosPage() {
       {/* Modal Novo Serviço */}
       {showModal && (
         <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-[#f2f4ee] border border-[#b8c4a8] rounded-2xl w-full max-w-lg animate-fade-in shadow-2xl">
+          <div className="bg-[#dde2d4] border border-[#b8c4a8] rounded-2xl w-full max-w-lg animate-fade-in shadow-2xl">
             <div className="p-6 border-b border-[#b8c4a8] flex items-center justify-between">
               <div>
                 <h2 className="text-xl font-semibold text-[#284703]">Novo Serviço</h2>
@@ -511,7 +511,7 @@ export default function ServicosPage() {
       {/* Modal Editar Serviço */}
       {showEditModal && editingServico && (
         <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-[#f2f4ee] border border-[#b8c4a8] rounded-2xl w-full max-w-lg animate-fade-in shadow-2xl">
+          <div className="bg-[#dde2d4] border border-[#b8c4a8] rounded-2xl w-full max-w-lg animate-fade-in shadow-2xl">
             <div className="p-6 border-b border-[#b8c4a8] flex items-center justify-between">
               <div>
                 <h2 className="text-xl font-semibold text-[#284703]">Editar Serviço</h2>
@@ -605,7 +605,7 @@ export default function ServicosPage() {
       {/* Modal Confirmar Exclusão */}
       {showDeleteConfirm && deletingServico && (
         <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-[#f2f4ee] border border-[#b8c4a8] rounded-2xl w-full max-w-md animate-fade-in shadow-2xl">
+          <div className="bg-[#dde2d4] border border-[#b8c4a8] rounded-2xl w-full max-w-md animate-fade-in shadow-2xl">
             <div className="p-6 border-b border-[#b8c4a8]">
               <h2 className="text-xl font-semibold text-[#284703]">Confirmar Exclusão</h2>
             </div>

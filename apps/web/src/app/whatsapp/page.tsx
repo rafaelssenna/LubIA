@@ -122,7 +122,7 @@ export default function WhatsAppPage() {
       <div className="p-6">
         {/* Stats Rápidos */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6 animate-fade-in">
-          <div className="bg-[#f2f4ee] border border-[#b8c4a8] rounded-2xl p-5 hover:border-[#25D366]/30 hover:shadow-lg hover:shadow-[#25D366]/5 transition-all duration-300">
+          <div className="bg-[#dde2d4] border border-[#b8c4a8] rounded-2xl p-5 hover:border-[#25D366]/30 hover:shadow-lg hover:shadow-[#25D366]/5 transition-all duration-300">
             <div className="flex items-center gap-4">
               <div className="p-3 bg-gradient-to-br from-[#25D366] to-[#128C7E] rounded-xl shadow-lg shadow-[#25D366]/20 ring-1 ring-[#25D366]/20">
                 <MessageCircle size={22} className="text-white" />
@@ -133,7 +133,7 @@ export default function WhatsAppPage() {
               </div>
             </div>
           </div>
-          <div className="bg-[#f2f4ee] border border-[#b8c4a8] rounded-2xl p-5 hover:border-blue-500/30 hover:shadow-lg hover:shadow-blue-500/5 transition-all duration-300">
+          <div className="bg-[#dde2d4] border border-[#b8c4a8] rounded-2xl p-5 hover:border-blue-500/30 hover:shadow-lg hover:shadow-blue-500/5 transition-all duration-300">
             <div className="flex items-center gap-4">
               <div className="p-3 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl shadow-lg shadow-blue-500/20 ring-1 ring-blue-500/20">
                 <Users size={22} className="text-white" />
@@ -144,7 +144,7 @@ export default function WhatsAppPage() {
               </div>
             </div>
           </div>
-          <div className="bg-[#f2f4ee] border border-[#b8c4a8] rounded-2xl p-5 hover:border-amber-500/30 hover:shadow-lg hover:shadow-amber-500/5 transition-all duration-300">
+          <div className="bg-[#dde2d4] border border-[#b8c4a8] rounded-2xl p-5 hover:border-amber-500/30 hover:shadow-lg hover:shadow-amber-500/5 transition-all duration-300">
             <div className="flex items-center gap-4">
               <div className="p-3 bg-gradient-to-br from-amber-500 to-amber-600 rounded-xl shadow-lg shadow-amber-500/20 ring-1 ring-amber-500/20">
                 <Bell size={22} className="text-white" />
@@ -155,7 +155,7 @@ export default function WhatsAppPage() {
               </div>
             </div>
           </div>
-          <div className="bg-[#f2f4ee] border border-[#b8c4a8] rounded-2xl p-5 hover:border-[#4A701C]/30 hover:shadow-lg hover:shadow-[#4A701C]/5 transition-all duration-300">
+          <div className="bg-[#dde2d4] border border-[#b8c4a8] rounded-2xl p-5 hover:border-[#4A701C]/30 hover:shadow-lg hover:shadow-[#4A701C]/5 transition-all duration-300">
             <div className="flex items-center gap-4">
               <div className="p-3 bg-gradient-to-br from-[#4A701C] to-[#284703] rounded-xl shadow-lg shadow-green-100 ring-1 ring-[#4A701C]/20">
                 <Zap size={22} className="text-white" />
@@ -169,7 +169,7 @@ export default function WhatsAppPage() {
         </div>
 
         {/* Chat Interface */}
-        <div className="bg-[#f2f4ee] border border-[#b8c4a8] rounded-3xl overflow-hidden h-[calc(100vh-320px)] flex animate-fade-in-up shadow-2xl" style={{ animationDelay: '0.1s' }}>
+        <div className="bg-[#dde2d4] border border-[#b8c4a8] rounded-3xl overflow-hidden h-[calc(100vh-320px)] flex animate-fade-in-up shadow-2xl" style={{ animationDelay: '0.1s' }}>
           {/* Lista de Conversas */}
           <div className="w-96 border-r border-[#b8c4a8] flex flex-col">
             <div className="p-5 border-b border-[#b8c4a8]">

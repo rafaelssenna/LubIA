@@ -89,7 +89,7 @@ export default function ConfiguracoesPage() {
             return (
               <button
                 key={section.id}
-                className="bg-[#f2f4ee] border border-[#b8c4a8] rounded-2xl p-6 text-left hover:border-[#4A701C]/40 hover:shadow-lg hover:shadow-[#4A701C]/5 transition-all duration-300 group"
+                className="bg-[#dde2d4] border border-[#b8c4a8] rounded-2xl p-6 text-left hover:border-[#4A701C]/40 hover:shadow-lg hover:shadow-[#4A701C]/5 transition-all duration-300 group"
               >
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-4">
@@ -114,7 +114,7 @@ export default function ConfiguracoesPage() {
         </div>
 
         {/* Version Info */}
-        <div className="bg-[#f2f4ee] border border-[#b8c4a8] rounded-2xl p-6">
+        <div className="bg-[#dde2d4] border border-[#b8c4a8] rounded-2xl p-6">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
               <div className="p-3 bg-[#d4dbc8] rounded-xl">
@@ -132,7 +132,7 @@ export default function ConfiguracoesPage() {
         </div>
 
         {/* Quick Actions */}
-        <div className="bg-[#f2f4ee] border border-[#b8c4a8] rounded-2xl p-6">
+        <div className="bg-[#dde2d4] border border-[#b8c4a8] rounded-2xl p-6">
           <h3 className="font-semibold text-[#284703] mb-4">Ações Rápidas</h3>
           <div className="flex flex-wrap gap-3">
             <button className="px-4 py-2 bg-[#e8ece2] border border-[#b8c4a8] hover:border-[#4A701C]/30 rounded-xl text-sm text-[#555D4C] hover:text-[#284703] transition-all duration-200">

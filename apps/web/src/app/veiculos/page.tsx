@@ -213,7 +213,7 @@ export default function VeiculosPage() {
       <div className="p-6 space-y-6 animate-fade-in">
         {/* Stats */}
         <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-          <div className="group relative bg-[#f2f4ee] rounded-2xl p-5 border border-[#b8c4a8] hover:border-green-300 transition-all duration-300 hover:shadow-lg hover:shadow-[#4A701C]/5">
+          <div className="group relative bg-[#dde2d4] rounded-2xl p-5 border border-[#b8c4a8] hover:border-green-300 transition-all duration-300 hover:shadow-lg hover:shadow-[#4A701C]/5">
             <div className="absolute inset-0 bg-gradient-to-br from-[#4A701C]/5 to-transparent rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
             <div className="relative flex items-center gap-3">
               <div className="p-3 bg-gradient-to-br from-[#4A701C]/20 to-[#4A701C]/5 rounded-xl ring-1 ring-[#4A701C]/20">
@@ -225,7 +225,7 @@ export default function VeiculosPage() {
               </div>
             </div>
           </div>
-          <div className="group relative bg-[#f2f4ee] rounded-2xl p-5 border border-[#b8c4a8] hover:border-blue-500/30 transition-all duration-300 hover:shadow-lg hover:shadow-blue-500/5">
+          <div className="group relative bg-[#dde2d4] rounded-2xl p-5 border border-[#b8c4a8] hover:border-blue-500/30 transition-all duration-300 hover:shadow-lg hover:shadow-blue-500/5">
             <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-transparent rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
             <div className="relative flex items-center gap-3">
               <div className="p-3 bg-gradient-to-br from-blue-500/20 to-blue-500/5 rounded-xl ring-1 ring-blue-500/20">
@@ -237,7 +237,7 @@ export default function VeiculosPage() {
               </div>
             </div>
           </div>
-          <div className="group relative bg-[#f2f4ee] rounded-2xl p-5 border border-[#b8c4a8] hover:border-amber-500/30 transition-all duration-300 hover:shadow-lg hover:shadow-amber-500/5 hidden md:block">
+          <div className="group relative bg-[#dde2d4] rounded-2xl p-5 border border-[#b8c4a8] hover:border-amber-500/30 transition-all duration-300 hover:shadow-lg hover:shadow-amber-500/5 hidden md:block">
             <div className="absolute inset-0 bg-gradient-to-br from-amber-500/5 to-transparent rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
             <div className="relative flex items-center gap-3">
               <div className="p-3 bg-gradient-to-br from-amber-500/20 to-amber-500/5 rounded-xl ring-1 ring-amber-500/20">
@@ -260,7 +260,7 @@ export default function VeiculosPage() {
               placeholder="Buscar por placa, marca ou modelo..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full bg-[#f2f4ee] border border-[#b8c4a8] rounded-xl pl-11 pr-4 py-3 text-sm text-[#284703] placeholder-[#88B257] focus:outline-none focus:border-[#4A701C]/50 focus:ring-1 focus:ring-[#4A701C]/20 transition-all duration-200"
+              className="w-full bg-[#dde2d4] border border-[#b8c4a8] rounded-xl pl-11 pr-4 py-3 text-sm text-[#284703] placeholder-[#88B257] focus:outline-none focus:border-[#4A701C]/50 focus:ring-1 focus:ring-[#4A701C]/20 transition-all duration-200"
             />
           </div>
           <button
@@ -281,7 +281,7 @@ export default function VeiculosPage() {
             <Loader2 className="animate-spin text-[#4A701C]" size={32} />
           </div>
         ) : veiculos.length === 0 ? (
-          <div className="bg-[#f2f4ee] border border-[#b8c4a8] rounded-2xl p-12 text-center">
+          <div className="bg-[#dde2d4] border border-[#b8c4a8] rounded-2xl p-12 text-center">
             <div className="p-4 bg-gradient-to-br from-[#4A701C]/10 to-transparent rounded-2xl w-fit mx-auto mb-4">
               <Car size={48} className="text-[#555D4C]" />
             </div>
@@ -291,7 +291,7 @@ export default function VeiculosPage() {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {veiculos.map((veiculo) => (
-              <div key={veiculo.id} className="group bg-[#f2f4ee] border border-[#b8c4a8] rounded-2xl p-5 hover:border-green-300 transition-all duration-300 hover:shadow-lg hover:shadow-[#4A701C]/5">
+              <div key={veiculo.id} className="group bg-[#dde2d4] border border-[#b8c4a8] rounded-2xl p-5 hover:border-green-300 transition-all duration-300 hover:shadow-lg hover:shadow-[#4A701C]/5">
                 <div className="flex items-start justify-between mb-4">
                   <div className="flex items-center gap-3">
                     <div className="p-3 rounded-xl bg-gradient-to-br from-[#4A701C] to-[#284703] ring-2 ring-[#4A701C]/20 group-hover:ring-[#4A701C]/40 transition-all duration-300">
@@ -367,7 +367,7 @@ export default function VeiculosPage() {
       {/* Modal Novo Veículo */}
       {showModal && (
         <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-[#f2f4ee] border border-[#b8c4a8] rounded-2xl w-full max-w-md animate-fade-in max-h-[90vh] overflow-y-auto shadow-2xl">
+          <div className="bg-[#dde2d4] border border-[#b8c4a8] rounded-2xl w-full max-w-md animate-fade-in max-h-[90vh] overflow-y-auto shadow-2xl">
             <div className="p-6 border-b border-[#b8c4a8] flex items-center justify-between">
               <div>
                 <h2 className="text-xl font-semibold text-[#284703]">Novo Veículo</h2>
@@ -488,7 +488,7 @@ export default function VeiculosPage() {
       {/* Modal Editar Veículo */}
       {showEditModal && selectedVeiculo && (
         <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-[#f2f4ee] border border-[#b8c4a8] rounded-2xl w-full max-w-md animate-fade-in max-h-[90vh] overflow-y-auto shadow-2xl">
+          <div className="bg-[#dde2d4] border border-[#b8c4a8] rounded-2xl w-full max-w-md animate-fade-in max-h-[90vh] overflow-y-auto shadow-2xl">
             <div className="p-6 border-b border-[#b8c4a8] flex items-center justify-between">
               <div>
                 <h2 className="text-xl font-semibold text-[#284703]">Editar Veículo</h2>
@@ -593,7 +593,7 @@ export default function VeiculosPage() {
       {/* Modal Confirmar Exclusão */}
       {showDeleteConfirm && selectedVeiculo && (
         <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-[#f2f4ee] border border-[#b8c4a8] rounded-2xl w-full max-w-md animate-fade-in shadow-2xl">
+          <div className="bg-[#dde2d4] border border-[#b8c4a8] rounded-2xl w-full max-w-md animate-fade-in shadow-2xl">
             <div className="p-6 border-b border-[#b8c4a8]">
               <h2 className="text-xl font-semibold text-[#284703]">Confirmar Exclusão</h2>
             </div>

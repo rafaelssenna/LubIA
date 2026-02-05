@@ -146,7 +146,7 @@ export default function LembretesPage() {
       <div className="p-6 space-y-6 animate-fade-in">
         {/* Stats */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <div className="bg-[#f2f4ee] border border-[#b8c4a8] rounded-xl p-4 hover:border-red-500/30 hover:shadow-lg hover:shadow-red-500/5 transition-all duration-300">
+          <div className="bg-[#dde2d4] border border-[#b8c4a8] rounded-xl p-4 hover:border-red-500/30 hover:shadow-lg hover:shadow-red-500/5 transition-all duration-300">
             <div className="flex items-center gap-3">
               <div className="p-2.5 bg-red-50 rounded-xl ring-1 ring-red-500/20">
                 <AlertCircle size={20} className="text-red-400" />
@@ -157,7 +157,7 @@ export default function LembretesPage() {
               </div>
             </div>
           </div>
-          <div className="bg-[#f2f4ee] border border-[#b8c4a8] rounded-xl p-4 hover:border-amber-500/30 hover:shadow-lg hover:shadow-amber-500/5 transition-all duration-300">
+          <div className="bg-[#dde2d4] border border-[#b8c4a8] rounded-xl p-4 hover:border-amber-500/30 hover:shadow-lg hover:shadow-amber-500/5 transition-all duration-300">
             <div className="flex items-center gap-3">
               <div className="p-2.5 bg-amber-50 rounded-xl ring-1 ring-amber-500/20">
                 <Clock size={20} className="text-amber-400" />
@@ -168,7 +168,7 @@ export default function LembretesPage() {
               </div>
             </div>
           </div>
-          <div className="bg-[#f2f4ee] border border-[#b8c4a8] rounded-xl p-4 hover:border-blue-500/30 hover:shadow-lg hover:shadow-blue-500/5 transition-all duration-300">
+          <div className="bg-[#dde2d4] border border-[#b8c4a8] rounded-xl p-4 hover:border-blue-500/30 hover:shadow-lg hover:shadow-blue-500/5 transition-all duration-300">
             <div className="flex items-center gap-3">
               <div className="p-2.5 bg-blue-50 rounded-xl ring-1 ring-blue-500/20">
                 <Send size={20} className="text-blue-400" />
@@ -179,7 +179,7 @@ export default function LembretesPage() {
               </div>
             </div>
           </div>
-          <div className="bg-[#f2f4ee] border border-[#b8c4a8] rounded-xl p-4 hover:border-green-500/30 hover:shadow-lg hover:shadow-green-500/5 transition-all duration-300">
+          <div className="bg-[#dde2d4] border border-[#b8c4a8] rounded-xl p-4 hover:border-green-500/30 hover:shadow-lg hover:shadow-green-500/5 transition-all duration-300">
             <div className="flex items-center gap-3">
               <div className="p-2.5 bg-green-50 rounded-xl ring-1 ring-green-500/20">
                 <CheckCircle size={20} className="text-green-400" />
@@ -217,7 +217,7 @@ export default function LembretesPage() {
             </select>
           </div>
           <div className="flex gap-3">
-            <button className="flex items-center gap-2 px-6 py-3 bg-[#f2f4ee] border border-[#b8c4a8] rounded-xl text-[#555D4C] hover:border-[#4A701C]/40 hover:text-[#284703] transition-all duration-200">
+            <button className="flex items-center gap-2 px-6 py-3 bg-[#dde2d4] border border-[#b8c4a8] rounded-xl text-[#555D4C] hover:border-[#4A701C]/40 hover:text-[#284703] transition-all duration-200">
               <Bell size={20} />
               Configurar Automação
             </button>
@@ -229,7 +229,7 @@ export default function LembretesPage() {
         </div>
 
         {/* Lista de Lembretes */}
-        <div className="bg-[#f2f4ee] border border-[#b8c4a8] rounded-2xl overflow-hidden">
+        <div className="bg-[#dde2d4] border border-[#b8c4a8] rounded-2xl overflow-hidden">
           <div className="p-4 border-b border-[#b8c4a8] flex items-center gap-3">
             <input type="checkbox" className="w-4 h-4 accent-[#4A701C]" />
             <span className="text-sm text-[#6B7280]">Selecionar todos</span>
@@ -307,7 +307,7 @@ export default function LembretesPage() {
         </div>
 
         {/* Mensagem Padrão */}
-        <div className="bg-[#f2f4ee] border border-[#b8c4a8] rounded-2xl p-6">
+        <div className="bg-[#dde2d4] border border-[#b8c4a8] rounded-2xl p-6">
           <h3 className="text-lg font-semibold text-[#284703] mb-4">Mensagem de Lembrete Padrão</h3>
           <div className="bg-[#e8ece2] rounded-xl p-4 border border-[#b8c4a8]">
             <p className="text-[#555D4C] text-sm leading-relaxed">

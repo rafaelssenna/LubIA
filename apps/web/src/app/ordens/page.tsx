@@ -408,7 +408,7 @@ function OrdensPageContent() {
       <div className="p-6 space-y-6 animate-fade-in">
         {/* Stats */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <div className="group relative bg-[#f2f4ee] rounded-2xl p-5 border border-[#b8c4a8] hover:border-green-300 transition-all duration-300 hover:shadow-lg hover:shadow-green-50">
+          <div className="group relative bg-[#dde2d4] rounded-2xl p-5 border border-[#b8c4a8] hover:border-green-300 transition-all duration-300 hover:shadow-lg hover:shadow-green-50">
             <div className="absolute inset-0 bg-gradient-to-br from-[#4A701C]/5 to-transparent rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
             <div className="relative flex items-center gap-4">
               <div className="p-3 bg-gradient-to-br from-[#4A701C]/20 to-[#4A701C]/5 rounded-xl ring-1 ring-[#4A701C]/20">
@@ -420,7 +420,7 @@ function OrdensPageContent() {
               </div>
             </div>
           </div>
-          <div className="group relative bg-[#f2f4ee] rounded-2xl p-5 border border-[#b8c4a8] hover:border-purple-300 transition-all duration-300 hover:shadow-lg hover:shadow-purple-50">
+          <div className="group relative bg-[#dde2d4] rounded-2xl p-5 border border-[#b8c4a8] hover:border-purple-300 transition-all duration-300 hover:shadow-lg hover:shadow-purple-50">
             <div className="absolute inset-0 bg-gradient-to-br from-purple-500/5 to-transparent rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
             <div className="relative flex items-center gap-4">
               <div className="p-3 bg-gradient-to-br from-purple-500/20 to-purple-500/5 rounded-xl ring-1 ring-purple-500/20">
@@ -432,7 +432,7 @@ function OrdensPageContent() {
               </div>
             </div>
           </div>
-          <div className="group relative bg-[#f2f4ee] rounded-2xl p-5 border border-[#b8c4a8] hover:border-cyan-300 transition-all duration-300 hover:shadow-lg hover:shadow-cyan-50">
+          <div className="group relative bg-[#dde2d4] rounded-2xl p-5 border border-[#b8c4a8] hover:border-cyan-300 transition-all duration-300 hover:shadow-lg hover:shadow-cyan-50">
             <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/5 to-transparent rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
             <div className="relative flex items-center gap-4">
               <div className="p-3 bg-gradient-to-br from-cyan-500/20 to-cyan-500/5 rounded-xl ring-1 ring-cyan-500/20">
@@ -444,7 +444,7 @@ function OrdensPageContent() {
               </div>
             </div>
           </div>
-          <div className="group relative bg-[#f2f4ee] rounded-2xl p-5 border border-[#b8c4a8] hover:border-blue-300 transition-all duration-300 hover:shadow-lg hover:shadow-blue-50">
+          <div className="group relative bg-[#dde2d4] rounded-2xl p-5 border border-[#b8c4a8] hover:border-blue-300 transition-all duration-300 hover:shadow-lg hover:shadow-blue-50">
             <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-transparent rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
             <div className="relative flex items-center gap-4">
               <div className="p-3 bg-gradient-to-br from-blue-500/20 to-blue-500/5 rounded-xl ring-1 ring-blue-500/20">
@@ -462,7 +462,7 @@ function OrdensPageContent() {
         <div className="flex flex-col md:flex-row gap-4 justify-between">
           <div className="flex flex-1 gap-4 items-center">
             {/* View Mode Toggle */}
-            <div className="flex items-center gap-1 bg-[#f2f4ee] border border-[#b8c4a8] rounded-xl p-1">
+            <div className="flex items-center gap-1 bg-[#dde2d4] border border-[#b8c4a8] rounded-xl p-1">
               <button
                 onClick={() => setViewMode('lista')}
                 className={`p-2.5 rounded-lg transition-all duration-200 ${
@@ -496,13 +496,13 @@ function OrdensPageContent() {
                     placeholder="Buscar por número, placa ou cliente..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="w-full bg-[#f2f4ee] border border-[#b8c4a8] rounded-xl pl-11 pr-4 py-3.5 text-sm text-[#284703] placeholder-gray-400 focus:outline-none focus:border-[#4A701C]/50 focus:ring-2 focus:ring-[#4A701C]/10 transition-all duration-200"
+                    className="w-full bg-[#dde2d4] border border-[#b8c4a8] rounded-xl pl-11 pr-4 py-3.5 text-sm text-[#284703] placeholder-gray-400 focus:outline-none focus:border-[#4A701C]/50 focus:ring-2 focus:ring-[#4A701C]/10 transition-all duration-200"
                   />
                 </div>
                 <select
                   value={statusFilter}
                   onChange={(e) => setStatusFilter(e.target.value)}
-                  className="bg-[#f2f4ee] border border-[#b8c4a8] rounded-xl px-4 py-3.5 text-sm text-[#284703] focus:outline-none focus:border-[#4A701C]/50 focus:ring-2 focus:ring-[#4A701C]/10 transition-all duration-200 cursor-pointer"
+                  className="bg-[#dde2d4] border border-[#b8c4a8] rounded-xl px-4 py-3.5 text-sm text-[#284703] focus:outline-none focus:border-[#4A701C]/50 focus:ring-2 focus:ring-[#4A701C]/10 transition-all duration-200 cursor-pointer"
                 >
                   <option value="">Todos os Status</option>
                   {Object.entries(statusConfig).map(([key, config]) => (
@@ -514,7 +514,7 @@ function OrdensPageContent() {
               <div className="flex items-center gap-2">
                 <button
                   onClick={() => navigateWeek(-1)}
-                  className="p-2.5 bg-[#f2f4ee] border border-[#b8c4a8] rounded-lg text-[#555D4C] hover:text-[#284703] hover:border-green-300 transition-all duration-200"
+                  className="p-2.5 bg-[#dde2d4] border border-[#b8c4a8] rounded-lg text-[#555D4C] hover:text-[#284703] hover:border-green-300 transition-all duration-200"
                 >
                   <ChevronLeft size={18} />
                 </button>
@@ -523,13 +523,13 @@ function OrdensPageContent() {
                 </span>
                 <button
                   onClick={() => navigateWeek(1)}
-                  className="p-2.5 bg-[#f2f4ee] border border-[#b8c4a8] rounded-lg text-[#555D4C] hover:text-[#284703] hover:border-green-300 transition-all duration-200"
+                  className="p-2.5 bg-[#dde2d4] border border-[#b8c4a8] rounded-lg text-[#555D4C] hover:text-[#284703] hover:border-green-300 transition-all duration-200"
                 >
                   <ChevronRight size={18} />
                 </button>
                 <button
                   onClick={() => setCurrentDate(new Date())}
-                  className="px-4 py-2.5 bg-[#f2f4ee] border border-[#b8c4a8] rounded-lg text-[#555D4C] hover:text-[#4A701C] hover:border-green-300 transition-all duration-200 text-sm font-medium"
+                  className="px-4 py-2.5 bg-[#dde2d4] border border-[#b8c4a8] rounded-lg text-[#555D4C] hover:text-[#4A701C] hover:border-green-300 transition-all duration-200 text-sm font-medium"
                 >
                   Hoje
                 </button>
@@ -547,7 +547,7 @@ function OrdensPageContent() {
 
         {/* Calendar View */}
         {viewMode === 'calendario' && (
-          <div className="bg-[#f2f4ee] border border-[#b8c4a8] rounded-2xl overflow-hidden">
+          <div className="bg-[#dde2d4] border border-[#b8c4a8] rounded-2xl overflow-hidden">
             {/* Calendar Header */}
             <div className="grid grid-cols-8 border-b border-[#b8c4a8]">
               <div className="p-4 text-[#555D4C] text-sm font-medium">Horario</div>
@@ -613,12 +613,12 @@ function OrdensPageContent() {
         {viewMode === 'lista' && (
         <div className="space-y-3">
           {loading ? (
-            <div className="bg-[#f2f4ee] border border-[#b8c4a8] rounded-2xl p-12 text-center">
+            <div className="bg-[#dde2d4] border border-[#b8c4a8] rounded-2xl p-12 text-center">
               <Loader2 className="animate-spin mx-auto mb-3 text-[#4A701C]" size={36} />
               <p className="text-[#555D4C]">Carregando...</p>
             </div>
           ) : ordens.length === 0 ? (
-            <div className="bg-[#f2f4ee] border border-[#b8c4a8] rounded-2xl p-12 text-center">
+            <div className="bg-[#dde2d4] border border-[#b8c4a8] rounded-2xl p-12 text-center">
               <div className="w-16 h-16 mx-auto mb-4 bg-[#d4dbc8] rounded-2xl flex items-center justify-center">
                 <ClipboardList className="text-[#88B257]" size={32} />
               </div>
@@ -632,7 +632,7 @@ function OrdensPageContent() {
               return (
                 <div
                   key={ordem.id}
-                  className="group relative bg-[#f2f4ee] border border-[#b8c4a8] rounded-2xl p-5 hover:border-[#88B257] hover:shadow-xl hover:shadow-gray-100 transition-all duration-300"
+                  className="group relative bg-[#dde2d4] border border-[#b8c4a8] rounded-2xl p-5 hover:border-[#88B257] hover:shadow-xl hover:shadow-gray-100 transition-all duration-300"
                 >
                   <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                     <div className="flex items-start gap-4">
@@ -740,7 +740,7 @@ function OrdensPageContent() {
       {/* Modal Nova O.S. */}
       {showModal && (
         <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4">
-          <div className="bg-[#f2f4ee] border border-[#b8c4a8] rounded-2xl w-full max-w-2xl max-h-[90vh] overflow-hidden animate-fade-in flex flex-col">
+          <div className="bg-[#dde2d4] border border-[#b8c4a8] rounded-2xl w-full max-w-2xl max-h-[90vh] overflow-hidden animate-fade-in flex flex-col">
             <div className="p-6 border-b border-[#b8c4a8] flex items-center justify-between">
               <div>
                 <h2 className="text-xl font-semibold text-[#284703]">Nova Ordem de Servico</h2>
@@ -972,7 +972,7 @@ function OrdensPageContent() {
                       onChange={(e) => setObservacoes(e.target.value)}
                       placeholder="Observacoes adicionais..."
                       rows={3}
-                      className="w-full bg-[#f2f4ee] border border-[#b8c4a8] rounded-xl px-4 py-3 text-[#284703] placeholder-gray-400 focus:outline-none focus:border-[#4A701C] resize-none"
+                      className="w-full bg-[#dde2d4] border border-[#b8c4a8] rounded-xl px-4 py-3 text-[#284703] placeholder-gray-400 focus:outline-none focus:border-[#4A701C] resize-none"
                     />
                   </div>
 
@@ -1023,7 +1023,7 @@ function OrdensPageContent() {
       {/* Modal Detalhes */}
       {showDetailModal && selectedOrdem && (
         <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4">
-          <div className="bg-[#f2f4ee] border border-[#b8c4a8] rounded-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto animate-fade-in">
+          <div className="bg-[#dde2d4] border border-[#b8c4a8] rounded-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto animate-fade-in">
             <div className="p-6 border-b border-[#b8c4a8] flex items-center justify-between">
               <div>
                 <h2 className="text-xl font-semibold text-[#284703]">O.S. #{selectedOrdem.numero.slice(-8).toUpperCase()}</h2>
@@ -1157,7 +1157,7 @@ function OrdensPageContent() {
       {/* Modal Confirmar Exclusão */}
       {showDeleteConfirm && selectedOrdem && (
         <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4">
-          <div className="bg-[#f2f4ee] border border-[#b8c4a8] rounded-2xl w-full max-w-md animate-fade-in">
+          <div className="bg-[#dde2d4] border border-[#b8c4a8] rounded-2xl w-full max-w-md animate-fade-in">
             <div className="p-6 border-b border-[#b8c4a8]">
               <h2 className="text-xl font-semibold text-[#284703]">Confirmar Exclusao</h2>
             </div>
