@@ -42,29 +42,22 @@ export default function Sidebar() {
     >
       {/* Logo */}
       <div className="p-5 border-b border-[#1a1a1a]">
-        <div className={`flex items-center gap-4 ${collapsed ? 'justify-center' : ''}`}>
+        <div className="flex items-center justify-center">
           <div className="relative">
-            <div className="w-12 h-12 rounded-2xl flex items-center justify-center shadow-lg shadow-[#22c55e]/30 overflow-hidden ring-1 ring-[#22c55e]/20">
+            <div className={`rounded-2xl flex items-center justify-center shadow-lg shadow-[#22c55e]/30 overflow-hidden ring-1 ring-[#22c55e]/20 transition-all duration-300 ${
+              collapsed ? 'w-12 h-12' : 'w-44 h-14'
+            }`}>
               <Image
                 src="/logo.png"
                 alt="LoopIA Logo"
-                width={48}
-                height={48}
+                width={collapsed ? 48 : 176}
+                height={collapsed ? 48 : 56}
                 className="object-contain"
                 priority
               />
             </div>
             <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-[#22c55e] rounded-full border-2 border-[#0f0f0f] animate-pulse"></div>
           </div>
-          {!collapsed && (
-            <div className="animate-fade-in">
-              <h1 className="text-2xl font-bold tracking-tight">
-                <span className="text-white">Loop</span>
-                <span className="gradient-text">IA</span>
-              </h1>
-              <p className="text-xs text-[#6B7280] font-medium">Gestão Inteligente</p>
-            </div>
-          )}
         </div>
       </div>
 
