@@ -81,7 +81,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
             className={`flex items-center gap-3 px-4 py-3 rounded-xl border shadow-lg animate-fade-in min-w-[300px] max-w-[400px] ${getStyles(toast.type)}`}
           >
             {getIcon(toast.type)}
-            <p className="flex-1 text-sm text-gray-900">{toast.message}</p>
+            <p className="flex-1 text-sm text-[#1a3a12]">{toast.message}</p>
             <button
               onClick={() => removeToast(toast.id)}
               className="p-1 hover:bg-black/5 rounded-lg transition-colors"

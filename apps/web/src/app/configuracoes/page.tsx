@@ -60,7 +60,7 @@ const configSections = [
 
 export default function ConfiguracoesPage() {
   return (
-    <div className="min-h-screen bg-[#dfe2e9]">
+    <div className="min-h-screen bg-[#daeece]">
       <Header title="Configurações" subtitle="Personalize o sistema" />
 
       <div className="p-6 space-y-6 animate-fade-in">
@@ -71,10 +71,10 @@ export default function ConfiguracoesPage() {
               <Settings size={24} className="text-[#22c55e]" />
             </div>
             <div>
-              <h2 className="text-lg font-semibold text-gray-900 mb-1">
+              <h2 className="text-lg font-semibold text-[#1a3a12] mb-1">
                 Central de Configurações
               </h2>
-              <p className="text-gray-500 text-sm">
+              <p className="text-[#4D9F3F] text-sm">
                 Personalize o LoopIA de acordo com as necessidades da sua oficina.
                 Todas as alterações são salvas automaticamente.
               </p>
@@ -89,7 +89,7 @@ export default function ConfiguracoesPage() {
             return (
               <button
                 key={section.id}
-                className="bg-[#ecedf2] border border-[#c5c8d1] rounded-2xl p-6 text-left hover:border-[#22c55e]/40 hover:shadow-lg hover:shadow-[#22c55e]/5 transition-all duration-300 group"
+                className="bg-[#f0f8ea] border border-[#AADF94] rounded-2xl p-6 text-left hover:border-[#22c55e]/40 hover:shadow-lg hover:shadow-[#22c55e]/5 transition-all duration-300 group"
               >
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-4">
@@ -97,7 +97,7 @@ export default function ConfiguracoesPage() {
                       <Icon size={24} />
                     </div>
                     <div>
-                      <h3 className="font-semibold text-gray-900 group-hover:text-[#22c55e] transition-colors">
+                      <h3 className="font-semibold text-[#1a3a12] group-hover:text-[#22c55e] transition-colors">
                         {section.title}
                       </h3>
                       <p className="text-sm text-[#6B7280]">{section.description}</p>
@@ -114,14 +114,14 @@ export default function ConfiguracoesPage() {
         </div>
 
         {/* Version Info */}
-        <div className="bg-[#ecedf2] border border-[#c5c8d1] rounded-2xl p-6">
+        <div className="bg-[#f0f8ea] border border-[#AADF94] rounded-2xl p-6">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
-              <div className="p-3 bg-[#d0d3db] rounded-xl">
+              <div className="p-3 bg-[#c8e4b8] rounded-xl">
                 <HelpCircle size={24} className="text-[#6B7280]" />
               </div>
               <div>
-                <h3 className="font-semibold text-gray-900">Sobre o LoopIA</h3>
+                <h3 className="font-semibold text-[#1a3a12]">Sobre o LoopIA</h3>
                 <p className="text-sm text-[#6B7280]">Versão 1.0.0 • Sistema de Gestão Inteligente para Oficinas</p>
               </div>
             </div>
@@ -132,19 +132,19 @@ export default function ConfiguracoesPage() {
         </div>
 
         {/* Quick Actions */}
-        <div className="bg-[#ecedf2] border border-[#c5c8d1] rounded-2xl p-6">
-          <h3 className="font-semibold text-gray-900 mb-4">Ações Rápidas</h3>
+        <div className="bg-[#f0f8ea] border border-[#AADF94] rounded-2xl p-6">
+          <h3 className="font-semibold text-[#1a3a12] mb-4">Ações Rápidas</h3>
           <div className="flex flex-wrap gap-3">
-            <button className="px-4 py-2 bg-[#dfe2e9] border border-[#c5c8d1] hover:border-[#22c55e]/30 rounded-xl text-sm text-gray-500 hover:text-gray-900 transition-all duration-200">
+            <button className="px-4 py-2 bg-[#daeece] border border-[#AADF94] hover:border-[#22c55e]/30 rounded-xl text-sm text-[#4D9F3F] hover:text-[#1a3a12] transition-all duration-200">
               Exportar Dados
             </button>
-            <button className="px-4 py-2 bg-[#dfe2e9] border border-[#c5c8d1] hover:border-[#22c55e]/30 rounded-xl text-sm text-gray-500 hover:text-gray-900 transition-all duration-200">
+            <button className="px-4 py-2 bg-[#daeece] border border-[#AADF94] hover:border-[#22c55e]/30 rounded-xl text-sm text-[#4D9F3F] hover:text-[#1a3a12] transition-all duration-200">
               Limpar Cache
             </button>
-            <button className="px-4 py-2 bg-[#dfe2e9] border border-[#c5c8d1] hover:border-[#22c55e]/30 rounded-xl text-sm text-gray-500 hover:text-gray-900 transition-all duration-200">
+            <button className="px-4 py-2 bg-[#daeece] border border-[#AADF94] hover:border-[#22c55e]/30 rounded-xl text-sm text-[#4D9F3F] hover:text-[#1a3a12] transition-all duration-200">
               Verificar Atualizações
             </button>
-            <button className="px-4 py-2 bg-[#dfe2e9] border border-[#c5c8d1] hover:border-[#22c55e]/30 rounded-xl text-sm text-gray-500 hover:text-gray-900 transition-all duration-200">
+            <button className="px-4 py-2 bg-[#daeece] border border-[#AADF94] hover:border-[#22c55e]/30 rounded-xl text-sm text-[#4D9F3F] hover:text-[#1a3a12] transition-all duration-200">
               Suporte
             </button>
           </div>

@@ -116,52 +116,52 @@ export default function WhatsAppPage() {
   const [showTemplates, setShowTemplates] = useState(false);
 
   return (
-    <div className="min-h-screen bg-[#dfe2e9]">
+    <div className="min-h-screen bg-[#daeece]">
       <Header title="WhatsApp Business" subtitle="Central de comunicação com clientes" />
 
       <div className="p-6">
         {/* Stats Rápidos */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6 animate-fade-in">
-          <div className="bg-[#ecedf2] border border-[#c5c8d1] rounded-2xl p-5 hover:border-[#25D366]/30 hover:shadow-lg hover:shadow-[#25D366]/5 transition-all duration-300">
+          <div className="bg-[#f0f8ea] border border-[#AADF94] rounded-2xl p-5 hover:border-[#25D366]/30 hover:shadow-lg hover:shadow-[#25D366]/5 transition-all duration-300">
             <div className="flex items-center gap-4">
               <div className="p-3 bg-gradient-to-br from-[#25D366] to-[#128C7E] rounded-xl shadow-lg shadow-[#25D366]/20 ring-1 ring-[#25D366]/20">
                 <MessageCircle size={22} className="text-white" />
               </div>
               <div>
-                <p className="text-3xl font-bold text-gray-900">156</p>
+                <p className="text-3xl font-bold text-[#1a3a12]">156</p>
                 <p className="text-xs text-[#6B7280]">Mensagens (hoje)</p>
               </div>
             </div>
           </div>
-          <div className="bg-[#ecedf2] border border-[#c5c8d1] rounded-2xl p-5 hover:border-blue-500/30 hover:shadow-lg hover:shadow-blue-500/5 transition-all duration-300">
+          <div className="bg-[#f0f8ea] border border-[#AADF94] rounded-2xl p-5 hover:border-blue-500/30 hover:shadow-lg hover:shadow-blue-500/5 transition-all duration-300">
             <div className="flex items-center gap-4">
               <div className="p-3 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl shadow-lg shadow-blue-500/20 ring-1 ring-blue-500/20">
                 <Users size={22} className="text-white" />
               </div>
               <div>
-                <p className="text-3xl font-bold text-gray-900">23</p>
+                <p className="text-3xl font-bold text-[#1a3a12]">23</p>
                 <p className="text-xs text-[#6B7280]">Conversas ativas</p>
               </div>
             </div>
           </div>
-          <div className="bg-[#ecedf2] border border-[#c5c8d1] rounded-2xl p-5 hover:border-amber-500/30 hover:shadow-lg hover:shadow-amber-500/5 transition-all duration-300">
+          <div className="bg-[#f0f8ea] border border-[#AADF94] rounded-2xl p-5 hover:border-amber-500/30 hover:shadow-lg hover:shadow-amber-500/5 transition-all duration-300">
             <div className="flex items-center gap-4">
               <div className="p-3 bg-gradient-to-br from-amber-500 to-amber-600 rounded-xl shadow-lg shadow-amber-500/20 ring-1 ring-amber-500/20">
                 <Bell size={22} className="text-white" />
               </div>
               <div>
-                <p className="text-3xl font-bold text-gray-900">5</p>
+                <p className="text-3xl font-bold text-[#1a3a12]">5</p>
                 <p className="text-xs text-[#6B7280]">Não lidas</p>
               </div>
             </div>
           </div>
-          <div className="bg-[#ecedf2] border border-[#c5c8d1] rounded-2xl p-5 hover:border-[#22c55e]/30 hover:shadow-lg hover:shadow-[#22c55e]/5 transition-all duration-300">
+          <div className="bg-[#f0f8ea] border border-[#AADF94] rounded-2xl p-5 hover:border-[#22c55e]/30 hover:shadow-lg hover:shadow-[#22c55e]/5 transition-all duration-300">
             <div className="flex items-center gap-4">
               <div className="p-3 bg-gradient-to-br from-[#22c55e] to-[#166534] rounded-xl shadow-lg shadow-green-100 ring-1 ring-[#22c55e]/20">
                 <Zap size={22} className="text-white" />
               </div>
               <div>
-                <p className="text-3xl font-bold text-gray-900">89%</p>
+                <p className="text-3xl font-bold text-[#1a3a12]">89%</p>
                 <p className="text-xs text-[#6B7280]">Taxa de resposta</p>
               </div>
             </div>
@@ -169,16 +169,16 @@ export default function WhatsAppPage() {
         </div>
 
         {/* Chat Interface */}
-        <div className="bg-[#ecedf2] border border-[#c5c8d1] rounded-3xl overflow-hidden h-[calc(100vh-320px)] flex animate-fade-in-up shadow-2xl" style={{ animationDelay: '0.1s' }}>
+        <div className="bg-[#f0f8ea] border border-[#AADF94] rounded-3xl overflow-hidden h-[calc(100vh-320px)] flex animate-fade-in-up shadow-2xl" style={{ animationDelay: '0.1s' }}>
           {/* Lista de Conversas */}
-          <div className="w-96 border-r border-[#c5c8d1] flex flex-col">
-            <div className="p-5 border-b border-[#c5c8d1]">
+          <div className="w-96 border-r border-[#AADF94] flex flex-col">
+            <div className="p-5 border-b border-[#AADF94]">
               <div className="relative group">
                 <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-[#6B7280] group-focus-within:text-[#25D366] transition-colors" size={18} />
                 <input
                   type="text"
                   placeholder="Buscar conversa..."
-                  className="w-full bg-[#dfe2e9] border border-[#c5c8d1] rounded-2xl pl-11 pr-4 py-3 text-sm text-gray-900 placeholder-[#6B7280] focus:outline-none focus:border-[#25D366]/50 focus:ring-1 focus:ring-[#25D366]/20 transition-all duration-300"
+                  className="w-full bg-[#daeece] border border-[#AADF94] rounded-2xl pl-11 pr-4 py-3 text-sm text-[#1a3a12] placeholder-[#6B7280] focus:outline-none focus:border-[#25D366]/50 focus:ring-1 focus:ring-[#25D366]/20 transition-all duration-300"
                 />
               </div>
             </div>
@@ -187,10 +187,10 @@ export default function WhatsAppPage() {
                 <div
                   key={conversa.id}
                   onClick={() => setSelectedConversation(conversa)}
-                  className={`p-4 border-b border-[#c5c8d1] cursor-pointer transition-all duration-300 ${
+                  className={`p-4 border-b border-[#AADF94] cursor-pointer transition-all duration-300 ${
                     selectedConversation.id === conversa.id
                       ? 'bg-gradient-to-r from-[#25D366]/20 to-transparent border-l-4 border-l-[#25D366]'
-                      : 'hover:bg-[#dfe2e9]'
+                      : 'hover:bg-[#daeece]'
                   }`}
                   style={{ animationDelay: `${index * 0.05}s` }}
                 >
@@ -205,7 +205,7 @@ export default function WhatsAppPage() {
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center justify-between">
-                        <p className="font-semibold text-gray-900 truncate">{conversa.cliente}</p>
+                        <p className="font-semibold text-[#1a3a12] truncate">{conversa.cliente}</p>
                         <span className="text-xs text-[#6B7280]">{conversa.horario}</span>
                       </div>
                       <p className="text-sm text-[#6B7280] truncate mt-1">{conversa.ultimaMensagem}</p>
@@ -224,7 +224,7 @@ export default function WhatsAppPage() {
           {/* Área de Chat */}
           <div className="flex-1 flex flex-col">
             {/* Header do Chat */}
-            <div className="p-5 border-b border-[#c5c8d1] flex items-center justify-between bg-[#dfe2e9]">
+            <div className="p-5 border-b border-[#AADF94] flex items-center justify-between bg-[#daeece]">
               <div className="flex items-center gap-4">
                 <div className="relative">
                   <div className="w-12 h-12 bg-gradient-to-br from-[#25D366] to-[#128C7E] rounded-2xl flex items-center justify-center text-white font-bold shadow-lg shadow-[#25D366]/20">
@@ -235,7 +235,7 @@ export default function WhatsAppPage() {
                   )}
                 </div>
                 <div>
-                  <p className="font-semibold text-gray-900 text-lg">{selectedConversation.cliente}</p>
+                  <p className="font-semibold text-[#1a3a12] text-lg">{selectedConversation.cliente}</p>
                   <p className="text-xs text-[#6B7280] flex items-center gap-2">
                     {selectedConversation.online ? (
                       <>
@@ -251,10 +251,10 @@ export default function WhatsAppPage() {
                 </div>
               </div>
               <div className="flex gap-2">
-                <button className="p-3 hover:bg-[#dfe2e9] rounded-xl transition-all duration-300 text-gray-500 hover:text-[#25D366]">
+                <button className="p-3 hover:bg-[#daeece] rounded-xl transition-all duration-300 text-[#4D9F3F] hover:text-[#25D366]">
                   <Phone size={20} />
                 </button>
-                <button className="p-3 hover:bg-[#dfe2e9] rounded-xl transition-all duration-300 text-gray-500 hover:text-gray-900">
+                <button className="p-3 hover:bg-[#daeece] rounded-xl transition-all duration-300 text-[#4D9F3F] hover:text-[#1a3a12]">
                   <Settings size={20} />
                 </button>
               </div>
@@ -272,7 +272,7 @@ export default function WhatsAppPage() {
                     className={`max-w-[70%] p-4 rounded-2xl shadow-lg ${
                       msg.tipo === 'enviada'
                         ? 'bg-gradient-to-br from-[#25D366] to-[#128C7E] text-white rounded-br-md shadow-[#25D366]/20'
-                        : 'glass-card text-gray-900 rounded-bl-md'
+                        : 'glass-card text-[#1a3a12] rounded-bl-md'
                     }`}
                   >
                     <p className="text-sm leading-relaxed">{msg.texto}</p>
@@ -291,7 +291,7 @@ export default function WhatsAppPage() {
 
             {/* Templates */}
             {showTemplates && (
-              <div className="p-4 border-t border-[#c5c8d1] bg-[#dfe2e9] animate-fade-in">
+              <div className="p-4 border-t border-[#AADF94] bg-[#daeece] animate-fade-in">
                 <p className="text-sm text-[#6B7280] mb-3 flex items-center gap-2">
                   <Sparkles size={14} className="text-[#25D366]" />
                   Templates rápidos:
@@ -300,7 +300,7 @@ export default function WhatsAppPage() {
                   {templates.map((template) => (
                     <button
                       key={template.id}
-                      className="flex items-center gap-2 px-4 py-2.5 bg-[#dfe2e9] border border-[#c5c8d1] rounded-xl text-gray-500 hover:text-gray-900 hover:border-[#25D366]/50 hover:bg-[#25D366]/10 transition-all duration-300 text-sm font-medium"
+                      className="flex items-center gap-2 px-4 py-2.5 bg-[#daeece] border border-[#AADF94] rounded-xl text-[#4D9F3F] hover:text-[#1a3a12] hover:border-[#25D366]/50 hover:bg-[#25D366]/10 transition-all duration-300 text-sm font-medium"
                     >
                       <template.icon size={16} className="text-[#25D366]" />
                       {template.nome}
@@ -311,21 +311,21 @@ export default function WhatsAppPage() {
             )}
 
             {/* Input de Mensagem */}
-            <div className="p-5 border-t border-[#c5c8d1] bg-[#dfe2e9]">
+            <div className="p-5 border-t border-[#AADF94] bg-[#daeece]">
               <div className="flex items-center gap-3">
-                <button className="p-3 hover:bg-[#dfe2e9] rounded-xl transition-all duration-300 text-gray-500 hover:text-amber-400">
+                <button className="p-3 hover:bg-[#daeece] rounded-xl transition-all duration-300 text-[#4D9F3F] hover:text-amber-400">
                   <Smile size={22} />
                 </button>
-                <button className="p-3 hover:bg-[#dfe2e9] rounded-xl transition-all duration-300 text-gray-500 hover:text-gray-900">
+                <button className="p-3 hover:bg-[#daeece] rounded-xl transition-all duration-300 text-[#4D9F3F] hover:text-[#1a3a12]">
                   <Paperclip size={22} />
                 </button>
-                <button className="p-3 hover:bg-[#dfe2e9] rounded-xl transition-all duration-300 text-gray-500 hover:text-blue-400">
+                <button className="p-3 hover:bg-[#daeece] rounded-xl transition-all duration-300 text-[#4D9F3F] hover:text-blue-400">
                   <Image size={22} />
                 </button>
                 <button
                   onClick={() => setShowTemplates(!showTemplates)}
                   className={`p-3 rounded-xl transition-all duration-300 ${
-                    showTemplates ? 'bg-[#25D366] text-white shadow-lg shadow-[#25D366]/30' : 'hover:bg-[#dfe2e9] text-gray-500 hover:text-[#25D366]'
+                    showTemplates ? 'bg-[#25D366] text-white shadow-lg shadow-[#25D366]/30' : 'hover:bg-[#daeece] text-[#4D9F3F] hover:text-[#25D366]'
                   }`}
                 >
                   <FileText size={22} />
@@ -335,7 +335,7 @@ export default function WhatsAppPage() {
                   value={message}
                   onChange={(e) => setMessage(e.target.value)}
                   placeholder="Digite uma mensagem..."
-                  className="flex-1 bg-[#dfe2e9] border border-[#c5c8d1] rounded-2xl px-5 py-3.5 text-gray-900 placeholder-[#6B7280] focus:outline-none focus:border-[#25D366]/50 focus:ring-1 focus:ring-[#25D366]/20 transition-all duration-300"
+                  className="flex-1 bg-[#daeece] border border-[#AADF94] rounded-2xl px-5 py-3.5 text-[#1a3a12] placeholder-[#6B7280] focus:outline-none focus:border-[#25D366]/50 focus:ring-1 focus:ring-[#25D366]/20 transition-all duration-300"
                 />
                 <button className="p-4 bg-gradient-to-r from-[#25D366] to-[#128C7E] rounded-2xl text-white hover:opacity-90 transition-all duration-300 shadow-lg shadow-[#25D366]/30 hover:scale-105">
                   <Send size={22} />

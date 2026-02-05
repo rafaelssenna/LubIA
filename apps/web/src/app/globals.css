@@ -1,15 +1,15 @@
 @import "tailwindcss";
 
 :root {
-  --background: #dfe2e9;
-  --background-secondary: #d0d3db;
-  --foreground: #1e293b;
-  --card: #ecedf2;
-  --card-hover: #dfe2e9;
-  --border: #c5c8d1;
-  --border-light: #b0b4be;
+  --background: #e6f5da;
+  --background-secondary: #c8e4b8;
+  --foreground: #1a3a12;
+  --card: #f0f8ea;
+  --card-hover: #daeece;
+  --border: #AADF94;
+  --border-light: #8fcf76;
   --primary: #22C55E;
-  --primary-dark: #166534;
+  --primary-dark: #1F7F15;
   --primary-light: #4ADE80;
   --secondary: #3B82F6;
   --accent: #15803D;
@@ -65,28 +65,28 @@ body {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #b0b4be;
+  background: #8fcf76;
   border-radius: 10px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #9ca3af;
+  background: #4D9F3F;
 }
 
 /* Glass Effect */
 .glass {
-  background: rgba(236, 237, 242, 0.85);
+  background: rgba(240, 248, 234, 0.88);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
-  border: 1px solid #c5c8d1;
+  border: 1px solid #AADF94;
 }
 
 .glass-card {
-  background: linear-gradient(135deg, rgba(236, 237, 242, 0.95) 0%, rgba(223, 226, 233, 0.9) 100%);
+  background: linear-gradient(135deg, rgba(240, 248, 234, 0.95) 0%, rgba(218, 238, 206, 0.9) 100%);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
-  border: 1px solid #c5c8d1;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.06), 0 2px 4px -2px rgba(0, 0, 0, 0.04);
+  border: 1px solid #AADF94;
+  box-shadow: 0 4px 6px -1px rgba(31, 127, 21, 0.06), 0 2px 4px -2px rgba(31, 127, 21, 0.04);
 }
 
 /* Button Styles */
@@ -112,8 +112,8 @@ body {
 
 .card-hover:hover {
   transform: translateY(-4px);
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08), 0 0 30px rgba(34, 197, 94, 0.08);
-  border-color: rgba(34, 197, 94, 0.3);
+  box-shadow: 0 20px 40px rgba(31, 127, 21, 0.1), 0 0 30px rgba(34, 197, 94, 0.1);
+  border-color: rgba(77, 159, 63, 0.4);
 }
 
 /* Input Focus Effects */
