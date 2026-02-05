@@ -41,23 +41,16 @@ export default function Sidebar() {
       }`}
     >
       {/* Logo */}
-      <div className="p-5 border-b border-[#1a1a1a]">
+      <div className="p-4 border-b border-[#1a1a1a]">
         <div className="flex items-center justify-center">
-          <div className="relative">
-            <div className={`rounded-2xl flex items-center justify-center shadow-lg shadow-[#22c55e]/30 overflow-hidden ring-1 ring-[#22c55e]/20 transition-all duration-300 ${
-              collapsed ? 'w-12 h-12' : 'w-44 h-14'
-            }`}>
-              <Image
-                src="/logo.png"
-                alt="LoopIA Logo"
-                width={collapsed ? 48 : 176}
-                height={collapsed ? 48 : 56}
-                className="object-contain"
-                priority
-              />
-            </div>
-            <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-[#22c55e] rounded-full border-2 border-[#0f0f0f] animate-pulse"></div>
-          </div>
+          <Image
+            src="/logo.png"
+            alt="LoopIA Logo"
+            width={collapsed ? 40 : 160}
+            height={collapsed ? 40 : 48}
+            className="object-contain transition-all duration-300"
+            priority
+          />
         </div>
       </div>
 
