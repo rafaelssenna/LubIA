@@ -83,7 +83,7 @@ const quickActions = [
 
 const getActionColors = (color: string) => {
   const colors: Record<string, { gradient: string; ring: string; glow: string }> = {
-    green: { gradient: 'from-[#22c55e] to-[#166534]', ring: 'ring-green-200', glow: 'hover:shadow-green-100' },
+    green: { gradient: 'from-[#4A701C] to-[#284703]', ring: 'ring-green-200', glow: 'hover:shadow-green-100' },
     blue: { gradient: 'from-blue-500 to-blue-600', ring: 'ring-blue-200', glow: 'hover:shadow-blue-100' },
     purple: { gradient: 'from-purple-500 to-purple-600', ring: 'ring-purple-200', glow: 'hover:shadow-purple-100' },
     amber: { gradient: 'from-amber-500 to-amber-600', ring: 'ring-amber-200', glow: 'hover:shadow-amber-100' },
@@ -117,7 +117,7 @@ export default function Dashboard() {
   };
 
   return (
-    <div className="min-h-screen bg-[#daeece]">
+    <div className="min-h-screen bg-[#e8ece2]">
       <Header title="Dashboard" subtitle="Visão geral da oficina" />
 
       <div className="p-6 space-y-6">
@@ -129,7 +129,7 @@ export default function Dashboard() {
             return (
               <div
                 key={index}
-                className={`group relative bg-[#f0f8ea] rounded-2xl p-5 border border-[#AADF94] hover:border-[#7CBF6A] transition-all duration-300 hover:shadow-lg ${colors.glow}`}
+                className={`group relative bg-[#f2f4ee] rounded-2xl p-5 border border-[#b8c4a8] hover:border-[#88B257] transition-all duration-300 hover:shadow-lg ${colors.glow}`}
               >
                 <div className="relative flex items-center gap-4">
                   <div className={`p-3 bg-gradient-to-br ${colors.bg} rounded-xl ring-1 ${colors.ring}`}>
@@ -137,11 +137,11 @@ export default function Dashboard() {
                   </div>
                   <div className="flex-1">
                     {loading ? (
-                      <div className="h-7 w-16 bg-[#c8e4b8] rounded animate-pulse" />
+                      <div className="h-7 w-16 bg-[#d4dbc8] rounded animate-pulse" />
                     ) : (
-                      <p className="text-2xl font-bold text-[#1a3a12]">{formatStatValue(stat.key, value)}</p>
+                      <p className="text-2xl font-bold text-[#284703]">{formatStatValue(stat.key, value)}</p>
                     )}
-                    <p className="text-sm text-[#4D9F3F]">{stat.label}</p>
+                    <p className="text-sm text-[#555D4C]">{stat.label}</p>
                   </div>
                 </div>
               </div>
@@ -150,32 +150,32 @@ export default function Dashboard() {
         </div>
 
         {/* Serviços de Hoje */}
-        <div className="bg-[#f0f8ea] rounded-2xl border border-[#AADF94] overflow-hidden">
-          <div className="p-5 border-b border-[#AADF94] flex items-center justify-between">
+        <div className="bg-[#f2f4ee] rounded-2xl border border-[#b8c4a8] overflow-hidden">
+          <div className="p-5 border-b border-[#b8c4a8] flex items-center justify-between">
             <div>
-              <h2 className="text-lg font-bold text-[#1a3a12]">Serviços de Hoje</h2>
-              <p className="text-sm text-[#4D9F3F] mt-0.5">
+              <h2 className="text-lg font-bold text-[#284703]">Serviços de Hoje</h2>
+              <p className="text-sm text-[#555D4C] mt-0.5">
                 {loading ? '...' : `${servicosHoje.length} agendamento${servicosHoje.length !== 1 ? 's' : ''} para hoje`}
               </p>
             </div>
             <Link
               href="/ordens"
-              className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-[#22c55e] to-[#166534] rounded-xl text-sm font-medium text-white hover:shadow-lg hover:shadow-[#22c55e]/20 transition-all duration-300 hover:scale-[1.02]"
+              className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-[#4A701C] to-[#284703] rounded-xl text-sm font-medium text-white hover:shadow-lg hover:shadow-[#4A701C]/20 transition-all duration-300 hover:scale-[1.02]"
             >
               <Plus size={16} />
               Nova O.S.
             </Link>
           </div>
-          <div className="divide-y divide-[#c8e4b8]">
+          <div className="divide-y divide-[#d4dbc8]">
             {loading ? (
               <div className="p-8 text-center">
-                <Loader2 className="animate-spin mx-auto mb-2 text-[#22c55e]" size={28} />
-                <p className="text-sm text-[#4D9F3F]">Carregando...</p>
+                <Loader2 className="animate-spin mx-auto mb-2 text-[#4A701C]" size={28} />
+                <p className="text-sm text-[#555D4C]">Carregando...</p>
               </div>
             ) : servicosHoje.length === 0 ? (
               <div className="p-8 text-center">
-                <Calendar className="mx-auto mb-2 text-[#AADF94]" size={32} />
-                <p className="text-[#4D9F3F]">Nenhum serviço agendado para hoje</p>
+                <Calendar className="mx-auto mb-2 text-[#b8c4a8]" size={32} />
+                <p className="text-[#555D4C]">Nenhum serviço agendado para hoje</p>
               </div>
             ) : (
               servicosHoje.map((servico) => {
@@ -184,20 +184,20 @@ export default function Dashboard() {
                   <Link
                     key={servico.id}
                     href={`/ordens?detail=${servico.id}`}
-                    className="block p-4 hover:bg-[#daeece] transition-all duration-200 group cursor-pointer"
+                    className="block p-4 hover:bg-[#e8ece2] transition-all duration-200 group cursor-pointer"
                   >
                     <div className="flex items-center gap-4">
-                      <div className="text-center min-w-[70px] py-2.5 bg-[#daeece] rounded-xl ring-1 ring-[#AADF94] group-hover:ring-[#7CBF6A] transition-all duration-200">
-                        <p className="text-lg font-bold text-[#1a3a12]">{servico.hora}</p>
+                      <div className="text-center min-w-[70px] py-2.5 bg-[#e8ece2] rounded-xl ring-1 ring-[#b8c4a8] group-hover:ring-[#88B257] transition-all duration-200">
+                        <p className="text-lg font-bold text-[#284703]">{servico.hora}</p>
                       </div>
                       <div className="flex-1 min-w-0">
-                        <p className="font-medium text-[#1a3a12] truncate">{servico.cliente}</p>
-                        <p className="text-sm text-[#4D9F3F] truncate">{servico.veiculo} • {servico.servico}</p>
+                        <p className="font-medium text-[#284703] truncate">{servico.cliente}</p>
+                        <p className="text-sm text-[#555D4C] truncate">{servico.veiculo} • {servico.servico}</p>
                       </div>
                       <span className={`px-3 py-1.5 rounded-lg text-xs font-medium ${statusCfg.bg} ${statusCfg.text} ring-1 ${statusCfg.ring}`}>
                         {statusCfg.label}
                       </span>
-                      <ArrowRight size={16} className="text-[#AADF94] group-hover:text-[#22c55e] group-hover:translate-x-1 transition-all duration-200" />
+                      <ArrowRight size={16} className="text-[#b8c4a8] group-hover:text-[#4A701C] group-hover:translate-x-1 transition-all duration-200" />
                     </div>
                   </Link>
                 );
@@ -205,10 +205,10 @@ export default function Dashboard() {
             )}
           </div>
           {servicosHoje.length > 0 && (
-            <div className="p-4 border-t border-[#c8e4b8] bg-[#daeece]">
+            <div className="p-4 border-t border-[#d4dbc8] bg-[#e8ece2]">
               <Link
                 href="/ordens"
-                className="flex items-center justify-center gap-2 text-sm text-[#4D9F3F] hover:text-[#22c55e] transition-colors duration-200"
+                className="flex items-center justify-center gap-2 text-sm text-[#555D4C] hover:text-[#4A701C] transition-colors duration-200"
               >
                 Ver todas as ordens
                 <ArrowRight size={14} />
@@ -219,7 +219,7 @@ export default function Dashboard() {
 
         {/* Ações Rápidas */}
         <div>
-          <h3 className="text-sm font-medium text-[#4D9F3F] mb-3 px-1">Ações Rápidas</h3>
+          <h3 className="text-sm font-medium text-[#555D4C] mb-3 px-1">Ações Rápidas</h3>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             {quickActions.map((action, index) => {
               const colors = getActionColors(action.color);
@@ -227,12 +227,12 @@ export default function Dashboard() {
                 <Link
                   key={index}
                   href={action.href}
-                  className={`flex flex-col items-center gap-3 p-5 bg-[#f0f8ea] rounded-2xl border border-[#AADF94] hover:border-[#7CBF6A] transition-all duration-300 group hover:shadow-lg ${colors.glow}`}
+                  className={`flex flex-col items-center gap-3 p-5 bg-[#f2f4ee] rounded-2xl border border-[#b8c4a8] hover:border-[#88B257] transition-all duration-300 group hover:shadow-lg ${colors.glow}`}
                 >
                   <div className={`p-3 bg-gradient-to-br ${colors.gradient} rounded-xl ring-1 ${colors.ring} group-hover:scale-110 group-hover:rotate-3 transition-all duration-300`}>
                     <action.icon size={24} className="text-white" />
                   </div>
-                  <span className="text-sm font-medium text-[#2d5a22] group-hover:text-[#22c55e] transition-colors duration-200">{action.label}</span>
+                  <span className="text-sm font-medium text-[#434D36] group-hover:text-[#4A701C] transition-colors duration-200">{action.label}</span>
                 </Link>
               );
             })}

@@ -36,7 +36,7 @@ export default function Sidebar() {
 
   return (
     <aside
-      className={`fixed left-0 top-0 h-screen bg-[#1F7F15] flex flex-col transition-all duration-300 z-50 shadow-xl shadow-[#1F7F15]/20 ${
+      className={`fixed left-0 top-0 h-screen bg-[#284703] flex flex-col transition-all duration-300 z-50 shadow-xl shadow-[#284703]/20 ${
         collapsed ? 'w-20' : 'w-72'
       }`}
     >
@@ -57,7 +57,7 @@ export default function Sidebar() {
       {/* Toggle button */}
       <button
         onClick={toggleCollapsed}
-        className="absolute -right-3 top-24 w-6 h-6 bg-[#4D9F3F] rounded-full flex items-center justify-center text-white hover:scale-110 transition-transform shadow-lg shadow-[#4D9F3F]/40 border-2 border-[#e6f5da]"
+        className="absolute -right-3 top-24 w-6 h-6 bg-[#4A701C] rounded-full flex items-center justify-center text-white hover:scale-110 transition-transform shadow-lg shadow-[#4A701C]/40 border-2 border-[#e8ece2]"
       >
         {collapsed ? <ChevronRight size={14} /> : <ChevronLeft size={14} />}
       </button>
@@ -91,7 +91,7 @@ export default function Sidebar() {
                 <span className="font-medium relative z-10">{item.label}</span>
               )}
               {!collapsed && isActive && (
-                <div className="ml-auto w-2 h-2 bg-[#D9FFBF] rounded-full animate-pulse"></div>
+                <div className="ml-auto w-2 h-2 bg-[#88B257] rounded-full animate-pulse"></div>
               )}
             </Link>
           );

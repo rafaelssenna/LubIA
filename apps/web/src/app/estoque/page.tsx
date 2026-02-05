@@ -68,7 +68,7 @@ const getCategoriaColor = (categoria: string) => {
     'oleo_lubrificante': 'bg-amber-50 text-amber-600',
     'aditivo': 'bg-blue-50 text-blue-600',
     'graxa': 'bg-purple-50 text-purple-600',
-    'filtro_oleo': 'bg-green-50 text-[#22c55e]',
+    'filtro_oleo': 'bg-green-50 text-[#4A701C]',
     'filtro_ar': 'bg-cyan-50 text-cyan-600',
     'filtro_ar_condicionado': 'bg-indigo-50 text-indigo-600',
     'filtro_combustivel': 'bg-orange-50 text-orange-600',
@@ -482,15 +482,15 @@ export default function EstoquePage() {
         <title>Relatório de Estoque - LoopIA</title>
         <style>
           body { font-family: Arial, sans-serif; padding: 20px; color: #333; }
-          h1 { color: #22c55e; margin-bottom: 5px; }
+          h1 { color: #4A701C; margin-bottom: 5px; }
           .subtitle { color: #666; margin-bottom: 20px; }
           table { width: 100%; border-collapse: collapse; margin-top: 20px; font-size: 12px; }
           th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
-          th { background: #22c55e; color: white; }
+          th { background: #4A701C; color: white; }
           tr:nth-child(even) { background: #f9f9f9; }
           .stats { display: flex; gap: 20px; margin-bottom: 20px; }
           .stat { padding: 15px; background: #f5f5f5; border-radius: 8px; }
-          .stat-value { font-size: 24px; font-weight: bold; color: #22c55e; }
+          .stat-value { font-size: 24px; font-weight: bold; color: #4A701C; }
           .stat-label { font-size: 12px; color: #666; }
           .text-right { text-align: right; }
           .low-stock { color: red; font-weight: bold; }
@@ -566,54 +566,54 @@ export default function EstoquePage() {
   const valorTotal = produtos.reduce((acc, p) => acc + (p.quantidade * p.precoCompraAtual), 0);
 
   return (
-    <div className="min-h-screen bg-[#daeece]">
+    <div className="min-h-screen bg-[#e8ece2]">
       <Header title="Controle de Estoque" subtitle="Gerencie produtos e movimentações" />
 
       <div className="p-6 space-y-6 animate-fade-in">
         {/* Stats */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <div className="bg-[#f0f8ea] border border-[#AADF94] rounded-xl p-4 hover:border-green-300 hover:shadow-lg hover:shadow-green-100 transition-all duration-300">
+          <div className="bg-[#f2f4ee] border border-[#b8c4a8] rounded-xl p-4 hover:border-green-300 hover:shadow-lg hover:shadow-green-100 transition-all duration-300">
             <div className="flex items-center gap-3">
-              <div className="p-2.5 bg-[#22c55e]/20 rounded-xl ring-1 ring-[#22c55e]/20">
-                <Package size={20} className="text-[#22c55e]" />
+              <div className="p-2.5 bg-[#4A701C]/20 rounded-xl ring-1 ring-[#4A701C]/20">
+                <Package size={20} className="text-[#4A701C]" />
               </div>
               <div>
-                <p className="text-2xl font-bold text-[#1a3a12]">{produtos.length}</p>
+                <p className="text-2xl font-bold text-[#284703]">{produtos.length}</p>
                 <p className="text-xs text-[#6B7280]">Produtos</p>
               </div>
             </div>
           </div>
-          <div className="bg-[#f0f8ea] border border-[#AADF94] rounded-xl p-4 hover:border-blue-500/30 hover:shadow-lg hover:shadow-blue-500/5 transition-all duration-300">
+          <div className="bg-[#f2f4ee] border border-[#b8c4a8] rounded-xl p-4 hover:border-blue-500/30 hover:shadow-lg hover:shadow-blue-500/5 transition-all duration-300">
             <div className="flex items-center gap-3">
               <div className="p-2.5 bg-blue-50 rounded-xl ring-1 ring-blue-500/20">
                 <Droplets size={20} className="text-blue-600" />
               </div>
               <div>
-                <p className="text-2xl font-bold text-[#1a3a12]">{totalItens.toFixed(0)}</p>
+                <p className="text-2xl font-bold text-[#284703]">{totalItens.toFixed(0)}</p>
                 <p className="text-xs text-[#6B7280]">Itens em Estoque</p>
               </div>
             </div>
           </div>
-          <div className="bg-[#f0f8ea] border border-[#AADF94] rounded-xl p-4 hover:border-amber-500/30 hover:shadow-lg hover:shadow-amber-500/5 transition-all duration-300">
+          <div className="bg-[#f2f4ee] border border-[#b8c4a8] rounded-xl p-4 hover:border-amber-500/30 hover:shadow-lg hover:shadow-amber-500/5 transition-all duration-300">
             <div className="flex items-center gap-3">
               <div className="p-2.5 bg-amber-50 rounded-xl ring-1 ring-amber-500/20">
                 <DollarSign size={20} className="text-amber-600" />
               </div>
               <div>
-                <p className="text-2xl font-bold text-[#1a3a12]">
+                <p className="text-2xl font-bold text-[#284703]">
                   {valorTotal.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
                 </p>
                 <p className="text-xs text-[#6B7280]">Valor Total</p>
               </div>
             </div>
           </div>
-          <div className="bg-[#f0f8ea] border border-[#AADF94] rounded-xl p-4 hover:border-red-500/30 hover:shadow-lg hover:shadow-red-500/5 transition-all duration-300">
+          <div className="bg-[#f2f4ee] border border-[#b8c4a8] rounded-xl p-4 hover:border-red-500/30 hover:shadow-lg hover:shadow-red-500/5 transition-all duration-300">
             <div className="flex items-center gap-3">
-              <div className={`p-2.5 rounded-xl ring-1 ${estoqueBaixoCount > 0 ? 'bg-red-50 ring-red-500/20' : 'bg-[#22c55e]/20 ring-[#22c55e]/20'}`}>
-                <AlertTriangle size={20} className={estoqueBaixoCount > 0 ? 'text-red-400' : 'text-[#22c55e]'} />
+              <div className={`p-2.5 rounded-xl ring-1 ${estoqueBaixoCount > 0 ? 'bg-red-50 ring-red-500/20' : 'bg-[#4A701C]/20 ring-[#4A701C]/20'}`}>
+                <AlertTriangle size={20} className={estoqueBaixoCount > 0 ? 'text-red-400' : 'text-[#4A701C]'} />
               </div>
               <div>
-                <p className="text-2xl font-bold text-[#1a3a12]">{estoqueBaixoCount}</p>
+                <p className="text-2xl font-bold text-[#284703]">{estoqueBaixoCount}</p>
                 <p className="text-xs text-[#6B7280]">Estoque Baixo</p>
               </div>
             </div>
@@ -628,7 +628,7 @@ export default function EstoquePage() {
                 <AlertTriangle size={20} className="text-red-400" />
               </div>
               <div>
-                <p className="text-[#1a3a12] font-medium">
+                <p className="text-[#284703] font-medium">
                   {estoqueBaixoCount} {estoqueBaixoCount === 1 ? 'produto está' : 'produtos estão'} com estoque baixo
                 </p>
                 <p className="text-sm text-red-400">Verifique os itens que precisam de reposição</p>
@@ -647,19 +647,19 @@ export default function EstoquePage() {
         <div className="flex flex-col md:flex-row gap-4 justify-between">
           <div className="flex gap-3 flex-1">
             <div className="relative flex-1 max-w-md group">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-[#6B7280] group-focus-within:text-[#22c55e] transition-colors" size={18} />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-[#6B7280] group-focus-within:text-[#4A701C] transition-colors" size={18} />
               <input
                 type="text"
                 placeholder="Buscar produto..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full bg-[#daeece] border border-[#AADF94] rounded-xl pl-10 pr-4 py-3 text-sm text-[#1a3a12] placeholder-[#7CBF6A] focus:outline-none focus:border-[#22c55e]/50 focus:ring-1 focus:ring-[#22c55e]/20 transition-all duration-200"
+                className="w-full bg-[#e8ece2] border border-[#b8c4a8] rounded-xl pl-10 pr-4 py-3 text-sm text-[#284703] placeholder-[#88B257] focus:outline-none focus:border-[#4A701C]/50 focus:ring-1 focus:ring-[#4A701C]/20 transition-all duration-200"
               />
             </div>
             <select
               value={categoriaFilter}
               onChange={(e) => setCategoriaFilter(e.target.value)}
-              className="bg-[#daeece] border border-[#AADF94] rounded-xl px-4 py-3 text-[#4D9F3F] focus:outline-none focus:border-[#22c55e]/50 focus:ring-1 focus:ring-[#22c55e]/20 transition-all duration-200"
+              className="bg-[#e8ece2] border border-[#b8c4a8] rounded-xl px-4 py-3 text-[#555D4C] focus:outline-none focus:border-[#4A701C]/50 focus:ring-1 focus:ring-[#4A701C]/20 transition-all duration-200"
             >
               {categorias.map((cat) => (
                 <option key={cat.value} value={cat.value}>{cat.label}</option>
@@ -670,7 +670,7 @@ export default function EstoquePage() {
               className={`flex items-center gap-2 px-4 py-3 rounded-xl transition-all duration-200 ${
                 showOnlyLowStock
                   ? 'bg-red-50 border border-red-500/50 text-red-400'
-                  : 'border border-[#AADF94] text-[#4D9F3F] hover:bg-[#daeece] hover:text-[#1a3a12]'
+                  : 'border border-[#b8c4a8] text-[#555D4C] hover:bg-[#e8ece2] hover:text-[#284703]'
               }`}
               title="Filtrar estoque baixo"
             >
@@ -684,7 +684,7 @@ export default function EstoquePage() {
           <div className="flex gap-3">
             <button
               onClick={exportToCSV}
-              className="flex items-center gap-2 px-4 py-3 border border-[#AADF94] rounded-xl text-[#4D9F3F] hover:bg-[#daeece] hover:text-[#1a3a12] transition-all duration-200"
+              className="flex items-center gap-2 px-4 py-3 border border-[#b8c4a8] rounded-xl text-[#555D4C] hover:bg-[#e8ece2] hover:text-[#284703] transition-all duration-200"
               title="Exportar para Excel"
             >
               <FileSpreadsheet size={20} />
@@ -692,7 +692,7 @@ export default function EstoquePage() {
             </button>
             <button
               onClick={exportToPDF}
-              className="flex items-center gap-2 px-4 py-3 border border-[#AADF94] rounded-xl text-[#4D9F3F] hover:bg-[#daeece] hover:text-[#1a3a12] transition-all duration-200"
+              className="flex items-center gap-2 px-4 py-3 border border-[#b8c4a8] rounded-xl text-[#555D4C] hover:bg-[#e8ece2] hover:text-[#284703] transition-all duration-200"
               title="Exportar para PDF"
             >
               <Download size={20} />
@@ -700,7 +700,7 @@ export default function EstoquePage() {
             </button>
             <button
               onClick={() => setShowOCR(true)}
-              className="flex items-center gap-2 px-6 py-3 border border-[#AADF94] rounded-xl text-[#4D9F3F] hover:bg-[#daeece] hover:text-[#1a3a12] transition-all duration-200"
+              className="flex items-center gap-2 px-6 py-3 border border-[#b8c4a8] rounded-xl text-[#555D4C] hover:bg-[#e8ece2] hover:text-[#284703] transition-all duration-200"
               title="Escanear nota fiscal"
             >
               <FileText size={20} />
@@ -708,7 +708,7 @@ export default function EstoquePage() {
             </button>
             <button
               onClick={() => setShowModal(true)}
-              className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-[#22c55e] to-[#166534] rounded-xl text-white font-medium hover:shadow-lg hover:shadow-green-200 hover:scale-[1.02] active:scale-[0.98] transition-all duration-200"
+              className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-[#4A701C] to-[#284703] rounded-xl text-white font-medium hover:shadow-lg hover:shadow-green-200 hover:scale-[1.02] active:scale-[0.98] transition-all duration-200"
             >
               <Plus size={20} />
               Novo Produto
@@ -717,14 +717,14 @@ export default function EstoquePage() {
         </div>
 
         {/* Tabela de Produtos */}
-        <div className="bg-[#f0f8ea] border border-[#AADF94] rounded-2xl overflow-hidden">
+        <div className="bg-[#f2f4ee] border border-[#b8c4a8] rounded-2xl overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead>
-                <tr className="border-b border-[#AADF94]">
+                <tr className="border-b border-[#b8c4a8]">
                   <th className="text-left px-6 py-4 text-sm font-medium text-[#6B7280]">Código</th>
                   <th
-                    className="text-left px-6 py-4 text-sm font-medium text-[#6B7280] cursor-pointer hover:text-[#1a3a12] transition-all duration-200 select-none"
+                    className="text-left px-6 py-4 text-sm font-medium text-[#6B7280] cursor-pointer hover:text-[#284703] transition-all duration-200 select-none"
                     onClick={() => handleSort('nome')}
                   >
                     <div className="flex items-center gap-1">
@@ -734,7 +734,7 @@ export default function EstoquePage() {
                   </th>
                   <th className="text-left px-6 py-4 text-sm font-medium text-[#6B7280]">Categoria</th>
                   <th
-                    className="text-right px-6 py-4 text-sm font-medium text-[#6B7280] cursor-pointer hover:text-[#1a3a12] transition-all duration-200 select-none"
+                    className="text-right px-6 py-4 text-sm font-medium text-[#6B7280] cursor-pointer hover:text-[#284703] transition-all duration-200 select-none"
                     onClick={() => handleSort('quantidade')}
                   >
                     <div className="flex items-center justify-end gap-1">
@@ -743,7 +743,7 @@ export default function EstoquePage() {
                     </div>
                   </th>
                   <th
-                    className="text-right px-6 py-4 text-sm font-medium text-[#6B7280] cursor-pointer hover:text-[#1a3a12] transition-all duration-200 select-none"
+                    className="text-right px-6 py-4 text-sm font-medium text-[#6B7280] cursor-pointer hover:text-[#284703] transition-all duration-200 select-none"
                     onClick={() => handleSort('precoCompra')}
                   >
                     <div className="flex items-center justify-end gap-1">
@@ -752,7 +752,7 @@ export default function EstoquePage() {
                     </div>
                   </th>
                   <th
-                    className="text-right px-6 py-4 text-sm font-medium text-[#6B7280] cursor-pointer hover:text-[#1a3a12] transition-all duration-200 select-none"
+                    className="text-right px-6 py-4 text-sm font-medium text-[#6B7280] cursor-pointer hover:text-[#284703] transition-all duration-200 select-none"
                     onClick={() => handleSort('precoVenda')}
                   >
                     <div className="flex items-center justify-end gap-1">
@@ -776,13 +776,13 @@ export default function EstoquePage() {
                   </tr>
                 ) : (
                   paginatedProducts.map((produto) => (
-                    <tr key={produto.id} className="border-b border-[#AADF94]/50 hover:bg-[#daeece] transition-all duration-200">
+                    <tr key={produto.id} className="border-b border-[#b8c4a8]/50 hover:bg-[#e8ece2] transition-all duration-200">
                       <td className="px-6 py-4">
-                        <span className="text-sm font-mono text-[#4D9F3F]">{produto.codigo}</span>
+                        <span className="text-sm font-mono text-[#555D4C]">{produto.codigo}</span>
                       </td>
                       <td className="px-6 py-4">
                         <div>
-                          <p className="text-[#1a3a12] font-medium">{produto.nome}</p>
+                          <p className="text-[#284703] font-medium">{produto.nome}</p>
                           <p className="text-xs text-[#6B7280]">{produto.marca}</p>
                         </div>
                       </td>
@@ -793,7 +793,7 @@ export default function EstoquePage() {
                       </td>
                       <td className="px-6 py-4 text-right">
                         <div className="flex items-center justify-end gap-2">
-                          <span className={`font-bold ${produto.estoqueBaixo ? 'text-red-400' : 'text-[#1a3a12]'}`}>
+                          <span className={`font-bold ${produto.estoqueBaixo ? 'text-red-400' : 'text-[#284703]'}`}>
                             {produto.quantidade}
                           </span>
                           <span className="text-xs text-[#6B7280]">{produto.unidade}</span>
@@ -802,21 +802,21 @@ export default function EstoquePage() {
                           )}
                         </div>
                       </td>
-                      <td className="px-6 py-4 text-right text-[#4D9F3F]">
+                      <td className="px-6 py-4 text-right text-[#555D4C]">
                         {produto.precoCompraAtual.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
                       </td>
-                      <td className="px-6 py-4 text-right text-[#22c55e] font-bold">
+                      <td className="px-6 py-4 text-right text-[#4A701C] font-bold">
                         {produto.precoVenda.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
                       </td>
                       <td className="px-6 py-4">
-                        <div className="flex items-center justify-center gap-1 bg-[#daeece] rounded-lg p-1">
+                        <div className="flex items-center justify-center gap-1 bg-[#e8ece2] rounded-lg p-1">
                           <button
                             onClick={() => {
                               setSelectedProduto(produto);
                               setMovTipo('ENTRADA');
                               setShowMovModal(true);
                             }}
-                            className="p-2 hover:bg-[#22c55e]/10 rounded-md transition-all duration-200 text-[#7CBF6A] hover:text-[#22c55e]"
+                            className="p-2 hover:bg-[#4A701C]/10 rounded-md transition-all duration-200 text-[#88B257] hover:text-[#4A701C]"
                             title="Entrada"
                           >
                             <ArrowDownCircle size={18} />
@@ -827,21 +827,21 @@ export default function EstoquePage() {
                               setMovTipo('SAIDA');
                               setShowMovModal(true);
                             }}
-                            className="p-2 hover:bg-red-50 rounded-md transition-all duration-200 text-[#7CBF6A] hover:text-red-400"
+                            className="p-2 hover:bg-red-50 rounded-md transition-all duration-200 text-[#88B257] hover:text-red-400"
                             title="Saída"
                           >
                             <ArrowUpCircle size={18} />
                           </button>
                           <button
                             onClick={() => openHistoryModal(produto)}
-                            className="p-2 hover:bg-blue-50 rounded-md transition-all duration-200 text-[#7CBF6A] hover:text-blue-600"
+                            className="p-2 hover:bg-blue-50 rounded-md transition-all duration-200 text-[#88B257] hover:text-blue-600"
                             title="Histórico"
                           >
                             <History size={16} />
                           </button>
                           <button
                             onClick={() => openEditModal(produto)}
-                            className="p-2 hover:bg-[#c8e4b8] rounded-md transition-all duration-200 text-[#7CBF6A] hover:text-[#1a3a12]"
+                            className="p-2 hover:bg-[#d4dbc8] rounded-md transition-all duration-200 text-[#88B257] hover:text-[#284703]"
                             title="Editar"
                           >
                             <Edit size={16} />
@@ -851,7 +851,7 @@ export default function EstoquePage() {
                               setDeletingProduto(produto);
                               setShowDeleteConfirm(true);
                             }}
-                            className="p-2 hover:bg-red-50 rounded-md transition-all duration-200 text-[#7CBF6A] hover:text-red-400"
+                            className="p-2 hover:bg-red-50 rounded-md transition-all duration-200 text-[#88B257] hover:text-red-400"
                             title="Excluir"
                           >
                             <Trash2 size={16} />
@@ -867,7 +867,7 @@ export default function EstoquePage() {
 
           {/* Pagination */}
           {totalPages > 1 && (
-            <div className="px-6 py-4 border-t border-[#AADF94] flex items-center justify-between">
+            <div className="px-6 py-4 border-t border-[#b8c4a8] flex items-center justify-between">
               <p className="text-sm text-[#6B7280]">
                 Mostrando {((currentPage - 1) * itemsPerPage) + 1} a {Math.min(currentPage * itemsPerPage, processedProducts.length)} de {processedProducts.length} produtos
               </p>
@@ -875,7 +875,7 @@ export default function EstoquePage() {
                 <button
                   onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
                   disabled={currentPage === 1}
-                  className="p-2 border border-[#AADF94] rounded-lg text-[#4D9F3F] hover:bg-[#daeece] hover:text-[#1a3a12] disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
+                  className="p-2 border border-[#b8c4a8] rounded-lg text-[#555D4C] hover:bg-[#e8ece2] hover:text-[#284703] disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
                 >
                   <ChevronLeft size={18} />
                 </button>
@@ -897,8 +897,8 @@ export default function EstoquePage() {
                         onClick={() => setCurrentPage(pageNum)}
                         className={`w-8 h-8 rounded-lg text-sm font-medium transition-all duration-200 ${
                           currentPage === pageNum
-                            ? 'bg-gradient-to-r from-[#22c55e] to-[#166534] text-white shadow-lg shadow-green-200'
-                            : 'text-[#4D9F3F] hover:bg-[#daeece] hover:text-[#1a3a12]'
+                            ? 'bg-gradient-to-r from-[#4A701C] to-[#284703] text-white shadow-lg shadow-green-200'
+                            : 'text-[#555D4C] hover:bg-[#e8ece2] hover:text-[#284703]'
                         }`}
                       >
                         {pageNum}
@@ -909,7 +909,7 @@ export default function EstoquePage() {
                 <button
                   onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
                   disabled={currentPage === totalPages}
-                  className="p-2 border border-[#AADF94] rounded-lg text-[#4D9F3F] hover:bg-[#daeece] hover:text-[#1a3a12] disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
+                  className="p-2 border border-[#b8c4a8] rounded-lg text-[#555D4C] hover:bg-[#e8ece2] hover:text-[#284703] disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
                 >
                   <ChevronRight size={18} />
                 </button>
@@ -922,51 +922,51 @@ export default function EstoquePage() {
       {/* Modal Novo Produto */}
       {showModal && (
         <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-[#f0f8ea] border border-[#AADF94] rounded-2xl w-full max-w-lg animate-fade-in max-h-[90vh] overflow-y-auto shadow-2xl">
-            <div className="p-6 border-b border-[#AADF94]">
-              <h2 className="text-xl font-semibold text-[#1a3a12]">Novo Produto</h2>
+          <div className="bg-[#f2f4ee] border border-[#b8c4a8] rounded-2xl w-full max-w-lg animate-fade-in max-h-[90vh] overflow-y-auto shadow-2xl">
+            <div className="p-6 border-b border-[#b8c4a8]">
+              <h2 className="text-xl font-semibold text-[#284703]">Novo Produto</h2>
               <p className="text-sm text-[#6B7280] mt-1">Cadastre um novo produto no estoque</p>
             </div>
             <div className="p-6 space-y-4">
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-[#4D9F3F] mb-2">Código</label>
+                  <label className="block text-sm font-medium text-[#555D4C] mb-2">Código</label>
                   <input
                     type="text"
                     value={form.codigo}
                     onChange={(e) => setForm({ ...form, codigo: e.target.value })}
                     placeholder="Ex: OL-5W30-1L"
-                    className="w-full bg-[#daeece] border border-[#AADF94] rounded-xl px-4 py-3 text-[#1a3a12] placeholder-[#7CBF6A] focus:outline-none focus:border-[#22c55e]/50 focus:ring-1 focus:ring-[#22c55e]/20 transition-all duration-200"
+                    className="w-full bg-[#e8ece2] border border-[#b8c4a8] rounded-xl px-4 py-3 text-[#284703] placeholder-[#88B257] focus:outline-none focus:border-[#4A701C]/50 focus:ring-1 focus:ring-[#4A701C]/20 transition-all duration-200"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-[#4D9F3F] mb-2">Marca</label>
+                  <label className="block text-sm font-medium text-[#555D4C] mb-2">Marca</label>
                   <input
                     type="text"
                     value={form.marca}
                     onChange={(e) => setForm({ ...form, marca: e.target.value })}
                     placeholder="Ex: Mobil"
-                    className="w-full bg-[#daeece] border border-[#AADF94] rounded-xl px-4 py-3 text-[#1a3a12] placeholder-[#7CBF6A] focus:outline-none focus:border-[#22c55e]/50 focus:ring-1 focus:ring-[#22c55e]/20 transition-all duration-200"
+                    className="w-full bg-[#e8ece2] border border-[#b8c4a8] rounded-xl px-4 py-3 text-[#284703] placeholder-[#88B257] focus:outline-none focus:border-[#4A701C]/50 focus:ring-1 focus:ring-[#4A701C]/20 transition-all duration-200"
                   />
                 </div>
               </div>
               <div>
-                <label className="block text-sm font-medium text-[#4D9F3F] mb-2">Nome do Produto</label>
+                <label className="block text-sm font-medium text-[#555D4C] mb-2">Nome do Produto</label>
                 <input
                   type="text"
                   value={form.nome}
                   onChange={(e) => setForm({ ...form, nome: e.target.value })}
                   placeholder="Ex: Óleo Mobil Super 5W30 1L"
-                  className="w-full bg-[#daeece] border border-[#AADF94] rounded-xl px-4 py-3 text-[#1a3a12] placeholder-[#7CBF6A] focus:outline-none focus:border-[#22c55e]/50 focus:ring-1 focus:ring-[#22c55e]/20 transition-all duration-200"
+                  className="w-full bg-[#e8ece2] border border-[#b8c4a8] rounded-xl px-4 py-3 text-[#284703] placeholder-[#88B257] focus:outline-none focus:border-[#4A701C]/50 focus:ring-1 focus:ring-[#4A701C]/20 transition-all duration-200"
                 />
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-[#4D9F3F] mb-2">Categoria</label>
+                  <label className="block text-sm font-medium text-[#555D4C] mb-2">Categoria</label>
                   <select
                     value={form.categoria}
                     onChange={(e) => setForm({ ...form, categoria: e.target.value })}
-                    className="w-full bg-[#daeece] border border-[#AADF94] rounded-xl px-4 py-3 text-[#1a3a12] focus:outline-none focus:border-[#22c55e]/50 focus:ring-1 focus:ring-[#22c55e]/20 transition-all duration-200"
+                    className="w-full bg-[#e8ece2] border border-[#b8c4a8] rounded-xl px-4 py-3 text-[#284703] focus:outline-none focus:border-[#4A701C]/50 focus:ring-1 focus:ring-[#4A701C]/20 transition-all duration-200"
                   >
                     {categorias.filter(c => c.value).map((cat) => (
                       <option key={cat.value} value={cat.value}>{cat.label}</option>
@@ -974,11 +974,11 @@ export default function EstoquePage() {
                   </select>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-[#4D9F3F] mb-2">Unidade</label>
+                  <label className="block text-sm font-medium text-[#555D4C] mb-2">Unidade</label>
                   <select
                     value={form.unidade}
                     onChange={(e) => setForm({ ...form, unidade: e.target.value })}
-                    className="w-full bg-[#daeece] border border-[#AADF94] rounded-xl px-4 py-3 text-[#1a3a12] focus:outline-none focus:border-[#22c55e]/50 focus:ring-1 focus:ring-[#22c55e]/20 transition-all duration-200"
+                    className="w-full bg-[#e8ece2] border border-[#b8c4a8] rounded-xl px-4 py-3 text-[#284703] focus:outline-none focus:border-[#4A701C]/50 focus:ring-1 focus:ring-[#4A701C]/20 transition-all duration-200"
                   >
                     <option value="LITRO">Litro</option>
                     <option value="UNIDADE">Unidade</option>
@@ -989,72 +989,72 @@ export default function EstoquePage() {
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-[#4D9F3F] mb-2">Quantidade Inicial</label>
+                  <label className="block text-sm font-medium text-[#555D4C] mb-2">Quantidade Inicial</label>
                   <input
                     type="number"
                     value={form.quantidade}
                     onChange={(e) => setForm({ ...form, quantidade: e.target.value })}
                     placeholder="0"
-                    className="w-full bg-[#daeece] border border-[#AADF94] rounded-xl px-4 py-3 text-[#1a3a12] placeholder-[#7CBF6A] focus:outline-none focus:border-[#22c55e]/50 focus:ring-1 focus:ring-[#22c55e]/20 transition-all duration-200"
+                    className="w-full bg-[#e8ece2] border border-[#b8c4a8] rounded-xl px-4 py-3 text-[#284703] placeholder-[#88B257] focus:outline-none focus:border-[#4A701C]/50 focus:ring-1 focus:ring-[#4A701C]/20 transition-all duration-200"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-[#4D9F3F] mb-2">Estoque Mínimo</label>
+                  <label className="block text-sm font-medium text-[#555D4C] mb-2">Estoque Mínimo</label>
                   <input
                     type="number"
                     value={form.estoqueMinimo}
                     onChange={(e) => setForm({ ...form, estoqueMinimo: e.target.value })}
                     placeholder="5"
-                    className="w-full bg-[#daeece] border border-[#AADF94] rounded-xl px-4 py-3 text-[#1a3a12] placeholder-[#7CBF6A] focus:outline-none focus:border-[#22c55e]/50 focus:ring-1 focus:ring-[#22c55e]/20 transition-all duration-200"
+                    className="w-full bg-[#e8ece2] border border-[#b8c4a8] rounded-xl px-4 py-3 text-[#284703] placeholder-[#88B257] focus:outline-none focus:border-[#4A701C]/50 focus:ring-1 focus:ring-[#4A701C]/20 transition-all duration-200"
                   />
                 </div>
               </div>
               <div className="grid grid-cols-3 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-[#4D9F3F] mb-2">Preço Compra</label>
+                  <label className="block text-sm font-medium text-[#555D4C] mb-2">Preço Compra</label>
                   <input
                     type="number"
                     step="0.01"
                     value={form.precoCompra}
                     onChange={(e) => setForm({ ...form, precoCompra: e.target.value })}
                     placeholder="0.00"
-                    className="w-full bg-[#daeece] border border-[#AADF94] rounded-xl px-4 py-3 text-[#1a3a12] placeholder-[#7CBF6A] focus:outline-none focus:border-[#22c55e]/50 focus:ring-1 focus:ring-[#22c55e]/20 transition-all duration-200"
+                    className="w-full bg-[#e8ece2] border border-[#b8c4a8] rounded-xl px-4 py-3 text-[#284703] placeholder-[#88B257] focus:outline-none focus:border-[#4A701C]/50 focus:ring-1 focus:ring-[#4A701C]/20 transition-all duration-200"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-[#4D9F3F] mb-2">Preço Venda</label>
+                  <label className="block text-sm font-medium text-[#555D4C] mb-2">Preço Venda</label>
                   <input
                     type="number"
                     step="0.01"
                     value={form.precoVenda}
                     onChange={(e) => setForm({ ...form, precoVenda: e.target.value })}
                     placeholder="0.00"
-                    className="w-full bg-[#daeece] border border-[#AADF94] rounded-xl px-4 py-3 text-[#1a3a12] placeholder-[#7CBF6A] focus:outline-none focus:border-[#22c55e]/50 focus:ring-1 focus:ring-[#22c55e]/20 transition-all duration-200"
+                    className="w-full bg-[#e8ece2] border border-[#b8c4a8] rounded-xl px-4 py-3 text-[#284703] placeholder-[#88B257] focus:outline-none focus:border-[#4A701C]/50 focus:ring-1 focus:ring-[#4A701C]/20 transition-all duration-200"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-[#4D9F3F] mb-2">Preço Granel</label>
+                  <label className="block text-sm font-medium text-[#555D4C] mb-2">Preço Granel</label>
                   <input
                     type="number"
                     step="0.01"
                     value={form.precoGranel}
                     onChange={(e) => setForm({ ...form, precoGranel: e.target.value })}
                     placeholder="Por litro"
-                    className="w-full bg-[#daeece] border border-[#AADF94] rounded-xl px-4 py-3 text-[#1a3a12] placeholder-[#7CBF6A] focus:outline-none focus:border-[#22c55e]/50 focus:ring-1 focus:ring-[#22c55e]/20 transition-all duration-200"
+                    className="w-full bg-[#e8ece2] border border-[#b8c4a8] rounded-xl px-4 py-3 text-[#284703] placeholder-[#88B257] focus:outline-none focus:border-[#4A701C]/50 focus:ring-1 focus:ring-[#4A701C]/20 transition-all duration-200"
                   />
                 </div>
               </div>
             </div>
-            <div className="p-6 border-t border-[#AADF94] flex gap-3 justify-end">
+            <div className="p-6 border-t border-[#b8c4a8] flex gap-3 justify-end">
               <button
                 onClick={() => setShowModal(false)}
-                className="px-6 py-3 border border-[#AADF94] rounded-xl text-[#4D9F3F] hover:bg-[#daeece] hover:text-[#1a3a12] transition-all duration-200"
+                className="px-6 py-3 border border-[#b8c4a8] rounded-xl text-[#555D4C] hover:bg-[#e8ece2] hover:text-[#284703] transition-all duration-200"
               >
                 Cancelar
               </button>
               <button
                 onClick={handleSubmit}
-                className="px-6 py-3 bg-gradient-to-r from-[#22c55e] to-[#166534] rounded-xl text-white font-medium hover:shadow-lg hover:shadow-green-200 hover:scale-[1.02] active:scale-[0.98] transition-all duration-200"
+                className="px-6 py-3 bg-gradient-to-r from-[#4A701C] to-[#284703] rounded-xl text-white font-medium hover:shadow-lg hover:shadow-green-200 hover:scale-[1.02] active:scale-[0.98] transition-all duration-200"
               >
                 Cadastrar Produto
               </button>
@@ -1066,9 +1066,9 @@ export default function EstoquePage() {
       {/* Modal Movimentação */}
       {showMovModal && selectedProduto && (
         <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-[#f0f8ea] border border-[#AADF94] rounded-2xl w-full max-w-md animate-fade-in shadow-2xl">
-            <div className="p-6 border-b border-[#AADF94]">
-              <h2 className="text-xl font-semibold text-[#1a3a12]">
+          <div className="bg-[#f2f4ee] border border-[#b8c4a8] rounded-2xl w-full max-w-md animate-fade-in shadow-2xl">
+            <div className="p-6 border-b border-[#b8c4a8]">
+              <h2 className="text-xl font-semibold text-[#284703]">
                 {movTipo === 'ENTRADA' ? 'Entrada de Estoque' : 'Saída de Estoque'}
               </h2>
               <p className="text-sm text-[#6B7280] mt-1">{selectedProduto.nome}</p>
@@ -1076,27 +1076,27 @@ export default function EstoquePage() {
             </div>
             <div className="p-6 space-y-4">
               <div>
-                <label className="block text-sm font-medium text-[#4D9F3F] mb-2">Quantidade</label>
+                <label className="block text-sm font-medium text-[#555D4C] mb-2">Quantidade</label>
                 <input
                   type="number"
                   value={movQuantidade}
                   onChange={(e) => setMovQuantidade(e.target.value)}
                   placeholder="0"
-                  className="w-full bg-[#daeece] border border-[#AADF94] rounded-xl px-4 py-3 text-[#1a3a12] placeholder-[#7CBF6A] focus:outline-none focus:border-[#22c55e]/50 focus:ring-1 focus:ring-[#22c55e]/20 transition-all duration-200"
+                  className="w-full bg-[#e8ece2] border border-[#b8c4a8] rounded-xl px-4 py-3 text-[#284703] placeholder-[#88B257] focus:outline-none focus:border-[#4A701C]/50 focus:ring-1 focus:ring-[#4A701C]/20 transition-all duration-200"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-[#4D9F3F] mb-2">Motivo (opcional)</label>
+                <label className="block text-sm font-medium text-[#555D4C] mb-2">Motivo (opcional)</label>
                 <input
                   type="text"
                   value={movMotivo}
                   onChange={(e) => setMovMotivo(e.target.value)}
                   placeholder="Ex: Compra NF 12345"
-                  className="w-full bg-[#daeece] border border-[#AADF94] rounded-xl px-4 py-3 text-[#1a3a12] placeholder-[#7CBF6A] focus:outline-none focus:border-[#22c55e]/50 focus:ring-1 focus:ring-[#22c55e]/20 transition-all duration-200"
+                  className="w-full bg-[#e8ece2] border border-[#b8c4a8] rounded-xl px-4 py-3 text-[#284703] placeholder-[#88B257] focus:outline-none focus:border-[#4A701C]/50 focus:ring-1 focus:ring-[#4A701C]/20 transition-all duration-200"
                 />
               </div>
             </div>
-            <div className="p-6 border-t border-[#AADF94] flex gap-3 justify-end">
+            <div className="p-6 border-t border-[#b8c4a8] flex gap-3 justify-end">
               <button
                 onClick={() => {
                   setShowMovModal(false);
@@ -1104,7 +1104,7 @@ export default function EstoquePage() {
                   setMovQuantidade('');
                   setMovMotivo('');
                 }}
-                className="px-6 py-3 border border-[#AADF94] rounded-xl text-[#4D9F3F] hover:bg-[#daeece] hover:text-[#1a3a12] transition-all duration-200"
+                className="px-6 py-3 border border-[#b8c4a8] rounded-xl text-[#555D4C] hover:bg-[#e8ece2] hover:text-[#284703] transition-all duration-200"
               >
                 Cancelar
               </button>
@@ -1112,7 +1112,7 @@ export default function EstoquePage() {
                 onClick={handleMovimentacao}
                 className={`px-6 py-3 rounded-xl text-white font-medium hover:scale-[1.02] active:scale-[0.98] transition-all duration-200 ${
                   movTipo === 'ENTRADA'
-                    ? 'bg-gradient-to-r from-[#22c55e] to-[#166534] hover:shadow-lg hover:shadow-green-200'
+                    ? 'bg-gradient-to-r from-[#4A701C] to-[#284703] hover:shadow-lg hover:shadow-green-200'
                     : 'bg-gradient-to-r from-red-500 to-red-700 hover:shadow-lg hover:shadow-red-500/25'
                 }`}
               >
@@ -1182,9 +1182,9 @@ export default function EstoquePage() {
       {/* Modal para revisar itens da NF */}
       {showOcrItems && ocrItems.length > 0 && (
         <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-[#f0f8ea] border border-[#AADF94] rounded-2xl shadow-2xl w-full max-w-3xl animate-fade-in max-h-[90vh] overflow-hidden flex flex-col">
-            <div className="p-6 border-b border-[#AADF94]">
-              <h2 className="text-xl font-semibold text-[#1a3a12]">Itens da Nota Fiscal</h2>
+          <div className="bg-[#f2f4ee] border border-[#b8c4a8] rounded-2xl shadow-2xl w-full max-w-3xl animate-fade-in max-h-[90vh] overflow-hidden flex flex-col">
+            <div className="p-6 border-b border-[#b8c4a8]">
+              <h2 className="text-xl font-semibold text-[#284703]">Itens da Nota Fiscal</h2>
               <p className="text-sm text-[#6B7280] mt-1">
                 {ocrResult?.numeroNF && `NF: ${ocrResult.numeroNF} • `}
                 {ocrResult?.fornecedor && `${ocrResult.fornecedor} • `}
@@ -1200,7 +1200,7 @@ export default function EstoquePage() {
                       ? item.existingProduct
                         ? 'bg-amber-50 border-amber-300'
                         : 'bg-green-50 border-green-300'
-                      : 'bg-[#daeece] border-[#AADF94]'
+                      : 'bg-[#e8ece2] border-[#b8c4a8]'
                   }`}
                 >
                   {item.existingProduct && (
@@ -1211,7 +1211,7 @@ export default function EstoquePage() {
                           <span className="text-amber-600 text-sm font-medium">Produto já existe no estoque</span>
                         </div>
                         <label className="flex items-center gap-2 cursor-pointer">
-                          <span className="text-xs text-[#4D9F3F]">
+                          <span className="text-xs text-[#555D4C]">
                             {item.updateExisting ? 'Atualizar qtd' : 'Criar novo'}
                           </span>
                           <input
@@ -1226,11 +1226,11 @@ export default function EstoquePage() {
                           />
                         </label>
                       </div>
-                      <p className="text-xs text-[#4D9F3F] mt-1">
-                        <span className="text-[#1a3a12]">{item.existingProduct.nome}</span>
+                      <p className="text-xs text-[#555D4C] mt-1">
+                        <span className="text-[#284703]">{item.existingProduct.nome}</span>
                         {' • '}Estoque atual: <span className="text-amber-600">{item.existingProduct.quantidade} {item.existingProduct.unidade}</span>
                         {item.updateExisting && (
-                          <span> → <span className="text-[#22c55e]">{item.existingProduct.quantidade + (item.quantidade || 0)} {item.existingProduct.unidade}</span></span>
+                          <span> → <span className="text-[#4A701C]">{item.existingProduct.quantidade + (item.quantidade || 0)} {item.existingProduct.unidade}</span></span>
                         )}
                       </p>
                     </div>
@@ -1244,7 +1244,7 @@ export default function EstoquePage() {
                         newItems[index].selected = e.target.checked;
                         setOcrItems(newItems);
                       }}
-                      className="mt-1 w-5 h-5 accent-[#22c55e]"
+                      className="mt-1 w-5 h-5 accent-[#4A701C]"
                     />
                     <div className="flex-1 space-y-3">
                       <div>
@@ -1257,7 +1257,7 @@ export default function EstoquePage() {
                             newItems[index].descricao = e.target.value;
                             setOcrItems(newItems);
                           }}
-                          className="w-full bg-[#f0f8ea] border border-[#AADF94] rounded-lg px-3 py-2 text-[#1a3a12] text-sm focus:outline-none focus:border-[#22c55e]/50 focus:ring-1 focus:ring-[#22c55e]/20 transition-all duration-200"
+                          className="w-full bg-[#f2f4ee] border border-[#b8c4a8] rounded-lg px-3 py-2 text-[#284703] text-sm focus:outline-none focus:border-[#4A701C]/50 focus:ring-1 focus:ring-[#4A701C]/20 transition-all duration-200"
                         />
                       </div>
                       <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
@@ -1270,7 +1270,7 @@ export default function EstoquePage() {
                               newItems[index].categoria = e.target.value;
                               setOcrItems(newItems);
                             }}
-                            className="w-full bg-[#f0f8ea] border border-[#AADF94] rounded-lg px-3 py-2 text-[#1a3a12] text-sm focus:outline-none focus:border-[#22c55e]/50 focus:ring-1 focus:ring-[#22c55e]/20 transition-all duration-200"
+                            className="w-full bg-[#f2f4ee] border border-[#b8c4a8] rounded-lg px-3 py-2 text-[#284703] text-sm focus:outline-none focus:border-[#4A701C]/50 focus:ring-1 focus:ring-[#4A701C]/20 transition-all duration-200"
                           >
                             {categorias.filter(c => c.value).map(cat => (
                               <option key={cat.value} value={cat.value}>{cat.label}</option>
@@ -1286,7 +1286,7 @@ export default function EstoquePage() {
                               newItems[index].unidade = e.target.value;
                               setOcrItems(newItems);
                             }}
-                            className="w-full bg-[#f0f8ea] border border-[#AADF94] rounded-lg px-3 py-2 text-[#1a3a12] text-sm focus:outline-none focus:border-[#22c55e]/50 focus:ring-1 focus:ring-[#22c55e]/20 transition-all duration-200"
+                            className="w-full bg-[#f2f4ee] border border-[#b8c4a8] rounded-lg px-3 py-2 text-[#284703] text-sm focus:outline-none focus:border-[#4A701C]/50 focus:ring-1 focus:ring-[#4A701C]/20 transition-all duration-200"
                           >
                             <option value="LITRO">Litro</option>
                             <option value="UNIDADE">Unidade</option>
@@ -1304,7 +1304,7 @@ export default function EstoquePage() {
                               newItems[index].codigo = e.target.value;
                               setOcrItems(newItems);
                             }}
-                            className="w-full bg-[#f0f8ea] border border-[#AADF94] rounded-lg px-3 py-2 text-[#1a3a12] text-sm focus:outline-none focus:border-[#22c55e]/50 focus:ring-1 focus:ring-[#22c55e]/20 transition-all duration-200"
+                            className="w-full bg-[#f2f4ee] border border-[#b8c4a8] rounded-lg px-3 py-2 text-[#284703] text-sm focus:outline-none focus:border-[#4A701C]/50 focus:ring-1 focus:ring-[#4A701C]/20 transition-all duration-200"
                           />
                         </div>
                       </div>
@@ -1319,7 +1319,7 @@ export default function EstoquePage() {
                               newItems[index].quantidade = parseFloat(e.target.value) || 0;
                               setOcrItems(newItems);
                             }}
-                            className="w-full bg-[#f0f8ea] border border-[#AADF94] rounded-lg px-3 py-2 text-[#1a3a12] text-sm focus:outline-none focus:border-[#22c55e]/50 focus:ring-1 focus:ring-[#22c55e]/20 transition-all duration-200"
+                            className="w-full bg-[#f2f4ee] border border-[#b8c4a8] rounded-lg px-3 py-2 text-[#284703] text-sm focus:outline-none focus:border-[#4A701C]/50 focus:ring-1 focus:ring-[#4A701C]/20 transition-all duration-200"
                           />
                         </div>
                         <div>
@@ -1333,7 +1333,7 @@ export default function EstoquePage() {
                               newItems[index].precoCompra = parseFloat(e.target.value) || 0;
                               setOcrItems(newItems);
                             }}
-                            className="w-full bg-[#f0f8ea] border border-[#AADF94] rounded-lg px-3 py-2 text-[#1a3a12] text-sm focus:outline-none focus:border-[#22c55e]/50 focus:ring-1 focus:ring-[#22c55e]/20 transition-all duration-200"
+                            className="w-full bg-[#f2f4ee] border border-[#b8c4a8] rounded-lg px-3 py-2 text-[#284703] text-sm focus:outline-none focus:border-[#4A701C]/50 focus:ring-1 focus:ring-[#4A701C]/20 transition-all duration-200"
                           />
                         </div>
                         <div>
@@ -1353,10 +1353,10 @@ export default function EstoquePage() {
                               newItems[index].precoVenda = parseFloat(e.target.value) || 0;
                               setOcrItems(newItems);
                             }}
-                            className={`w-full bg-[#f0f8ea] rounded-lg px-3 py-2 text-[#1a3a12] text-sm focus:outline-none ${
+                            className={`w-full bg-[#f2f4ee] rounded-lg px-3 py-2 text-[#284703] text-sm focus:outline-none ${
                               item.selected && !item.updateExisting && !item.precoVenda
                                 ? 'border-2 border-red-500 focus:border-red-500'
-                                : 'border border-[#AADF94] focus:border-[#22c55e]'
+                                : 'border border-[#b8c4a8] focus:border-[#4A701C]'
                             }`}
                             placeholder={item.selected && !item.updateExisting ? 'Obrigatório' : '0.00'}
                           />
@@ -1371,7 +1371,7 @@ export default function EstoquePage() {
                               newItems[index].estoqueMinimo = parseFloat(e.target.value) || 0;
                               setOcrItems(newItems);
                             }}
-                            className="w-full bg-[#f0f8ea] border border-[#AADF94] rounded-lg px-3 py-2 text-[#1a3a12] text-sm focus:outline-none focus:border-[#22c55e]/50 focus:ring-1 focus:ring-[#22c55e]/20 transition-all duration-200"
+                            className="w-full bg-[#f2f4ee] border border-[#b8c4a8] rounded-lg px-3 py-2 text-[#284703] text-sm focus:outline-none focus:border-[#4A701C]/50 focus:ring-1 focus:ring-[#4A701C]/20 transition-all duration-200"
                           />
                         </div>
                       </div>
@@ -1380,14 +1380,14 @@ export default function EstoquePage() {
                 </div>
               ))}
             </div>
-            <div className="p-6 border-t border-[#AADF94] flex gap-3 justify-between">
+            <div className="p-6 border-t border-[#b8c4a8] flex gap-3 justify-between">
               <button
                 onClick={() => {
                   setShowOcrItems(false);
                   setOcrItems([]);
                   setOcrResult(null);
                 }}
-                className="px-6 py-3 border border-[#AADF94] rounded-xl text-[#4D9F3F] hover:bg-[#daeece] hover:text-[#1a3a12] transition-all duration-200"
+                className="px-6 py-3 border border-[#b8c4a8] rounded-xl text-[#555D4C] hover:bg-[#e8ece2] hover:text-[#284703] transition-all duration-200"
               >
                 Cancelar
               </button>
@@ -1465,7 +1465,7 @@ export default function EstoquePage() {
                   ocrItems.filter(i => i.selected).length === 0 ||
                   ocrItems.some(i => i.selected && !i.updateExisting && !i.precoVenda)
                 }
-                className="px-6 py-3 bg-gradient-to-r from-[#22c55e] to-[#166534] rounded-xl text-white font-medium hover:opacity-90 transition-opacity disabled:opacity-50"
+                className="px-6 py-3 bg-gradient-to-r from-[#4A701C] to-[#284703] rounded-xl text-white font-medium hover:opacity-90 transition-opacity disabled:opacity-50"
               >
                 {savingOcr
                   ? 'Salvando...'
@@ -1481,48 +1481,48 @@ export default function EstoquePage() {
       {/* Modal Editar Produto */}
       {showEditModal && editingProduto && (
         <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-[#f0f8ea] border border-[#AADF94] rounded-2xl shadow-2xl w-full max-w-lg animate-fade-in max-h-[90vh] overflow-y-auto">
-            <div className="p-6 border-b border-[#AADF94]">
-              <h2 className="text-xl font-semibold text-[#1a3a12]">Editar Produto</h2>
+          <div className="bg-[#f2f4ee] border border-[#b8c4a8] rounded-2xl shadow-2xl w-full max-w-lg animate-fade-in max-h-[90vh] overflow-y-auto">
+            <div className="p-6 border-b border-[#b8c4a8]">
+              <h2 className="text-xl font-semibold text-[#284703]">Editar Produto</h2>
               <p className="text-sm text-[#6B7280] mt-1">Atualize as informações do produto</p>
             </div>
             <div className="p-6 space-y-4">
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-[#4D9F3F] mb-2">Código</label>
+                  <label className="block text-sm font-medium text-[#555D4C] mb-2">Código</label>
                   <input
                     type="text"
                     value={editingForm.codigo}
                     onChange={(e) => setEditingForm({ ...editingForm, codigo: e.target.value })}
-                    className="w-full bg-[#daeece] border border-[#AADF94] rounded-xl px-4 py-3 text-[#1a3a12] placeholder-[#7CBF6A] focus:outline-none focus:border-[#22c55e]/50 focus:ring-1 focus:ring-[#22c55e]/20 transition-all duration-200"
+                    className="w-full bg-[#e8ece2] border border-[#b8c4a8] rounded-xl px-4 py-3 text-[#284703] placeholder-[#88B257] focus:outline-none focus:border-[#4A701C]/50 focus:ring-1 focus:ring-[#4A701C]/20 transition-all duration-200"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-[#4D9F3F] mb-2">Marca</label>
+                  <label className="block text-sm font-medium text-[#555D4C] mb-2">Marca</label>
                   <input
                     type="text"
                     value={editingForm.marca}
                     onChange={(e) => setEditingForm({ ...editingForm, marca: e.target.value })}
-                    className="w-full bg-[#daeece] border border-[#AADF94] rounded-xl px-4 py-3 text-[#1a3a12] placeholder-[#7CBF6A] focus:outline-none focus:border-[#22c55e]/50 focus:ring-1 focus:ring-[#22c55e]/20 transition-all duration-200"
+                    className="w-full bg-[#e8ece2] border border-[#b8c4a8] rounded-xl px-4 py-3 text-[#284703] placeholder-[#88B257] focus:outline-none focus:border-[#4A701C]/50 focus:ring-1 focus:ring-[#4A701C]/20 transition-all duration-200"
                   />
                 </div>
               </div>
               <div>
-                <label className="block text-sm font-medium text-[#4D9F3F] mb-2">Nome do Produto</label>
+                <label className="block text-sm font-medium text-[#555D4C] mb-2">Nome do Produto</label>
                 <input
                   type="text"
                   value={editingForm.nome}
                   onChange={(e) => setEditingForm({ ...editingForm, nome: e.target.value })}
-                  className="w-full bg-[#daeece] border border-[#AADF94] rounded-xl px-4 py-3 text-[#1a3a12] placeholder-[#7CBF6A] focus:outline-none focus:border-[#22c55e]/50 focus:ring-1 focus:ring-[#22c55e]/20 transition-all duration-200"
+                  className="w-full bg-[#e8ece2] border border-[#b8c4a8] rounded-xl px-4 py-3 text-[#284703] placeholder-[#88B257] focus:outline-none focus:border-[#4A701C]/50 focus:ring-1 focus:ring-[#4A701C]/20 transition-all duration-200"
                 />
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-[#4D9F3F] mb-2">Categoria</label>
+                  <label className="block text-sm font-medium text-[#555D4C] mb-2">Categoria</label>
                   <select
                     value={editingForm.categoria}
                     onChange={(e) => setEditingForm({ ...editingForm, categoria: e.target.value })}
-                    className="w-full bg-[#daeece] border border-[#AADF94] rounded-xl px-4 py-3 text-[#1a3a12] focus:outline-none focus:border-[#22c55e]/50 focus:ring-1 focus:ring-[#22c55e]/20 transition-all duration-200"
+                    className="w-full bg-[#e8ece2] border border-[#b8c4a8] rounded-xl px-4 py-3 text-[#284703] focus:outline-none focus:border-[#4A701C]/50 focus:ring-1 focus:ring-[#4A701C]/20 transition-all duration-200"
                   >
                     {categorias.filter(c => c.value).map((cat) => (
                       <option key={cat.value} value={cat.value}>{cat.label}</option>
@@ -1530,11 +1530,11 @@ export default function EstoquePage() {
                   </select>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-[#4D9F3F] mb-2">Unidade</label>
+                  <label className="block text-sm font-medium text-[#555D4C] mb-2">Unidade</label>
                   <select
                     value={editingForm.unidade}
                     onChange={(e) => setEditingForm({ ...editingForm, unidade: e.target.value })}
-                    className="w-full bg-[#daeece] border border-[#AADF94] rounded-xl px-4 py-3 text-[#1a3a12] focus:outline-none focus:border-[#22c55e]/50 focus:ring-1 focus:ring-[#22c55e]/20 transition-all duration-200"
+                    className="w-full bg-[#e8ece2] border border-[#b8c4a8] rounded-xl px-4 py-3 text-[#284703] focus:outline-none focus:border-[#4A701C]/50 focus:ring-1 focus:ring-[#4A701C]/20 transition-all duration-200"
                   >
                     <option value="LITRO">Litro</option>
                     <option value="UNIDADE">Unidade</option>
@@ -1545,71 +1545,71 @@ export default function EstoquePage() {
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-[#4D9F3F] mb-2">Quantidade</label>
+                  <label className="block text-sm font-medium text-[#555D4C] mb-2">Quantidade</label>
                   <input
                     type="number"
                     value={editingForm.quantidade}
                     onChange={(e) => setEditingForm({ ...editingForm, quantidade: e.target.value })}
-                    className="w-full bg-[#daeece] border border-[#AADF94] rounded-xl px-4 py-3 text-[#1a3a12] placeholder-[#7CBF6A] focus:outline-none focus:border-[#22c55e]/50 focus:ring-1 focus:ring-[#22c55e]/20 transition-all duration-200"
+                    className="w-full bg-[#e8ece2] border border-[#b8c4a8] rounded-xl px-4 py-3 text-[#284703] placeholder-[#88B257] focus:outline-none focus:border-[#4A701C]/50 focus:ring-1 focus:ring-[#4A701C]/20 transition-all duration-200"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-[#4D9F3F] mb-2">Estoque Mínimo</label>
+                  <label className="block text-sm font-medium text-[#555D4C] mb-2">Estoque Mínimo</label>
                   <input
                     type="number"
                     value={editingForm.estoqueMinimo}
                     onChange={(e) => setEditingForm({ ...editingForm, estoqueMinimo: e.target.value })}
-                    className="w-full bg-[#daeece] border border-[#AADF94] rounded-xl px-4 py-3 text-[#1a3a12] placeholder-[#7CBF6A] focus:outline-none focus:border-[#22c55e]/50 focus:ring-1 focus:ring-[#22c55e]/20 transition-all duration-200"
+                    className="w-full bg-[#e8ece2] border border-[#b8c4a8] rounded-xl px-4 py-3 text-[#284703] placeholder-[#88B257] focus:outline-none focus:border-[#4A701C]/50 focus:ring-1 focus:ring-[#4A701C]/20 transition-all duration-200"
                   />
                 </div>
               </div>
               <div className="grid grid-cols-3 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-[#4D9F3F] mb-2">Preço Compra</label>
+                  <label className="block text-sm font-medium text-[#555D4C] mb-2">Preço Compra</label>
                   <input
                     type="number"
                     step="0.01"
                     value={editingForm.precoCompra}
                     onChange={(e) => setEditingForm({ ...editingForm, precoCompra: e.target.value })}
-                    className="w-full bg-[#daeece] border border-[#AADF94] rounded-xl px-4 py-3 text-[#1a3a12] placeholder-[#7CBF6A] focus:outline-none focus:border-[#22c55e]/50 focus:ring-1 focus:ring-[#22c55e]/20 transition-all duration-200"
+                    className="w-full bg-[#e8ece2] border border-[#b8c4a8] rounded-xl px-4 py-3 text-[#284703] placeholder-[#88B257] focus:outline-none focus:border-[#4A701C]/50 focus:ring-1 focus:ring-[#4A701C]/20 transition-all duration-200"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-[#4D9F3F] mb-2">Preço Venda</label>
+                  <label className="block text-sm font-medium text-[#555D4C] mb-2">Preço Venda</label>
                   <input
                     type="number"
                     step="0.01"
                     value={editingForm.precoVenda}
                     onChange={(e) => setEditingForm({ ...editingForm, precoVenda: e.target.value })}
-                    className="w-full bg-[#daeece] border border-[#AADF94] rounded-xl px-4 py-3 text-[#1a3a12] placeholder-[#7CBF6A] focus:outline-none focus:border-[#22c55e]/50 focus:ring-1 focus:ring-[#22c55e]/20 transition-all duration-200"
+                    className="w-full bg-[#e8ece2] border border-[#b8c4a8] rounded-xl px-4 py-3 text-[#284703] placeholder-[#88B257] focus:outline-none focus:border-[#4A701C]/50 focus:ring-1 focus:ring-[#4A701C]/20 transition-all duration-200"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-[#4D9F3F] mb-2">Preço Granel</label>
+                  <label className="block text-sm font-medium text-[#555D4C] mb-2">Preço Granel</label>
                   <input
                     type="number"
                     step="0.01"
                     value={editingForm.precoGranel}
                     onChange={(e) => setEditingForm({ ...editingForm, precoGranel: e.target.value })}
                     placeholder="Por litro"
-                    className="w-full bg-[#daeece] border border-[#AADF94] rounded-xl px-4 py-3 text-[#1a3a12] placeholder-[#7CBF6A] focus:outline-none focus:border-[#22c55e]/50 focus:ring-1 focus:ring-[#22c55e]/20 transition-all duration-200"
+                    className="w-full bg-[#e8ece2] border border-[#b8c4a8] rounded-xl px-4 py-3 text-[#284703] placeholder-[#88B257] focus:outline-none focus:border-[#4A701C]/50 focus:ring-1 focus:ring-[#4A701C]/20 transition-all duration-200"
                   />
                 </div>
               </div>
             </div>
-            <div className="p-6 border-t border-[#AADF94] flex gap-3 justify-end">
+            <div className="p-6 border-t border-[#b8c4a8] flex gap-3 justify-end">
               <button
                 onClick={() => {
                   setShowEditModal(false);
                   setEditingProduto(null);
                 }}
-                className="px-6 py-3 border border-[#AADF94] rounded-xl text-[#4D9F3F] hover:bg-[#daeece] hover:text-[#1a3a12] transition-all duration-200"
+                className="px-6 py-3 border border-[#b8c4a8] rounded-xl text-[#555D4C] hover:bg-[#e8ece2] hover:text-[#284703] transition-all duration-200"
               >
                 Cancelar
               </button>
               <button
                 onClick={handleEditSubmit}
-                className="px-6 py-3 bg-gradient-to-r from-[#22c55e] to-[#166534] rounded-xl text-white font-medium hover:shadow-lg hover:shadow-green-200 hover:scale-[1.02] active:scale-[0.98] transition-all duration-200"
+                className="px-6 py-3 bg-gradient-to-r from-[#4A701C] to-[#284703] rounded-xl text-white font-medium hover:shadow-lg hover:shadow-green-200 hover:scale-[1.02] active:scale-[0.98] transition-all duration-200"
               >
                 Salvar Alterações
               </button>
@@ -1621,9 +1621,9 @@ export default function EstoquePage() {
       {/* Modal Confirmar Exclusão */}
       {showDeleteConfirm && deletingProduto && (
         <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-[#f0f8ea] border border-[#AADF94] rounded-2xl shadow-2xl w-full max-w-md animate-fade-in">
-            <div className="p-6 border-b border-[#AADF94]">
-              <h2 className="text-xl font-semibold text-[#1a3a12]">Confirmar Exclusão</h2>
+          <div className="bg-[#f2f4ee] border border-[#b8c4a8] rounded-2xl shadow-2xl w-full max-w-md animate-fade-in">
+            <div className="p-6 border-b border-[#b8c4a8]">
+              <h2 className="text-xl font-semibold text-[#284703]">Confirmar Exclusão</h2>
             </div>
             <div className="p-6">
               <div className="flex items-center gap-4 mb-4">
@@ -1631,21 +1631,21 @@ export default function EstoquePage() {
                   <Trash2 size={24} className="text-red-400" />
                 </div>
                 <div>
-                  <p className="text-[#1a3a12] font-medium">{deletingProduto.nome}</p>
+                  <p className="text-[#284703] font-medium">{deletingProduto.nome}</p>
                   <p className="text-sm text-[#6B7280]">{deletingProduto.codigo} • {deletingProduto.marca}</p>
                 </div>
               </div>
-              <p className="text-[#4D9F3F] text-sm">
+              <p className="text-[#555D4C] text-sm">
                 Tem certeza que deseja excluir este produto? Esta ação não pode ser desfeita.
               </p>
             </div>
-            <div className="p-6 border-t border-[#AADF94] flex gap-3 justify-end">
+            <div className="p-6 border-t border-[#b8c4a8] flex gap-3 justify-end">
               <button
                 onClick={() => {
                   setShowDeleteConfirm(false);
                   setDeletingProduto(null);
                 }}
-                className="px-6 py-3 border border-[#AADF94] rounded-xl text-[#4D9F3F] hover:bg-[#daeece] hover:text-[#1a3a12] transition-all duration-200"
+                className="px-6 py-3 border border-[#b8c4a8] rounded-xl text-[#555D4C] hover:bg-[#e8ece2] hover:text-[#284703] transition-all duration-200"
               >
                 Cancelar
               </button>
@@ -1663,9 +1663,9 @@ export default function EstoquePage() {
       {/* Modal Histórico de Movimentações */}
       {showHistoryModal && historyProduto && (
         <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-[#f0f8ea] border border-[#AADF94] rounded-2xl shadow-2xl w-full max-w-2xl animate-fade-in max-h-[80vh] overflow-hidden flex flex-col">
-            <div className="p-6 border-b border-[#AADF94]">
-              <h2 className="text-xl font-semibold text-[#1a3a12]">Histórico de Movimentações</h2>
+          <div className="bg-[#f2f4ee] border border-[#b8c4a8] rounded-2xl shadow-2xl w-full max-w-2xl animate-fade-in max-h-[80vh] overflow-hidden flex flex-col">
+            <div className="p-6 border-b border-[#b8c4a8]">
+              <h2 className="text-xl font-semibold text-[#284703]">Histórico de Movimentações</h2>
               <p className="text-sm text-[#6B7280] mt-1">{historyProduto.nome}</p>
               <p className="text-xs text-[#6B7280]">
                 {historyProduto.codigo} • Estoque atual: {historyProduto.quantidade} {historyProduto.unidade}
@@ -1695,7 +1695,7 @@ export default function EstoquePage() {
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-3">
                           {mov.tipo === 'ENTRADA' ? (
-                            <ArrowDownCircle size={20} className="text-[#22c55e]" />
+                            <ArrowDownCircle size={20} className="text-[#4A701C]" />
                           ) : mov.tipo === 'SAIDA' ? (
                             <ArrowUpCircle size={20} className="text-red-400" />
                           ) : (
@@ -1703,12 +1703,12 @@ export default function EstoquePage() {
                           )}
                           <div>
                             <p className={`font-medium ${
-                              mov.tipo === 'ENTRADA' ? 'text-[#22c55e]' : mov.tipo === 'SAIDA' ? 'text-red-400' : 'text-blue-600'
+                              mov.tipo === 'ENTRADA' ? 'text-[#4A701C]' : mov.tipo === 'SAIDA' ? 'text-red-400' : 'text-blue-600'
                             }`}>
                               {mov.tipo === 'ENTRADA' ? '+' : mov.tipo === 'SAIDA' ? '-' : ''}{mov.quantidade} {historyProduto.unidade}
                             </p>
                             {mov.motivo && (
-                              <p className="text-sm text-[#4D9F3F]">{mov.motivo}</p>
+                              <p className="text-sm text-[#555D4C]">{mov.motivo}</p>
                             )}
                           </div>
                         </div>
@@ -1726,14 +1726,14 @@ export default function EstoquePage() {
                 </div>
               )}
             </div>
-            <div className="p-6 border-t border-[#AADF94] flex justify-end">
+            <div className="p-6 border-t border-[#b8c4a8] flex justify-end">
               <button
                 onClick={() => {
                   setShowHistoryModal(false);
                   setHistoryProduto(null);
                   setMovimentacoes([]);
                 }}
-                className="px-6 py-3 border border-[#AADF94] rounded-xl text-[#4D9F3F] hover:bg-[#daeece] hover:text-[#1a3a12] transition-all duration-200"
+                className="px-6 py-3 border border-[#b8c4a8] rounded-xl text-[#555D4C] hover:bg-[#e8ece2] hover:text-[#284703] transition-all duration-200"
               >
                 Fechar
               </button>
