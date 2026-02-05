@@ -36,12 +36,12 @@ export default function Sidebar() {
 
   return (
     <aside
-      className={`fixed left-0 top-0 h-screen bg-gradient-to-b from-[#0f0f0f] to-[#0a0a0a] border-r border-[#1a1a1a] flex flex-col transition-all duration-300 z-50 ${
+      className={`fixed left-0 top-0 h-screen bg-white border-r border-gray-200 flex flex-col transition-all duration-300 z-50 shadow-sm ${
         collapsed ? 'w-20' : 'w-72'
       }`}
     >
       {/* Logo */}
-      <div className="p-4 border-b border-[#1a1a1a]">
+      <div className="p-4 border-b border-gray-200">
         <div className="flex items-center justify-center">
           <Image
             src="/logo.png"
@@ -73,7 +73,7 @@ export default function Sidebar() {
               className={`flex items-center gap-3 px-4 py-3.5 rounded-xl transition-all duration-300 group relative overflow-hidden ${
                 isActive
                   ? 'bg-gradient-to-r from-[#22c55e] to-[#166534] text-white shadow-lg shadow-[#22c55e]/25'
-                  : 'text-[#94a3b8] hover:bg-[#1a1a1a] hover:text-white'
+                  : 'text-gray-500 hover:bg-gray-50 hover:text-gray-900'
               } ${collapsed ? 'justify-center px-3' : ''}`}
               title={collapsed ? item.label : undefined}
               style={{ animationDelay: `${index * 0.05}s` }}
@@ -99,10 +99,10 @@ export default function Sidebar() {
       </nav>
 
       {/* Footer */}
-      <div className="p-4 border-t border-[#1a1a1a] space-y-1.5">
+      <div className="p-4 border-t border-gray-200 space-y-1.5">
         <Link
           href="/configuracoes"
-          className={`flex items-center gap-3 px-4 py-3 rounded-xl text-[#94a3b8] hover:bg-[#1a1a1a] hover:text-white transition-all duration-300 group ${
+          className={`flex items-center gap-3 px-4 py-3 rounded-xl text-gray-500 hover:bg-gray-50 hover:text-gray-900 transition-all duration-300 group ${
             collapsed ? 'justify-center px-3' : ''
           }`}
           title={collapsed ? 'Configurações' : undefined}
@@ -111,7 +111,7 @@ export default function Sidebar() {
           {!collapsed && <span className="font-medium">Configurações</span>}
         </Link>
         <button
-          className={`flex items-center gap-3 px-4 py-3 rounded-xl text-[#94a3b8] hover:bg-red-500/10 hover:text-red-400 transition-all duration-300 w-full group ${
+          className={`flex items-center gap-3 px-4 py-3 rounded-xl text-gray-500 hover:bg-red-50 hover:text-red-500 transition-all duration-300 w-full group ${
             collapsed ? 'justify-center px-3' : ''
           }`}
           title={collapsed ? 'Sair' : undefined}

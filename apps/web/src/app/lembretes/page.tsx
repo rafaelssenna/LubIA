@@ -85,22 +85,22 @@ const getUrgenciaConfig = (urgencia: string) => {
   switch (urgencia) {
     case 'alta':
       return {
-        color: 'bg-red-500/20 text-red-400 border-red-500/30',
+        color: 'bg-red-50 text-red-600 border-red-200',
         label: 'Urgente',
       };
     case 'media':
       return {
-        color: 'bg-amber-500/20 text-amber-400 border-amber-500/30',
+        color: 'bg-amber-50 text-amber-600 border-amber-200',
         label: 'Atenção',
       };
     case 'baixa':
       return {
-        color: 'bg-green-500/20 text-green-400 border-green-500/30',
+        color: 'bg-green-50 text-green-600 border-green-200',
         label: 'Normal',
       };
     default:
       return {
-        color: 'bg-gray-500/20 text-gray-400 border-gray-500/30',
+        color: 'bg-gray-50 text-gray-500 border-gray-200',
         label: urgencia,
       };
   }
@@ -110,19 +110,19 @@ const getStatusConfig = (status: string) => {
   switch (status) {
     case 'pendente':
       return {
-        color: 'text-amber-400',
+        color: 'text-amber-600',
         label: 'Pendente',
         icon: Clock,
       };
     case 'enviado':
       return {
-        color: 'text-blue-400',
+        color: 'text-blue-600',
         label: 'Enviado',
         icon: Send,
       };
     case 'confirmado':
       return {
-        color: 'text-green-400',
+        color: 'text-green-600',
         label: 'Confirmado',
         icon: CheckCircle,
       };
@@ -140,52 +140,52 @@ export default function LembretesPage() {
   const [filterUrgencia, setFilterUrgencia] = useState('todos');
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#0a0a0a] via-[#0f0f0f] to-[#0a0a0a]">
+    <div className="min-h-screen bg-gray-50/50">
       <Header title="Lembretes" subtitle="Gerencie lembretes de manutenção" />
 
       <div className="p-6 space-y-6 animate-fade-in">
         {/* Stats */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <div className="bg-gradient-to-br from-[#1a1a1a] to-[#141414] border border-[#2a2a2a] rounded-xl p-4 hover:border-red-500/30 hover:shadow-lg hover:shadow-red-500/5 transition-all duration-300">
+          <div className="bg-white border border-gray-200 rounded-xl p-4 hover:border-red-500/30 hover:shadow-lg hover:shadow-red-500/5 transition-all duration-300">
             <div className="flex items-center gap-3">
-              <div className="p-2.5 bg-red-500/20 rounded-xl ring-1 ring-red-500/20">
+              <div className="p-2.5 bg-red-50 rounded-xl ring-1 ring-red-500/20">
                 <AlertCircle size={20} className="text-red-400" />
               </div>
               <div>
-                <p className="text-2xl font-bold text-white">3</p>
+                <p className="text-2xl font-bold text-gray-900">3</p>
                 <p className="text-xs text-[#6B7280]">Urgentes</p>
               </div>
             </div>
           </div>
-          <div className="bg-gradient-to-br from-[#1a1a1a] to-[#141414] border border-[#2a2a2a] rounded-xl p-4 hover:border-amber-500/30 hover:shadow-lg hover:shadow-amber-500/5 transition-all duration-300">
+          <div className="bg-white border border-gray-200 rounded-xl p-4 hover:border-amber-500/30 hover:shadow-lg hover:shadow-amber-500/5 transition-all duration-300">
             <div className="flex items-center gap-3">
-              <div className="p-2.5 bg-amber-500/20 rounded-xl ring-1 ring-amber-500/20">
+              <div className="p-2.5 bg-amber-50 rounded-xl ring-1 ring-amber-500/20">
                 <Clock size={20} className="text-amber-400" />
               </div>
               <div>
-                <p className="text-2xl font-bold text-white">5</p>
+                <p className="text-2xl font-bold text-gray-900">5</p>
                 <p className="text-xs text-[#6B7280]">Pendentes</p>
               </div>
             </div>
           </div>
-          <div className="bg-gradient-to-br from-[#1a1a1a] to-[#141414] border border-[#2a2a2a] rounded-xl p-4 hover:border-blue-500/30 hover:shadow-lg hover:shadow-blue-500/5 transition-all duration-300">
+          <div className="bg-white border border-gray-200 rounded-xl p-4 hover:border-blue-500/30 hover:shadow-lg hover:shadow-blue-500/5 transition-all duration-300">
             <div className="flex items-center gap-3">
-              <div className="p-2.5 bg-blue-500/20 rounded-xl ring-1 ring-blue-500/20">
+              <div className="p-2.5 bg-blue-50 rounded-xl ring-1 ring-blue-500/20">
                 <Send size={20} className="text-blue-400" />
               </div>
               <div>
-                <p className="text-2xl font-bold text-white">12</p>
+                <p className="text-2xl font-bold text-gray-900">12</p>
                 <p className="text-xs text-[#6B7280]">Enviados (semana)</p>
               </div>
             </div>
           </div>
-          <div className="bg-gradient-to-br from-[#1a1a1a] to-[#141414] border border-[#2a2a2a] rounded-xl p-4 hover:border-green-500/30 hover:shadow-lg hover:shadow-green-500/5 transition-all duration-300">
+          <div className="bg-white border border-gray-200 rounded-xl p-4 hover:border-green-500/30 hover:shadow-lg hover:shadow-green-500/5 transition-all duration-300">
             <div className="flex items-center gap-3">
-              <div className="p-2.5 bg-green-500/20 rounded-xl ring-1 ring-green-500/20">
+              <div className="p-2.5 bg-green-50 rounded-xl ring-1 ring-green-500/20">
                 <CheckCircle size={20} className="text-green-400" />
               </div>
               <div>
-                <p className="text-2xl font-bold text-white">8</p>
+                <p className="text-2xl font-bold text-gray-900">8</p>
                 <p className="text-xs text-[#6B7280]">Agendados</p>
               </div>
             </div>
@@ -202,13 +202,13 @@ export default function LembretesPage() {
                 placeholder="Buscar por cliente ou placa..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full bg-[#0f0f0f] border border-[#2a2a2a] rounded-xl pl-10 pr-4 py-3 text-sm text-white placeholder-[#6B7280] focus:outline-none focus:border-[#22c55e]/50 focus:ring-1 focus:ring-[#22c55e]/20 transition-all duration-200"
+                className="w-full bg-gray-50 border border-gray-200 rounded-xl pl-10 pr-4 py-3 text-sm text-gray-900 placeholder-[#6B7280] focus:outline-none focus:border-[#22c55e]/50 focus:ring-1 focus:ring-[#22c55e]/20 transition-all duration-200"
               />
             </div>
             <select
               value={filterUrgencia}
               onChange={(e) => setFilterUrgencia(e.target.value)}
-              className="bg-[#0f0f0f] border border-[#2a2a2a] rounded-xl px-4 py-3 text-[#94a3b8] focus:outline-none focus:border-[#22c55e]/50 focus:ring-1 focus:ring-[#22c55e]/20 transition-all duration-200"
+              className="bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-gray-500 focus:outline-none focus:border-[#22c55e]/50 focus:ring-1 focus:ring-[#22c55e]/20 transition-all duration-200"
             >
               <option value="todos">Todas Urgências</option>
               <option value="alta">Urgente</option>
@@ -217,11 +217,11 @@ export default function LembretesPage() {
             </select>
           </div>
           <div className="flex gap-3">
-            <button className="flex items-center gap-2 px-6 py-3 bg-gradient-to-br from-[#1a1a1a] to-[#141414] border border-[#2a2a2a] rounded-xl text-[#94a3b8] hover:border-[#22c55e]/40 hover:text-white transition-all duration-200">
+            <button className="flex items-center gap-2 px-6 py-3 bg-white border border-gray-200 rounded-xl text-gray-500 hover:border-[#22c55e]/40 hover:text-gray-900 transition-all duration-200">
               <Bell size={20} />
               Configurar Automação
             </button>
-            <button className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-[#22c55e] to-[#166534] rounded-xl text-white font-medium hover:shadow-lg hover:shadow-[#22c55e]/25 hover:scale-[1.02] active:scale-[0.98] transition-all duration-200">
+            <button className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-[#22c55e] to-[#166534] rounded-xl text-white font-medium hover:shadow-lg hover:shadow-green-200 hover:scale-[1.02] active:scale-[0.98] transition-all duration-200">
               <Send size={20} />
               Enviar Selecionados
             </button>
@@ -229,12 +229,12 @@ export default function LembretesPage() {
         </div>
 
         {/* Lista de Lembretes */}
-        <div className="bg-gradient-to-br from-[#1a1a1a] to-[#141414] border border-[#2a2a2a] rounded-2xl overflow-hidden">
-          <div className="p-4 border-b border-[#2a2a2a] flex items-center gap-3">
+        <div className="bg-white border border-gray-200 rounded-2xl overflow-hidden">
+          <div className="p-4 border-b border-gray-200 flex items-center gap-3">
             <input type="checkbox" className="w-4 h-4 accent-[#22c55e]" />
             <span className="text-sm text-[#6B7280]">Selecionar todos</span>
           </div>
-          <div className="divide-y divide-[#2a2a2a]">
+          <div className="divide-y divide-gray-200">
             {lembretes.map((lembrete) => {
               const urgenciaConfig = getUrgenciaConfig(lembrete.urgencia);
               const statusConfig = getStatusConfig(lembrete.status);
@@ -243,7 +243,7 @@ export default function LembretesPage() {
               return (
                 <div
                   key={lembrete.id}
-                  className="p-4 hover:bg-white/5 transition-all duration-200"
+                  className="p-4 hover:bg-gray-50 transition-all duration-200"
                 >
                   <div className="flex items-center gap-4">
                     <input type="checkbox" className="w-4 h-4 accent-[#22c55e]" />
@@ -256,14 +256,14 @@ export default function LembretesPage() {
                     <div className="flex-1">
                       <div className="flex items-center gap-3 mb-1">
                         <User size={16} className="text-[#6B7280]" />
-                        <span className="font-medium text-white">{lembrete.cliente}</span>
+                        <span className="font-medium text-gray-900">{lembrete.cliente}</span>
                         <span className="text-[#6B7280]">•</span>
-                        <span className="text-[#94a3b8] text-sm">{lembrete.telefone}</span>
+                        <span className="text-gray-500 text-sm">{lembrete.telefone}</span>
                       </div>
                       <div className="flex items-center gap-3 mb-1">
                         <Car size={16} className="text-[#6B7280]" />
-                        <span className="text-[#94a3b8] text-sm">{lembrete.veiculo}</span>
-                        <span className="px-2 py-0.5 bg-[#0f0f0f] rounded text-xs text-[#22c55e] ring-1 ring-[#22c55e]/20">
+                        <span className="text-gray-500 text-sm">{lembrete.veiculo}</span>
+                        <span className="px-2 py-0.5 bg-gray-50 rounded text-xs text-[#22c55e] ring-1 ring-[#22c55e]/20">
                           {lembrete.placa}
                         </span>
                       </div>
@@ -288,14 +288,14 @@ export default function LembretesPage() {
                       </div>
                     </div>
 
-                    <div className="flex gap-2 bg-[#0f0f0f] rounded-xl p-1.5">
+                    <div className="flex gap-2 bg-gray-50 rounded-xl p-1.5">
                       <button className="p-2.5 bg-[#25D366]/20 rounded-lg text-[#25D366] hover:bg-[#25D366]/30 transition-all duration-200" title="Enviar WhatsApp">
                         <MessageCircle size={18} />
                       </button>
-                      <button className="p-2.5 bg-blue-500/20 rounded-lg text-blue-400 hover:bg-blue-500/30 transition-all duration-200" title="Ligar">
+                      <button className="p-2.5 bg-blue-50 rounded-lg text-blue-600 hover:bg-blue-500/30 transition-all duration-200" title="Ligar">
                         <Phone size={18} />
                       </button>
-                      <button className="p-2.5 bg-[#22c55e]/20 rounded-lg text-[#22c55e] hover:bg-[#22c55e]/30 transition-all duration-200" title="Agendar">
+                      <button className="p-2.5 bg-green-50 rounded-lg text-[#22c55e] hover:bg-[#22c55e]/30 transition-all duration-200" title="Agendar">
                         <Calendar size={18} />
                       </button>
                     </div>
@@ -307,10 +307,10 @@ export default function LembretesPage() {
         </div>
 
         {/* Mensagem Padrão */}
-        <div className="bg-gradient-to-br from-[#1a1a1a] to-[#141414] border border-[#2a2a2a] rounded-2xl p-6">
-          <h3 className="text-lg font-semibold text-white mb-4">Mensagem de Lembrete Padrão</h3>
-          <div className="bg-[#0f0f0f] rounded-xl p-4 border border-[#2a2a2a]">
-            <p className="text-[#94a3b8] text-sm leading-relaxed">
+        <div className="bg-white border border-gray-200 rounded-2xl p-6">
+          <h3 className="text-lg font-semibold text-gray-900 mb-4">Mensagem de Lembrete Padrão</h3>
+          <div className="bg-gray-50 rounded-xl p-4 border border-gray-200">
+            <p className="text-gray-500 text-sm leading-relaxed">
               Olá <span className="text-[#22c55e]">[NOME_CLIENTE]</span>! 🚗
               <br /><br />
               Tudo bem? Aqui é da <span className="text-[#22c55e]">LoopIA Oficina</span>!

@@ -48,10 +48,10 @@ const statConfig = [
 
 const getStatColors = (color: string) => {
   const colors: Record<string, { bg: string; ring: string; text: string; glow: string }> = {
-    blue: { bg: 'from-blue-500/20 to-blue-500/5', ring: 'ring-blue-500/20', text: 'text-blue-400', glow: 'group-hover:shadow-blue-500/10' },
-    purple: { bg: 'from-purple-500/20 to-purple-500/5', ring: 'ring-purple-500/20', text: 'text-purple-400', glow: 'group-hover:shadow-purple-500/10' },
-    green: { bg: 'from-[#22c55e]/20 to-[#22c55e]/5', ring: 'ring-[#22c55e]/20', text: 'text-[#22c55e]', glow: 'group-hover:shadow-[#22c55e]/10' },
-    amber: { bg: 'from-amber-500/20 to-amber-500/5', ring: 'ring-amber-500/20', text: 'text-amber-400', glow: 'group-hover:shadow-amber-500/10' },
+    blue: { bg: 'from-blue-100 to-blue-50', ring: 'ring-blue-200', text: 'text-blue-600', glow: 'group-hover:shadow-blue-100' },
+    purple: { bg: 'from-purple-100 to-purple-50', ring: 'ring-purple-200', text: 'text-purple-600', glow: 'group-hover:shadow-purple-100' },
+    green: { bg: 'from-green-100 to-green-50', ring: 'ring-green-200', text: 'text-green-600', glow: 'group-hover:shadow-green-100' },
+    amber: { bg: 'from-amber-100 to-amber-50', ring: 'ring-amber-200', text: 'text-amber-600', glow: 'group-hover:shadow-amber-100' },
   };
   return colors[color] || colors.green;
 };
@@ -59,18 +59,18 @@ const getStatColors = (color: string) => {
 const getStatusConfig = (status: string) => {
   switch (status) {
     case 'EM_ANDAMENTO':
-      return { label: 'Em Andamento', bg: 'bg-purple-500/10', text: 'text-purple-400', ring: 'ring-purple-500/30', icon: Play };
+      return { label: 'Em Andamento', bg: 'bg-purple-50', text: 'text-purple-600', ring: 'ring-purple-200', icon: Play };
     case 'AGUARDANDO_PECAS':
-      return { label: 'Aguardando', bg: 'bg-amber-500/10', text: 'text-amber-400', ring: 'ring-amber-500/30', icon: Pause };
+      return { label: 'Aguardando', bg: 'bg-amber-50', text: 'text-amber-600', ring: 'ring-amber-200', icon: Pause };
     case 'CONCLUIDO':
-      return { label: 'Concluído', bg: 'bg-[#22c55e]/10', text: 'text-[#22c55e]', ring: 'ring-[#22c55e]/30', icon: CheckCircle };
+      return { label: 'Concluído', bg: 'bg-green-50', text: 'text-green-600', ring: 'ring-green-200', icon: CheckCircle };
     case 'ENTREGUE':
-      return { label: 'Entregue', bg: 'bg-cyan-500/10', text: 'text-cyan-400', ring: 'ring-cyan-500/30', icon: Truck };
+      return { label: 'Entregue', bg: 'bg-cyan-50', text: 'text-cyan-600', ring: 'ring-cyan-200', icon: Truck };
     case 'CANCELADO':
-      return { label: 'Cancelado', bg: 'bg-red-500/10', text: 'text-red-400', ring: 'ring-red-500/30', icon: XCircle };
+      return { label: 'Cancelado', bg: 'bg-red-50', text: 'text-red-500', ring: 'ring-red-200', icon: XCircle };
     case 'AGENDADO':
     default:
-      return { label: 'Agendado', bg: 'bg-blue-500/10', text: 'text-blue-400', ring: 'ring-blue-500/30', icon: Calendar };
+      return { label: 'Agendado', bg: 'bg-blue-50', text: 'text-blue-600', ring: 'ring-blue-200', icon: Calendar };
   }
 };
 
@@ -83,10 +83,10 @@ const quickActions = [
 
 const getActionColors = (color: string) => {
   const colors: Record<string, { gradient: string; ring: string; glow: string }> = {
-    green: { gradient: 'from-[#22c55e] to-[#166534]', ring: 'ring-[#22c55e]/20', glow: 'hover:shadow-[#22c55e]/20' },
-    blue: { gradient: 'from-blue-500 to-blue-600', ring: 'ring-blue-500/20', glow: 'hover:shadow-blue-500/20' },
-    purple: { gradient: 'from-purple-500 to-purple-600', ring: 'ring-purple-500/20', glow: 'hover:shadow-purple-500/20' },
-    amber: { gradient: 'from-amber-500 to-amber-600', ring: 'ring-amber-500/20', glow: 'hover:shadow-amber-500/20' },
+    green: { gradient: 'from-[#22c55e] to-[#166534]', ring: 'ring-green-200', glow: 'hover:shadow-green-100' },
+    blue: { gradient: 'from-blue-500 to-blue-600', ring: 'ring-blue-200', glow: 'hover:shadow-blue-100' },
+    purple: { gradient: 'from-purple-500 to-purple-600', ring: 'ring-purple-200', glow: 'hover:shadow-purple-100' },
+    amber: { gradient: 'from-amber-500 to-amber-600', ring: 'ring-amber-200', glow: 'hover:shadow-amber-100' },
   };
   return colors[color] || colors.green;
 };
@@ -117,7 +117,7 @@ export default function Dashboard() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#0a0a0a] via-[#0f0f0f] to-[#0a0a0a]">
+    <div className="min-h-screen bg-gray-50/50">
       <Header title="Dashboard" subtitle="Visão geral da oficina" />
 
       <div className="p-6 space-y-6">
@@ -129,20 +129,19 @@ export default function Dashboard() {
             return (
               <div
                 key={index}
-                className={`group relative bg-gradient-to-br from-[#1a1a1a] to-[#141414] rounded-2xl p-5 border border-[#2a2a2a] hover:border-[#3a3a3a] transition-all duration-300 hover:shadow-lg ${colors.glow}`}
+                className={`group relative bg-white rounded-2xl p-5 border border-gray-200 hover:border-gray-300 transition-all duration-300 hover:shadow-lg ${colors.glow}`}
               >
-                <div className="absolute inset-0 bg-gradient-to-br from-white/[0.02] to-transparent rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                 <div className="relative flex items-center gap-4">
                   <div className={`p-3 bg-gradient-to-br ${colors.bg} rounded-xl ring-1 ${colors.ring}`}>
                     <stat.icon size={22} className={colors.text} />
                   </div>
                   <div className="flex-1">
                     {loading ? (
-                      <div className="h-7 w-16 bg-[#2a2a2a] rounded animate-pulse" />
+                      <div className="h-7 w-16 bg-gray-100 rounded animate-pulse" />
                     ) : (
-                      <p className="text-2xl font-bold text-white">{formatStatValue(stat.key, value)}</p>
+                      <p className="text-2xl font-bold text-gray-900">{formatStatValue(stat.key, value)}</p>
                     )}
-                    <p className="text-sm text-[#666666]">{stat.label}</p>
+                    <p className="text-sm text-gray-500">{stat.label}</p>
                   </div>
                 </div>
               </div>
@@ -151,11 +150,11 @@ export default function Dashboard() {
         </div>
 
         {/* Serviços de Hoje */}
-        <div className="bg-gradient-to-br from-[#1a1a1a] to-[#141414] rounded-2xl border border-[#2a2a2a] overflow-hidden">
-          <div className="p-5 border-b border-[#2a2a2a] flex items-center justify-between">
+        <div className="bg-white rounded-2xl border border-gray-200 overflow-hidden">
+          <div className="p-5 border-b border-gray-200 flex items-center justify-between">
             <div>
-              <h2 className="text-lg font-bold text-white">Serviços de Hoje</h2>
-              <p className="text-sm text-[#666666] mt-0.5">
+              <h2 className="text-lg font-bold text-gray-900">Serviços de Hoje</h2>
+              <p className="text-sm text-gray-500 mt-0.5">
                 {loading ? '...' : `${servicosHoje.length} agendamento${servicosHoje.length !== 1 ? 's' : ''} para hoje`}
               </p>
             </div>
@@ -167,16 +166,16 @@ export default function Dashboard() {
               Nova O.S.
             </Link>
           </div>
-          <div className="divide-y divide-[#2a2a2a]">
+          <div className="divide-y divide-gray-100">
             {loading ? (
               <div className="p-8 text-center">
                 <Loader2 className="animate-spin mx-auto mb-2 text-[#22c55e]" size={28} />
-                <p className="text-sm text-[#666666]">Carregando...</p>
+                <p className="text-sm text-gray-500">Carregando...</p>
               </div>
             ) : servicosHoje.length === 0 ? (
               <div className="p-8 text-center">
-                <Calendar className="mx-auto mb-2 text-[#444444]" size={32} />
-                <p className="text-[#666666]">Nenhum serviço agendado para hoje</p>
+                <Calendar className="mx-auto mb-2 text-gray-300" size={32} />
+                <p className="text-gray-500">Nenhum serviço agendado para hoje</p>
               </div>
             ) : (
               servicosHoje.map((servico) => {
@@ -185,20 +184,20 @@ export default function Dashboard() {
                   <Link
                     key={servico.id}
                     href={`/ordens?detail=${servico.id}`}
-                    className="block p-4 hover:bg-white/[0.02] transition-all duration-200 group cursor-pointer"
+                    className="block p-4 hover:bg-gray-50 transition-all duration-200 group cursor-pointer"
                   >
                     <div className="flex items-center gap-4">
-                      <div className="text-center min-w-[70px] py-2.5 bg-gradient-to-br from-[#1a1a1a] to-[#0f0f0f] rounded-xl ring-1 ring-[#2a2a2a] group-hover:ring-[#3a3a3a] transition-all duration-200">
-                        <p className="text-lg font-bold text-white">{servico.hora}</p>
+                      <div className="text-center min-w-[70px] py-2.5 bg-gray-50 rounded-xl ring-1 ring-gray-200 group-hover:ring-gray-300 transition-all duration-200">
+                        <p className="text-lg font-bold text-gray-900">{servico.hora}</p>
                       </div>
                       <div className="flex-1 min-w-0">
-                        <p className="font-medium text-white truncate">{servico.cliente}</p>
-                        <p className="text-sm text-[#666666] truncate">{servico.veiculo} • {servico.servico}</p>
+                        <p className="font-medium text-gray-900 truncate">{servico.cliente}</p>
+                        <p className="text-sm text-gray-500 truncate">{servico.veiculo} • {servico.servico}</p>
                       </div>
                       <span className={`px-3 py-1.5 rounded-lg text-xs font-medium ${statusCfg.bg} ${statusCfg.text} ring-1 ${statusCfg.ring}`}>
                         {statusCfg.label}
                       </span>
-                      <ArrowRight size={16} className="text-[#444444] group-hover:text-[#22c55e] group-hover:translate-x-1 transition-all duration-200" />
+                      <ArrowRight size={16} className="text-gray-300 group-hover:text-[#22c55e] group-hover:translate-x-1 transition-all duration-200" />
                     </div>
                   </Link>
                 );
@@ -206,10 +205,10 @@ export default function Dashboard() {
             )}
           </div>
           {servicosHoje.length > 0 && (
-            <div className="p-4 border-t border-[#2a2a2a] bg-[#0f0f0f]/50">
+            <div className="p-4 border-t border-gray-100 bg-gray-50/50">
               <Link
                 href="/ordens"
-                className="flex items-center justify-center gap-2 text-sm text-[#666666] hover:text-[#22c55e] transition-colors duration-200"
+                className="flex items-center justify-center gap-2 text-sm text-gray-500 hover:text-[#22c55e] transition-colors duration-200"
               >
                 Ver todas as ordens
                 <ArrowRight size={14} />
@@ -220,7 +219,7 @@ export default function Dashboard() {
 
         {/* Ações Rápidas */}
         <div>
-          <h3 className="text-sm font-medium text-[#666666] mb-3 px-1">Ações Rápidas</h3>
+          <h3 className="text-sm font-medium text-gray-500 mb-3 px-1">Ações Rápidas</h3>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             {quickActions.map((action, index) => {
               const colors = getActionColors(action.color);
@@ -228,12 +227,12 @@ export default function Dashboard() {
                 <Link
                   key={index}
                   href={action.href}
-                  className={`flex flex-col items-center gap-3 p-5 bg-gradient-to-br from-[#1a1a1a] to-[#141414] rounded-2xl border border-[#2a2a2a] hover:border-[#3a3a3a] transition-all duration-300 group hover:shadow-lg ${colors.glow}`}
+                  className={`flex flex-col items-center gap-3 p-5 bg-white rounded-2xl border border-gray-200 hover:border-gray-300 transition-all duration-300 group hover:shadow-lg ${colors.glow}`}
                 >
                   <div className={`p-3 bg-gradient-to-br ${colors.gradient} rounded-xl ring-1 ${colors.ring} group-hover:scale-110 group-hover:rotate-3 transition-all duration-300`}>
                     <action.icon size={24} className="text-white" />
                   </div>
-                  <span className="text-sm font-medium text-white group-hover:text-[#22c55e] transition-colors duration-200">{action.label}</span>
+                  <span className="text-sm font-medium text-gray-700 group-hover:text-[#22c55e] transition-colors duration-200">{action.label}</span>
                 </Link>
               );
             })}

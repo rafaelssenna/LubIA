@@ -61,13 +61,13 @@ export function ToastProvider({ children }: { children: ReactNode }) {
   const getStyles = (type: ToastType) => {
     switch (type) {
       case 'success':
-        return 'bg-[#22c55e]/20 border-[#22c55e]/50 text-[#22c55e]';
+        return 'bg-green-50 border-[#22c55e]/50 text-[#22c55e]';
       case 'error':
-        return 'bg-red-500/20 border-red-500/50 text-red-400';
+        return 'bg-red-50 border-red-400/50 text-red-500';
       case 'warning':
-        return 'bg-amber-500/20 border-amber-500/50 text-amber-400';
+        return 'bg-amber-50 border-amber-400/50 text-amber-600';
       case 'info':
-        return 'bg-blue-500/20 border-blue-500/50 text-blue-400';
+        return 'bg-blue-50 border-blue-400/50 text-blue-500';
     }
   };
 
@@ -78,13 +78,13 @@ export function ToastProvider({ children }: { children: ReactNode }) {
         {toasts.map((toast) => (
           <div
             key={toast.id}
-            className={`flex items-center gap-3 px-4 py-3 rounded-xl border backdrop-blur-sm animate-fade-in min-w-[300px] max-w-[400px] ${getStyles(toast.type)}`}
+            className={`flex items-center gap-3 px-4 py-3 rounded-xl border shadow-lg animate-fade-in min-w-[300px] max-w-[400px] ${getStyles(toast.type)}`}
           >
             {getIcon(toast.type)}
-            <p className="flex-1 text-sm text-white">{toast.message}</p>
+            <p className="flex-1 text-sm text-gray-900">{toast.message}</p>
             <button
               onClick={() => removeToast(toast.id)}
-              className="p-1 hover:bg-white/10 rounded-lg transition-colors"
+              className="p-1 hover:bg-black/5 rounded-lg transition-colors"
             >
               <X size={16} />
             </button>
