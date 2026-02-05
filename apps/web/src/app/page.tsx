@@ -48,10 +48,10 @@ const statConfig = [
 
 const getStatColors = (color: string) => {
   const colors: Record<string, { bg: string; ring: string; text: string; glow: string }> = {
-    blue: { bg: 'from-blue-100 to-blue-50', ring: 'ring-blue-500/20', text: 'text-blue-400', glow: 'group-hover:shadow-blue-100' },
-    purple: { bg: 'from-purple-100 to-purple-50', ring: 'ring-purple-500/20', text: 'text-purple-400', glow: 'group-hover:shadow-purple-100' },
-    green: { bg: 'from-green-100 to-green-50', ring: 'ring-green-500/20', text: 'text-green-400', glow: 'group-hover:shadow-green-100' },
-    amber: { bg: 'from-amber-100 to-amber-50', ring: 'ring-amber-500/20', text: 'text-amber-400', glow: 'group-hover:shadow-amber-100' },
+    blue: { bg: 'from-blue-500/20 to-blue-500/5', ring: 'ring-blue-500/20', text: 'text-blue-400', glow: 'group-hover:shadow-blue-500/10' },
+    purple: { bg: 'from-purple-500/20 to-purple-500/5', ring: 'ring-purple-500/20', text: 'text-purple-400', glow: 'group-hover:shadow-purple-500/10' },
+    green: { bg: 'from-green-500/20 to-green-500/5', ring: 'ring-green-500/20', text: 'text-green-400', glow: 'group-hover:shadow-green-500/10' },
+    amber: { bg: 'from-amber-500/20 to-amber-500/5', ring: 'ring-amber-500/20', text: 'text-amber-400', glow: 'group-hover:shadow-amber-500/10' },
   };
   return colors[color] || colors.green;
 };
@@ -83,10 +83,10 @@ const quickActions = [
 
 const getActionColors = (color: string) => {
   const colors: Record<string, { gradient: string; ring: string; glow: string }> = {
-    green: { gradient: 'from-[#43A047] to-[#1B5E20]', ring: 'ring-green-500/20', glow: 'hover:shadow-green-100' },
-    blue: { gradient: 'from-blue-500 to-blue-600', ring: 'ring-blue-500/20', glow: 'hover:shadow-blue-100' },
-    purple: { gradient: 'from-purple-500 to-purple-600', ring: 'ring-purple-500/20', glow: 'hover:shadow-purple-100' },
-    amber: { gradient: 'from-amber-500 to-amber-600', ring: 'ring-amber-500/20', glow: 'hover:shadow-amber-100' },
+    green: { gradient: 'from-[#43A047] to-[#1B5E20]', ring: 'ring-green-500/20', glow: 'hover:shadow-green-500/10' },
+    blue: { gradient: 'from-blue-500 to-blue-600', ring: 'ring-blue-500/20', glow: 'hover:shadow-blue-500/10' },
+    purple: { gradient: 'from-purple-500 to-purple-600', ring: 'ring-purple-500/20', glow: 'hover:shadow-purple-500/10' },
+    amber: { gradient: 'from-amber-500 to-amber-600', ring: 'ring-amber-500/20', glow: 'hover:shadow-amber-500/10' },
   };
   return colors[color] || colors.green;
 };

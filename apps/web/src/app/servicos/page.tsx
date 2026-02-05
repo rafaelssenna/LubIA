@@ -53,14 +53,14 @@ const getCategoriaLabel = (value: string) => {
 
 const getCategoriaColor = (categoria: string) => {
   const colors: Record<string, string> = {
-    'TROCA_OLEO': 'bg-amber-500/10 text-amber-600',
-    'FILTROS': 'bg-blue-500/10 text-blue-600',
-    'PNEUS': 'bg-purple-50 text-purple-600',
+    'TROCA_OLEO': 'bg-amber-500/10 text-amber-400',
+    'FILTROS': 'bg-blue-500/10 text-blue-400',
+    'PNEUS': 'bg-purple-500/10 text-purple-400',
     'REVISOES': 'bg-green-500/10 text-[#43A047]',
-    'FREIOS': 'bg-red-500/10 text-red-600',
-    'SUSPENSAO': 'bg-orange-50 text-orange-600',
-    'ELETRICA': 'bg-yellow-50 text-yellow-600',
-    'AR_CONDICIONADO': 'bg-cyan-50 text-cyan-600',
+    'FREIOS': 'bg-red-500/10 text-red-400',
+    'SUSPENSAO': 'bg-orange-500/10 text-orange-400',
+    'ELETRICA': 'bg-yellow-500/10 text-yellow-400',
+    'AR_CONDICIONADO': 'bg-cyan-500/10 text-cyan-400',
     'OUTROS': 'bg-gray-500/10 text-gray-400',
   };
   return colors[categoria] || 'bg-gray-500/10 text-gray-400';
@@ -261,7 +261,7 @@ export default function ServicosPage() {
       <div className="p-6 space-y-6 animate-fade-in">
         {/* Stats */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <div className="bg-[#1E1E1E] border border-[#333333] rounded-xl p-4 hover:border-green-300 hover:shadow-lg hover:shadow-green-100 transition-all duration-300">
+          <div className="bg-[#1E1E1E] border border-[#333333] rounded-xl p-4 hover:border-green-500/30 hover:shadow-lg hover:shadow-green-500/10 transition-all duration-300">
             <div className="flex items-center gap-3">
               <div className="p-2.5 bg-[#43A047]/20 rounded-xl ring-1 ring-[#43A047]/20">
                 <Wrench size={20} className="text-[#43A047]" />
@@ -275,7 +275,7 @@ export default function ServicosPage() {
           <div className="bg-[#1E1E1E] border border-[#333333] rounded-xl p-4 hover:border-amber-500/30 hover:shadow-lg hover:shadow-amber-500/5 transition-all duration-300">
             <div className="flex items-center gap-3">
               <div className="p-2.5 bg-amber-500/10 rounded-xl ring-1 ring-amber-500/20">
-                <Package size={20} className="text-amber-600" />
+                <Package size={20} className="text-amber-400" />
               </div>
               <div>
                 <p className="text-2xl font-bold text-[#E8E8E8]">{stats.categorias}</p>
@@ -286,7 +286,7 @@ export default function ServicosPage() {
           <div className="bg-[#1E1E1E] border border-[#333333] rounded-xl p-4 hover:border-blue-500/30 hover:shadow-lg hover:shadow-blue-500/5 transition-all duration-300">
             <div className="flex items-center gap-3">
               <div className="p-2.5 bg-blue-500/10 rounded-xl ring-1 ring-blue-500/20">
-                <DollarSign size={20} className="text-blue-600" />
+                <DollarSign size={20} className="text-blue-400" />
               </div>
               <div>
                 <p className="text-2xl font-bold text-[#E8E8E8]">
@@ -298,8 +298,8 @@ export default function ServicosPage() {
           </div>
           <div className="bg-[#1E1E1E] border border-[#333333] rounded-xl p-4 hover:border-purple-500/30 hover:shadow-lg hover:shadow-purple-500/5 transition-all duration-300">
             <div className="flex items-center gap-3">
-              <div className="p-2.5 bg-purple-50 rounded-xl ring-1 ring-purple-500/20">
-                <Clock size={20} className="text-purple-600" />
+              <div className="p-2.5 bg-purple-500/10 rounded-xl ring-1 ring-purple-500/20">
+                <Clock size={20} className="text-purple-400" />
               </div>
               <div>
                 <p className="text-2xl font-bold text-[#E8E8E8]">{formatDuracao(stats.duracaoMedia)}</p>
@@ -337,7 +337,7 @@ export default function ServicosPage() {
               resetForm();
               setShowModal(true);
             }}
-            className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-[#43A047] to-[#1B5E20] rounded-xl text-white font-medium hover:shadow-lg hover:shadow-green-200 hover:scale-[1.02] active:scale-[0.98] transition-all duration-200"
+            className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-[#43A047] to-[#1B5E20] rounded-xl text-white font-medium hover:shadow-lg hover:shadow-green-500/10 hover:scale-[1.02] active:scale-[0.98] transition-all duration-200"
           >
             <Plus size={20} />
             Novo Serviço
@@ -358,7 +358,7 @@ export default function ServicosPage() {
                 key={servico.id}
                 className={`bg-[#1E1E1E] border rounded-2xl p-6 transition-all duration-300 ${
                   servico.ativo
-                    ? 'border-[#333333] hover:border-[#43A047]/40 hover:shadow-lg hover:shadow-green-100'
+                    ? 'border-[#333333] hover:border-[#43A047]/40 hover:shadow-lg hover:shadow-green-500/10'
                     : 'border-[#333333]/50 opacity-60'
                 }`}
               >
@@ -499,7 +499,7 @@ export default function ServicosPage() {
               <button
                 onClick={handleSubmit}
                 disabled={saving}
-                className="px-6 py-3 bg-gradient-to-r from-[#43A047] to-[#1B5E20] rounded-xl text-white font-medium hover:shadow-lg hover:shadow-green-200 hover:scale-[1.02] active:scale-[0.98] transition-all duration-200 disabled:opacity-50 disabled:hover:scale-100"
+                className="px-6 py-3 bg-gradient-to-r from-[#43A047] to-[#1B5E20] rounded-xl text-white font-medium hover:shadow-lg hover:shadow-green-500/10 hover:scale-[1.02] active:scale-[0.98] transition-all duration-200 disabled:opacity-50 disabled:hover:scale-100"
               >
                 {saving ? 'Salvando...' : 'Cadastrar Serviço'}
               </button>
@@ -593,7 +593,7 @@ export default function ServicosPage() {
               <button
                 onClick={handleEditSubmit}
                 disabled={saving}
-                className="px-6 py-3 bg-gradient-to-r from-[#43A047] to-[#1B5E20] rounded-xl text-white font-medium hover:shadow-lg hover:shadow-green-200 hover:scale-[1.02] active:scale-[0.98] transition-all duration-200 disabled:opacity-50 disabled:hover:scale-100"
+                className="px-6 py-3 bg-gradient-to-r from-[#43A047] to-[#1B5E20] rounded-xl text-white font-medium hover:shadow-lg hover:shadow-green-500/10 hover:scale-[1.02] active:scale-[0.98] transition-all duration-200 disabled:opacity-50 disabled:hover:scale-100"
               >
                 {saving ? 'Salvando...' : 'Salvar Alterações'}
               </button>

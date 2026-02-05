@@ -65,14 +65,14 @@ const getCategoriaLabel = (value: string) => {
 
 const getCategoriaColor = (categoria: string) => {
   const colors: Record<string, string> = {
-    'oleo_lubrificante': 'bg-amber-500/10 text-amber-600',
-    'aditivo': 'bg-blue-500/10 text-blue-600',
-    'graxa': 'bg-purple-50 text-purple-600',
+    'oleo_lubrificante': 'bg-amber-500/10 text-amber-400',
+    'aditivo': 'bg-blue-500/10 text-blue-400',
+    'graxa': 'bg-purple-500/10 text-purple-400',
     'filtro_oleo': 'bg-green-500/10 text-[#43A047]',
-    'filtro_ar': 'bg-cyan-50 text-cyan-600',
-    'filtro_ar_condicionado': 'bg-indigo-50 text-indigo-600',
-    'filtro_combustivel': 'bg-orange-50 text-orange-600',
-    'acessorio': 'bg-pink-50 text-pink-600',
+    'filtro_ar': 'bg-cyan-500/10 text-cyan-400',
+    'filtro_ar_condicionado': 'bg-indigo-500/10 text-indigo-400',
+    'filtro_combustivel': 'bg-orange-500/10 text-orange-400',
+    'acessorio': 'bg-pink-500/10 text-pink-400',
     'outro': 'bg-gray-500/10 text-gray-400',
   };
   return colors[categoria.toLowerCase()] || 'bg-gray-500/10 text-gray-400';
@@ -572,7 +572,7 @@ export default function EstoquePage() {
       <div className="p-6 space-y-6 animate-fade-in">
         {/* Stats */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <div className="bg-[#1E1E1E] border border-[#333333] rounded-xl p-4 hover:border-green-300 hover:shadow-lg hover:shadow-green-100 transition-all duration-300">
+          <div className="bg-[#1E1E1E] border border-[#333333] rounded-xl p-4 hover:border-green-500/30 hover:shadow-lg hover:shadow-green-500/10 transition-all duration-300">
             <div className="flex items-center gap-3">
               <div className="p-2.5 bg-[#43A047]/20 rounded-xl ring-1 ring-[#43A047]/20">
                 <Package size={20} className="text-[#43A047]" />
@@ -586,7 +586,7 @@ export default function EstoquePage() {
           <div className="bg-[#1E1E1E] border border-[#333333] rounded-xl p-4 hover:border-blue-500/30 hover:shadow-lg hover:shadow-blue-500/5 transition-all duration-300">
             <div className="flex items-center gap-3">
               <div className="p-2.5 bg-blue-500/10 rounded-xl ring-1 ring-blue-500/20">
-                <Droplets size={20} className="text-blue-600" />
+                <Droplets size={20} className="text-blue-400" />
               </div>
               <div>
                 <p className="text-2xl font-bold text-[#E8E8E8]">{totalItens.toFixed(0)}</p>
@@ -597,7 +597,7 @@ export default function EstoquePage() {
           <div className="bg-[#1E1E1E] border border-[#333333] rounded-xl p-4 hover:border-amber-500/30 hover:shadow-lg hover:shadow-amber-500/5 transition-all duration-300">
             <div className="flex items-center gap-3">
               <div className="p-2.5 bg-amber-500/10 rounded-xl ring-1 ring-amber-500/20">
-                <DollarSign size={20} className="text-amber-600" />
+                <DollarSign size={20} className="text-amber-400" />
               </div>
               <div>
                 <p className="text-2xl font-bold text-[#E8E8E8]">
@@ -622,7 +622,7 @@ export default function EstoquePage() {
 
         {/* Low Stock Alert Banner */}
         {estoqueBaixoCount > 0 && !showOnlyLowStock && (
-          <div className="bg-gradient-to-r from-red-50 to-red-50/50 border border-red-200 rounded-xl p-4 flex items-center justify-between animate-fade-in">
+          <div className="bg-gradient-to-r from-red-500/10 to-red-500/5 border border-red-500/20 rounded-xl p-4 flex items-center justify-between animate-fade-in">
             <div className="flex items-center gap-3">
               <div className="p-2.5 bg-red-500/10 rounded-xl ring-1 ring-red-500/20">
                 <AlertTriangle size={20} className="text-red-400" />
@@ -636,7 +636,7 @@ export default function EstoquePage() {
             </div>
             <button
               onClick={() => setShowOnlyLowStock(true)}
-              className="px-4 py-2 bg-red-500/10 hover:bg-red-100 border border-red-200 rounded-lg text-red-400 text-sm font-medium hover:scale-[1.02] active:scale-[0.98] transition-all duration-200"
+              className="px-4 py-2 bg-red-500/10 hover:bg-red-500/20 border border-red-500/20 rounded-lg text-red-400 text-sm font-medium hover:scale-[1.02] active:scale-[0.98] transition-all duration-200"
             >
               Ver produtos
             </button>
@@ -708,7 +708,7 @@ export default function EstoquePage() {
             </button>
             <button
               onClick={() => setShowModal(true)}
-              className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-[#43A047] to-[#1B5E20] rounded-xl text-white font-medium hover:shadow-lg hover:shadow-green-200 hover:scale-[1.02] active:scale-[0.98] transition-all duration-200"
+              className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-[#43A047] to-[#1B5E20] rounded-xl text-white font-medium hover:shadow-lg hover:shadow-green-500/10 hover:scale-[1.02] active:scale-[0.98] transition-all duration-200"
             >
               <Plus size={20} />
               Novo Produto
@@ -834,7 +834,7 @@ export default function EstoquePage() {
                           </button>
                           <button
                             onClick={() => openHistoryModal(produto)}
-                            className="p-2 hover:bg-blue-500/10 rounded-md transition-all duration-200 text-[#66BB6A] hover:text-blue-600"
+                            className="p-2 hover:bg-blue-500/10 rounded-md transition-all duration-200 text-[#66BB6A] hover:text-blue-400"
                             title="Histórico"
                           >
                             <History size={16} />
@@ -897,7 +897,7 @@ export default function EstoquePage() {
                         onClick={() => setCurrentPage(pageNum)}
                         className={`w-8 h-8 rounded-lg text-sm font-medium transition-all duration-200 ${
                           currentPage === pageNum
-                            ? 'bg-gradient-to-r from-[#43A047] to-[#1B5E20] text-white shadow-lg shadow-green-200'
+                            ? 'bg-gradient-to-r from-[#43A047] to-[#1B5E20] text-white shadow-lg shadow-green-500/10'
                             : 'text-[#9E9E9E] hover:bg-[#121212] hover:text-[#E8E8E8]'
                         }`}
                       >
@@ -1054,7 +1054,7 @@ export default function EstoquePage() {
               </button>
               <button
                 onClick={handleSubmit}
-                className="px-6 py-3 bg-gradient-to-r from-[#43A047] to-[#1B5E20] rounded-xl text-white font-medium hover:shadow-lg hover:shadow-green-200 hover:scale-[1.02] active:scale-[0.98] transition-all duration-200"
+                className="px-6 py-3 bg-gradient-to-r from-[#43A047] to-[#1B5E20] rounded-xl text-white font-medium hover:shadow-lg hover:shadow-green-500/10 hover:scale-[1.02] active:scale-[0.98] transition-all duration-200"
               >
                 Cadastrar Produto
               </button>
@@ -1112,7 +1112,7 @@ export default function EstoquePage() {
                 onClick={handleMovimentacao}
                 className={`px-6 py-3 rounded-xl text-white font-medium hover:scale-[1.02] active:scale-[0.98] transition-all duration-200 ${
                   movTipo === 'ENTRADA'
-                    ? 'bg-gradient-to-r from-[#43A047] to-[#1B5E20] hover:shadow-lg hover:shadow-green-200'
+                    ? 'bg-gradient-to-r from-[#43A047] to-[#1B5E20] hover:shadow-lg hover:shadow-green-500/10'
                     : 'bg-gradient-to-r from-red-500 to-red-700 hover:shadow-lg hover:shadow-red-500/25'
                 }`}
               >
@@ -1204,11 +1204,11 @@ export default function EstoquePage() {
                   }`}
                 >
                   {item.existingProduct && (
-                    <div className="mb-3 p-3 bg-amber-500/10 rounded-lg border border-amber-200">
+                    <div className="mb-3 p-3 bg-amber-500/10 rounded-lg border border-amber-500/20">
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-2">
-                          <AlertTriangle size={16} className="text-amber-600" />
-                          <span className="text-amber-600 text-sm font-medium">Produto já existe no estoque</span>
+                          <AlertTriangle size={16} className="text-amber-400" />
+                          <span className="text-amber-400 text-sm font-medium">Produto já existe no estoque</span>
                         </div>
                         <label className="flex items-center gap-2 cursor-pointer">
                           <span className="text-xs text-[#9E9E9E]">
@@ -1228,7 +1228,7 @@ export default function EstoquePage() {
                       </div>
                       <p className="text-xs text-[#9E9E9E] mt-1">
                         <span className="text-[#E8E8E8]">{item.existingProduct.nome}</span>
-                        {' • '}Estoque atual: <span className="text-amber-600">{item.existingProduct.quantidade} {item.existingProduct.unidade}</span>
+                        {' • '}Estoque atual: <span className="text-amber-400">{item.existingProduct.quantidade} {item.existingProduct.unidade}</span>
                         {item.updateExisting && (
                           <span> → <span className="text-[#43A047]">{item.existingProduct.quantidade + (item.quantidade || 0)} {item.existingProduct.unidade}</span></span>
                         )}
@@ -1609,7 +1609,7 @@ export default function EstoquePage() {
               </button>
               <button
                 onClick={handleEditSubmit}
-                className="px-6 py-3 bg-gradient-to-r from-[#43A047] to-[#1B5E20] rounded-xl text-white font-medium hover:shadow-lg hover:shadow-green-200 hover:scale-[1.02] active:scale-[0.98] transition-all duration-200"
+                className="px-6 py-3 bg-gradient-to-r from-[#43A047] to-[#1B5E20] rounded-xl text-white font-medium hover:shadow-lg hover:shadow-green-500/10 hover:scale-[1.02] active:scale-[0.98] transition-all duration-200"
               >
                 Salvar Alterações
               </button>
@@ -1686,10 +1686,10 @@ export default function EstoquePage() {
                       key={mov.id}
                       className={`p-4 rounded-xl border ${
                         mov.tipo === 'ENTRADA'
-                          ? 'bg-green-500/10 border-green-200'
+                          ? 'bg-green-500/10 border-green-500/20'
                           : mov.tipo === 'SAIDA'
-                          ? 'bg-red-500/10 border-red-200'
-                          : 'bg-blue-500/10 border-blue-200'
+                          ? 'bg-red-500/10 border-red-500/20'
+                          : 'bg-blue-500/10 border-blue-500/20'
                       }`}
                     >
                       <div className="flex items-center justify-between">
@@ -1699,11 +1699,11 @@ export default function EstoquePage() {
                           ) : mov.tipo === 'SAIDA' ? (
                             <ArrowUpCircle size={20} className="text-red-400" />
                           ) : (
-                            <History size={20} className="text-blue-600" />
+                            <History size={20} className="text-blue-400" />
                           )}
                           <div>
                             <p className={`font-medium ${
-                              mov.tipo === 'ENTRADA' ? 'text-[#43A047]' : mov.tipo === 'SAIDA' ? 'text-red-400' : 'text-blue-600'
+                              mov.tipo === 'ENTRADA' ? 'text-[#43A047]' : mov.tipo === 'SAIDA' ? 'text-red-400' : 'text-blue-400'
                             }`}>
                               {mov.tipo === 'ENTRADA' ? '+' : mov.tipo === 'SAIDA' ? '-' : ''}{mov.quantidade} {historyProduto.unidade}
                             </p>

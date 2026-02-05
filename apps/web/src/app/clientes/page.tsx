@@ -304,7 +304,7 @@ export default function ClientesPage() {
       <div className="p-6 space-y-6 animate-fade-in">
         {/* Stats */}
         <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-          <div className="group relative bg-[#1E1E1E] rounded-2xl p-5 border border-[#333333] hover:border-green-300 transition-all duration-300 hover:shadow-lg hover:shadow-[#43A047]/5">
+          <div className="group relative bg-[#1E1E1E] rounded-2xl p-5 border border-[#333333] hover:border-green-500/30 transition-all duration-300 hover:shadow-lg hover:shadow-[#43A047]/5">
             <div className="absolute inset-0 bg-gradient-to-br from-[#43A047]/5 to-transparent rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
             <div className="relative flex items-center gap-3">
               <div className="p-3 bg-gradient-to-br from-[#43A047]/20 to-[#43A047]/5 rounded-xl ring-1 ring-[#43A047]/20">
@@ -362,7 +362,7 @@ export default function ClientesPage() {
               setEnderecoForm({ cep: '', rua: '', numero: '', complemento: '', bairro: '', cidade: '', uf: '' });
               setShowModal(true);
             }}
-            className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-[#43A047] to-[#1B5E20] rounded-xl text-white font-medium hover:shadow-lg hover:shadow-green-100 transition-all duration-300 hover:scale-[1.02]"
+            className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-[#43A047] to-[#1B5E20] rounded-xl text-white font-medium hover:shadow-lg hover:shadow-green-500/10 transition-all duration-300 hover:scale-[1.02]"
           >
             <Plus size={18} />
             Novo Cliente
@@ -625,7 +625,7 @@ export default function ClientesPage() {
               <button
                 onClick={handleSubmit}
                 disabled={saving}
-                className="px-6 py-3 bg-gradient-to-r from-[#43A047] to-[#1B5E20] rounded-xl text-white font-medium hover:shadow-lg hover:shadow-green-100 transition-all duration-300 disabled:opacity-50"
+                className="px-6 py-3 bg-gradient-to-r from-[#43A047] to-[#1B5E20] rounded-xl text-white font-medium hover:shadow-lg hover:shadow-green-500/10 transition-all duration-300 disabled:opacity-50"
               >
                 {saving ? 'Salvando...' : 'Cadastrar'}
               </button>
@@ -780,7 +780,7 @@ export default function ClientesPage() {
               <button
                 onClick={handleEditSubmit}
                 disabled={saving}
-                className="px-6 py-3 bg-gradient-to-r from-[#43A047] to-[#1B5E20] rounded-xl text-white font-medium hover:shadow-lg hover:shadow-green-100 transition-all duration-300 disabled:opacity-50"
+                className="px-6 py-3 bg-gradient-to-r from-[#43A047] to-[#1B5E20] rounded-xl text-white font-medium hover:shadow-lg hover:shadow-green-500/10 transition-all duration-300 disabled:opacity-50"
               >
                 {saving ? 'Salvando...' : 'Salvar Alteracoes'}
               </button>

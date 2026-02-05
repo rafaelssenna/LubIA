@@ -157,7 +157,7 @@ export default function WhatsAppPage() {
           </div>
           <div className="bg-[#1E1E1E] border border-[#333333] rounded-2xl p-5 hover:border-[#43A047]/30 hover:shadow-lg hover:shadow-[#43A047]/5 transition-all duration-300">
             <div className="flex items-center gap-4">
-              <div className="p-3 bg-gradient-to-br from-[#43A047] to-[#1B5E20] rounded-xl shadow-lg shadow-green-100 ring-1 ring-[#43A047]/20">
+              <div className="p-3 bg-gradient-to-br from-[#43A047] to-[#1B5E20] rounded-xl shadow-lg shadow-green-500/10 ring-1 ring-[#43A047]/20">
                 <Zap size={22} className="text-white" />
               </div>
               <div>

@@ -85,17 +85,17 @@ const getUrgenciaConfig = (urgencia: string) => {
   switch (urgencia) {
     case 'alta':
       return {
-        color: 'bg-red-500/10 text-red-600 border-red-200',
+        color: 'bg-red-500/10 text-red-400 border-red-500/20',
         label: 'Urgente',
       };
     case 'media':
       return {
-        color: 'bg-amber-500/10 text-amber-600 border-amber-200',
+        color: 'bg-amber-500/10 text-amber-400 border-amber-500/20',
         label: 'Atenção',
       };
     case 'baixa':
       return {
-        color: 'bg-green-500/10 text-green-600 border-green-200',
+        color: 'bg-green-500/10 text-green-400 border-green-500/20',
         label: 'Normal',
       };
     default:
@@ -110,19 +110,19 @@ const getStatusConfig = (status: string) => {
   switch (status) {
     case 'pendente':
       return {
-        color: 'text-amber-600',
+        color: 'text-amber-400',
         label: 'Pendente',
         icon: Clock,
       };
     case 'enviado':
       return {
-        color: 'text-blue-600',
+        color: 'text-blue-400',
         label: 'Enviado',
         icon: Send,
       };
     case 'confirmado':
       return {
-        color: 'text-green-600',
+        color: 'text-green-400',
         label: 'Confirmado',
         icon: CheckCircle,
       };
@@ -221,7 +221,7 @@ export default function LembretesPage() {
               <Bell size={20} />
               Configurar Automação
             </button>
-            <button className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-[#43A047] to-[#1B5E20] rounded-xl text-white font-medium hover:shadow-lg hover:shadow-green-200 hover:scale-[1.02] active:scale-[0.98] transition-all duration-200">
+            <button className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-[#43A047] to-[#1B5E20] rounded-xl text-white font-medium hover:shadow-lg hover:shadow-green-500/10 hover:scale-[1.02] active:scale-[0.98] transition-all duration-200">
               <Send size={20} />
               Enviar Selecionados
             </button>
@@ -292,7 +292,7 @@ export default function LembretesPage() {
                       <button className="p-2.5 bg-[#25D366]/20 rounded-lg text-[#25D366] hover:bg-[#25D366]/30 transition-all duration-200" title="Enviar WhatsApp">
                         <MessageCircle size={18} />
                       </button>
-                      <button className="p-2.5 bg-blue-500/10 rounded-lg text-blue-600 hover:bg-blue-500/30 transition-all duration-200" title="Ligar">
+                      <button className="p-2.5 bg-blue-500/10 rounded-lg text-blue-400 hover:bg-blue-500/30 transition-all duration-200" title="Ligar">
                         <Phone size={18} />
                       </button>
                       <button className="p-2.5 bg-green-500/10 rounded-lg text-[#43A047] hover:bg-[#43A047]/30 transition-all duration-200" title="Agendar">
