@@ -15,7 +15,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "LubIA - Gestão de Oficinas",
+  title: "LoopIA - Gestão de Oficinas",
   description: "Sistema inteligente para gestão de oficinas mecânicas",
 };
 

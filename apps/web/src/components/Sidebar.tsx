@@ -47,7 +47,7 @@ export default function Sidebar() {
             <div className="w-12 h-12 rounded-2xl flex items-center justify-center shadow-lg shadow-[#22c55e]/30 overflow-hidden ring-1 ring-[#22c55e]/20">
               <Image
                 src="/logo.png"
-                alt="LubIA Logo"
+                alt="LoopIA Logo"
                 width={48}
                 height={48}
                 className="object-contain"
@@ -59,7 +59,7 @@ export default function Sidebar() {
           {!collapsed && (
             <div className="animate-fade-in">
               <h1 className="text-2xl font-bold tracking-tight">
-                <span className="text-white">Lub</span>
+                <span className="text-white">Loop</span>
                 <span className="gradient-text">IA</span>
               </h1>
               <p className="text-xs text-[#6B7280] font-medium">Gestão Inteligente</p>

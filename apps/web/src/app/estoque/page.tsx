@@ -479,7 +479,7 @@ export default function EstoquePage() {
       <!DOCTYPE html>
       <html>
       <head>
-        <title>Relatório de Estoque - LubIA</title>
+        <title>Relatório de Estoque - LoopIA</title>
         <style>
           body { font-family: Arial, sans-serif; padding: 20px; color: #333; }
           h1 { color: #22c55e; margin-bottom: 5px; }
@@ -500,7 +500,7 @@ export default function EstoquePage() {
       </head>
       <body>
         <h1>Relatório de Estoque</h1>
-        <p class="subtitle">LubIA - Sistema de Gestão para Oficinas • ${new Date().toLocaleDateString('pt-BR')}</p>
+        <p class="subtitle">LoopIA - Sistema de Gestão para Oficinas • ${new Date().toLocaleDateString('pt-BR')}</p>
 
         <div class="stats">
           <div class="stat">
@@ -550,7 +550,7 @@ export default function EstoquePage() {
           </tbody>
         </table>
 
-        <p class="footer">Gerado por LubIA em ${new Date().toLocaleString('pt-BR')}</p>
+        <p class="footer">Gerado por LoopIA em ${new Date().toLocaleString('pt-BR')}</p>
 
         <script>window.onload = function() { window.print(); }</script>
       </body>

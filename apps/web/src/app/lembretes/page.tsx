@@ -313,7 +313,7 @@ export default function LembretesPage() {
             <p className="text-[#94a3b8] text-sm leading-relaxed">
               Olá <span className="text-[#22c55e]">[NOME_CLIENTE]</span>! 🚗
               <br /><br />
-              Tudo bem? Aqui é da <span className="text-[#22c55e]">LubIA Oficina</span>!
+              Tudo bem? Aqui é da <span className="text-[#22c55e]">LoopIA Oficina</span>!
               <br /><br />
               Notamos que já se passaram <span className="text-[#22c55e]">[TEMPO]</span> desde a última <span className="text-[#22c55e]">[SERVICO]</span> do seu <span className="text-[#22c55e]">[VEICULO]</span> (placa <span className="text-[#22c55e]">[PLACA]</span>).
               <br /><br />

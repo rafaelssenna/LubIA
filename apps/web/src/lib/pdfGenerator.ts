@@ -39,12 +39,12 @@ interface OrdemPDF {
 
 // Configuração da oficina (pode ser movido para config futuramente)
 const OFICINA_CONFIG = {
-  nome: 'LubIA',
+  nome: 'LoopIA',
   subtitulo: 'Centro Automotivo',
   cnpj: '00.000.000/0001-00',
   telefone: '(31) 0000-0000',
   endereco: 'Rua Exemplo, 123 - Belo Horizonte/MG',
-  email: 'contato@lubia.com.br',
+  email: 'contato@loopia.com.br',
 };
 
 const statusLabels: Record<string, string> = {

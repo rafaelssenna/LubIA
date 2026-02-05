@@ -75,7 +75,7 @@ export default function ConfiguracoesPage() {
                 Central de Configurações
               </h2>
               <p className="text-[#94a3b8] text-sm">
-                Personalize o LubIA de acordo com as necessidades da sua oficina.
+                Personalize o LoopIA de acordo com as necessidades da sua oficina.
                 Todas as alterações são salvas automaticamente.
               </p>
             </div>
@@ -121,7 +121,7 @@ export default function ConfiguracoesPage() {
                 <HelpCircle size={24} className="text-[#6B7280]" />
               </div>
               <div>
-                <h3 className="font-semibold text-white">Sobre o LubIA</h3>
+                <h3 className="font-semibold text-white">Sobre o LoopIA</h3>
                 <p className="text-sm text-[#6B7280]">Versão 1.0.0 • Sistema de Gestão Inteligente para Oficinas</p>
               </div>
             </div>
