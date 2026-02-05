@@ -298,47 +298,47 @@ export default function ClientesPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#e8ece2]">
+    <div className="min-h-screen bg-[#121212]">
       <Header title="Clientes" subtitle="Gerencie seus clientes" />
 
       <div className="p-6 space-y-6 animate-fade-in">
         {/* Stats */}
         <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-          <div className="group relative bg-[#dde2d4] rounded-2xl p-5 border border-[#b8c4a8] hover:border-green-300 transition-all duration-300 hover:shadow-lg hover:shadow-[#4A701C]/5">
-            <div className="absolute inset-0 bg-gradient-to-br from-[#4A701C]/5 to-transparent rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+          <div className="group relative bg-[#1E1E1E] rounded-2xl p-5 border border-[#333333] hover:border-green-300 transition-all duration-300 hover:shadow-lg hover:shadow-[#43A047]/5">
+            <div className="absolute inset-0 bg-gradient-to-br from-[#43A047]/5 to-transparent rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
             <div className="relative flex items-center gap-3">
-              <div className="p-3 bg-gradient-to-br from-[#4A701C]/20 to-[#4A701C]/5 rounded-xl ring-1 ring-[#4A701C]/20">
-                <User size={20} className="text-[#4A701C]" />
+              <div className="p-3 bg-gradient-to-br from-[#43A047]/20 to-[#43A047]/5 rounded-xl ring-1 ring-[#43A047]/20">
+                <User size={20} className="text-[#43A047]" />
               </div>
               <div>
-                <p className="text-2xl font-bold text-[#284703]">{clientes.length}</p>
-                <p className="text-xs text-[#555D4C]">Total Clientes</p>
+                <p className="text-2xl font-bold text-[#E8E8E8]">{clientes.length}</p>
+                <p className="text-xs text-[#9E9E9E]">Total Clientes</p>
               </div>
             </div>
           </div>
-          <div className="group relative bg-[#dde2d4] rounded-2xl p-5 border border-[#b8c4a8] hover:border-blue-500/30 transition-all duration-300 hover:shadow-lg hover:shadow-blue-500/5">
+          <div className="group relative bg-[#1E1E1E] rounded-2xl p-5 border border-[#333333] hover:border-blue-500/30 transition-all duration-300 hover:shadow-lg hover:shadow-blue-500/5">
             <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-transparent rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
             <div className="relative flex items-center gap-3">
               <div className="p-3 bg-gradient-to-br from-blue-500/20 to-blue-500/5 rounded-xl ring-1 ring-blue-500/20">
                 <Car size={20} className="text-blue-400" />
               </div>
               <div>
-                <p className="text-2xl font-bold text-[#284703]">
+                <p className="text-2xl font-bold text-[#E8E8E8]">
                   {clientes.reduce((acc, c) => acc + c.veiculosCount, 0)}
                 </p>
-                <p className="text-xs text-[#555D4C]">Total Veiculos</p>
+                <p className="text-xs text-[#9E9E9E]">Total Veiculos</p>
               </div>
             </div>
           </div>
-          <div className="group relative bg-[#dde2d4] rounded-2xl p-5 border border-[#b8c4a8] hover:border-amber-500/30 transition-all duration-300 hover:shadow-lg hover:shadow-amber-500/5 hidden md:block">
+          <div className="group relative bg-[#1E1E1E] rounded-2xl p-5 border border-[#333333] hover:border-amber-500/30 transition-all duration-300 hover:shadow-lg hover:shadow-amber-500/5 hidden md:block">
             <div className="absolute inset-0 bg-gradient-to-br from-amber-500/5 to-transparent rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
             <div className="relative flex items-center gap-3">
               <div className="p-3 bg-gradient-to-br from-amber-500/20 to-amber-500/5 rounded-xl ring-1 ring-amber-500/20">
                 <MessageCircle size={20} className="text-amber-400" />
               </div>
               <div>
-                <p className="text-2xl font-bold text-[#284703]">0</p>
-                <p className="text-xs text-[#555D4C]">Msgs Enviadas (Hoje)</p>
+                <p className="text-2xl font-bold text-[#E8E8E8]">0</p>
+                <p className="text-xs text-[#9E9E9E]">Msgs Enviadas (Hoje)</p>
               </div>
             </div>
           </div>
@@ -347,13 +347,13 @@ export default function ClientesPage() {
         {/* Toolbar */}
         <div className="flex flex-col md:flex-row gap-4 justify-between">
           <div className="relative flex-1 max-w-md">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-[#555D4C]" size={18} />
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-[#9E9E9E]" size={18} />
             <input
               type="text"
               placeholder="Buscar cliente por nome, telefone ou CPF..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full bg-[#dde2d4] border border-[#b8c4a8] rounded-xl pl-11 pr-4 py-3 text-sm text-[#284703] placeholder-gray-500 focus:outline-none focus:border-[#4A701C]/50 focus:ring-1 focus:ring-[#4A701C]/20 transition-all duration-200"
+              className="w-full bg-[#1E1E1E] border border-[#333333] rounded-xl pl-11 pr-4 py-3 text-sm text-[#E8E8E8] placeholder-[#616161] focus:outline-none focus:border-[#43A047]/50 focus:ring-1 focus:ring-[#43A047]/20 transition-all duration-200"
             />
           </div>
           <button
@@ -362,7 +362,7 @@ export default function ClientesPage() {
               setEnderecoForm({ cep: '', rua: '', numero: '', complemento: '', bairro: '', cidade: '', uf: '' });
               setShowModal(true);
             }}
-            className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-[#4A701C] to-[#284703] rounded-xl text-white font-medium hover:shadow-lg hover:shadow-green-100 transition-all duration-300 hover:scale-[1.02]"
+            className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-[#43A047] to-[#1B5E20] rounded-xl text-white font-medium hover:shadow-lg hover:shadow-green-100 transition-all duration-300 hover:scale-[1.02]"
           >
             <Plus size={18} />
             Novo Cliente
@@ -370,86 +370,86 @@ export default function ClientesPage() {
         </div>
 
         {/* Lista de Clientes */}
-        <div className="bg-[#dde2d4] border border-[#b8c4a8] rounded-2xl overflow-hidden">
+        <div className="bg-[#1E1E1E] border border-[#333333] rounded-2xl overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead>
-                <tr className="border-b border-[#b8c4a8]">
-                  <th className="text-left px-6 py-4 text-sm font-medium text-[#555D4C]">Cliente</th>
-                  <th className="text-left px-6 py-4 text-sm font-medium text-[#555D4C]">Telefone</th>
-                  <th className="text-left px-6 py-4 text-sm font-medium text-[#555D4C]">CPF</th>
-                  <th className="text-center px-6 py-4 text-sm font-medium text-[#555D4C]">Veiculos</th>
-                  <th className="text-right px-6 py-4 text-sm font-medium text-[#555D4C]">Acoes</th>
+                <tr className="border-b border-[#333333]">
+                  <th className="text-left px-6 py-4 text-sm font-medium text-[#9E9E9E]">Cliente</th>
+                  <th className="text-left px-6 py-4 text-sm font-medium text-[#9E9E9E]">Telefone</th>
+                  <th className="text-left px-6 py-4 text-sm font-medium text-[#9E9E9E]">CPF</th>
+                  <th className="text-center px-6 py-4 text-sm font-medium text-[#9E9E9E]">Veiculos</th>
+                  <th className="text-right px-6 py-4 text-sm font-medium text-[#9E9E9E]">Acoes</th>
                 </tr>
               </thead>
               <tbody>
                 {loading ? (
                   <tr>
-                    <td colSpan={5} className="text-center py-12 text-[#555D4C]">
+                    <td colSpan={5} className="text-center py-12 text-[#9E9E9E]">
                       <Loader2 className="animate-spin mx-auto mb-2" size={24} />
                       Carregando...
                     </td>
                   </tr>
                 ) : clientes.length === 0 ? (
                   <tr>
-                    <td colSpan={5} className="text-center py-12 text-[#555D4C]">
+                    <td colSpan={5} className="text-center py-12 text-[#9E9E9E]">
                       Nenhum cliente encontrado
                     </td>
                   </tr>
                 ) : (
                   clientes.map((cliente) => (
-                    <tr key={cliente.id} className="border-b border-[#b8c4a8]/50 hover:bg-[#e8ece2] transition-all duration-200 group">
+                    <tr key={cliente.id} className="border-b border-[#333333]/50 hover:bg-[#121212] transition-all duration-200 group">
                       <td className="px-6 py-4">
                         <div className="flex items-center gap-3">
-                          <div className="w-10 h-10 bg-gradient-to-br from-[#4A701C] to-[#284703] rounded-xl flex items-center justify-center text-white font-bold ring-2 ring-[#4A701C]/20">
+                          <div className="w-10 h-10 bg-gradient-to-br from-[#43A047] to-[#1B5E20] rounded-xl flex items-center justify-center text-white font-bold ring-2 ring-[#43A047]/20">
                             {cliente.nome.charAt(0).toUpperCase()}
                           </div>
                           <div>
-                            <span className="font-medium text-[#284703]">{cliente.nome}</span>
+                            <span className="font-medium text-[#E8E8E8]">{cliente.nome}</span>
                             {cliente.email && (
-                              <p className="text-xs text-[#555D4C]">{cliente.email}</p>
+                              <p className="text-xs text-[#9E9E9E]">{cliente.email}</p>
                             )}
                           </div>
                         </div>
                       </td>
                       <td className="px-6 py-4">
-                        <div className="flex items-center gap-2 text-[#555D4C]">
-                          <Phone size={14} className="text-[#4A701C]" />
+                        <div className="flex items-center gap-2 text-[#9E9E9E]">
+                          <Phone size={14} className="text-[#43A047]" />
                           {formatPhone(cliente.telefone)}
                         </div>
                       </td>
                       <td className="px-6 py-4">
-                        <span className="text-[#555D4C]">
+                        <span className="text-[#9E9E9E]">
                           {cliente.cpf ? formatCPF(cliente.cpf) : '-'}
                         </span>
                       </td>
                       <td className="px-6 py-4 text-center">
-                        <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-[#4A701C]/10 rounded-lg ring-1 ring-[#4A701C]/20">
-                          <Car size={14} className="text-[#4A701C]" />
-                          <span className="text-[#4A701C] font-medium">{cliente.veiculosCount}</span>
+                        <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-[#43A047]/10 rounded-lg ring-1 ring-[#43A047]/20">
+                          <Car size={14} className="text-[#43A047]" />
+                          <span className="text-[#43A047] font-medium">{cliente.veiculosCount}</span>
                         </div>
                       </td>
                       <td className="px-6 py-4">
-                        <div className="flex items-center justify-end gap-1 p-1 bg-[#dde2d4] rounded-lg ring-1 ring-[#b8c4a8] opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                        <div className="flex items-center justify-end gap-1 p-1 bg-[#1E1E1E] rounded-lg ring-1 ring-[#333333] opacity-0 group-hover:opacity-100 transition-opacity duration-200">
                           <button
                             onClick={() => {
                               window.open(`https://wa.me/55${cliente.telefone.replace(/\D/g, '')}`, '_blank');
                             }}
-                            className="p-2 hover:bg-[#25D366]/10 rounded-md text-[#555D4C] hover:text-[#25D366] transition-all duration-200"
+                            className="p-2 hover:bg-[#25D366]/10 rounded-md text-[#9E9E9E] hover:text-[#25D366] transition-all duration-200"
                             title="WhatsApp"
                           >
                             <MessageCircle size={16} />
                           </button>
                           <button
                             onClick={() => viewDetails(cliente)}
-                            className="p-2 hover:bg-blue-500/10 rounded-md text-[#555D4C] hover:text-blue-400 transition-all duration-200"
+                            className="p-2 hover:bg-blue-500/10 rounded-md text-[#9E9E9E] hover:text-blue-400 transition-all duration-200"
                             title="Ver detalhes"
                           >
                             <Eye size={16} />
                           </button>
                           <button
                             onClick={() => openEditModal(cliente)}
-                            className="p-2 hover:bg-[#e8ece2] rounded-md text-[#555D4C] hover:text-[#284703] transition-all duration-200"
+                            className="p-2 hover:bg-[#121212] rounded-md text-[#9E9E9E] hover:text-[#E8E8E8] transition-all duration-200"
                             title="Editar"
                           >
                             <Edit size={16} />
@@ -459,7 +459,7 @@ export default function ClientesPage() {
                               setSelectedCliente(cliente);
                               setShowDeleteConfirm(true);
                             }}
-                            className="p-2 hover:bg-red-500/10 rounded-md text-[#555D4C] hover:text-red-400 transition-all duration-200"
+                            className="p-2 hover:bg-red-500/10 rounded-md text-[#9E9E9E] hover:text-red-400 transition-all duration-200"
                             title="Excluir"
                           >
                             <Trash2 size={16} />
@@ -478,60 +478,60 @@ export default function ClientesPage() {
       {/* Modal Novo Cliente */}
       {showModal && (
         <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-[#dde2d4] border border-[#b8c4a8] rounded-2xl w-full max-w-md animate-fade-in shadow-2xl">
-            <div className="p-6 border-b border-[#b8c4a8] flex items-center justify-between">
+          <div className="bg-[#1E1E1E] border border-[#333333] rounded-2xl w-full max-w-md animate-fade-in shadow-2xl">
+            <div className="p-6 border-b border-[#333333] flex items-center justify-between">
               <div>
-                <h2 className="text-xl font-semibold text-[#284703]">Novo Cliente</h2>
-                <p className="text-sm text-[#555D4C] mt-1">Cadastre um novo cliente</p>
+                <h2 className="text-xl font-semibold text-[#E8E8E8]">Novo Cliente</h2>
+                <p className="text-sm text-[#9E9E9E] mt-1">Cadastre um novo cliente</p>
               </div>
-              <button onClick={() => setShowModal(false)} className="p-2 hover:bg-[#e8ece2] rounded-lg text-[#555D4C] hover:text-[#284703] transition-all duration-200">
+              <button onClick={() => setShowModal(false)} className="p-2 hover:bg-[#121212] rounded-lg text-[#9E9E9E] hover:text-[#E8E8E8] transition-all duration-200">
                 <X size={20} />
               </button>
             </div>
             <div className="p-6 space-y-4 max-h-[60vh] overflow-y-auto">
               <div>
-                <label className="block text-sm font-medium text-[#555D4C] mb-2">Nome *</label>
+                <label className="block text-sm font-medium text-[#9E9E9E] mb-2">Nome *</label>
                 <input
                   type="text"
                   value={form.nome}
                   onChange={(e) => setForm({ ...form, nome: e.target.value })}
                   placeholder="Nome completo"
-                  className="w-full bg-[#e8ece2] border border-[#b8c4a8] rounded-xl px-4 py-3 text-[#284703] placeholder-gray-500 focus:outline-none focus:border-[#4A701C]/50 focus:ring-1 focus:ring-[#4A701C]/20 transition-all duration-200"
+                  className="w-full bg-[#121212] border border-[#333333] rounded-xl px-4 py-3 text-[#E8E8E8] placeholder-[#616161] focus:outline-none focus:border-[#43A047]/50 focus:ring-1 focus:ring-[#43A047]/20 transition-all duration-200"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-[#555D4C] mb-2">Telefone *</label>
+                <label className="block text-sm font-medium text-[#9E9E9E] mb-2">Telefone *</label>
                 <input
                   type="text"
                   value={form.telefone}
                   onChange={(e) => setForm({ ...form, telefone: e.target.value })}
                   placeholder="(11) 99999-9999"
-                  className="w-full bg-[#e8ece2] border border-[#b8c4a8] rounded-xl px-4 py-3 text-[#284703] placeholder-gray-500 focus:outline-none focus:border-[#4A701C]/50 focus:ring-1 focus:ring-[#4A701C]/20 transition-all duration-200"
+                  className="w-full bg-[#121212] border border-[#333333] rounded-xl px-4 py-3 text-[#E8E8E8] placeholder-[#616161] focus:outline-none focus:border-[#43A047]/50 focus:ring-1 focus:ring-[#43A047]/20 transition-all duration-200"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-[#555D4C] mb-2">Email</label>
+                <label className="block text-sm font-medium text-[#9E9E9E] mb-2">Email</label>
                 <input
                   type="email"
                   value={form.email}
                   onChange={(e) => setForm({ ...form, email: e.target.value })}
                   placeholder="email@exemplo.com"
-                  className="w-full bg-[#e8ece2] border border-[#b8c4a8] rounded-xl px-4 py-3 text-[#284703] placeholder-gray-500 focus:outline-none focus:border-[#4A701C]/50 focus:ring-1 focus:ring-[#4A701C]/20 transition-all duration-200"
+                  className="w-full bg-[#121212] border border-[#333333] rounded-xl px-4 py-3 text-[#E8E8E8] placeholder-[#616161] focus:outline-none focus:border-[#43A047]/50 focus:ring-1 focus:ring-[#43A047]/20 transition-all duration-200"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-[#555D4C] mb-2">CPF</label>
+                <label className="block text-sm font-medium text-[#9E9E9E] mb-2">CPF</label>
                 <input
                   type="text"
                   value={form.cpf}
                   onChange={(e) => setForm({ ...form, cpf: e.target.value })}
                   placeholder="000.000.000-00"
-                  className="w-full bg-[#e8ece2] border border-[#b8c4a8] rounded-xl px-4 py-3 text-[#284703] placeholder-gray-500 focus:outline-none focus:border-[#4A701C]/50 focus:ring-1 focus:ring-[#4A701C]/20 transition-all duration-200"
+                  className="w-full bg-[#121212] border border-[#333333] rounded-xl px-4 py-3 text-[#E8E8E8] placeholder-[#616161] focus:outline-none focus:border-[#43A047]/50 focus:ring-1 focus:ring-[#43A047]/20 transition-all duration-200"
                 />
               </div>
               {/* Endereco */}
-              <div className="pt-2 border-t border-[#b8c4a8]">
-                <label className="block text-sm font-medium text-[#555D4C] mb-3">Endereco</label>
+              <div className="pt-2 border-t border-[#333333]">
+                <label className="block text-sm font-medium text-[#9E9E9E] mb-3">Endereco</label>
                 <div className="space-y-3">
                   <div className="grid grid-cols-3 gap-3">
                     <div className="col-span-1">
@@ -545,7 +545,7 @@ export default function ClientesPage() {
                           if (value.length === 8) buscarCep(value);
                         }}
                         placeholder="CEP"
-                        className="w-full bg-[#e8ece2] border border-[#b8c4a8] rounded-xl px-4 py-3 text-[#284703] placeholder-gray-500 focus:outline-none focus:border-[#4A701C]/50 text-sm"
+                        className="w-full bg-[#121212] border border-[#333333] rounded-xl px-4 py-3 text-[#E8E8E8] placeholder-[#616161] focus:outline-none focus:border-[#43A047]/50 text-sm"
                       />
                     </div>
                     <div className="col-span-2">
@@ -555,7 +555,7 @@ export default function ClientesPage() {
                         onChange={(e) => setEnderecoForm({ ...enderecoForm, rua: e.target.value })}
                         placeholder={buscandoCep ? 'Buscando...' : 'Rua'}
                         disabled={buscandoCep}
-                        className="w-full bg-[#e8ece2] border border-[#b8c4a8] rounded-xl px-4 py-3 text-[#284703] placeholder-gray-500 focus:outline-none focus:border-[#4A701C]/50 text-sm disabled:opacity-50"
+                        className="w-full bg-[#121212] border border-[#333333] rounded-xl px-4 py-3 text-[#E8E8E8] placeholder-[#616161] focus:outline-none focus:border-[#43A047]/50 text-sm disabled:opacity-50"
                       />
                     </div>
                   </div>
@@ -566,7 +566,7 @@ export default function ClientesPage() {
                         value={enderecoForm.numero}
                         onChange={(e) => setEnderecoForm({ ...enderecoForm, numero: e.target.value })}
                         placeholder="No"
-                        className="w-full bg-[#e8ece2] border border-[#b8c4a8] rounded-xl px-4 py-3 text-[#284703] placeholder-gray-500 focus:outline-none focus:border-[#4A701C]/50 text-sm"
+                        className="w-full bg-[#121212] border border-[#333333] rounded-xl px-4 py-3 text-[#E8E8E8] placeholder-[#616161] focus:outline-none focus:border-[#43A047]/50 text-sm"
                       />
                     </div>
                     <div className="col-span-2">
@@ -575,7 +575,7 @@ export default function ClientesPage() {
                         value={enderecoForm.complemento}
                         onChange={(e) => setEnderecoForm({ ...enderecoForm, complemento: e.target.value })}
                         placeholder="Complemento"
-                        className="w-full bg-[#e8ece2] border border-[#b8c4a8] rounded-xl px-4 py-3 text-[#284703] placeholder-gray-500 focus:outline-none focus:border-[#4A701C]/50 text-sm"
+                        className="w-full bg-[#121212] border border-[#333333] rounded-xl px-4 py-3 text-[#E8E8E8] placeholder-[#616161] focus:outline-none focus:border-[#43A047]/50 text-sm"
                       />
                     </div>
                   </div>
@@ -587,7 +587,7 @@ export default function ClientesPage() {
                         onChange={(e) => setEnderecoForm({ ...enderecoForm, bairro: e.target.value })}
                         placeholder="Bairro"
                         disabled={buscandoCep}
-                        className="w-full bg-[#e8ece2] border border-[#b8c4a8] rounded-xl px-4 py-3 text-[#284703] placeholder-gray-500 focus:outline-none focus:border-[#4A701C]/50 text-sm disabled:opacity-50"
+                        className="w-full bg-[#121212] border border-[#333333] rounded-xl px-4 py-3 text-[#E8E8E8] placeholder-[#616161] focus:outline-none focus:border-[#43A047]/50 text-sm disabled:opacity-50"
                       />
                     </div>
                     <div>
@@ -597,7 +597,7 @@ export default function ClientesPage() {
                         onChange={(e) => setEnderecoForm({ ...enderecoForm, cidade: e.target.value })}
                         placeholder="Cidade"
                         disabled={buscandoCep}
-                        className="w-full bg-[#e8ece2] border border-[#b8c4a8] rounded-xl px-4 py-3 text-[#284703] placeholder-gray-500 focus:outline-none focus:border-[#4A701C]/50 text-sm disabled:opacity-50"
+                        className="w-full bg-[#121212] border border-[#333333] rounded-xl px-4 py-3 text-[#E8E8E8] placeholder-[#616161] focus:outline-none focus:border-[#43A047]/50 text-sm disabled:opacity-50"
                       />
                     </div>
                     <div>
@@ -608,24 +608,24 @@ export default function ClientesPage() {
                         placeholder="UF"
                         maxLength={2}
                         disabled={buscandoCep}
-                        className="w-full bg-[#e8ece2] border border-[#b8c4a8] rounded-xl px-4 py-3 text-[#284703] placeholder-gray-500 focus:outline-none focus:border-[#4A701C]/50 text-sm disabled:opacity-50"
+                        className="w-full bg-[#121212] border border-[#333333] rounded-xl px-4 py-3 text-[#E8E8E8] placeholder-[#616161] focus:outline-none focus:border-[#43A047]/50 text-sm disabled:opacity-50"
                       />
                     </div>
                   </div>
                 </div>
               </div>
             </div>
-            <div className="p-6 border-t border-[#b8c4a8] flex gap-3 justify-end">
+            <div className="p-6 border-t border-[#333333] flex gap-3 justify-end">
               <button
                 onClick={() => setShowModal(false)}
-                className="px-6 py-3 border border-[#b8c4a8] rounded-xl text-[#555D4C] hover:bg-[#e8ece2] transition-all duration-200"
+                className="px-6 py-3 border border-[#333333] rounded-xl text-[#9E9E9E] hover:bg-[#121212] transition-all duration-200"
               >
                 Cancelar
               </button>
               <button
                 onClick={handleSubmit}
                 disabled={saving}
-                className="px-6 py-3 bg-gradient-to-r from-[#4A701C] to-[#284703] rounded-xl text-white font-medium hover:shadow-lg hover:shadow-green-100 transition-all duration-300 disabled:opacity-50"
+                className="px-6 py-3 bg-gradient-to-r from-[#43A047] to-[#1B5E20] rounded-xl text-white font-medium hover:shadow-lg hover:shadow-green-100 transition-all duration-300 disabled:opacity-50"
               >
                 {saving ? 'Salvando...' : 'Cadastrar'}
               </button>
@@ -637,56 +637,56 @@ export default function ClientesPage() {
       {/* Modal Editar Cliente */}
       {showEditModal && selectedCliente && (
         <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-[#dde2d4] border border-[#b8c4a8] rounded-2xl w-full max-w-md animate-fade-in shadow-2xl">
-            <div className="p-6 border-b border-[#b8c4a8] flex items-center justify-between">
+          <div className="bg-[#1E1E1E] border border-[#333333] rounded-2xl w-full max-w-md animate-fade-in shadow-2xl">
+            <div className="p-6 border-b border-[#333333] flex items-center justify-between">
               <div>
-                <h2 className="text-xl font-semibold text-[#284703]">Editar Cliente</h2>
-                <p className="text-sm text-[#555D4C] mt-1">Atualize as informacoes do cliente</p>
+                <h2 className="text-xl font-semibold text-[#E8E8E8]">Editar Cliente</h2>
+                <p className="text-sm text-[#9E9E9E] mt-1">Atualize as informacoes do cliente</p>
               </div>
-              <button onClick={() => setShowEditModal(false)} className="p-2 hover:bg-[#e8ece2] rounded-lg text-[#555D4C] hover:text-[#284703] transition-all duration-200">
+              <button onClick={() => setShowEditModal(false)} className="p-2 hover:bg-[#121212] rounded-lg text-[#9E9E9E] hover:text-[#E8E8E8] transition-all duration-200">
                 <X size={20} />
               </button>
             </div>
             <div className="p-6 space-y-4 max-h-[60vh] overflow-y-auto">
               <div>
-                <label className="block text-sm font-medium text-[#555D4C] mb-2">Nome *</label>
+                <label className="block text-sm font-medium text-[#9E9E9E] mb-2">Nome *</label>
                 <input
                   type="text"
                   value={form.nome}
                   onChange={(e) => setForm({ ...form, nome: e.target.value })}
-                  className="w-full bg-[#e8ece2] border border-[#b8c4a8] rounded-xl px-4 py-3 text-[#284703] placeholder-gray-500 focus:outline-none focus:border-[#4A701C]/50 focus:ring-1 focus:ring-[#4A701C]/20 transition-all duration-200"
+                  className="w-full bg-[#121212] border border-[#333333] rounded-xl px-4 py-3 text-[#E8E8E8] placeholder-[#616161] focus:outline-none focus:border-[#43A047]/50 focus:ring-1 focus:ring-[#43A047]/20 transition-all duration-200"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-[#555D4C] mb-2">Telefone *</label>
+                <label className="block text-sm font-medium text-[#9E9E9E] mb-2">Telefone *</label>
                 <input
                   type="text"
                   value={form.telefone}
                   onChange={(e) => setForm({ ...form, telefone: e.target.value })}
-                  className="w-full bg-[#e8ece2] border border-[#b8c4a8] rounded-xl px-4 py-3 text-[#284703] placeholder-gray-500 focus:outline-none focus:border-[#4A701C]/50 focus:ring-1 focus:ring-[#4A701C]/20 transition-all duration-200"
+                  className="w-full bg-[#121212] border border-[#333333] rounded-xl px-4 py-3 text-[#E8E8E8] placeholder-[#616161] focus:outline-none focus:border-[#43A047]/50 focus:ring-1 focus:ring-[#43A047]/20 transition-all duration-200"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-[#555D4C] mb-2">Email</label>
+                <label className="block text-sm font-medium text-[#9E9E9E] mb-2">Email</label>
                 <input
                   type="email"
                   value={form.email}
                   onChange={(e) => setForm({ ...form, email: e.target.value })}
-                  className="w-full bg-[#e8ece2] border border-[#b8c4a8] rounded-xl px-4 py-3 text-[#284703] placeholder-gray-500 focus:outline-none focus:border-[#4A701C]/50 focus:ring-1 focus:ring-[#4A701C]/20 transition-all duration-200"
+                  className="w-full bg-[#121212] border border-[#333333] rounded-xl px-4 py-3 text-[#E8E8E8] placeholder-[#616161] focus:outline-none focus:border-[#43A047]/50 focus:ring-1 focus:ring-[#43A047]/20 transition-all duration-200"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-[#555D4C] mb-2">CPF</label>
+                <label className="block text-sm font-medium text-[#9E9E9E] mb-2">CPF</label>
                 <input
                   type="text"
                   value={form.cpf}
                   onChange={(e) => setForm({ ...form, cpf: e.target.value })}
-                  className="w-full bg-[#e8ece2] border border-[#b8c4a8] rounded-xl px-4 py-3 text-[#284703] placeholder-gray-500 focus:outline-none focus:border-[#4A701C]/50 focus:ring-1 focus:ring-[#4A701C]/20 transition-all duration-200"
+                  className="w-full bg-[#121212] border border-[#333333] rounded-xl px-4 py-3 text-[#E8E8E8] placeholder-[#616161] focus:outline-none focus:border-[#43A047]/50 focus:ring-1 focus:ring-[#43A047]/20 transition-all duration-200"
                 />
               </div>
               {/* Endereco */}
-              <div className="pt-2 border-t border-[#b8c4a8]">
-                <label className="block text-sm font-medium text-[#555D4C] mb-3">Endereco</label>
+              <div className="pt-2 border-t border-[#333333]">
+                <label className="block text-sm font-medium text-[#9E9E9E] mb-3">Endereco</label>
                 <div className="space-y-3">
                   <div className="grid grid-cols-3 gap-3">
                     <div className="col-span-1">
@@ -700,7 +700,7 @@ export default function ClientesPage() {
                           if (value.length === 8) buscarCep(value);
                         }}
                         placeholder="CEP"
-                        className="w-full bg-[#e8ece2] border border-[#b8c4a8] rounded-xl px-4 py-3 text-[#284703] placeholder-gray-500 focus:outline-none focus:border-[#4A701C]/50 text-sm"
+                        className="w-full bg-[#121212] border border-[#333333] rounded-xl px-4 py-3 text-[#E8E8E8] placeholder-[#616161] focus:outline-none focus:border-[#43A047]/50 text-sm"
                       />
                     </div>
                     <div className="col-span-2">
@@ -710,7 +710,7 @@ export default function ClientesPage() {
                         onChange={(e) => setEnderecoForm({ ...enderecoForm, rua: e.target.value })}
                         placeholder={buscandoCep ? 'Buscando...' : 'Rua'}
                         disabled={buscandoCep}
-                        className="w-full bg-[#e8ece2] border border-[#b8c4a8] rounded-xl px-4 py-3 text-[#284703] placeholder-gray-500 focus:outline-none focus:border-[#4A701C]/50 text-sm disabled:opacity-50"
+                        className="w-full bg-[#121212] border border-[#333333] rounded-xl px-4 py-3 text-[#E8E8E8] placeholder-[#616161] focus:outline-none focus:border-[#43A047]/50 text-sm disabled:opacity-50"
                       />
                     </div>
                   </div>
@@ -721,7 +721,7 @@ export default function ClientesPage() {
                         value={enderecoForm.numero}
                         onChange={(e) => setEnderecoForm({ ...enderecoForm, numero: e.target.value })}
                         placeholder="No"
-                        className="w-full bg-[#e8ece2] border border-[#b8c4a8] rounded-xl px-4 py-3 text-[#284703] placeholder-gray-500 focus:outline-none focus:border-[#4A701C]/50 text-sm"
+                        className="w-full bg-[#121212] border border-[#333333] rounded-xl px-4 py-3 text-[#E8E8E8] placeholder-[#616161] focus:outline-none focus:border-[#43A047]/50 text-sm"
                       />
                     </div>
                     <div className="col-span-2">
@@ -730,7 +730,7 @@ export default function ClientesPage() {
                         value={enderecoForm.complemento}
                         onChange={(e) => setEnderecoForm({ ...enderecoForm, complemento: e.target.value })}
                         placeholder="Complemento"
-                        className="w-full bg-[#e8ece2] border border-[#b8c4a8] rounded-xl px-4 py-3 text-[#284703] placeholder-gray-500 focus:outline-none focus:border-[#4A701C]/50 text-sm"
+                        className="w-full bg-[#121212] border border-[#333333] rounded-xl px-4 py-3 text-[#E8E8E8] placeholder-[#616161] focus:outline-none focus:border-[#43A047]/50 text-sm"
                       />
                     </div>
                   </div>
@@ -742,7 +742,7 @@ export default function ClientesPage() {
                         onChange={(e) => setEnderecoForm({ ...enderecoForm, bairro: e.target.value })}
                         placeholder="Bairro"
                         disabled={buscandoCep}
-                        className="w-full bg-[#e8ece2] border border-[#b8c4a8] rounded-xl px-4 py-3 text-[#284703] placeholder-gray-500 focus:outline-none focus:border-[#4A701C]/50 text-sm disabled:opacity-50"
+                        className="w-full bg-[#121212] border border-[#333333] rounded-xl px-4 py-3 text-[#E8E8E8] placeholder-[#616161] focus:outline-none focus:border-[#43A047]/50 text-sm disabled:opacity-50"
                       />
                     </div>
                     <div>
@@ -752,7 +752,7 @@ export default function ClientesPage() {
                         onChange={(e) => setEnderecoForm({ ...enderecoForm, cidade: e.target.value })}
                         placeholder="Cidade"
                         disabled={buscandoCep}
-                        className="w-full bg-[#e8ece2] border border-[#b8c4a8] rounded-xl px-4 py-3 text-[#284703] placeholder-gray-500 focus:outline-none focus:border-[#4A701C]/50 text-sm disabled:opacity-50"
+                        className="w-full bg-[#121212] border border-[#333333] rounded-xl px-4 py-3 text-[#E8E8E8] placeholder-[#616161] focus:outline-none focus:border-[#43A047]/50 text-sm disabled:opacity-50"
                       />
                     </div>
                     <div>
@@ -763,24 +763,24 @@ export default function ClientesPage() {
                         placeholder="UF"
                         maxLength={2}
                         disabled={buscandoCep}
-                        className="w-full bg-[#e8ece2] border border-[#b8c4a8] rounded-xl px-4 py-3 text-[#284703] placeholder-gray-500 focus:outline-none focus:border-[#4A701C]/50 text-sm disabled:opacity-50"
+                        className="w-full bg-[#121212] border border-[#333333] rounded-xl px-4 py-3 text-[#E8E8E8] placeholder-[#616161] focus:outline-none focus:border-[#43A047]/50 text-sm disabled:opacity-50"
                       />
                     </div>
                   </div>
                 </div>
               </div>
             </div>
-            <div className="p-6 border-t border-[#b8c4a8] flex gap-3 justify-end">
+            <div className="p-6 border-t border-[#333333] flex gap-3 justify-end">
               <button
                 onClick={() => setShowEditModal(false)}
-                className="px-6 py-3 border border-[#b8c4a8] rounded-xl text-[#555D4C] hover:bg-[#e8ece2] transition-all duration-200"
+                className="px-6 py-3 border border-[#333333] rounded-xl text-[#9E9E9E] hover:bg-[#121212] transition-all duration-200"
               >
                 Cancelar
               </button>
               <button
                 onClick={handleEditSubmit}
                 disabled={saving}
-                className="px-6 py-3 bg-gradient-to-r from-[#4A701C] to-[#284703] rounded-xl text-white font-medium hover:shadow-lg hover:shadow-green-100 transition-all duration-300 disabled:opacity-50"
+                className="px-6 py-3 bg-gradient-to-r from-[#43A047] to-[#1B5E20] rounded-xl text-white font-medium hover:shadow-lg hover:shadow-green-100 transition-all duration-300 disabled:opacity-50"
               >
                 {saving ? 'Salvando...' : 'Salvar Alteracoes'}
               </button>
@@ -792,9 +792,9 @@ export default function ClientesPage() {
       {/* Modal Confirmar Exclusao */}
       {showDeleteConfirm && selectedCliente && (
         <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-[#dde2d4] border border-[#b8c4a8] rounded-2xl w-full max-w-md animate-fade-in shadow-2xl">
-            <div className="p-6 border-b border-[#b8c4a8]">
-              <h2 className="text-xl font-semibold text-[#284703]">Confirmar Exclusao</h2>
+          <div className="bg-[#1E1E1E] border border-[#333333] rounded-2xl w-full max-w-md animate-fade-in shadow-2xl">
+            <div className="p-6 border-b border-[#333333]">
+              <h2 className="text-xl font-semibold text-[#E8E8E8]">Confirmar Exclusao</h2>
             </div>
             <div className="p-6">
               <div className="flex items-center gap-4 mb-4">
@@ -802,8 +802,8 @@ export default function ClientesPage() {
                   <Trash2 size={24} className="text-red-400" />
                 </div>
                 <div>
-                  <p className="text-[#284703] font-medium">{selectedCliente.nome}</p>
-                  <p className="text-sm text-[#555D4C]">{formatPhone(selectedCliente.telefone)}</p>
+                  <p className="text-[#E8E8E8] font-medium">{selectedCliente.nome}</p>
+                  <p className="text-sm text-[#9E9E9E]">{formatPhone(selectedCliente.telefone)}</p>
                 </div>
               </div>
               {selectedCliente.veiculosCount > 0 ? (
@@ -812,18 +812,18 @@ export default function ClientesPage() {
                   Remova os veiculos primeiro para poder excluir o cliente.
                 </div>
               ) : (
-                <p className="text-[#555D4C] text-sm">
+                <p className="text-[#9E9E9E] text-sm">
                   Tem certeza que deseja excluir este cliente? Esta acao nao pode ser desfeita.
                 </p>
               )}
             </div>
-            <div className="p-6 border-t border-[#b8c4a8] flex gap-3 justify-end">
+            <div className="p-6 border-t border-[#333333] flex gap-3 justify-end">
               <button
                 onClick={() => {
                   setShowDeleteConfirm(false);
                   setSelectedCliente(null);
                 }}
-                className="px-6 py-3 border border-[#b8c4a8] rounded-xl text-[#555D4C] hover:bg-[#e8ece2] transition-all duration-200"
+                className="px-6 py-3 border border-[#333333] rounded-xl text-[#9E9E9E] hover:bg-[#121212] transition-all duration-200"
               >
                 Cancelar
               </button>
@@ -844,80 +844,80 @@ export default function ClientesPage() {
       {/* Modal Detalhes do Cliente */}
       {showDetailModal && selectedCliente && (
         <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-[#dde2d4] border border-[#b8c4a8] rounded-2xl w-full max-w-lg animate-fade-in max-h-[90vh] overflow-y-auto shadow-2xl">
-            <div className="p-6 border-b border-[#b8c4a8] flex items-center justify-between">
+          <div className="bg-[#1E1E1E] border border-[#333333] rounded-2xl w-full max-w-lg animate-fade-in max-h-[90vh] overflow-y-auto shadow-2xl">
+            <div className="p-6 border-b border-[#333333] flex items-center justify-between">
               <div className="flex items-center gap-4">
-                <div className="w-14 h-14 bg-gradient-to-br from-[#4A701C] to-[#284703] rounded-2xl flex items-center justify-center text-white text-2xl font-bold ring-2 ring-[#4A701C]/20">
+                <div className="w-14 h-14 bg-gradient-to-br from-[#43A047] to-[#1B5E20] rounded-2xl flex items-center justify-center text-white text-2xl font-bold ring-2 ring-[#43A047]/20">
                   {selectedCliente.nome.charAt(0).toUpperCase()}
                 </div>
                 <div>
-                  <h2 className="text-xl font-semibold text-[#284703]">{selectedCliente.nome}</h2>
-                  <p className="text-sm text-[#555D4C]">Cliente #{selectedCliente.id}</p>
+                  <h2 className="text-xl font-semibold text-[#E8E8E8]">{selectedCliente.nome}</h2>
+                  <p className="text-sm text-[#9E9E9E]">Cliente #{selectedCliente.id}</p>
                 </div>
               </div>
-              <button onClick={() => setShowDetailModal(false)} className="p-2 hover:bg-[#e8ece2] rounded-lg text-[#555D4C] hover:text-[#284703] transition-all duration-200">
+              <button onClick={() => setShowDetailModal(false)} className="p-2 hover:bg-[#121212] rounded-lg text-[#9E9E9E] hover:text-[#E8E8E8] transition-all duration-200">
                 <X size={20} />
               </button>
             </div>
             <div className="p-6 space-y-4">
               <div className="grid grid-cols-2 gap-4">
-                <div className="p-4 bg-[#e8ece2] rounded-xl border border-[#b8c4a8]">
-                  <div className="flex items-center gap-2 text-[#555D4C] mb-1">
+                <div className="p-4 bg-[#121212] rounded-xl border border-[#333333]">
+                  <div className="flex items-center gap-2 text-[#9E9E9E] mb-1">
                     <Phone size={14} />
                     <span className="text-xs">Telefone</span>
                   </div>
-                  <p className="text-[#284703]">{formatPhone(selectedCliente.telefone)}</p>
+                  <p className="text-[#E8E8E8]">{formatPhone(selectedCliente.telefone)}</p>
                 </div>
-                <div className="p-4 bg-[#e8ece2] rounded-xl border border-[#b8c4a8]">
-                  <div className="flex items-center gap-2 text-[#555D4C] mb-1">
+                <div className="p-4 bg-[#121212] rounded-xl border border-[#333333]">
+                  <div className="flex items-center gap-2 text-[#9E9E9E] mb-1">
                     <Car size={14} />
                     <span className="text-xs">Veiculos</span>
                   </div>
-                  <p className="text-[#284703]">{selectedCliente.veiculosCount}</p>
+                  <p className="text-[#E8E8E8]">{selectedCliente.veiculosCount}</p>
                 </div>
               </div>
               {selectedCliente.email && (
-                <div className="p-4 bg-[#e8ece2] rounded-xl border border-[#b8c4a8]">
-                  <div className="flex items-center gap-2 text-[#555D4C] mb-1">
+                <div className="p-4 bg-[#121212] rounded-xl border border-[#333333]">
+                  <div className="flex items-center gap-2 text-[#9E9E9E] mb-1">
                     <Mail size={14} />
                     <span className="text-xs">Email</span>
                   </div>
-                  <p className="text-[#284703]">{selectedCliente.email}</p>
+                  <p className="text-[#E8E8E8]">{selectedCliente.email}</p>
                 </div>
               )}
               {selectedCliente.cpf && (
-                <div className="p-4 bg-[#e8ece2] rounded-xl border border-[#b8c4a8]">
-                  <div className="flex items-center gap-2 text-[#555D4C] mb-1">
+                <div className="p-4 bg-[#121212] rounded-xl border border-[#333333]">
+                  <div className="flex items-center gap-2 text-[#9E9E9E] mb-1">
                     <CreditCard size={14} />
                     <span className="text-xs">CPF</span>
                   </div>
-                  <p className="text-[#284703]">{formatCPF(selectedCliente.cpf)}</p>
+                  <p className="text-[#E8E8E8]">{formatCPF(selectedCliente.cpf)}</p>
                 </div>
               )}
               {selectedCliente.endereco && (
-                <div className="p-4 bg-[#e8ece2] rounded-xl border border-[#b8c4a8]">
-                  <div className="flex items-center gap-2 text-[#555D4C] mb-1">
+                <div className="p-4 bg-[#121212] rounded-xl border border-[#333333]">
+                  <div className="flex items-center gap-2 text-[#9E9E9E] mb-1">
                     <MapPin size={14} />
                     <span className="text-xs">Endereco</span>
                   </div>
-                  <p className="text-[#284703]">{selectedCliente.endereco}</p>
+                  <p className="text-[#E8E8E8]">{selectedCliente.endereco}</p>
                 </div>
               )}
 
               {/* Veiculos */}
               {selectedCliente.veiculos && selectedCliente.veiculos.length > 0 && (
                 <div>
-                  <h3 className="text-sm font-medium text-[#555D4C] mb-3">Veiculos</h3>
+                  <h3 className="text-sm font-medium text-[#9E9E9E] mb-3">Veiculos</h3>
                   <div className="space-y-2">
                     {selectedCliente.veiculos.map((veiculo) => (
-                      <div key={veiculo.id} className="p-4 bg-[#e8ece2] rounded-xl border border-[#b8c4a8] flex items-center justify-between">
+                      <div key={veiculo.id} className="p-4 bg-[#121212] rounded-xl border border-[#333333] flex items-center justify-between">
                         <div className="flex items-center gap-3">
                           <div className="p-2 bg-blue-500/10 rounded-lg ring-1 ring-blue-500/20">
                             <Car size={16} className="text-blue-400" />
                           </div>
                           <div>
-                            <p className="text-[#284703]">{veiculo.marca} {veiculo.modelo}</p>
-                            <p className="text-xs text-[#4A701C] font-mono">{veiculo.placa}</p>
+                            <p className="text-[#E8E8E8]">{veiculo.marca} {veiculo.modelo}</p>
+                            <p className="text-xs text-[#43A047] font-mono">{veiculo.placa}</p>
                           </div>
                         </div>
                       </div>
@@ -926,7 +926,7 @@ export default function ClientesPage() {
                 </div>
               )}
             </div>
-            <div className="p-6 border-t border-[#b8c4a8] flex gap-3 justify-end">
+            <div className="p-6 border-t border-[#333333] flex gap-3 justify-end">
               <button
                 onClick={() => {
                   window.open(`https://wa.me/55${selectedCliente.telefone.replace(/\D/g, '')}`, '_blank');
@@ -938,7 +938,7 @@ export default function ClientesPage() {
               </button>
               <button
                 onClick={() => setShowDetailModal(false)}
-                className="px-6 py-3 border border-[#b8c4a8] rounded-xl text-[#555D4C] hover:bg-[#e8ece2] transition-all duration-200"
+                className="px-6 py-3 border border-[#333333] rounded-xl text-[#9E9E9E] hover:bg-[#121212] transition-all duration-200"
               >
                 Fechar
               </button>

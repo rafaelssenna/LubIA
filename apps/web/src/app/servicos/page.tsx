@@ -53,17 +53,17 @@ const getCategoriaLabel = (value: string) => {
 
 const getCategoriaColor = (categoria: string) => {
   const colors: Record<string, string> = {
-    'TROCA_OLEO': 'bg-amber-50 text-amber-600',
-    'FILTROS': 'bg-blue-50 text-blue-600',
+    'TROCA_OLEO': 'bg-amber-500/10 text-amber-600',
+    'FILTROS': 'bg-blue-500/10 text-blue-600',
     'PNEUS': 'bg-purple-50 text-purple-600',
-    'REVISOES': 'bg-green-50 text-[#4A701C]',
-    'FREIOS': 'bg-red-50 text-red-600',
+    'REVISOES': 'bg-green-500/10 text-[#43A047]',
+    'FREIOS': 'bg-red-500/10 text-red-600',
     'SUSPENSAO': 'bg-orange-50 text-orange-600',
     'ELETRICA': 'bg-yellow-50 text-yellow-600',
     'AR_CONDICIONADO': 'bg-cyan-50 text-cyan-600',
-    'OUTROS': 'bg-gray-50 text-gray-500',
+    'OUTROS': 'bg-gray-500/10 text-gray-400',
   };
-  return colors[categoria] || 'bg-gray-50 text-gray-500';
+  return colors[categoria] || 'bg-gray-500/10 text-gray-400';
 };
 
 const formatDuracao = (minutos: number | null) => {
@@ -255,54 +255,54 @@ export default function ServicosPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#e8ece2]">
+    <div className="min-h-screen bg-[#121212]">
       <Header title="Catálogo de Serviços" subtitle="Gerencie os serviços oferecidos" />
 
       <div className="p-6 space-y-6 animate-fade-in">
         {/* Stats */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <div className="bg-[#dde2d4] border border-[#b8c4a8] rounded-xl p-4 hover:border-green-300 hover:shadow-lg hover:shadow-green-100 transition-all duration-300">
+          <div className="bg-[#1E1E1E] border border-[#333333] rounded-xl p-4 hover:border-green-300 hover:shadow-lg hover:shadow-green-100 transition-all duration-300">
             <div className="flex items-center gap-3">
-              <div className="p-2.5 bg-[#4A701C]/20 rounded-xl ring-1 ring-[#4A701C]/20">
-                <Wrench size={20} className="text-[#4A701C]" />
+              <div className="p-2.5 bg-[#43A047]/20 rounded-xl ring-1 ring-[#43A047]/20">
+                <Wrench size={20} className="text-[#43A047]" />
               </div>
               <div>
-                <p className="text-2xl font-bold text-[#284703]">{stats.ativos}</p>
+                <p className="text-2xl font-bold text-[#E8E8E8]">{stats.ativos}</p>
                 <p className="text-xs text-[#6B7280]">Serviços Ativos</p>
               </div>
             </div>
           </div>
-          <div className="bg-[#dde2d4] border border-[#b8c4a8] rounded-xl p-4 hover:border-amber-500/30 hover:shadow-lg hover:shadow-amber-500/5 transition-all duration-300">
+          <div className="bg-[#1E1E1E] border border-[#333333] rounded-xl p-4 hover:border-amber-500/30 hover:shadow-lg hover:shadow-amber-500/5 transition-all duration-300">
             <div className="flex items-center gap-3">
-              <div className="p-2.5 bg-amber-50 rounded-xl ring-1 ring-amber-500/20">
+              <div className="p-2.5 bg-amber-500/10 rounded-xl ring-1 ring-amber-500/20">
                 <Package size={20} className="text-amber-600" />
               </div>
               <div>
-                <p className="text-2xl font-bold text-[#284703]">{stats.categorias}</p>
+                <p className="text-2xl font-bold text-[#E8E8E8]">{stats.categorias}</p>
                 <p className="text-xs text-[#6B7280]">Categorias</p>
               </div>
             </div>
           </div>
-          <div className="bg-[#dde2d4] border border-[#b8c4a8] rounded-xl p-4 hover:border-blue-500/30 hover:shadow-lg hover:shadow-blue-500/5 transition-all duration-300">
+          <div className="bg-[#1E1E1E] border border-[#333333] rounded-xl p-4 hover:border-blue-500/30 hover:shadow-lg hover:shadow-blue-500/5 transition-all duration-300">
             <div className="flex items-center gap-3">
-              <div className="p-2.5 bg-blue-50 rounded-xl ring-1 ring-blue-500/20">
+              <div className="p-2.5 bg-blue-500/10 rounded-xl ring-1 ring-blue-500/20">
                 <DollarSign size={20} className="text-blue-600" />
               </div>
               <div>
-                <p className="text-2xl font-bold text-[#284703]">
+                <p className="text-2xl font-bold text-[#E8E8E8]">
                   {stats.precoMedio.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
                 </p>
                 <p className="text-xs text-[#6B7280]">Ticket Médio</p>
               </div>
             </div>
           </div>
-          <div className="bg-[#dde2d4] border border-[#b8c4a8] rounded-xl p-4 hover:border-purple-500/30 hover:shadow-lg hover:shadow-purple-500/5 transition-all duration-300">
+          <div className="bg-[#1E1E1E] border border-[#333333] rounded-xl p-4 hover:border-purple-500/30 hover:shadow-lg hover:shadow-purple-500/5 transition-all duration-300">
             <div className="flex items-center gap-3">
               <div className="p-2.5 bg-purple-50 rounded-xl ring-1 ring-purple-500/20">
                 <Clock size={20} className="text-purple-600" />
               </div>
               <div>
-                <p className="text-2xl font-bold text-[#284703]">{formatDuracao(stats.duracaoMedia)}</p>
+                <p className="text-2xl font-bold text-[#E8E8E8]">{formatDuracao(stats.duracaoMedia)}</p>
                 <p className="text-xs text-[#6B7280]">Duração Média</p>
               </div>
             </div>
@@ -313,19 +313,19 @@ export default function ServicosPage() {
         <div className="flex flex-col md:flex-row gap-4 justify-between">
           <div className="flex gap-3 flex-1">
             <div className="relative flex-1 max-w-md group">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-[#6B7280] group-focus-within:text-[#4A701C] transition-colors" size={18} />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-[#6B7280] group-focus-within:text-[#43A047] transition-colors" size={18} />
               <input
                 type="text"
                 placeholder="Buscar serviço..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full bg-[#e8ece2] border border-[#b8c4a8] rounded-xl pl-10 pr-4 py-3 text-sm text-[#284703] placeholder-[#88B257] focus:outline-none focus:border-[#4A701C]/50 focus:ring-1 focus:ring-[#4A701C]/20 transition-all duration-200"
+                className="w-full bg-[#121212] border border-[#333333] rounded-xl pl-10 pr-4 py-3 text-sm text-[#E8E8E8] placeholder-[#616161] focus:outline-none focus:border-[#43A047]/50 focus:ring-1 focus:ring-[#43A047]/20 transition-all duration-200"
               />
             </div>
             <select
               value={categoriaFilter}
               onChange={(e) => setCategoriaFilter(e.target.value)}
-              className="bg-[#e8ece2] border border-[#b8c4a8] rounded-xl px-4 py-3 text-[#555D4C] focus:outline-none focus:border-[#4A701C]/50 focus:ring-1 focus:ring-[#4A701C]/20 transition-all duration-200"
+              className="bg-[#121212] border border-[#333333] rounded-xl px-4 py-3 text-[#9E9E9E] focus:outline-none focus:border-[#43A047]/50 focus:ring-1 focus:ring-[#43A047]/20 transition-all duration-200"
             >
               {categorias.map((cat) => (
                 <option key={cat.value} value={cat.value}>{cat.label}</option>
@@ -337,7 +337,7 @@ export default function ServicosPage() {
               resetForm();
               setShowModal(true);
             }}
-            className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-[#4A701C] to-[#284703] rounded-xl text-white font-medium hover:shadow-lg hover:shadow-green-200 hover:scale-[1.02] active:scale-[0.98] transition-all duration-200"
+            className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-[#43A047] to-[#1B5E20] rounded-xl text-white font-medium hover:shadow-lg hover:shadow-green-200 hover:scale-[1.02] active:scale-[0.98] transition-all duration-200"
           >
             <Plus size={20} />
             Novo Serviço
@@ -356,23 +356,23 @@ export default function ServicosPage() {
             {servicos.map((servico) => (
               <div
                 key={servico.id}
-                className={`bg-[#dde2d4] border rounded-2xl p-6 transition-all duration-300 ${
+                className={`bg-[#1E1E1E] border rounded-2xl p-6 transition-all duration-300 ${
                   servico.ativo
-                    ? 'border-[#b8c4a8] hover:border-[#4A701C]/40 hover:shadow-lg hover:shadow-green-100'
-                    : 'border-[#b8c4a8]/50 opacity-60'
+                    ? 'border-[#333333] hover:border-[#43A047]/40 hover:shadow-lg hover:shadow-green-100'
+                    : 'border-[#333333]/50 opacity-60'
                 }`}
               >
                 <div className="flex items-start justify-between mb-4">
                   <div>
-                    <h3 className="font-semibold text-[#284703] text-lg">{servico.nome}</h3>
+                    <h3 className="font-semibold text-[#E8E8E8] text-lg">{servico.nome}</h3>
                     <span className={`inline-block mt-2 px-3 py-1 rounded-full text-xs ${getCategoriaColor(servico.categoria)}`}>
                       {getCategoriaLabel(servico.categoria)}
                     </span>
                   </div>
-                  <div className="flex gap-1 bg-[#e8ece2] rounded-lg p-1">
+                  <div className="flex gap-1 bg-[#121212] rounded-lg p-1">
                     <button
                       onClick={() => openEditModal(servico)}
-                      className="p-2 hover:bg-[#d4dbc8] rounded-md transition-all duration-200 text-[#88B257] hover:text-[#284703]"
+                      className="p-2 hover:bg-[#2A2A2A] rounded-md transition-all duration-200 text-[#66BB6A] hover:text-[#E8E8E8]"
                     >
                       <Edit size={16} />
                     </button>
@@ -381,7 +381,7 @@ export default function ServicosPage() {
                         setDeletingServico(servico);
                         setShowDeleteConfirm(true);
                       }}
-                      className="p-2 hover:bg-red-50 rounded-md transition-all duration-200 text-[#88B257] hover:text-red-400"
+                      className="p-2 hover:bg-red-500/10 rounded-md transition-all duration-200 text-[#66BB6A] hover:text-red-400"
                     >
                       <Trash2 size={16} />
                     </button>
@@ -392,13 +392,13 @@ export default function ServicosPage() {
                   <p className="text-sm text-[#6B7280] mb-4">{servico.descricao}</p>
                 )}
 
-                <div className="space-y-3 pt-4 border-t border-[#b8c4a8]">
+                <div className="space-y-3 pt-4 border-t border-[#333333]">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2 text-[#6B7280]">
                       <DollarSign size={16} />
                       <span className="text-sm">Preço</span>
                     </div>
-                    <span className="text-[#4A701C] font-bold">
+                    <span className="text-[#43A047] font-bold">
                       {servico.precoBase.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
                     </span>
                   </div>
@@ -407,7 +407,7 @@ export default function ServicosPage() {
                       <Clock size={16} />
                       <span className="text-sm">Duração</span>
                     </div>
-                    <span className="text-[#284703]">{formatDuracao(servico.duracaoMin)}</span>
+                    <span className="text-[#E8E8E8]">{formatDuracao(servico.duracaoMin)}</span>
                   </div>
                 </div>
               </div>
@@ -419,36 +419,36 @@ export default function ServicosPage() {
       {/* Modal Novo Serviço */}
       {showModal && (
         <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-[#dde2d4] border border-[#b8c4a8] rounded-2xl w-full max-w-lg animate-fade-in shadow-2xl">
-            <div className="p-6 border-b border-[#b8c4a8] flex items-center justify-between">
+          <div className="bg-[#1E1E1E] border border-[#333333] rounded-2xl w-full max-w-lg animate-fade-in shadow-2xl">
+            <div className="p-6 border-b border-[#333333] flex items-center justify-between">
               <div>
-                <h2 className="text-xl font-semibold text-[#284703]">Novo Serviço</h2>
+                <h2 className="text-xl font-semibold text-[#E8E8E8]">Novo Serviço</h2>
                 <p className="text-sm text-[#6B7280] mt-1">Cadastre um novo serviço no catálogo</p>
               </div>
               <button
                 onClick={() => setShowModal(false)}
-                className="p-2 hover:bg-[#d4dbc8] rounded-lg transition-all duration-200 text-[#88B257] hover:text-[#284703]"
+                className="p-2 hover:bg-[#2A2A2A] rounded-lg transition-all duration-200 text-[#66BB6A] hover:text-[#E8E8E8]"
               >
                 <X size={20} />
               </button>
             </div>
             <div className="p-6 space-y-4">
               <div>
-                <label className="block text-sm font-medium text-[#555D4C] mb-2">Nome do Serviço *</label>
+                <label className="block text-sm font-medium text-[#9E9E9E] mb-2">Nome do Serviço *</label>
                 <input
                   type="text"
                   value={form.nome}
                   onChange={(e) => setForm({ ...form, nome: e.target.value })}
                   placeholder="Ex: Troca de Óleo 5W30"
-                  className="w-full bg-[#e8ece2] border border-[#b8c4a8] rounded-xl px-4 py-3 text-[#284703] placeholder-[#88B257] focus:outline-none focus:border-[#4A701C]/50 focus:ring-1 focus:ring-[#4A701C]/20 transition-all duration-200"
+                  className="w-full bg-[#121212] border border-[#333333] rounded-xl px-4 py-3 text-[#E8E8E8] placeholder-[#616161] focus:outline-none focus:border-[#43A047]/50 focus:ring-1 focus:ring-[#43A047]/20 transition-all duration-200"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-[#555D4C] mb-2">Categoria</label>
+                <label className="block text-sm font-medium text-[#9E9E9E] mb-2">Categoria</label>
                 <select
                   value={form.categoria}
                   onChange={(e) => setForm({ ...form, categoria: e.target.value })}
-                  className="w-full bg-[#e8ece2] border border-[#b8c4a8] rounded-xl px-4 py-3 text-[#284703] focus:outline-none focus:border-[#4A701C]/50 focus:ring-1 focus:ring-[#4A701C]/20 transition-all duration-200"
+                  className="w-full bg-[#121212] border border-[#333333] rounded-xl px-4 py-3 text-[#E8E8E8] focus:outline-none focus:border-[#43A047]/50 focus:ring-1 focus:ring-[#43A047]/20 transition-all duration-200"
                 >
                   {categorias.filter(c => c.value).map((cat) => (
                     <option key={cat.value} value={cat.value}>{cat.label}</option>
@@ -456,50 +456,50 @@ export default function ServicosPage() {
                 </select>
               </div>
               <div>
-                <label className="block text-sm font-medium text-[#555D4C] mb-2">Descrição</label>
+                <label className="block text-sm font-medium text-[#9E9E9E] mb-2">Descrição</label>
                 <textarea
                   value={form.descricao}
                   onChange={(e) => setForm({ ...form, descricao: e.target.value })}
                   placeholder="Descrição do serviço..."
                   rows={2}
-                  className="w-full bg-[#e8ece2] border border-[#b8c4a8] rounded-xl px-4 py-3 text-[#284703] placeholder-[#88B257] focus:outline-none focus:border-[#4A701C]/50 focus:ring-1 focus:ring-[#4A701C]/20 transition-all duration-200 resize-none"
+                  className="w-full bg-[#121212] border border-[#333333] rounded-xl px-4 py-3 text-[#E8E8E8] placeholder-[#616161] focus:outline-none focus:border-[#43A047]/50 focus:ring-1 focus:ring-[#43A047]/20 transition-all duration-200 resize-none"
                 />
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-[#555D4C] mb-2">Preço (R$) *</label>
+                  <label className="block text-sm font-medium text-[#9E9E9E] mb-2">Preço (R$) *</label>
                   <input
                     type="number"
                     step="0.01"
                     value={form.precoBase}
                     onChange={(e) => setForm({ ...form, precoBase: e.target.value })}
                     placeholder="Ex: 180.00"
-                    className="w-full bg-[#e8ece2] border border-[#b8c4a8] rounded-xl px-4 py-3 text-[#284703] placeholder-[#88B257] focus:outline-none focus:border-[#4A701C]/50 focus:ring-1 focus:ring-[#4A701C]/20 transition-all duration-200"
+                    className="w-full bg-[#121212] border border-[#333333] rounded-xl px-4 py-3 text-[#E8E8E8] placeholder-[#616161] focus:outline-none focus:border-[#43A047]/50 focus:ring-1 focus:ring-[#43A047]/20 transition-all duration-200"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-[#555D4C] mb-2">Duração (min)</label>
+                  <label className="block text-sm font-medium text-[#9E9E9E] mb-2">Duração (min)</label>
                   <input
                     type="number"
                     value={form.duracaoMin}
                     onChange={(e) => setForm({ ...form, duracaoMin: e.target.value })}
                     placeholder="Ex: 60"
-                    className="w-full bg-[#e8ece2] border border-[#b8c4a8] rounded-xl px-4 py-3 text-[#284703] placeholder-[#88B257] focus:outline-none focus:border-[#4A701C]/50 focus:ring-1 focus:ring-[#4A701C]/20 transition-all duration-200"
+                    className="w-full bg-[#121212] border border-[#333333] rounded-xl px-4 py-3 text-[#E8E8E8] placeholder-[#616161] focus:outline-none focus:border-[#43A047]/50 focus:ring-1 focus:ring-[#43A047]/20 transition-all duration-200"
                   />
                 </div>
               </div>
             </div>
-            <div className="p-6 border-t border-[#b8c4a8] flex gap-3 justify-end">
+            <div className="p-6 border-t border-[#333333] flex gap-3 justify-end">
               <button
                 onClick={() => setShowModal(false)}
-                className="px-6 py-3 border border-[#b8c4a8] rounded-xl text-[#555D4C] hover:bg-[#e8ece2] hover:text-[#284703] transition-all duration-200"
+                className="px-6 py-3 border border-[#333333] rounded-xl text-[#9E9E9E] hover:bg-[#121212] hover:text-[#E8E8E8] transition-all duration-200"
               >
                 Cancelar
               </button>
               <button
                 onClick={handleSubmit}
                 disabled={saving}
-                className="px-6 py-3 bg-gradient-to-r from-[#4A701C] to-[#284703] rounded-xl text-white font-medium hover:shadow-lg hover:shadow-green-200 hover:scale-[1.02] active:scale-[0.98] transition-all duration-200 disabled:opacity-50 disabled:hover:scale-100"
+                className="px-6 py-3 bg-gradient-to-r from-[#43A047] to-[#1B5E20] rounded-xl text-white font-medium hover:shadow-lg hover:shadow-green-200 hover:scale-[1.02] active:scale-[0.98] transition-all duration-200 disabled:opacity-50 disabled:hover:scale-100"
               >
                 {saving ? 'Salvando...' : 'Cadastrar Serviço'}
               </button>
@@ -511,10 +511,10 @@ export default function ServicosPage() {
       {/* Modal Editar Serviço */}
       {showEditModal && editingServico && (
         <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-[#dde2d4] border border-[#b8c4a8] rounded-2xl w-full max-w-lg animate-fade-in shadow-2xl">
-            <div className="p-6 border-b border-[#b8c4a8] flex items-center justify-between">
+          <div className="bg-[#1E1E1E] border border-[#333333] rounded-2xl w-full max-w-lg animate-fade-in shadow-2xl">
+            <div className="p-6 border-b border-[#333333] flex items-center justify-between">
               <div>
-                <h2 className="text-xl font-semibold text-[#284703]">Editar Serviço</h2>
+                <h2 className="text-xl font-semibold text-[#E8E8E8]">Editar Serviço</h2>
                 <p className="text-sm text-[#6B7280] mt-1">Atualize as informações do serviço</p>
               </div>
               <button
@@ -522,27 +522,27 @@ export default function ServicosPage() {
                   setShowEditModal(false);
                   setEditingServico(null);
                 }}
-                className="p-2 hover:bg-[#d4dbc8] rounded-lg transition-all duration-200 text-[#88B257] hover:text-[#284703]"
+                className="p-2 hover:bg-[#2A2A2A] rounded-lg transition-all duration-200 text-[#66BB6A] hover:text-[#E8E8E8]"
               >
                 <X size={20} />
               </button>
             </div>
             <div className="p-6 space-y-4">
               <div>
-                <label className="block text-sm font-medium text-[#555D4C] mb-2">Nome do Serviço *</label>
+                <label className="block text-sm font-medium text-[#9E9E9E] mb-2">Nome do Serviço *</label>
                 <input
                   type="text"
                   value={form.nome}
                   onChange={(e) => setForm({ ...form, nome: e.target.value })}
-                  className="w-full bg-[#e8ece2] border border-[#b8c4a8] rounded-xl px-4 py-3 text-[#284703] placeholder-[#88B257] focus:outline-none focus:border-[#4A701C]/50 focus:ring-1 focus:ring-[#4A701C]/20 transition-all duration-200"
+                  className="w-full bg-[#121212] border border-[#333333] rounded-xl px-4 py-3 text-[#E8E8E8] placeholder-[#616161] focus:outline-none focus:border-[#43A047]/50 focus:ring-1 focus:ring-[#43A047]/20 transition-all duration-200"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-[#555D4C] mb-2">Categoria</label>
+                <label className="block text-sm font-medium text-[#9E9E9E] mb-2">Categoria</label>
                 <select
                   value={form.categoria}
                   onChange={(e) => setForm({ ...form, categoria: e.target.value })}
-                  className="w-full bg-[#e8ece2] border border-[#b8c4a8] rounded-xl px-4 py-3 text-[#284703] focus:outline-none focus:border-[#4A701C]/50 focus:ring-1 focus:ring-[#4A701C]/20 transition-all duration-200"
+                  className="w-full bg-[#121212] border border-[#333333] rounded-xl px-4 py-3 text-[#E8E8E8] focus:outline-none focus:border-[#43A047]/50 focus:ring-1 focus:ring-[#43A047]/20 transition-all duration-200"
                 >
                   {categorias.filter(c => c.value).map((cat) => (
                     <option key={cat.value} value={cat.value}>{cat.label}</option>
@@ -550,50 +550,50 @@ export default function ServicosPage() {
                 </select>
               </div>
               <div>
-                <label className="block text-sm font-medium text-[#555D4C] mb-2">Descrição</label>
+                <label className="block text-sm font-medium text-[#9E9E9E] mb-2">Descrição</label>
                 <textarea
                   value={form.descricao}
                   onChange={(e) => setForm({ ...form, descricao: e.target.value })}
                   rows={2}
-                  className="w-full bg-[#e8ece2] border border-[#b8c4a8] rounded-xl px-4 py-3 text-[#284703] placeholder-[#88B257] focus:outline-none focus:border-[#4A701C]/50 focus:ring-1 focus:ring-[#4A701C]/20 transition-all duration-200 resize-none"
+                  className="w-full bg-[#121212] border border-[#333333] rounded-xl px-4 py-3 text-[#E8E8E8] placeholder-[#616161] focus:outline-none focus:border-[#43A047]/50 focus:ring-1 focus:ring-[#43A047]/20 transition-all duration-200 resize-none"
                 />
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-[#555D4C] mb-2">Preço (R$) *</label>
+                  <label className="block text-sm font-medium text-[#9E9E9E] mb-2">Preço (R$) *</label>
                   <input
                     type="number"
                     step="0.01"
                     value={form.precoBase}
                     onChange={(e) => setForm({ ...form, precoBase: e.target.value })}
-                    className="w-full bg-[#e8ece2] border border-[#b8c4a8] rounded-xl px-4 py-3 text-[#284703] placeholder-[#88B257] focus:outline-none focus:border-[#4A701C]/50 focus:ring-1 focus:ring-[#4A701C]/20 transition-all duration-200"
+                    className="w-full bg-[#121212] border border-[#333333] rounded-xl px-4 py-3 text-[#E8E8E8] placeholder-[#616161] focus:outline-none focus:border-[#43A047]/50 focus:ring-1 focus:ring-[#43A047]/20 transition-all duration-200"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-[#555D4C] mb-2">Duração (min)</label>
+                  <label className="block text-sm font-medium text-[#9E9E9E] mb-2">Duração (min)</label>
                   <input
                     type="number"
                     value={form.duracaoMin}
                     onChange={(e) => setForm({ ...form, duracaoMin: e.target.value })}
-                    className="w-full bg-[#e8ece2] border border-[#b8c4a8] rounded-xl px-4 py-3 text-[#284703] placeholder-[#88B257] focus:outline-none focus:border-[#4A701C]/50 focus:ring-1 focus:ring-[#4A701C]/20 transition-all duration-200"
+                    className="w-full bg-[#121212] border border-[#333333] rounded-xl px-4 py-3 text-[#E8E8E8] placeholder-[#616161] focus:outline-none focus:border-[#43A047]/50 focus:ring-1 focus:ring-[#43A047]/20 transition-all duration-200"
                   />
                 </div>
               </div>
             </div>
-            <div className="p-6 border-t border-[#b8c4a8] flex gap-3 justify-end">
+            <div className="p-6 border-t border-[#333333] flex gap-3 justify-end">
               <button
                 onClick={() => {
                   setShowEditModal(false);
                   setEditingServico(null);
                 }}
-                className="px-6 py-3 border border-[#b8c4a8] rounded-xl text-[#555D4C] hover:bg-[#e8ece2] hover:text-[#284703] transition-all duration-200"
+                className="px-6 py-3 border border-[#333333] rounded-xl text-[#9E9E9E] hover:bg-[#121212] hover:text-[#E8E8E8] transition-all duration-200"
               >
                 Cancelar
               </button>
               <button
                 onClick={handleEditSubmit}
                 disabled={saving}
-                className="px-6 py-3 bg-gradient-to-r from-[#4A701C] to-[#284703] rounded-xl text-white font-medium hover:shadow-lg hover:shadow-green-200 hover:scale-[1.02] active:scale-[0.98] transition-all duration-200 disabled:opacity-50 disabled:hover:scale-100"
+                className="px-6 py-3 bg-gradient-to-r from-[#43A047] to-[#1B5E20] rounded-xl text-white font-medium hover:shadow-lg hover:shadow-green-200 hover:scale-[1.02] active:scale-[0.98] transition-all duration-200 disabled:opacity-50 disabled:hover:scale-100"
               >
                 {saving ? 'Salvando...' : 'Salvar Alterações'}
               </button>
@@ -605,31 +605,31 @@ export default function ServicosPage() {
       {/* Modal Confirmar Exclusão */}
       {showDeleteConfirm && deletingServico && (
         <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-[#dde2d4] border border-[#b8c4a8] rounded-2xl w-full max-w-md animate-fade-in shadow-2xl">
-            <div className="p-6 border-b border-[#b8c4a8]">
-              <h2 className="text-xl font-semibold text-[#284703]">Confirmar Exclusão</h2>
+          <div className="bg-[#1E1E1E] border border-[#333333] rounded-2xl w-full max-w-md animate-fade-in shadow-2xl">
+            <div className="p-6 border-b border-[#333333]">
+              <h2 className="text-xl font-semibold text-[#E8E8E8]">Confirmar Exclusão</h2>
             </div>
             <div className="p-6">
               <div className="flex items-center gap-4 mb-4">
-                <div className="p-3 bg-red-50 rounded-xl ring-1 ring-red-500/20">
+                <div className="p-3 bg-red-500/10 rounded-xl ring-1 ring-red-500/20">
                   <Trash2 size={24} className="text-red-400" />
                 </div>
                 <div>
-                  <p className="text-[#284703] font-medium">{deletingServico.nome}</p>
+                  <p className="text-[#E8E8E8] font-medium">{deletingServico.nome}</p>
                   <p className="text-sm text-[#6B7280]">{getCategoriaLabel(deletingServico.categoria)}</p>
                 </div>
               </div>
-              <p className="text-[#555D4C] text-sm">
+              <p className="text-[#9E9E9E] text-sm">
                 Tem certeza que deseja excluir este serviço? Esta ação não pode ser desfeita.
               </p>
             </div>
-            <div className="p-6 border-t border-[#b8c4a8] flex gap-3 justify-end">
+            <div className="p-6 border-t border-[#333333] flex gap-3 justify-end">
               <button
                 onClick={() => {
                   setShowDeleteConfirm(false);
                   setDeletingServico(null);
                 }}
-                className="px-6 py-3 border border-[#b8c4a8] rounded-xl text-[#555D4C] hover:bg-[#e8ece2] hover:text-[#284703] transition-all duration-200"
+                className="px-6 py-3 border border-[#333333] rounded-xl text-[#9E9E9E] hover:bg-[#121212] hover:text-[#E8E8E8] transition-all duration-200"
               >
                 Cancelar
               </button>
