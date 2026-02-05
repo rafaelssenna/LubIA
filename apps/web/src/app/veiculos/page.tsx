@@ -207,13 +207,13 @@ export default function VeiculosPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50/50">
+    <div className="min-h-screen bg-[#eef0f5]">
       <Header title="Veículos" subtitle="Cadastro de veículos" />
 
       <div className="p-6 space-y-6 animate-fade-in">
         {/* Stats */}
         <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-          <div className="group relative bg-white rounded-2xl p-5 border border-gray-200 hover:border-green-300 transition-all duration-300 hover:shadow-lg hover:shadow-[#22c55e]/5">
+          <div className="group relative bg-[#f8f9fb] rounded-2xl p-5 border border-[#dde0e7] hover:border-green-300 transition-all duration-300 hover:shadow-lg hover:shadow-[#22c55e]/5">
             <div className="absolute inset-0 bg-gradient-to-br from-[#22c55e]/5 to-transparent rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
             <div className="relative flex items-center gap-3">
               <div className="p-3 bg-gradient-to-br from-[#22c55e]/20 to-[#22c55e]/5 rounded-xl ring-1 ring-[#22c55e]/20">
@@ -225,7 +225,7 @@ export default function VeiculosPage() {
               </div>
             </div>
           </div>
-          <div className="group relative bg-white rounded-2xl p-5 border border-gray-200 hover:border-blue-500/30 transition-all duration-300 hover:shadow-lg hover:shadow-blue-500/5">
+          <div className="group relative bg-[#f8f9fb] rounded-2xl p-5 border border-[#dde0e7] hover:border-blue-500/30 transition-all duration-300 hover:shadow-lg hover:shadow-blue-500/5">
             <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-transparent rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
             <div className="relative flex items-center gap-3">
               <div className="p-3 bg-gradient-to-br from-blue-500/20 to-blue-500/5 rounded-xl ring-1 ring-blue-500/20">
@@ -237,7 +237,7 @@ export default function VeiculosPage() {
               </div>
             </div>
           </div>
-          <div className="group relative bg-white rounded-2xl p-5 border border-gray-200 hover:border-amber-500/30 transition-all duration-300 hover:shadow-lg hover:shadow-amber-500/5 hidden md:block">
+          <div className="group relative bg-[#f8f9fb] rounded-2xl p-5 border border-[#dde0e7] hover:border-amber-500/30 transition-all duration-300 hover:shadow-lg hover:shadow-amber-500/5 hidden md:block">
             <div className="absolute inset-0 bg-gradient-to-br from-amber-500/5 to-transparent rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
             <div className="relative flex items-center gap-3">
               <div className="p-3 bg-gradient-to-br from-amber-500/20 to-amber-500/5 rounded-xl ring-1 ring-amber-500/20">
@@ -260,7 +260,7 @@ export default function VeiculosPage() {
               placeholder="Buscar por placa, marca ou modelo..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full bg-white border border-gray-200 rounded-xl pl-11 pr-4 py-3 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:border-[#22c55e]/50 focus:ring-1 focus:ring-[#22c55e]/20 transition-all duration-200"
+              className="w-full bg-[#f8f9fb] border border-[#dde0e7] rounded-xl pl-11 pr-4 py-3 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:border-[#22c55e]/50 focus:ring-1 focus:ring-[#22c55e]/20 transition-all duration-200"
             />
           </div>
           <button
@@ -281,7 +281,7 @@ export default function VeiculosPage() {
             <Loader2 className="animate-spin text-[#22c55e]" size={32} />
           </div>
         ) : veiculos.length === 0 ? (
-          <div className="bg-white border border-gray-200 rounded-2xl p-12 text-center">
+          <div className="bg-[#f8f9fb] border border-[#dde0e7] rounded-2xl p-12 text-center">
             <div className="p-4 bg-gradient-to-br from-[#22c55e]/10 to-transparent rounded-2xl w-fit mx-auto mb-4">
               <Car size={48} className="text-gray-500" />
             </div>
@@ -291,7 +291,7 @@ export default function VeiculosPage() {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {veiculos.map((veiculo) => (
-              <div key={veiculo.id} className="group bg-white border border-gray-200 rounded-2xl p-5 hover:border-green-300 transition-all duration-300 hover:shadow-lg hover:shadow-[#22c55e]/5">
+              <div key={veiculo.id} className="group bg-[#f8f9fb] border border-[#dde0e7] rounded-2xl p-5 hover:border-green-300 transition-all duration-300 hover:shadow-lg hover:shadow-[#22c55e]/5">
                 <div className="flex items-start justify-between mb-4">
                   <div className="flex items-center gap-3">
                     <div className="p-3 rounded-xl bg-gradient-to-br from-[#22c55e] to-[#166534] ring-2 ring-[#22c55e]/20 group-hover:ring-[#22c55e]/40 transition-all duration-300">
@@ -308,14 +308,14 @@ export default function VeiculosPage() {
                 </div>
 
                 <div className="space-y-3 mb-4">
-                  <div className="flex items-center justify-between text-sm p-2 rounded-lg bg-gray-50">
+                  <div className="flex items-center justify-between text-sm p-2 rounded-lg bg-[#eef0f5]">
                     <span className="text-gray-500 flex items-center gap-2">
                       <User size={14} /> Proprietário
                     </span>
                     <span className="text-gray-900">{veiculo.cliente.nome}</span>
                   </div>
                   {veiculo.kmAtual && (
-                    <div className="flex items-center justify-between text-sm p-2 rounded-lg bg-gray-50">
+                    <div className="flex items-center justify-between text-sm p-2 rounded-lg bg-[#eef0f5]">
                       <span className="text-gray-500 flex items-center gap-2">
                         <Gauge size={14} /> KM Atual
                       </span>
@@ -323,7 +323,7 @@ export default function VeiculosPage() {
                     </div>
                   )}
                   {veiculo.cor && (
-                    <div className="flex items-center justify-between text-sm p-2 rounded-lg bg-gray-50">
+                    <div className="flex items-center justify-between text-sm p-2 rounded-lg bg-[#eef0f5]">
                       <span className="text-gray-500">Cor</span>
                       <span className="text-gray-900">{veiculo.cor}</span>
                     </div>
@@ -338,10 +338,10 @@ export default function VeiculosPage() {
                     <ClipboardList size={16} />
                     Nova O.S.
                   </button>
-                  <div className="flex gap-1 p-1 bg-gray-50 rounded-xl ring-1 ring-gray-200">
+                  <div className="flex gap-1 p-1 bg-[#eef0f5] rounded-xl ring-1 ring-gray-200">
                     <button
                       onClick={() => openEditModal(veiculo)}
-                      className="p-2 hover:bg-gray-50 rounded-lg text-gray-500 hover:text-gray-900 transition-all duration-200"
+                      className="p-2 hover:bg-[#eef0f5] rounded-lg text-gray-500 hover:text-gray-900 transition-all duration-200"
                       title="Editar"
                     >
                       <Edit size={16} />
@@ -367,13 +367,13 @@ export default function VeiculosPage() {
       {/* Modal Novo Veículo */}
       {showModal && (
         <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-white border border-gray-200 rounded-2xl w-full max-w-md animate-fade-in max-h-[90vh] overflow-y-auto shadow-2xl">
-            <div className="p-6 border-b border-gray-200 flex items-center justify-between">
+          <div className="bg-[#f8f9fb] border border-[#dde0e7] rounded-2xl w-full max-w-md animate-fade-in max-h-[90vh] overflow-y-auto shadow-2xl">
+            <div className="p-6 border-b border-[#dde0e7] flex items-center justify-between">
               <div>
                 <h2 className="text-xl font-semibold text-gray-900">Novo Veículo</h2>
                 <p className="text-sm text-gray-500 mt-1">Cadastre um novo veículo</p>
               </div>
-              <button onClick={() => setShowModal(false)} className="p-2 hover:bg-gray-50 rounded-lg text-gray-500 hover:text-gray-900 transition-all duration-200">
+              <button onClick={() => setShowModal(false)} className="p-2 hover:bg-[#eef0f5] rounded-lg text-gray-500 hover:text-gray-900 transition-all duration-200">
                 <X size={20} />
               </button>
             </div>
@@ -383,7 +383,7 @@ export default function VeiculosPage() {
                 <select
                   value={form.clienteId}
                   onChange={(e) => setForm({ ...form, clienteId: e.target.value })}
-                  className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-gray-900 focus:outline-none focus:border-[#22c55e]/50 focus:ring-1 focus:ring-[#22c55e]/20 transition-all duration-200"
+                  className="w-full bg-[#eef0f5] border border-[#dde0e7] rounded-xl px-4 py-3 text-gray-900 focus:outline-none focus:border-[#22c55e]/50 focus:ring-1 focus:ring-[#22c55e]/20 transition-all duration-200"
                 >
                   <option value="">Selecione o cliente</option>
                   {clientes.map((cliente) => (
@@ -399,7 +399,7 @@ export default function VeiculosPage() {
                     placeholder="ABC1D23"
                     value={form.placa}
                     onChange={(e) => setForm({ ...form, placa: e.target.value.toUpperCase() })}
-                    className="flex-1 bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-gray-900 placeholder-gray-400 focus:outline-none focus:border-[#22c55e]/50 focus:ring-1 focus:ring-[#22c55e]/20 uppercase font-mono transition-all duration-200"
+                    className="flex-1 bg-[#eef0f5] border border-[#dde0e7] rounded-xl px-4 py-3 text-gray-900 placeholder-gray-400 focus:outline-none focus:border-[#22c55e]/50 focus:ring-1 focus:ring-[#22c55e]/20 uppercase font-mono transition-all duration-200"
                   />
                   <button
                     type="button"
@@ -419,7 +419,7 @@ export default function VeiculosPage() {
                     placeholder="Ex: Honda"
                     value={form.marca}
                     onChange={(e) => setForm({ ...form, marca: e.target.value })}
-                    className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-gray-900 placeholder-gray-400 focus:outline-none focus:border-[#22c55e]/50 focus:ring-1 focus:ring-[#22c55e]/20 transition-all duration-200"
+                    className="w-full bg-[#eef0f5] border border-[#dde0e7] rounded-xl px-4 py-3 text-gray-900 placeholder-gray-400 focus:outline-none focus:border-[#22c55e]/50 focus:ring-1 focus:ring-[#22c55e]/20 transition-all duration-200"
                   />
                 </div>
                 <div>
@@ -429,7 +429,7 @@ export default function VeiculosPage() {
                     placeholder="2020"
                     value={form.ano}
                     onChange={(e) => setForm({ ...form, ano: e.target.value })}
-                    className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-gray-900 placeholder-gray-400 focus:outline-none focus:border-[#22c55e]/50 focus:ring-1 focus:ring-[#22c55e]/20 transition-all duration-200"
+                    className="w-full bg-[#eef0f5] border border-[#dde0e7] rounded-xl px-4 py-3 text-gray-900 placeholder-gray-400 focus:outline-none focus:border-[#22c55e]/50 focus:ring-1 focus:ring-[#22c55e]/20 transition-all duration-200"
                   />
                 </div>
               </div>
@@ -440,7 +440,7 @@ export default function VeiculosPage() {
                   placeholder="Ex: Civic EXL"
                   value={form.modelo}
                   onChange={(e) => setForm({ ...form, modelo: e.target.value })}
-                  className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-gray-900 placeholder-gray-400 focus:outline-none focus:border-[#22c55e]/50 focus:ring-1 focus:ring-[#22c55e]/20 transition-all duration-200"
+                  className="w-full bg-[#eef0f5] border border-[#dde0e7] rounded-xl px-4 py-3 text-gray-900 placeholder-gray-400 focus:outline-none focus:border-[#22c55e]/50 focus:ring-1 focus:ring-[#22c55e]/20 transition-all duration-200"
                 />
               </div>
               <div className="grid grid-cols-2 gap-4">
@@ -451,7 +451,7 @@ export default function VeiculosPage() {
                     placeholder="Ex: Prata"
                     value={form.cor}
                     onChange={(e) => setForm({ ...form, cor: e.target.value })}
-                    className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-gray-900 placeholder-gray-400 focus:outline-none focus:border-[#22c55e]/50 focus:ring-1 focus:ring-[#22c55e]/20 transition-all duration-200"
+                    className="w-full bg-[#eef0f5] border border-[#dde0e7] rounded-xl px-4 py-3 text-gray-900 placeholder-gray-400 focus:outline-none focus:border-[#22c55e]/50 focus:ring-1 focus:ring-[#22c55e]/20 transition-all duration-200"
                   />
                 </div>
                 <div>
@@ -461,15 +461,15 @@ export default function VeiculosPage() {
                     placeholder="45000"
                     value={form.kmAtual}
                     onChange={(e) => setForm({ ...form, kmAtual: e.target.value })}
-                    className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-gray-900 placeholder-gray-400 focus:outline-none focus:border-[#22c55e]/50 focus:ring-1 focus:ring-[#22c55e]/20 transition-all duration-200"
+                    className="w-full bg-[#eef0f5] border border-[#dde0e7] rounded-xl px-4 py-3 text-gray-900 placeholder-gray-400 focus:outline-none focus:border-[#22c55e]/50 focus:ring-1 focus:ring-[#22c55e]/20 transition-all duration-200"
                   />
                 </div>
               </div>
             </div>
-            <div className="p-6 border-t border-gray-200 flex gap-3 justify-end">
+            <div className="p-6 border-t border-[#dde0e7] flex gap-3 justify-end">
               <button
                 onClick={() => setShowModal(false)}
-                className="px-6 py-3 border border-gray-200 rounded-xl text-[#94a3b8] hover:bg-gray-50 transition-all duration-200"
+                className="px-6 py-3 border border-[#dde0e7] rounded-xl text-[#94a3b8] hover:bg-[#eef0f5] transition-all duration-200"
               >
                 Cancelar
               </button>
@@ -488,13 +488,13 @@ export default function VeiculosPage() {
       {/* Modal Editar Veículo */}
       {showEditModal && selectedVeiculo && (
         <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-white border border-gray-200 rounded-2xl w-full max-w-md animate-fade-in max-h-[90vh] overflow-y-auto shadow-2xl">
-            <div className="p-6 border-b border-gray-200 flex items-center justify-between">
+          <div className="bg-[#f8f9fb] border border-[#dde0e7] rounded-2xl w-full max-w-md animate-fade-in max-h-[90vh] overflow-y-auto shadow-2xl">
+            <div className="p-6 border-b border-[#dde0e7] flex items-center justify-between">
               <div>
                 <h2 className="text-xl font-semibold text-gray-900">Editar Veículo</h2>
                 <p className="text-sm text-gray-500 mt-1">Atualize as informações do veículo</p>
               </div>
-              <button onClick={() => setShowEditModal(false)} className="p-2 hover:bg-gray-50 rounded-lg text-gray-500 hover:text-gray-900 transition-all duration-200">
+              <button onClick={() => setShowEditModal(false)} className="p-2 hover:bg-[#eef0f5] rounded-lg text-gray-500 hover:text-gray-900 transition-all duration-200">
                 <X size={20} />
               </button>
             </div>
@@ -504,7 +504,7 @@ export default function VeiculosPage() {
                 <select
                   value={form.clienteId}
                   onChange={(e) => setForm({ ...form, clienteId: e.target.value })}
-                  className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-gray-900 focus:outline-none focus:border-[#22c55e]/50 focus:ring-1 focus:ring-[#22c55e]/20 transition-all duration-200"
+                  className="w-full bg-[#eef0f5] border border-[#dde0e7] rounded-xl px-4 py-3 text-gray-900 focus:outline-none focus:border-[#22c55e]/50 focus:ring-1 focus:ring-[#22c55e]/20 transition-all duration-200"
                 >
                   <option value="">Selecione o cliente</option>
                   {clientes.map((cliente) => (
@@ -518,7 +518,7 @@ export default function VeiculosPage() {
                   type="text"
                   value={form.placa}
                   onChange={(e) => setForm({ ...form, placa: e.target.value.toUpperCase() })}
-                  className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-gray-900 focus:outline-none focus:border-[#22c55e]/50 focus:ring-1 focus:ring-[#22c55e]/20 uppercase font-mono transition-all duration-200"
+                  className="w-full bg-[#eef0f5] border border-[#dde0e7] rounded-xl px-4 py-3 text-gray-900 focus:outline-none focus:border-[#22c55e]/50 focus:ring-1 focus:ring-[#22c55e]/20 uppercase font-mono transition-all duration-200"
                 />
               </div>
               <div className="grid grid-cols-2 gap-4">
@@ -528,7 +528,7 @@ export default function VeiculosPage() {
                     type="text"
                     value={form.marca}
                     onChange={(e) => setForm({ ...form, marca: e.target.value })}
-                    className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-gray-900 focus:outline-none focus:border-[#22c55e]/50 focus:ring-1 focus:ring-[#22c55e]/20 transition-all duration-200"
+                    className="w-full bg-[#eef0f5] border border-[#dde0e7] rounded-xl px-4 py-3 text-gray-900 focus:outline-none focus:border-[#22c55e]/50 focus:ring-1 focus:ring-[#22c55e]/20 transition-all duration-200"
                   />
                 </div>
                 <div>
@@ -537,7 +537,7 @@ export default function VeiculosPage() {
                     type="text"
                     value={form.ano}
                     onChange={(e) => setForm({ ...form, ano: e.target.value })}
-                    className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-gray-900 focus:outline-none focus:border-[#22c55e]/50 focus:ring-1 focus:ring-[#22c55e]/20 transition-all duration-200"
+                    className="w-full bg-[#eef0f5] border border-[#dde0e7] rounded-xl px-4 py-3 text-gray-900 focus:outline-none focus:border-[#22c55e]/50 focus:ring-1 focus:ring-[#22c55e]/20 transition-all duration-200"
                   />
                 </div>
               </div>
@@ -547,7 +547,7 @@ export default function VeiculosPage() {
                   type="text"
                   value={form.modelo}
                   onChange={(e) => setForm({ ...form, modelo: e.target.value })}
-                  className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-gray-900 focus:outline-none focus:border-[#22c55e]/50 focus:ring-1 focus:ring-[#22c55e]/20 transition-all duration-200"
+                  className="w-full bg-[#eef0f5] border border-[#dde0e7] rounded-xl px-4 py-3 text-gray-900 focus:outline-none focus:border-[#22c55e]/50 focus:ring-1 focus:ring-[#22c55e]/20 transition-all duration-200"
                 />
               </div>
               <div className="grid grid-cols-2 gap-4">
@@ -557,7 +557,7 @@ export default function VeiculosPage() {
                     type="text"
                     value={form.cor}
                     onChange={(e) => setForm({ ...form, cor: e.target.value })}
-                    className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-gray-900 focus:outline-none focus:border-[#22c55e]/50 focus:ring-1 focus:ring-[#22c55e]/20 transition-all duration-200"
+                    className="w-full bg-[#eef0f5] border border-[#dde0e7] rounded-xl px-4 py-3 text-gray-900 focus:outline-none focus:border-[#22c55e]/50 focus:ring-1 focus:ring-[#22c55e]/20 transition-all duration-200"
                   />
                 </div>
                 <div>
@@ -566,15 +566,15 @@ export default function VeiculosPage() {
                     type="text"
                     value={form.kmAtual}
                     onChange={(e) => setForm({ ...form, kmAtual: e.target.value })}
-                    className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-gray-900 focus:outline-none focus:border-[#22c55e]/50 focus:ring-1 focus:ring-[#22c55e]/20 transition-all duration-200"
+                    className="w-full bg-[#eef0f5] border border-[#dde0e7] rounded-xl px-4 py-3 text-gray-900 focus:outline-none focus:border-[#22c55e]/50 focus:ring-1 focus:ring-[#22c55e]/20 transition-all duration-200"
                   />
                 </div>
               </div>
             </div>
-            <div className="p-6 border-t border-gray-200 flex gap-3 justify-end">
+            <div className="p-6 border-t border-[#dde0e7] flex gap-3 justify-end">
               <button
                 onClick={() => setShowEditModal(false)}
-                className="px-6 py-3 border border-gray-200 rounded-xl text-[#94a3b8] hover:bg-gray-50 transition-all duration-200"
+                className="px-6 py-3 border border-[#dde0e7] rounded-xl text-[#94a3b8] hover:bg-[#eef0f5] transition-all duration-200"
               >
                 Cancelar
               </button>
@@ -593,8 +593,8 @@ export default function VeiculosPage() {
       {/* Modal Confirmar Exclusão */}
       {showDeleteConfirm && selectedVeiculo && (
         <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-white border border-gray-200 rounded-2xl w-full max-w-md animate-fade-in shadow-2xl">
-            <div className="p-6 border-b border-gray-200">
+          <div className="bg-[#f8f9fb] border border-[#dde0e7] rounded-2xl w-full max-w-md animate-fade-in shadow-2xl">
+            <div className="p-6 border-b border-[#dde0e7]">
               <h2 className="text-xl font-semibold text-gray-900">Confirmar Exclusão</h2>
             </div>
             <div className="p-6">
@@ -611,13 +611,13 @@ export default function VeiculosPage() {
                 Tem certeza que deseja excluir este veículo? Esta ação não pode ser desfeita.
               </p>
             </div>
-            <div className="p-6 border-t border-gray-200 flex gap-3 justify-end">
+            <div className="p-6 border-t border-[#dde0e7] flex gap-3 justify-end">
               <button
                 onClick={() => {
                   setShowDeleteConfirm(false);
                   setSelectedVeiculo(null);
                 }}
-                className="px-6 py-3 border border-gray-200 rounded-xl text-[#94a3b8] hover:bg-gray-50 transition-all duration-200"
+                className="px-6 py-3 border border-[#dde0e7] rounded-xl text-[#94a3b8] hover:bg-[#eef0f5] transition-all duration-200"
               >
                 Cancelar
               </button>

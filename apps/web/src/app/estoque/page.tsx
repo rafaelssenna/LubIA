@@ -566,13 +566,13 @@ export default function EstoquePage() {
   const valorTotal = produtos.reduce((acc, p) => acc + (p.quantidade * p.precoCompraAtual), 0);
 
   return (
-    <div className="min-h-screen bg-gray-50/50">
+    <div className="min-h-screen bg-[#eef0f5]">
       <Header title="Controle de Estoque" subtitle="Gerencie produtos e movimentações" />
 
       <div className="p-6 space-y-6 animate-fade-in">
         {/* Stats */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <div className="bg-white border border-gray-200 rounded-xl p-4 hover:border-green-300 hover:shadow-lg hover:shadow-green-100 transition-all duration-300">
+          <div className="bg-[#f8f9fb] border border-[#dde0e7] rounded-xl p-4 hover:border-green-300 hover:shadow-lg hover:shadow-green-100 transition-all duration-300">
             <div className="flex items-center gap-3">
               <div className="p-2.5 bg-[#22c55e]/20 rounded-xl ring-1 ring-[#22c55e]/20">
                 <Package size={20} className="text-[#22c55e]" />
@@ -583,7 +583,7 @@ export default function EstoquePage() {
               </div>
             </div>
           </div>
-          <div className="bg-white border border-gray-200 rounded-xl p-4 hover:border-blue-500/30 hover:shadow-lg hover:shadow-blue-500/5 transition-all duration-300">
+          <div className="bg-[#f8f9fb] border border-[#dde0e7] rounded-xl p-4 hover:border-blue-500/30 hover:shadow-lg hover:shadow-blue-500/5 transition-all duration-300">
             <div className="flex items-center gap-3">
               <div className="p-2.5 bg-blue-50 rounded-xl ring-1 ring-blue-500/20">
                 <Droplets size={20} className="text-blue-600" />
@@ -594,7 +594,7 @@ export default function EstoquePage() {
               </div>
             </div>
           </div>
-          <div className="bg-white border border-gray-200 rounded-xl p-4 hover:border-amber-500/30 hover:shadow-lg hover:shadow-amber-500/5 transition-all duration-300">
+          <div className="bg-[#f8f9fb] border border-[#dde0e7] rounded-xl p-4 hover:border-amber-500/30 hover:shadow-lg hover:shadow-amber-500/5 transition-all duration-300">
             <div className="flex items-center gap-3">
               <div className="p-2.5 bg-amber-50 rounded-xl ring-1 ring-amber-500/20">
                 <DollarSign size={20} className="text-amber-600" />
@@ -607,7 +607,7 @@ export default function EstoquePage() {
               </div>
             </div>
           </div>
-          <div className="bg-white border border-gray-200 rounded-xl p-4 hover:border-red-500/30 hover:shadow-lg hover:shadow-red-500/5 transition-all duration-300">
+          <div className="bg-[#f8f9fb] border border-[#dde0e7] rounded-xl p-4 hover:border-red-500/30 hover:shadow-lg hover:shadow-red-500/5 transition-all duration-300">
             <div className="flex items-center gap-3">
               <div className={`p-2.5 rounded-xl ring-1 ${estoqueBaixoCount > 0 ? 'bg-red-50 ring-red-500/20' : 'bg-[#22c55e]/20 ring-[#22c55e]/20'}`}>
                 <AlertTriangle size={20} className={estoqueBaixoCount > 0 ? 'text-red-400' : 'text-[#22c55e]'} />
@@ -653,13 +653,13 @@ export default function EstoquePage() {
                 placeholder="Buscar produto..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full bg-gray-50 border border-gray-200 rounded-xl pl-10 pr-4 py-3 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:border-[#22c55e]/50 focus:ring-1 focus:ring-[#22c55e]/20 transition-all duration-200"
+                className="w-full bg-[#eef0f5] border border-[#dde0e7] rounded-xl pl-10 pr-4 py-3 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:border-[#22c55e]/50 focus:ring-1 focus:ring-[#22c55e]/20 transition-all duration-200"
               />
             </div>
             <select
               value={categoriaFilter}
               onChange={(e) => setCategoriaFilter(e.target.value)}
-              className="bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-gray-500 focus:outline-none focus:border-[#22c55e]/50 focus:ring-1 focus:ring-[#22c55e]/20 transition-all duration-200"
+              className="bg-[#eef0f5] border border-[#dde0e7] rounded-xl px-4 py-3 text-gray-500 focus:outline-none focus:border-[#22c55e]/50 focus:ring-1 focus:ring-[#22c55e]/20 transition-all duration-200"
             >
               {categorias.map((cat) => (
                 <option key={cat.value} value={cat.value}>{cat.label}</option>
@@ -670,7 +670,7 @@ export default function EstoquePage() {
               className={`flex items-center gap-2 px-4 py-3 rounded-xl transition-all duration-200 ${
                 showOnlyLowStock
                   ? 'bg-red-50 border border-red-500/50 text-red-400'
-                  : 'border border-gray-200 text-gray-500 hover:bg-gray-50 hover:text-gray-900'
+                  : 'border border-[#dde0e7] text-gray-500 hover:bg-[#eef0f5] hover:text-gray-900'
               }`}
               title="Filtrar estoque baixo"
             >
@@ -684,7 +684,7 @@ export default function EstoquePage() {
           <div className="flex gap-3">
             <button
               onClick={exportToCSV}
-              className="flex items-center gap-2 px-4 py-3 border border-gray-200 rounded-xl text-gray-500 hover:bg-gray-50 hover:text-gray-900 transition-all duration-200"
+              className="flex items-center gap-2 px-4 py-3 border border-[#dde0e7] rounded-xl text-gray-500 hover:bg-[#eef0f5] hover:text-gray-900 transition-all duration-200"
               title="Exportar para Excel"
             >
               <FileSpreadsheet size={20} />
@@ -692,7 +692,7 @@ export default function EstoquePage() {
             </button>
             <button
               onClick={exportToPDF}
-              className="flex items-center gap-2 px-4 py-3 border border-gray-200 rounded-xl text-gray-500 hover:bg-gray-50 hover:text-gray-900 transition-all duration-200"
+              className="flex items-center gap-2 px-4 py-3 border border-[#dde0e7] rounded-xl text-gray-500 hover:bg-[#eef0f5] hover:text-gray-900 transition-all duration-200"
               title="Exportar para PDF"
             >
               <Download size={20} />
@@ -700,7 +700,7 @@ export default function EstoquePage() {
             </button>
             <button
               onClick={() => setShowOCR(true)}
-              className="flex items-center gap-2 px-6 py-3 border border-gray-200 rounded-xl text-gray-500 hover:bg-gray-50 hover:text-gray-900 transition-all duration-200"
+              className="flex items-center gap-2 px-6 py-3 border border-[#dde0e7] rounded-xl text-gray-500 hover:bg-[#eef0f5] hover:text-gray-900 transition-all duration-200"
               title="Escanear nota fiscal"
             >
               <FileText size={20} />
@@ -717,11 +717,11 @@ export default function EstoquePage() {
         </div>
 
         {/* Tabela de Produtos */}
-        <div className="bg-white border border-gray-200 rounded-2xl overflow-hidden">
+        <div className="bg-[#f8f9fb] border border-[#dde0e7] rounded-2xl overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead>
-                <tr className="border-b border-gray-200">
+                <tr className="border-b border-[#dde0e7]">
                   <th className="text-left px-6 py-4 text-sm font-medium text-[#6B7280]">Código</th>
                   <th
                     className="text-left px-6 py-4 text-sm font-medium text-[#6B7280] cursor-pointer hover:text-gray-900 transition-all duration-200 select-none"
@@ -776,7 +776,7 @@ export default function EstoquePage() {
                   </tr>
                 ) : (
                   paginatedProducts.map((produto) => (
-                    <tr key={produto.id} className="border-b border-gray-200/50 hover:bg-gray-50 transition-all duration-200">
+                    <tr key={produto.id} className="border-b border-[#dde0e7]/50 hover:bg-[#eef0f5] transition-all duration-200">
                       <td className="px-6 py-4">
                         <span className="text-sm font-mono text-gray-500">{produto.codigo}</span>
                       </td>
@@ -809,7 +809,7 @@ export default function EstoquePage() {
                         {produto.precoVenda.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
                       </td>
                       <td className="px-6 py-4">
-                        <div className="flex items-center justify-center gap-1 bg-gray-50 rounded-lg p-1">
+                        <div className="flex items-center justify-center gap-1 bg-[#eef0f5] rounded-lg p-1">
                           <button
                             onClick={() => {
                               setSelectedProduto(produto);
@@ -867,7 +867,7 @@ export default function EstoquePage() {
 
           {/* Pagination */}
           {totalPages > 1 && (
-            <div className="px-6 py-4 border-t border-gray-200 flex items-center justify-between">
+            <div className="px-6 py-4 border-t border-[#dde0e7] flex items-center justify-between">
               <p className="text-sm text-[#6B7280]">
                 Mostrando {((currentPage - 1) * itemsPerPage) + 1} a {Math.min(currentPage * itemsPerPage, processedProducts.length)} de {processedProducts.length} produtos
               </p>
@@ -875,7 +875,7 @@ export default function EstoquePage() {
                 <button
                   onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
                   disabled={currentPage === 1}
-                  className="p-2 border border-gray-200 rounded-lg text-gray-500 hover:bg-gray-50 hover:text-gray-900 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
+                  className="p-2 border border-[#dde0e7] rounded-lg text-gray-500 hover:bg-[#eef0f5] hover:text-gray-900 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
                 >
                   <ChevronLeft size={18} />
                 </button>
@@ -898,7 +898,7 @@ export default function EstoquePage() {
                         className={`w-8 h-8 rounded-lg text-sm font-medium transition-all duration-200 ${
                           currentPage === pageNum
                             ? 'bg-gradient-to-r from-[#22c55e] to-[#166534] text-white shadow-lg shadow-green-200'
-                            : 'text-gray-500 hover:bg-gray-50 hover:text-gray-900'
+                            : 'text-gray-500 hover:bg-[#eef0f5] hover:text-gray-900'
                         }`}
                       >
                         {pageNum}
@@ -909,7 +909,7 @@ export default function EstoquePage() {
                 <button
                   onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
                   disabled={currentPage === totalPages}
-                  className="p-2 border border-gray-200 rounded-lg text-gray-500 hover:bg-gray-50 hover:text-gray-900 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
+                  className="p-2 border border-[#dde0e7] rounded-lg text-gray-500 hover:bg-[#eef0f5] hover:text-gray-900 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
                 >
                   <ChevronRight size={18} />
                 </button>
@@ -922,8 +922,8 @@ export default function EstoquePage() {
       {/* Modal Novo Produto */}
       {showModal && (
         <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-white border border-gray-200 rounded-2xl w-full max-w-lg animate-fade-in max-h-[90vh] overflow-y-auto shadow-2xl">
-            <div className="p-6 border-b border-gray-200">
+          <div className="bg-[#f8f9fb] border border-[#dde0e7] rounded-2xl w-full max-w-lg animate-fade-in max-h-[90vh] overflow-y-auto shadow-2xl">
+            <div className="p-6 border-b border-[#dde0e7]">
               <h2 className="text-xl font-semibold text-gray-900">Novo Produto</h2>
               <p className="text-sm text-[#6B7280] mt-1">Cadastre um novo produto no estoque</p>
             </div>
@@ -936,7 +936,7 @@ export default function EstoquePage() {
                     value={form.codigo}
                     onChange={(e) => setForm({ ...form, codigo: e.target.value })}
                     placeholder="Ex: OL-5W30-1L"
-                    className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-gray-900 placeholder-gray-400 focus:outline-none focus:border-[#22c55e]/50 focus:ring-1 focus:ring-[#22c55e]/20 transition-all duration-200"
+                    className="w-full bg-[#eef0f5] border border-[#dde0e7] rounded-xl px-4 py-3 text-gray-900 placeholder-gray-400 focus:outline-none focus:border-[#22c55e]/50 focus:ring-1 focus:ring-[#22c55e]/20 transition-all duration-200"
                   />
                 </div>
                 <div>
@@ -946,7 +946,7 @@ export default function EstoquePage() {
                     value={form.marca}
                     onChange={(e) => setForm({ ...form, marca: e.target.value })}
                     placeholder="Ex: Mobil"
-                    className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-gray-900 placeholder-gray-400 focus:outline-none focus:border-[#22c55e]/50 focus:ring-1 focus:ring-[#22c55e]/20 transition-all duration-200"
+                    className="w-full bg-[#eef0f5] border border-[#dde0e7] rounded-xl px-4 py-3 text-gray-900 placeholder-gray-400 focus:outline-none focus:border-[#22c55e]/50 focus:ring-1 focus:ring-[#22c55e]/20 transition-all duration-200"
                   />
                 </div>
               </div>
@@ -957,7 +957,7 @@ export default function EstoquePage() {
                   value={form.nome}
                   onChange={(e) => setForm({ ...form, nome: e.target.value })}
                   placeholder="Ex: Óleo Mobil Super 5W30 1L"
-                  className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-gray-900 placeholder-gray-400 focus:outline-none focus:border-[#22c55e]/50 focus:ring-1 focus:ring-[#22c55e]/20 transition-all duration-200"
+                  className="w-full bg-[#eef0f5] border border-[#dde0e7] rounded-xl px-4 py-3 text-gray-900 placeholder-gray-400 focus:outline-none focus:border-[#22c55e]/50 focus:ring-1 focus:ring-[#22c55e]/20 transition-all duration-200"
                 />
               </div>
               <div className="grid grid-cols-2 gap-4">
@@ -966,7 +966,7 @@ export default function EstoquePage() {
                   <select
                     value={form.categoria}
                     onChange={(e) => setForm({ ...form, categoria: e.target.value })}
-                    className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-gray-900 focus:outline-none focus:border-[#22c55e]/50 focus:ring-1 focus:ring-[#22c55e]/20 transition-all duration-200"
+                    className="w-full bg-[#eef0f5] border border-[#dde0e7] rounded-xl px-4 py-3 text-gray-900 focus:outline-none focus:border-[#22c55e]/50 focus:ring-1 focus:ring-[#22c55e]/20 transition-all duration-200"
                   >
                     {categorias.filter(c => c.value).map((cat) => (
                       <option key={cat.value} value={cat.value}>{cat.label}</option>
@@ -978,7 +978,7 @@ export default function EstoquePage() {
                   <select
                     value={form.unidade}
                     onChange={(e) => setForm({ ...form, unidade: e.target.value })}
-                    className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-gray-900 focus:outline-none focus:border-[#22c55e]/50 focus:ring-1 focus:ring-[#22c55e]/20 transition-all duration-200"
+                    className="w-full bg-[#eef0f5] border border-[#dde0e7] rounded-xl px-4 py-3 text-gray-900 focus:outline-none focus:border-[#22c55e]/50 focus:ring-1 focus:ring-[#22c55e]/20 transition-all duration-200"
                   >
                     <option value="LITRO">Litro</option>
                     <option value="UNIDADE">Unidade</option>
@@ -995,7 +995,7 @@ export default function EstoquePage() {
                     value={form.quantidade}
                     onChange={(e) => setForm({ ...form, quantidade: e.target.value })}
                     placeholder="0"
-                    className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-gray-900 placeholder-gray-400 focus:outline-none focus:border-[#22c55e]/50 focus:ring-1 focus:ring-[#22c55e]/20 transition-all duration-200"
+                    className="w-full bg-[#eef0f5] border border-[#dde0e7] rounded-xl px-4 py-3 text-gray-900 placeholder-gray-400 focus:outline-none focus:border-[#22c55e]/50 focus:ring-1 focus:ring-[#22c55e]/20 transition-all duration-200"
                   />
                 </div>
                 <div>
@@ -1005,7 +1005,7 @@ export default function EstoquePage() {
                     value={form.estoqueMinimo}
                     onChange={(e) => setForm({ ...form, estoqueMinimo: e.target.value })}
                     placeholder="5"
-                    className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-gray-900 placeholder-gray-400 focus:outline-none focus:border-[#22c55e]/50 focus:ring-1 focus:ring-[#22c55e]/20 transition-all duration-200"
+                    className="w-full bg-[#eef0f5] border border-[#dde0e7] rounded-xl px-4 py-3 text-gray-900 placeholder-gray-400 focus:outline-none focus:border-[#22c55e]/50 focus:ring-1 focus:ring-[#22c55e]/20 transition-all duration-200"
                   />
                 </div>
               </div>
@@ -1018,7 +1018,7 @@ export default function EstoquePage() {
                     value={form.precoCompra}
                     onChange={(e) => setForm({ ...form, precoCompra: e.target.value })}
                     placeholder="0.00"
-                    className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-gray-900 placeholder-gray-400 focus:outline-none focus:border-[#22c55e]/50 focus:ring-1 focus:ring-[#22c55e]/20 transition-all duration-200"
+                    className="w-full bg-[#eef0f5] border border-[#dde0e7] rounded-xl px-4 py-3 text-gray-900 placeholder-gray-400 focus:outline-none focus:border-[#22c55e]/50 focus:ring-1 focus:ring-[#22c55e]/20 transition-all duration-200"
                   />
                 </div>
                 <div>
@@ -1029,7 +1029,7 @@ export default function EstoquePage() {
                     value={form.precoVenda}
                     onChange={(e) => setForm({ ...form, precoVenda: e.target.value })}
                     placeholder="0.00"
-                    className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-gray-900 placeholder-gray-400 focus:outline-none focus:border-[#22c55e]/50 focus:ring-1 focus:ring-[#22c55e]/20 transition-all duration-200"
+                    className="w-full bg-[#eef0f5] border border-[#dde0e7] rounded-xl px-4 py-3 text-gray-900 placeholder-gray-400 focus:outline-none focus:border-[#22c55e]/50 focus:ring-1 focus:ring-[#22c55e]/20 transition-all duration-200"
                   />
                 </div>
                 <div>
@@ -1040,15 +1040,15 @@ export default function EstoquePage() {
                     value={form.precoGranel}
                     onChange={(e) => setForm({ ...form, precoGranel: e.target.value })}
                     placeholder="Por litro"
-                    className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-gray-900 placeholder-gray-400 focus:outline-none focus:border-[#22c55e]/50 focus:ring-1 focus:ring-[#22c55e]/20 transition-all duration-200"
+                    className="w-full bg-[#eef0f5] border border-[#dde0e7] rounded-xl px-4 py-3 text-gray-900 placeholder-gray-400 focus:outline-none focus:border-[#22c55e]/50 focus:ring-1 focus:ring-[#22c55e]/20 transition-all duration-200"
                   />
                 </div>
               </div>
             </div>
-            <div className="p-6 border-t border-gray-200 flex gap-3 justify-end">
+            <div className="p-6 border-t border-[#dde0e7] flex gap-3 justify-end">
               <button
                 onClick={() => setShowModal(false)}
-                className="px-6 py-3 border border-gray-200 rounded-xl text-gray-500 hover:bg-gray-50 hover:text-gray-900 transition-all duration-200"
+                className="px-6 py-3 border border-[#dde0e7] rounded-xl text-gray-500 hover:bg-[#eef0f5] hover:text-gray-900 transition-all duration-200"
               >
                 Cancelar
               </button>
@@ -1066,8 +1066,8 @@ export default function EstoquePage() {
       {/* Modal Movimentação */}
       {showMovModal && selectedProduto && (
         <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-white border border-gray-200 rounded-2xl w-full max-w-md animate-fade-in shadow-2xl">
-            <div className="p-6 border-b border-gray-200">
+          <div className="bg-[#f8f9fb] border border-[#dde0e7] rounded-2xl w-full max-w-md animate-fade-in shadow-2xl">
+            <div className="p-6 border-b border-[#dde0e7]">
               <h2 className="text-xl font-semibold text-gray-900">
                 {movTipo === 'ENTRADA' ? 'Entrada de Estoque' : 'Saída de Estoque'}
               </h2>
@@ -1082,7 +1082,7 @@ export default function EstoquePage() {
                   value={movQuantidade}
                   onChange={(e) => setMovQuantidade(e.target.value)}
                   placeholder="0"
-                  className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-gray-900 placeholder-gray-400 focus:outline-none focus:border-[#22c55e]/50 focus:ring-1 focus:ring-[#22c55e]/20 transition-all duration-200"
+                  className="w-full bg-[#eef0f5] border border-[#dde0e7] rounded-xl px-4 py-3 text-gray-900 placeholder-gray-400 focus:outline-none focus:border-[#22c55e]/50 focus:ring-1 focus:ring-[#22c55e]/20 transition-all duration-200"
                 />
               </div>
               <div>
@@ -1092,11 +1092,11 @@ export default function EstoquePage() {
                   value={movMotivo}
                   onChange={(e) => setMovMotivo(e.target.value)}
                   placeholder="Ex: Compra NF 12345"
-                  className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-gray-900 placeholder-gray-400 focus:outline-none focus:border-[#22c55e]/50 focus:ring-1 focus:ring-[#22c55e]/20 transition-all duration-200"
+                  className="w-full bg-[#eef0f5] border border-[#dde0e7] rounded-xl px-4 py-3 text-gray-900 placeholder-gray-400 focus:outline-none focus:border-[#22c55e]/50 focus:ring-1 focus:ring-[#22c55e]/20 transition-all duration-200"
                 />
               </div>
             </div>
-            <div className="p-6 border-t border-gray-200 flex gap-3 justify-end">
+            <div className="p-6 border-t border-[#dde0e7] flex gap-3 justify-end">
               <button
                 onClick={() => {
                   setShowMovModal(false);
@@ -1104,7 +1104,7 @@ export default function EstoquePage() {
                   setMovQuantidade('');
                   setMovMotivo('');
                 }}
-                className="px-6 py-3 border border-gray-200 rounded-xl text-gray-500 hover:bg-gray-50 hover:text-gray-900 transition-all duration-200"
+                className="px-6 py-3 border border-[#dde0e7] rounded-xl text-gray-500 hover:bg-[#eef0f5] hover:text-gray-900 transition-all duration-200"
               >
                 Cancelar
               </button>
@@ -1182,8 +1182,8 @@ export default function EstoquePage() {
       {/* Modal para revisar itens da NF */}
       {showOcrItems && ocrItems.length > 0 && (
         <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-white border border-gray-200 rounded-2xl shadow-2xl w-full max-w-3xl animate-fade-in max-h-[90vh] overflow-hidden flex flex-col">
-            <div className="p-6 border-b border-gray-200">
+          <div className="bg-[#f8f9fb] border border-[#dde0e7] rounded-2xl shadow-2xl w-full max-w-3xl animate-fade-in max-h-[90vh] overflow-hidden flex flex-col">
+            <div className="p-6 border-b border-[#dde0e7]">
               <h2 className="text-xl font-semibold text-gray-900">Itens da Nota Fiscal</h2>
               <p className="text-sm text-[#6B7280] mt-1">
                 {ocrResult?.numeroNF && `NF: ${ocrResult.numeroNF} • `}
@@ -1200,7 +1200,7 @@ export default function EstoquePage() {
                       ? item.existingProduct
                         ? 'bg-amber-50 border-amber-300'
                         : 'bg-green-50 border-green-300'
-                      : 'bg-gray-50 border-gray-200'
+                      : 'bg-[#eef0f5] border-[#dde0e7]'
                   }`}
                 >
                   {item.existingProduct && (
@@ -1257,7 +1257,7 @@ export default function EstoquePage() {
                             newItems[index].descricao = e.target.value;
                             setOcrItems(newItems);
                           }}
-                          className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-gray-900 text-sm focus:outline-none focus:border-[#22c55e]/50 focus:ring-1 focus:ring-[#22c55e]/20 transition-all duration-200"
+                          className="w-full bg-[#f8f9fb] border border-[#dde0e7] rounded-lg px-3 py-2 text-gray-900 text-sm focus:outline-none focus:border-[#22c55e]/50 focus:ring-1 focus:ring-[#22c55e]/20 transition-all duration-200"
                         />
                       </div>
                       <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
@@ -1270,7 +1270,7 @@ export default function EstoquePage() {
                               newItems[index].categoria = e.target.value;
                               setOcrItems(newItems);
                             }}
-                            className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-gray-900 text-sm focus:outline-none focus:border-[#22c55e]/50 focus:ring-1 focus:ring-[#22c55e]/20 transition-all duration-200"
+                            className="w-full bg-[#f8f9fb] border border-[#dde0e7] rounded-lg px-3 py-2 text-gray-900 text-sm focus:outline-none focus:border-[#22c55e]/50 focus:ring-1 focus:ring-[#22c55e]/20 transition-all duration-200"
                           >
                             {categorias.filter(c => c.value).map(cat => (
                               <option key={cat.value} value={cat.value}>{cat.label}</option>
@@ -1286,7 +1286,7 @@ export default function EstoquePage() {
                               newItems[index].unidade = e.target.value;
                               setOcrItems(newItems);
                             }}
-                            className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-gray-900 text-sm focus:outline-none focus:border-[#22c55e]/50 focus:ring-1 focus:ring-[#22c55e]/20 transition-all duration-200"
+                            className="w-full bg-[#f8f9fb] border border-[#dde0e7] rounded-lg px-3 py-2 text-gray-900 text-sm focus:outline-none focus:border-[#22c55e]/50 focus:ring-1 focus:ring-[#22c55e]/20 transition-all duration-200"
                           >
                             <option value="LITRO">Litro</option>
                             <option value="UNIDADE">Unidade</option>
@@ -1304,7 +1304,7 @@ export default function EstoquePage() {
                               newItems[index].codigo = e.target.value;
                               setOcrItems(newItems);
                             }}
-                            className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-gray-900 text-sm focus:outline-none focus:border-[#22c55e]/50 focus:ring-1 focus:ring-[#22c55e]/20 transition-all duration-200"
+                            className="w-full bg-[#f8f9fb] border border-[#dde0e7] rounded-lg px-3 py-2 text-gray-900 text-sm focus:outline-none focus:border-[#22c55e]/50 focus:ring-1 focus:ring-[#22c55e]/20 transition-all duration-200"
                           />
                         </div>
                       </div>
@@ -1319,7 +1319,7 @@ export default function EstoquePage() {
                               newItems[index].quantidade = parseFloat(e.target.value) || 0;
                               setOcrItems(newItems);
                             }}
-                            className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-gray-900 text-sm focus:outline-none focus:border-[#22c55e]/50 focus:ring-1 focus:ring-[#22c55e]/20 transition-all duration-200"
+                            className="w-full bg-[#f8f9fb] border border-[#dde0e7] rounded-lg px-3 py-2 text-gray-900 text-sm focus:outline-none focus:border-[#22c55e]/50 focus:ring-1 focus:ring-[#22c55e]/20 transition-all duration-200"
                           />
                         </div>
                         <div>
@@ -1333,7 +1333,7 @@ export default function EstoquePage() {
                               newItems[index].precoCompra = parseFloat(e.target.value) || 0;
                               setOcrItems(newItems);
                             }}
-                            className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-gray-900 text-sm focus:outline-none focus:border-[#22c55e]/50 focus:ring-1 focus:ring-[#22c55e]/20 transition-all duration-200"
+                            className="w-full bg-[#f8f9fb] border border-[#dde0e7] rounded-lg px-3 py-2 text-gray-900 text-sm focus:outline-none focus:border-[#22c55e]/50 focus:ring-1 focus:ring-[#22c55e]/20 transition-all duration-200"
                           />
                         </div>
                         <div>
@@ -1353,10 +1353,10 @@ export default function EstoquePage() {
                               newItems[index].precoVenda = parseFloat(e.target.value) || 0;
                               setOcrItems(newItems);
                             }}
-                            className={`w-full bg-white rounded-lg px-3 py-2 text-gray-900 text-sm focus:outline-none ${
+                            className={`w-full bg-[#f8f9fb] rounded-lg px-3 py-2 text-gray-900 text-sm focus:outline-none ${
                               item.selected && !item.updateExisting && !item.precoVenda
                                 ? 'border-2 border-red-500 focus:border-red-500'
-                                : 'border border-gray-200 focus:border-[#22c55e]'
+                                : 'border border-[#dde0e7] focus:border-[#22c55e]'
                             }`}
                             placeholder={item.selected && !item.updateExisting ? 'Obrigatório' : '0.00'}
                           />
@@ -1371,7 +1371,7 @@ export default function EstoquePage() {
                               newItems[index].estoqueMinimo = parseFloat(e.target.value) || 0;
                               setOcrItems(newItems);
                             }}
-                            className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-gray-900 text-sm focus:outline-none focus:border-[#22c55e]/50 focus:ring-1 focus:ring-[#22c55e]/20 transition-all duration-200"
+                            className="w-full bg-[#f8f9fb] border border-[#dde0e7] rounded-lg px-3 py-2 text-gray-900 text-sm focus:outline-none focus:border-[#22c55e]/50 focus:ring-1 focus:ring-[#22c55e]/20 transition-all duration-200"
                           />
                         </div>
                       </div>
@@ -1380,14 +1380,14 @@ export default function EstoquePage() {
                 </div>
               ))}
             </div>
-            <div className="p-6 border-t border-gray-200 flex gap-3 justify-between">
+            <div className="p-6 border-t border-[#dde0e7] flex gap-3 justify-between">
               <button
                 onClick={() => {
                   setShowOcrItems(false);
                   setOcrItems([]);
                   setOcrResult(null);
                 }}
-                className="px-6 py-3 border border-gray-200 rounded-xl text-gray-500 hover:bg-gray-50 hover:text-gray-900 transition-all duration-200"
+                className="px-6 py-3 border border-[#dde0e7] rounded-xl text-gray-500 hover:bg-[#eef0f5] hover:text-gray-900 transition-all duration-200"
               >
                 Cancelar
               </button>
@@ -1481,8 +1481,8 @@ export default function EstoquePage() {
       {/* Modal Editar Produto */}
       {showEditModal && editingProduto && (
         <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-white border border-gray-200 rounded-2xl shadow-2xl w-full max-w-lg animate-fade-in max-h-[90vh] overflow-y-auto">
-            <div className="p-6 border-b border-gray-200">
+          <div className="bg-[#f8f9fb] border border-[#dde0e7] rounded-2xl shadow-2xl w-full max-w-lg animate-fade-in max-h-[90vh] overflow-y-auto">
+            <div className="p-6 border-b border-[#dde0e7]">
               <h2 className="text-xl font-semibold text-gray-900">Editar Produto</h2>
               <p className="text-sm text-[#6B7280] mt-1">Atualize as informações do produto</p>
             </div>
@@ -1494,7 +1494,7 @@ export default function EstoquePage() {
                     type="text"
                     value={editingForm.codigo}
                     onChange={(e) => setEditingForm({ ...editingForm, codigo: e.target.value })}
-                    className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-gray-900 placeholder-gray-400 focus:outline-none focus:border-[#22c55e]/50 focus:ring-1 focus:ring-[#22c55e]/20 transition-all duration-200"
+                    className="w-full bg-[#eef0f5] border border-[#dde0e7] rounded-xl px-4 py-3 text-gray-900 placeholder-gray-400 focus:outline-none focus:border-[#22c55e]/50 focus:ring-1 focus:ring-[#22c55e]/20 transition-all duration-200"
                   />
                 </div>
                 <div>
@@ -1503,7 +1503,7 @@ export default function EstoquePage() {
                     type="text"
                     value={editingForm.marca}
                     onChange={(e) => setEditingForm({ ...editingForm, marca: e.target.value })}
-                    className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-gray-900 placeholder-gray-400 focus:outline-none focus:border-[#22c55e]/50 focus:ring-1 focus:ring-[#22c55e]/20 transition-all duration-200"
+                    className="w-full bg-[#eef0f5] border border-[#dde0e7] rounded-xl px-4 py-3 text-gray-900 placeholder-gray-400 focus:outline-none focus:border-[#22c55e]/50 focus:ring-1 focus:ring-[#22c55e]/20 transition-all duration-200"
                   />
                 </div>
               </div>
@@ -1513,7 +1513,7 @@ export default function EstoquePage() {
                   type="text"
                   value={editingForm.nome}
                   onChange={(e) => setEditingForm({ ...editingForm, nome: e.target.value })}
-                  className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-gray-900 placeholder-gray-400 focus:outline-none focus:border-[#22c55e]/50 focus:ring-1 focus:ring-[#22c55e]/20 transition-all duration-200"
+                  className="w-full bg-[#eef0f5] border border-[#dde0e7] rounded-xl px-4 py-3 text-gray-900 placeholder-gray-400 focus:outline-none focus:border-[#22c55e]/50 focus:ring-1 focus:ring-[#22c55e]/20 transition-all duration-200"
                 />
               </div>
               <div className="grid grid-cols-2 gap-4">
@@ -1522,7 +1522,7 @@ export default function EstoquePage() {
                   <select
                     value={editingForm.categoria}
                     onChange={(e) => setEditingForm({ ...editingForm, categoria: e.target.value })}
-                    className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-gray-900 focus:outline-none focus:border-[#22c55e]/50 focus:ring-1 focus:ring-[#22c55e]/20 transition-all duration-200"
+                    className="w-full bg-[#eef0f5] border border-[#dde0e7] rounded-xl px-4 py-3 text-gray-900 focus:outline-none focus:border-[#22c55e]/50 focus:ring-1 focus:ring-[#22c55e]/20 transition-all duration-200"
                   >
                     {categorias.filter(c => c.value).map((cat) => (
                       <option key={cat.value} value={cat.value}>{cat.label}</option>
@@ -1534,7 +1534,7 @@ export default function EstoquePage() {
                   <select
                     value={editingForm.unidade}
                     onChange={(e) => setEditingForm({ ...editingForm, unidade: e.target.value })}
-                    className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-gray-900 focus:outline-none focus:border-[#22c55e]/50 focus:ring-1 focus:ring-[#22c55e]/20 transition-all duration-200"
+                    className="w-full bg-[#eef0f5] border border-[#dde0e7] rounded-xl px-4 py-3 text-gray-900 focus:outline-none focus:border-[#22c55e]/50 focus:ring-1 focus:ring-[#22c55e]/20 transition-all duration-200"
                   >
                     <option value="LITRO">Litro</option>
                     <option value="UNIDADE">Unidade</option>
@@ -1550,7 +1550,7 @@ export default function EstoquePage() {
                     type="number"
                     value={editingForm.quantidade}
                     onChange={(e) => setEditingForm({ ...editingForm, quantidade: e.target.value })}
-                    className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-gray-900 placeholder-gray-400 focus:outline-none focus:border-[#22c55e]/50 focus:ring-1 focus:ring-[#22c55e]/20 transition-all duration-200"
+                    className="w-full bg-[#eef0f5] border border-[#dde0e7] rounded-xl px-4 py-3 text-gray-900 placeholder-gray-400 focus:outline-none focus:border-[#22c55e]/50 focus:ring-1 focus:ring-[#22c55e]/20 transition-all duration-200"
                   />
                 </div>
                 <div>
@@ -1559,7 +1559,7 @@ export default function EstoquePage() {
                     type="number"
                     value={editingForm.estoqueMinimo}
                     onChange={(e) => setEditingForm({ ...editingForm, estoqueMinimo: e.target.value })}
-                    className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-gray-900 placeholder-gray-400 focus:outline-none focus:border-[#22c55e]/50 focus:ring-1 focus:ring-[#22c55e]/20 transition-all duration-200"
+                    className="w-full bg-[#eef0f5] border border-[#dde0e7] rounded-xl px-4 py-3 text-gray-900 placeholder-gray-400 focus:outline-none focus:border-[#22c55e]/50 focus:ring-1 focus:ring-[#22c55e]/20 transition-all duration-200"
                   />
                 </div>
               </div>
@@ -1571,7 +1571,7 @@ export default function EstoquePage() {
                     step="0.01"
                     value={editingForm.precoCompra}
                     onChange={(e) => setEditingForm({ ...editingForm, precoCompra: e.target.value })}
-                    className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-gray-900 placeholder-gray-400 focus:outline-none focus:border-[#22c55e]/50 focus:ring-1 focus:ring-[#22c55e]/20 transition-all duration-200"
+                    className="w-full bg-[#eef0f5] border border-[#dde0e7] rounded-xl px-4 py-3 text-gray-900 placeholder-gray-400 focus:outline-none focus:border-[#22c55e]/50 focus:ring-1 focus:ring-[#22c55e]/20 transition-all duration-200"
                   />
                 </div>
                 <div>
@@ -1581,7 +1581,7 @@ export default function EstoquePage() {
                     step="0.01"
                     value={editingForm.precoVenda}
                     onChange={(e) => setEditingForm({ ...editingForm, precoVenda: e.target.value })}
-                    className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-gray-900 placeholder-gray-400 focus:outline-none focus:border-[#22c55e]/50 focus:ring-1 focus:ring-[#22c55e]/20 transition-all duration-200"
+                    className="w-full bg-[#eef0f5] border border-[#dde0e7] rounded-xl px-4 py-3 text-gray-900 placeholder-gray-400 focus:outline-none focus:border-[#22c55e]/50 focus:ring-1 focus:ring-[#22c55e]/20 transition-all duration-200"
                   />
                 </div>
                 <div>
@@ -1592,18 +1592,18 @@ export default function EstoquePage() {
                     value={editingForm.precoGranel}
                     onChange={(e) => setEditingForm({ ...editingForm, precoGranel: e.target.value })}
                     placeholder="Por litro"
-                    className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-gray-900 placeholder-gray-400 focus:outline-none focus:border-[#22c55e]/50 focus:ring-1 focus:ring-[#22c55e]/20 transition-all duration-200"
+                    className="w-full bg-[#eef0f5] border border-[#dde0e7] rounded-xl px-4 py-3 text-gray-900 placeholder-gray-400 focus:outline-none focus:border-[#22c55e]/50 focus:ring-1 focus:ring-[#22c55e]/20 transition-all duration-200"
                   />
                 </div>
               </div>
             </div>
-            <div className="p-6 border-t border-gray-200 flex gap-3 justify-end">
+            <div className="p-6 border-t border-[#dde0e7] flex gap-3 justify-end">
               <button
                 onClick={() => {
                   setShowEditModal(false);
                   setEditingProduto(null);
                 }}
-                className="px-6 py-3 border border-gray-200 rounded-xl text-gray-500 hover:bg-gray-50 hover:text-gray-900 transition-all duration-200"
+                className="px-6 py-3 border border-[#dde0e7] rounded-xl text-gray-500 hover:bg-[#eef0f5] hover:text-gray-900 transition-all duration-200"
               >
                 Cancelar
               </button>
@@ -1621,8 +1621,8 @@ export default function EstoquePage() {
       {/* Modal Confirmar Exclusão */}
       {showDeleteConfirm && deletingProduto && (
         <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-white border border-gray-200 rounded-2xl shadow-2xl w-full max-w-md animate-fade-in">
-            <div className="p-6 border-b border-gray-200">
+          <div className="bg-[#f8f9fb] border border-[#dde0e7] rounded-2xl shadow-2xl w-full max-w-md animate-fade-in">
+            <div className="p-6 border-b border-[#dde0e7]">
               <h2 className="text-xl font-semibold text-gray-900">Confirmar Exclusão</h2>
             </div>
             <div className="p-6">
@@ -1639,13 +1639,13 @@ export default function EstoquePage() {
                 Tem certeza que deseja excluir este produto? Esta ação não pode ser desfeita.
               </p>
             </div>
-            <div className="p-6 border-t border-gray-200 flex gap-3 justify-end">
+            <div className="p-6 border-t border-[#dde0e7] flex gap-3 justify-end">
               <button
                 onClick={() => {
                   setShowDeleteConfirm(false);
                   setDeletingProduto(null);
                 }}
-                className="px-6 py-3 border border-gray-200 rounded-xl text-gray-500 hover:bg-gray-50 hover:text-gray-900 transition-all duration-200"
+                className="px-6 py-3 border border-[#dde0e7] rounded-xl text-gray-500 hover:bg-[#eef0f5] hover:text-gray-900 transition-all duration-200"
               >
                 Cancelar
               </button>
@@ -1663,8 +1663,8 @@ export default function EstoquePage() {
       {/* Modal Histórico de Movimentações */}
       {showHistoryModal && historyProduto && (
         <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-white border border-gray-200 rounded-2xl shadow-2xl w-full max-w-2xl animate-fade-in max-h-[80vh] overflow-hidden flex flex-col">
-            <div className="p-6 border-b border-gray-200">
+          <div className="bg-[#f8f9fb] border border-[#dde0e7] rounded-2xl shadow-2xl w-full max-w-2xl animate-fade-in max-h-[80vh] overflow-hidden flex flex-col">
+            <div className="p-6 border-b border-[#dde0e7]">
               <h2 className="text-xl font-semibold text-gray-900">Histórico de Movimentações</h2>
               <p className="text-sm text-[#6B7280] mt-1">{historyProduto.nome}</p>
               <p className="text-xs text-[#6B7280]">
@@ -1726,14 +1726,14 @@ export default function EstoquePage() {
                 </div>
               )}
             </div>
-            <div className="p-6 border-t border-gray-200 flex justify-end">
+            <div className="p-6 border-t border-[#dde0e7] flex justify-end">
               <button
                 onClick={() => {
                   setShowHistoryModal(false);
                   setHistoryProduto(null);
                   setMovimentacoes([]);
                 }}
-                className="px-6 py-3 border border-gray-200 rounded-xl text-gray-500 hover:bg-gray-50 hover:text-gray-900 transition-all duration-200"
+                className="px-6 py-3 border border-[#dde0e7] rounded-xl text-gray-500 hover:bg-[#eef0f5] hover:text-gray-900 transition-all duration-200"
               >
                 Fechar
               </button>

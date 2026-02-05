@@ -117,7 +117,7 @@ export default function Dashboard() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50/50">
+    <div className="min-h-screen bg-[#eef0f5]">
       <Header title="Dashboard" subtitle="Visão geral da oficina" />
 
       <div className="p-6 space-y-6">
@@ -129,7 +129,7 @@ export default function Dashboard() {
             return (
               <div
                 key={index}
-                className={`group relative bg-white rounded-2xl p-5 border border-gray-200 hover:border-gray-300 transition-all duration-300 hover:shadow-lg ${colors.glow}`}
+                className={`group relative bg-[#f8f9fb] rounded-2xl p-5 border border-[#dde0e7] hover:border-gray-300 transition-all duration-300 hover:shadow-lg ${colors.glow}`}
               >
                 <div className="relative flex items-center gap-4">
                   <div className={`p-3 bg-gradient-to-br ${colors.bg} rounded-xl ring-1 ${colors.ring}`}>
@@ -137,7 +137,7 @@ export default function Dashboard() {
                   </div>
                   <div className="flex-1">
                     {loading ? (
-                      <div className="h-7 w-16 bg-gray-100 rounded animate-pulse" />
+                      <div className="h-7 w-16 bg-[#e4e6eb] rounded animate-pulse" />
                     ) : (
                       <p className="text-2xl font-bold text-gray-900">{formatStatValue(stat.key, value)}</p>
                     )}
@@ -150,8 +150,8 @@ export default function Dashboard() {
         </div>
 
         {/* Serviços de Hoje */}
-        <div className="bg-white rounded-2xl border border-gray-200 overflow-hidden">
-          <div className="p-5 border-b border-gray-200 flex items-center justify-between">
+        <div className="bg-[#f8f9fb] rounded-2xl border border-[#dde0e7] overflow-hidden">
+          <div className="p-5 border-b border-[#dde0e7] flex items-center justify-between">
             <div>
               <h2 className="text-lg font-bold text-gray-900">Serviços de Hoje</h2>
               <p className="text-sm text-gray-500 mt-0.5">
@@ -166,7 +166,7 @@ export default function Dashboard() {
               Nova O.S.
             </Link>
           </div>
-          <div className="divide-y divide-gray-100">
+          <div className="divide-y divide-[#e4e6eb]">
             {loading ? (
               <div className="p-8 text-center">
                 <Loader2 className="animate-spin mx-auto mb-2 text-[#22c55e]" size={28} />
@@ -184,10 +184,10 @@ export default function Dashboard() {
                   <Link
                     key={servico.id}
                     href={`/ordens?detail=${servico.id}`}
-                    className="block p-4 hover:bg-gray-50 transition-all duration-200 group cursor-pointer"
+                    className="block p-4 hover:bg-[#eef0f5] transition-all duration-200 group cursor-pointer"
                   >
                     <div className="flex items-center gap-4">
-                      <div className="text-center min-w-[70px] py-2.5 bg-gray-50 rounded-xl ring-1 ring-gray-200 group-hover:ring-gray-300 transition-all duration-200">
+                      <div className="text-center min-w-[70px] py-2.5 bg-[#eef0f5] rounded-xl ring-1 ring-gray-200 group-hover:ring-gray-300 transition-all duration-200">
                         <p className="text-lg font-bold text-gray-900">{servico.hora}</p>
                       </div>
                       <div className="flex-1 min-w-0">
@@ -205,7 +205,7 @@ export default function Dashboard() {
             )}
           </div>
           {servicosHoje.length > 0 && (
-            <div className="p-4 border-t border-gray-100 bg-gray-50/50">
+            <div className="p-4 border-t border-[#e4e6eb] bg-[#eef0f5]">
               <Link
                 href="/ordens"
                 className="flex items-center justify-center gap-2 text-sm text-gray-500 hover:text-[#22c55e] transition-colors duration-200"
@@ -227,7 +227,7 @@ export default function Dashboard() {
                 <Link
                   key={index}
                   href={action.href}
-                  className={`flex flex-col items-center gap-3 p-5 bg-white rounded-2xl border border-gray-200 hover:border-gray-300 transition-all duration-300 group hover:shadow-lg ${colors.glow}`}
+                  className={`flex flex-col items-center gap-3 p-5 bg-[#f8f9fb] rounded-2xl border border-[#dde0e7] hover:border-gray-300 transition-all duration-300 group hover:shadow-lg ${colors.glow}`}
                 >
                   <div className={`p-3 bg-gradient-to-br ${colors.gradient} rounded-xl ring-1 ${colors.ring} group-hover:scale-110 group-hover:rotate-3 transition-all duration-300`}>
                     <action.icon size={24} className="text-white" />

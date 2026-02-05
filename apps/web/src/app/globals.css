@@ -1,13 +1,13 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --background-secondary: #f8fafc;
-  --foreground: #111827;
-  --card: #ffffff;
-  --card-hover: #f1f5f9;
-  --border: #e2e8f0;
-  --border-light: #cbd5e1;
+  --background: #eef0f5;
+  --background-secondary: #e4e6eb;
+  --foreground: #1e293b;
+  --card: #f8f9fb;
+  --card-hover: #eef0f5;
+  --border: #dde0e7;
+  --border-light: #c8cbd3;
   --primary: #22C55E;
   --primary-dark: #166534;
   --primary-light: #4ADE80;
@@ -65,28 +65,28 @@ body {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #cbd5e1;
+  background: #c8cbd3;
   border-radius: 10px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #94a3b8;
+  background: #9ca3af;
 }
 
 /* Glass Effect */
 .glass {
-  background: rgba(255, 255, 255, 0.85);
+  background: rgba(248, 249, 251, 0.85);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
-  border: 1px solid #e2e8f0;
+  border: 1px solid #dde0e7;
 }
 
 .glass-card {
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(248, 250, 252, 0.9) 100%);
+  background: linear-gradient(135deg, rgba(248, 249, 251, 0.95) 0%, rgba(238, 240, 245, 0.9) 100%);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
-  border: 1px solid #e2e8f0;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
+  border: 1px solid #dde0e7;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.04), 0 2px 4px -2px rgba(0, 0, 0, 0.03);
 }
 
 /* Button Styles */

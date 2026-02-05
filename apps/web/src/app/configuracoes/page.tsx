@@ -60,7 +60,7 @@ const configSections = [
 
 export default function ConfiguracoesPage() {
   return (
-    <div className="min-h-screen bg-gray-50/50">
+    <div className="min-h-screen bg-[#eef0f5]">
       <Header title="Configurações" subtitle="Personalize o sistema" />
 
       <div className="p-6 space-y-6 animate-fade-in">
@@ -89,7 +89,7 @@ export default function ConfiguracoesPage() {
             return (
               <button
                 key={section.id}
-                className="bg-white border border-gray-200 rounded-2xl p-6 text-left hover:border-[#22c55e]/40 hover:shadow-lg hover:shadow-[#22c55e]/5 transition-all duration-300 group"
+                className="bg-[#f8f9fb] border border-[#dde0e7] rounded-2xl p-6 text-left hover:border-[#22c55e]/40 hover:shadow-lg hover:shadow-[#22c55e]/5 transition-all duration-300 group"
               >
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-4">
@@ -114,10 +114,10 @@ export default function ConfiguracoesPage() {
         </div>
 
         {/* Version Info */}
-        <div className="bg-white border border-gray-200 rounded-2xl p-6">
+        <div className="bg-[#f8f9fb] border border-[#dde0e7] rounded-2xl p-6">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
-              <div className="p-3 bg-gray-100 rounded-xl">
+              <div className="p-3 bg-[#e4e6eb] rounded-xl">
                 <HelpCircle size={24} className="text-[#6B7280]" />
               </div>
               <div>
@@ -132,19 +132,19 @@ export default function ConfiguracoesPage() {
         </div>
 
         {/* Quick Actions */}
-        <div className="bg-white border border-gray-200 rounded-2xl p-6">
+        <div className="bg-[#f8f9fb] border border-[#dde0e7] rounded-2xl p-6">
           <h3 className="font-semibold text-gray-900 mb-4">Ações Rápidas</h3>
           <div className="flex flex-wrap gap-3">
-            <button className="px-4 py-2 bg-gray-50 border border-gray-200 hover:border-[#22c55e]/30 rounded-xl text-sm text-gray-500 hover:text-gray-900 transition-all duration-200">
+            <button className="px-4 py-2 bg-[#eef0f5] border border-[#dde0e7] hover:border-[#22c55e]/30 rounded-xl text-sm text-gray-500 hover:text-gray-900 transition-all duration-200">
               Exportar Dados
             </button>
-            <button className="px-4 py-2 bg-gray-50 border border-gray-200 hover:border-[#22c55e]/30 rounded-xl text-sm text-gray-500 hover:text-gray-900 transition-all duration-200">
+            <button className="px-4 py-2 bg-[#eef0f5] border border-[#dde0e7] hover:border-[#22c55e]/30 rounded-xl text-sm text-gray-500 hover:text-gray-900 transition-all duration-200">
               Limpar Cache
             </button>
-            <button className="px-4 py-2 bg-gray-50 border border-gray-200 hover:border-[#22c55e]/30 rounded-xl text-sm text-gray-500 hover:text-gray-900 transition-all duration-200">
+            <button className="px-4 py-2 bg-[#eef0f5] border border-[#dde0e7] hover:border-[#22c55e]/30 rounded-xl text-sm text-gray-500 hover:text-gray-900 transition-all duration-200">
               Verificar Atualizações
             </button>
-            <button className="px-4 py-2 bg-gray-50 border border-gray-200 hover:border-[#22c55e]/30 rounded-xl text-sm text-gray-500 hover:text-gray-900 transition-all duration-200">
+            <button className="px-4 py-2 bg-[#eef0f5] border border-[#dde0e7] hover:border-[#22c55e]/30 rounded-xl text-sm text-gray-500 hover:text-gray-900 transition-all duration-200">
               Suporte
             </button>
           </div>
