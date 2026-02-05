@@ -100,7 +100,7 @@ const getUrgenciaConfig = (urgencia: string) => {
       };
     default:
       return {
-        color: 'bg-gray-50 text-gray-500 border-[#dde0e7]',
+        color: 'bg-gray-50 text-gray-500 border-[#c5c8d1]',
         label: urgencia,
       };
   }
@@ -140,13 +140,13 @@ export default function LembretesPage() {
   const [filterUrgencia, setFilterUrgencia] = useState('todos');
 
   return (
-    <div className="min-h-screen bg-[#eef0f5]">
+    <div className="min-h-screen bg-[#dfe2e9]">
       <Header title="Lembretes" subtitle="Gerencie lembretes de manutenção" />
 
       <div className="p-6 space-y-6 animate-fade-in">
         {/* Stats */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <div className="bg-[#f8f9fb] border border-[#dde0e7] rounded-xl p-4 hover:border-red-500/30 hover:shadow-lg hover:shadow-red-500/5 transition-all duration-300">
+          <div className="bg-[#ecedf2] border border-[#c5c8d1] rounded-xl p-4 hover:border-red-500/30 hover:shadow-lg hover:shadow-red-500/5 transition-all duration-300">
             <div className="flex items-center gap-3">
               <div className="p-2.5 bg-red-50 rounded-xl ring-1 ring-red-500/20">
                 <AlertCircle size={20} className="text-red-400" />
@@ -157,7 +157,7 @@ export default function LembretesPage() {
               </div>
             </div>
           </div>
-          <div className="bg-[#f8f9fb] border border-[#dde0e7] rounded-xl p-4 hover:border-amber-500/30 hover:shadow-lg hover:shadow-amber-500/5 transition-all duration-300">
+          <div className="bg-[#ecedf2] border border-[#c5c8d1] rounded-xl p-4 hover:border-amber-500/30 hover:shadow-lg hover:shadow-amber-500/5 transition-all duration-300">
             <div className="flex items-center gap-3">
               <div className="p-2.5 bg-amber-50 rounded-xl ring-1 ring-amber-500/20">
                 <Clock size={20} className="text-amber-400" />
@@ -168,7 +168,7 @@ export default function LembretesPage() {
               </div>
             </div>
           </div>
-          <div className="bg-[#f8f9fb] border border-[#dde0e7] rounded-xl p-4 hover:border-blue-500/30 hover:shadow-lg hover:shadow-blue-500/5 transition-all duration-300">
+          <div className="bg-[#ecedf2] border border-[#c5c8d1] rounded-xl p-4 hover:border-blue-500/30 hover:shadow-lg hover:shadow-blue-500/5 transition-all duration-300">
             <div className="flex items-center gap-3">
               <div className="p-2.5 bg-blue-50 rounded-xl ring-1 ring-blue-500/20">
                 <Send size={20} className="text-blue-400" />
@@ -179,7 +179,7 @@ export default function LembretesPage() {
               </div>
             </div>
           </div>
-          <div className="bg-[#f8f9fb] border border-[#dde0e7] rounded-xl p-4 hover:border-green-500/30 hover:shadow-lg hover:shadow-green-500/5 transition-all duration-300">
+          <div className="bg-[#ecedf2] border border-[#c5c8d1] rounded-xl p-4 hover:border-green-500/30 hover:shadow-lg hover:shadow-green-500/5 transition-all duration-300">
             <div className="flex items-center gap-3">
               <div className="p-2.5 bg-green-50 rounded-xl ring-1 ring-green-500/20">
                 <CheckCircle size={20} className="text-green-400" />
@@ -202,13 +202,13 @@ export default function LembretesPage() {
                 placeholder="Buscar por cliente ou placa..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full bg-[#eef0f5] border border-[#dde0e7] rounded-xl pl-10 pr-4 py-3 text-sm text-gray-900 placeholder-[#6B7280] focus:outline-none focus:border-[#22c55e]/50 focus:ring-1 focus:ring-[#22c55e]/20 transition-all duration-200"
+                className="w-full bg-[#dfe2e9] border border-[#c5c8d1] rounded-xl pl-10 pr-4 py-3 text-sm text-gray-900 placeholder-[#6B7280] focus:outline-none focus:border-[#22c55e]/50 focus:ring-1 focus:ring-[#22c55e]/20 transition-all duration-200"
               />
             </div>
             <select
               value={filterUrgencia}
               onChange={(e) => setFilterUrgencia(e.target.value)}
-              className="bg-[#eef0f5] border border-[#dde0e7] rounded-xl px-4 py-3 text-gray-500 focus:outline-none focus:border-[#22c55e]/50 focus:ring-1 focus:ring-[#22c55e]/20 transition-all duration-200"
+              className="bg-[#dfe2e9] border border-[#c5c8d1] rounded-xl px-4 py-3 text-gray-500 focus:outline-none focus:border-[#22c55e]/50 focus:ring-1 focus:ring-[#22c55e]/20 transition-all duration-200"
             >
               <option value="todos">Todas Urgências</option>
               <option value="alta">Urgente</option>
@@ -217,7 +217,7 @@ export default function LembretesPage() {
             </select>
           </div>
           <div className="flex gap-3">
-            <button className="flex items-center gap-2 px-6 py-3 bg-[#f8f9fb] border border-[#dde0e7] rounded-xl text-gray-500 hover:border-[#22c55e]/40 hover:text-gray-900 transition-all duration-200">
+            <button className="flex items-center gap-2 px-6 py-3 bg-[#ecedf2] border border-[#c5c8d1] rounded-xl text-gray-500 hover:border-[#22c55e]/40 hover:text-gray-900 transition-all duration-200">
               <Bell size={20} />
               Configurar Automação
             </button>
@@ -229,12 +229,12 @@ export default function LembretesPage() {
         </div>
 
         {/* Lista de Lembretes */}
-        <div className="bg-[#f8f9fb] border border-[#dde0e7] rounded-2xl overflow-hidden">
-          <div className="p-4 border-b border-[#dde0e7] flex items-center gap-3">
+        <div className="bg-[#ecedf2] border border-[#c5c8d1] rounded-2xl overflow-hidden">
+          <div className="p-4 border-b border-[#c5c8d1] flex items-center gap-3">
             <input type="checkbox" className="w-4 h-4 accent-[#22c55e]" />
             <span className="text-sm text-[#6B7280]">Selecionar todos</span>
           </div>
-          <div className="divide-y divide-[#dde0e7]">
+          <div className="divide-y divide-[#c5c8d1]">
             {lembretes.map((lembrete) => {
               const urgenciaConfig = getUrgenciaConfig(lembrete.urgencia);
               const statusConfig = getStatusConfig(lembrete.status);
@@ -243,7 +243,7 @@ export default function LembretesPage() {
               return (
                 <div
                   key={lembrete.id}
-                  className="p-4 hover:bg-[#eef0f5] transition-all duration-200"
+                  className="p-4 hover:bg-[#dfe2e9] transition-all duration-200"
                 >
                   <div className="flex items-center gap-4">
                     <input type="checkbox" className="w-4 h-4 accent-[#22c55e]" />
@@ -263,7 +263,7 @@ export default function LembretesPage() {
                       <div className="flex items-center gap-3 mb-1">
                         <Car size={16} className="text-[#6B7280]" />
                         <span className="text-gray-500 text-sm">{lembrete.veiculo}</span>
-                        <span className="px-2 py-0.5 bg-[#eef0f5] rounded text-xs text-[#22c55e] ring-1 ring-[#22c55e]/20">
+                        <span className="px-2 py-0.5 bg-[#dfe2e9] rounded text-xs text-[#22c55e] ring-1 ring-[#22c55e]/20">
                           {lembrete.placa}
                         </span>
                       </div>
@@ -288,7 +288,7 @@ export default function LembretesPage() {
                       </div>
                     </div>
 
-                    <div className="flex gap-2 bg-[#eef0f5] rounded-xl p-1.5">
+                    <div className="flex gap-2 bg-[#dfe2e9] rounded-xl p-1.5">
                       <button className="p-2.5 bg-[#25D366]/20 rounded-lg text-[#25D366] hover:bg-[#25D366]/30 transition-all duration-200" title="Enviar WhatsApp">
                         <MessageCircle size={18} />
                       </button>
@@ -307,9 +307,9 @@ export default function LembretesPage() {
         </div>
 
         {/* Mensagem Padrão */}
-        <div className="bg-[#f8f9fb] border border-[#dde0e7] rounded-2xl p-6">
+        <div className="bg-[#ecedf2] border border-[#c5c8d1] rounded-2xl p-6">
           <h3 className="text-lg font-semibold text-gray-900 mb-4">Mensagem de Lembrete Padrão</h3>
-          <div className="bg-[#eef0f5] rounded-xl p-4 border border-[#dde0e7]">
+          <div className="bg-[#dfe2e9] rounded-xl p-4 border border-[#c5c8d1]">
             <p className="text-gray-500 text-sm leading-relaxed">
               Olá <span className="text-[#22c55e]">[NOME_CLIENTE]</span>! 🚗
               <br /><br />

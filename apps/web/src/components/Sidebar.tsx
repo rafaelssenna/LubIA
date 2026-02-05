@@ -36,12 +36,12 @@ export default function Sidebar() {
 
   return (
     <aside
-      className={`fixed left-0 top-0 h-screen bg-[#f8f9fb] border-r border-[#dde0e7] flex flex-col transition-all duration-300 z-50 shadow-sm ${
+      className={`fixed left-0 top-0 h-screen bg-[#ecedf2] border-r border-[#c5c8d1] flex flex-col transition-all duration-300 z-50 shadow-sm ${
         collapsed ? 'w-20' : 'w-72'
       }`}
     >
       {/* Logo */}
-      <div className="p-4 border-b border-[#dde0e7]">
+      <div className="p-4 border-b border-[#c5c8d1]">
         <div className="flex items-center justify-center">
           <Image
             src="/logo.png"
@@ -73,7 +73,7 @@ export default function Sidebar() {
               className={`flex items-center gap-3 px-4 py-3.5 rounded-xl transition-all duration-300 group relative overflow-hidden ${
                 isActive
                   ? 'bg-gradient-to-r from-[#22c55e] to-[#166534] text-white shadow-lg shadow-[#22c55e]/25'
-                  : 'text-gray-500 hover:bg-[#eef0f5] hover:text-gray-900'
+                  : 'text-gray-500 hover:bg-[#dfe2e9] hover:text-gray-900'
               } ${collapsed ? 'justify-center px-3' : ''}`}
               title={collapsed ? item.label : undefined}
               style={{ animationDelay: `${index * 0.05}s` }}
@@ -99,10 +99,10 @@ export default function Sidebar() {
       </nav>
 
       {/* Footer */}
-      <div className="p-4 border-t border-[#dde0e7] space-y-1.5">
+      <div className="p-4 border-t border-[#c5c8d1] space-y-1.5">
         <Link
           href="/configuracoes"
-          className={`flex items-center gap-3 px-4 py-3 rounded-xl text-gray-500 hover:bg-[#eef0f5] hover:text-gray-900 transition-all duration-300 group ${
+          className={`flex items-center gap-3 px-4 py-3 rounded-xl text-gray-500 hover:bg-[#dfe2e9] hover:text-gray-900 transition-all duration-300 group ${
             collapsed ? 'justify-center px-3' : ''
           }`}
           title={collapsed ? 'Configurações' : undefined}
