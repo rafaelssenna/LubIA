@@ -18,8 +18,9 @@ export async function POST() {
 
     // Chamar UazAPI para desconectar
     const response = await fetch(`${UAZAPI_URL}/instance/disconnect`, {
-      method: 'GET',
+      method: 'POST',
       headers: {
+        'Content-Type': 'application/json',
         'token': config.uazapiToken,
       },
     });

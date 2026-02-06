@@ -60,12 +60,14 @@ export async function GET() {
       });
     }
 
-    // Chamar UazAPI para obter QR Code
+    // Chamar UazAPI para obter QR Code (POST sem phone = QR code)
     const response = await fetch(`${UAZAPI_URL}/instance/connect`, {
-      method: 'GET',
+      method: 'POST',
       headers: {
+        'Content-Type': 'application/json',
         'token': config.uazapiToken!,
       },
+      body: JSON.stringify({}),
     });
 
     if (!response.ok) {
