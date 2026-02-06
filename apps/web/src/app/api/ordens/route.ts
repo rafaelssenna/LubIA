@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { validateStock, executeStockOperations, StockOperation } from '@/lib/estoque';
 
 // GET - Buscar todas as ordens de serviço
 export async function GET(request: NextRequest) {
@@ -9,6 +10,8 @@ export async function GET(request: NextRequest) {
     const status = searchParams.get('status') || '';
     const dataInicio = searchParams.get('dataInicio');
     const dataFim = searchParams.get('dataFim');
+    const page = Math.max(1, parseInt(searchParams.get('page') || '1'));
+    const limit = Math.min(100, Math.max(1, parseInt(searchParams.get('limit') || '20')));
 
     const where: any = {};
 
@@ -31,6 +34,9 @@ export async function GET(request: NextRequest) {
       };
     }
 
+    // Contagem total com filtros (para paginação)
+    const total = await prisma.ordemServico.count({ where });
+
     const ordens = await prisma.ordemServico.findMany({
       where,
       include: {
@@ -51,22 +57,32 @@ export async function GET(request: NextRequest) {
         },
       },
       orderBy: { createdAt: 'desc' },
+      skip: (page - 1) * limit,
+      take: limit,
     });
 
-    // Get stats
-    const allOrdens = await prisma.ordemServico.findMany();
+    // Stats via count queries (mais eficiente que carregar todos os registros)
     const hoje = new Date();
     hoje.setHours(0, 0, 0, 0);
 
+    const [statsTotal, statsAbertas, statsConcluidas, statsHoje] = await Promise.all([
+      prisma.ordemServico.count(),
+      prisma.ordemServico.count({
+        where: { status: { in: ['AGENDADO', 'EM_ANDAMENTO', 'AGUARDANDO_PECAS'] } },
+      }),
+      prisma.ordemServico.count({
+        where: { status: { in: ['CONCLUIDO', 'ENTREGUE'] } },
+      }),
+      prisma.ordemServico.count({
+        where: { createdAt: { gte: hoje } },
+      }),
+    ]);
+
     const stats = {
-      total: allOrdens.length,
-      abertas: allOrdens.filter(o => ['AGENDADO', 'EM_ANDAMENTO', 'AGUARDANDO_PECAS'].includes(o.status)).length,
-      concluidas: allOrdens.filter(o => o.status === 'CONCLUIDO' || o.status === 'ENTREGUE').length,
-      hoje: allOrdens.filter(o => {
-        const dataOrdem = new Date(o.createdAt);
-        dataOrdem.setHours(0, 0, 0, 0);
-        return dataOrdem.getTime() === hoje.getTime();
-      }).length,
+      total: statsTotal,
+      abertas: statsAbertas,
+      concluidas: statsConcluidas,
+      hoje: statsHoje,
     };
 
     return NextResponse.json({
@@ -113,6 +129,12 @@ export async function GET(request: NextRequest) {
         })),
       })),
       stats,
+      pagination: {
+        page,
+        limit,
+        total,
+        totalPages: Math.ceil(total / limit),
+      },
     });
   } catch (error: any) {
     console.error('[ORDENS API GET] Erro:', error?.message);
@@ -141,7 +163,7 @@ export async function POST(request: NextRequest) {
 
     // Calculate total from services
     let totalServicos = 0;
-    const itensData = [];
+    const itensData: any[] = [];
     if (itens && itens.length > 0) {
       for (const item of itens) {
         const servico = await prisma.servico.findUnique({
@@ -166,7 +188,7 @@ export async function POST(request: NextRequest) {
 
     // Calculate total from products
     let totalProdutos = 0;
-    const itensProdutoData = [];
+    const itensProdutoData: any[] = [];
     if (itensProduto && itensProduto.length > 0) {
       for (const item of itensProduto) {
         const produto = await prisma.produto.findUnique({
@@ -191,38 +213,69 @@ export async function POST(request: NextRequest) {
 
     const total = totalServicos + totalProdutos;
 
-    // Create order with items
-    const ordem = await prisma.ordemServico.create({
-      data: {
-        veiculoId,
-        dataAgendada: dataAgendada ? new Date(dataAgendada) : null,
-        kmEntrada: kmEntrada || null,
-        observacoes: observacoes || null,
-        total,
-        itens: {
-          create: itensData,
-        },
-        itensProduto: {
-          create: itensProdutoData,
-        },
-      },
-      include: {
-        veiculo: {
-          include: {
-            cliente: true,
+    // Validar estoque antes de criar
+    if (itensProdutoData.length > 0) {
+      const stockOps: StockOperation[] = itensProdutoData.map(item => ({
+        produtoId: item.produtoId,
+        quantidade: item.quantidade,
+        tipo: 'SAIDA' as const,
+        motivo: 'Saída por O.S.',
+        documento: '',
+      }));
+
+      const stockError = await validateStock(prisma, stockOps);
+      if (stockError) {
+        return NextResponse.json({ error: stockError }, { status: 400 });
+      }
+    }
+
+    // Create order with items AND deduct stock in a transaction
+    const ordem = await prisma.$transaction(async (tx) => {
+      const novaOrdem = await tx.ordemServico.create({
+        data: {
+          veiculoId,
+          dataAgendada: dataAgendada ? new Date(dataAgendada) : null,
+          kmEntrada: kmEntrada || null,
+          observacoes: observacoes || null,
+          total,
+          itens: {
+            create: itensData,
+          },
+          itensProduto: {
+            create: itensProdutoData,
           },
         },
-        itens: {
-          include: {
-            servico: true,
+        include: {
+          veiculo: {
+            include: {
+              cliente: true,
+            },
+          },
+          itens: {
+            include: {
+              servico: true,
+            },
+          },
+          itensProduto: {
+            include: {
+              produto: true,
+            },
           },
         },
-        itensProduto: {
-          include: {
-            produto: true,
-          },
-        },
-      },
+      });
+
+      // Deduzir estoque
+      if (itensProdutoData.length > 0) {
+        await executeStockOperations(tx, itensProdutoData.map(item => ({
+          produtoId: item.produtoId,
+          quantidade: item.quantidade,
+          tipo: 'SAIDA' as const,
+          motivo: `Saída por O.S. ${novaOrdem.numero}`,
+          documento: novaOrdem.numero,
+        })));
+      }
+
+      return novaOrdem;
     });
 
     // Update vehicle km if provided

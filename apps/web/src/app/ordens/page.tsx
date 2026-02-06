@@ -120,17 +120,31 @@ function OrdensPageContent() {
   const [selectedProdutos, setSelectedProdutos] = useState<{ produtoId: number; quantidade: number; precoUnitario: number }[]>([]);
   const [searchVeiculo, setSearchVeiculo] = useState('');
   const [step, setStep] = useState(1);
+  const [dataAgendada, setDataAgendada] = useState('');
+  const [editingOrdem, setEditingOrdem] = useState<OrdemServico | null>(null);
+
+  // Pagination
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [totalItems, setTotalItems] = useState(0);
+  const itemsPerPage = 20;
 
   const fetchOrdens = async () => {
     try {
       const params = new URLSearchParams();
       if (searchTerm) params.append('busca', searchTerm);
       if (statusFilter) params.append('status', statusFilter);
+      params.append('page', currentPage.toString());
+      params.append('limit', itemsPerPage.toString());
 
       const res = await fetch(`/api/ordens?${params}`);
       const data = await res.json();
       setOrdens(data.data || []);
       setStats(data.stats || { total: 0, abertas: 0, concluidas: 0, hoje: 0 });
+      if (data.pagination) {
+        setTotalPages(data.pagination.totalPages);
+        setTotalItems(data.pagination.total);
+      }
     } catch (error) {
       console.error('Erro ao buscar ordens:', error);
     } finally {
@@ -170,6 +184,11 @@ function OrdensPageContent() {
 
   useEffect(() => {
     fetchOrdens();
+  }, [searchTerm, statusFilter, currentPage]);
+
+  // Reset para página 1 ao mudar filtros
+  useEffect(() => {
+    setCurrentPage(1);
   }, [searchTerm, statusFilter]);
 
   // Check for veiculoId in URL to auto-open modal
@@ -206,11 +225,45 @@ function OrdensPageContent() {
     fetchVeiculos();
     fetchServicos();
     fetchProdutos();
+    setEditingOrdem(null);
     setSelectedVeiculoId(null);
     setKmEntrada('');
     setObservacoes('');
+    setDataAgendada('');
     setSelectedServicos([]);
     setSelectedProdutos([]);
+    setSearchVeiculo('');
+    setStep(1);
+    setShowModal(true);
+  };
+
+  const openEditModal = (ordem: OrdemServico) => {
+    if (ordem.status !== 'AGENDADO' && ordem.status !== 'EM_ANDAMENTO') {
+      toast.warning('Apenas O.S. com status Agendado ou Em Andamento podem ser editadas');
+      return;
+    }
+
+    fetchVeiculos();
+    fetchServicos();
+    fetchProdutos();
+
+    setEditingOrdem(ordem);
+    setSelectedVeiculoId(ordem.veiculo.id);
+    setKmEntrada(ordem.kmEntrada?.toString() || '');
+    setObservacoes(ordem.observacoes || '');
+    setDataAgendada(ordem.dataAgendada
+      ? new Date(ordem.dataAgendada).toISOString().slice(0, 16)
+      : '');
+    setSelectedServicos(ordem.itens.map(i => ({
+      servicoId: i.servicoId,
+      quantidade: i.quantidade,
+      precoUnitario: i.precoUnitario,
+    })));
+    setSelectedProdutos(ordem.itensProduto.map(i => ({
+      produtoId: i.produtoId,
+      quantidade: i.quantidade,
+      precoUnitario: i.precoUnitario,
+    })));
     setSearchVeiculo('');
     setStep(1);
     setShowModal(true);
@@ -227,32 +280,43 @@ function OrdensPageContent() {
       return;
     }
 
+    const isEditing = !!editingOrdem;
     setSaving(true);
     try {
-      const res = await fetch('/api/ordens', {
-        method: 'POST',
+      const payload = {
+        veiculoId: selectedVeiculoId,
+        kmEntrada: kmEntrada ? parseInt(kmEntrada) : null,
+        observacoes: observacoes || null,
+        dataAgendada: dataAgendada || null,
+        itens: selectedServicos,
+        itensProduto: selectedProdutos,
+      };
+
+      const url = isEditing ? `/api/ordens/${editingOrdem.id}` : '/api/ordens';
+      const method = isEditing ? 'PUT' : 'POST';
+
+      const res = await fetch(url, {
+        method,
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          veiculoId: selectedVeiculoId,
-          kmEntrada: kmEntrada ? parseInt(kmEntrada) : null,
-          observacoes: observacoes || null,
-          itens: selectedServicos,
-          itensProduto: selectedProdutos,
-        }),
+        body: JSON.stringify(payload),
       });
 
       const data = await res.json();
 
       if (res.ok) {
-        toast.success(`O.S. ${data.data.numero} criada com sucesso!`);
+        toast.success(isEditing
+          ? 'O.S. atualizada com sucesso!'
+          : `O.S. ${data.data.numero} criada com sucesso!`
+        );
         setShowModal(false);
+        setEditingOrdem(null);
         fetchOrdens();
       } else {
-        toast.error(data.error || 'Erro ao criar O.S.');
+        toast.error(data.error || `Erro ao ${isEditing ? 'atualizar' : 'criar'} O.S.`);
       }
     } catch (error) {
-      console.error('Erro ao criar O.S.:', error);
-      toast.error('Erro ao criar O.S.');
+      console.error(`Erro ao ${isEditing ? 'atualizar' : 'criar'} O.S.:`, error);
+      toast.error(`Erro ao ${isEditing ? 'atualizar' : 'criar'} O.S.`);
     } finally {
       setSaving(false);
     }
@@ -611,6 +675,7 @@ function OrdensPageContent() {
 
         {/* Lista de O.S. */}
         {viewMode === 'lista' && (
+        <>
         <div className="space-y-3">
           {loading ? (
             <div className="bg-[#1E1E1E] border border-[#333333] rounded-2xl p-12 text-center">
@@ -627,8 +692,8 @@ function OrdensPageContent() {
             </div>
           ) : (
             ordens.map((ordem) => {
-              const status = statusConfig[ordem.status] || statusConfig.AGENDADO;
-              const StatusIcon = status.icon;
+              const statusCfg = statusConfig[ordem.status] || statusConfig.AGENDADO;
+              const StatusIcon = statusCfg.icon;
               return (
                 <div
                   key={ordem.id}
@@ -636,14 +701,14 @@ function OrdensPageContent() {
                 >
                   <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                     <div className="flex items-start gap-4">
-                      <div className={`p-3.5 ${status.bg} rounded-xl ring-1 ring-[#333333]`}>
-                        <StatusIcon size={24} className={status.color} />
+                      <div className={`p-3.5 ${statusCfg.bg} rounded-xl ring-1 ring-[#333333]`}>
+                        <StatusIcon size={24} className={statusCfg.color} />
                       </div>
                       <div className="space-y-1.5">
                         <div className="flex items-center gap-3">
                           <span className="text-lg font-bold text-[#E8E8E8] tracking-tight">#{ordem.numero.slice(-8).toUpperCase()}</span>
-                          <span className={`px-2.5 py-1 ${status.bg} rounded-lg text-xs font-semibold ${status.color} ring-1 ring-[#333333]`}>
-                            {status.label}
+                          <span className={`px-2.5 py-1 ${statusCfg.bg} rounded-lg text-xs font-semibold ${statusCfg.color} ring-1 ring-[#333333]`}>
+                            {statusCfg.label}
                           </span>
                         </div>
                         <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-[#9E9E9E]">
@@ -714,6 +779,15 @@ function OrdensPageContent() {
                         >
                           <Eye size={18} />
                         </button>
+                        {(ordem.status === 'AGENDADO' || ordem.status === 'EM_ANDAMENTO') && (
+                          <button
+                            onClick={() => openEditModal(ordem)}
+                            className="p-2 hover:bg-amber-500/10 rounded-md text-[#9E9E9E] hover:text-amber-400 transition-all duration-200"
+                            title="Editar"
+                          >
+                            <Edit size={18} />
+                          </button>
+                        )}
                         {ordem.status !== 'CONCLUIDO' && ordem.status !== 'ENTREGUE' && (
                           <button
                             onClick={() => {
@@ -734,6 +808,35 @@ function OrdensPageContent() {
             })
           )}
         </div>
+
+          {/* Paginação */}
+          {totalPages > 1 && (
+            <div className="flex items-center justify-between bg-[#1E1E1E] border border-[#333333] rounded-2xl px-6 py-4">
+              <p className="text-sm text-[#9E9E9E]">
+                Mostrando {((currentPage - 1) * itemsPerPage) + 1} - {Math.min(currentPage * itemsPerPage, totalItems)} de {totalItems} ordens
+              </p>
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                  disabled={currentPage === 1}
+                  className="p-2 bg-[#121212] border border-[#333333] rounded-lg text-[#9E9E9E] hover:text-[#E8E8E8] hover:border-green-500/30 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  <ChevronLeft size={18} />
+                </button>
+                <span className="px-4 py-2 text-[#E8E8E8] font-medium">
+                  {currentPage} / {totalPages}
+                </span>
+                <button
+                  onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                  disabled={currentPage === totalPages}
+                  className="p-2 bg-[#121212] border border-[#333333] rounded-lg text-[#9E9E9E] hover:text-[#E8E8E8] hover:border-green-500/30 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  <ChevronRight size={18} />
+                </button>
+              </div>
+            </div>
+          )}
+        </>
         )}
       </div>
 
@@ -743,10 +846,10 @@ function OrdensPageContent() {
           <div className="bg-[#1E1E1E] border border-[#333333] rounded-2xl w-full max-w-2xl max-h-[90vh] overflow-hidden animate-fade-in flex flex-col">
             <div className="p-6 border-b border-[#333333] flex items-center justify-between">
               <div>
-                <h2 className="text-xl font-semibold text-[#E8E8E8]">Nova Ordem de Servico</h2>
+                <h2 className="text-xl font-semibold text-[#E8E8E8]">{editingOrdem ? 'Editar Ordem de Servico' : 'Nova Ordem de Servico'}</h2>
                 <p className="text-sm text-[#9E9E9E] mt-1">Passo {step} de 3</p>
               </div>
-              <button onClick={() => setShowModal(false)} className="p-2 hover:bg-[#2A2A2A] rounded-lg text-[#9E9E9E] hover:text-[#E8E8E8] transition-colors">
+              <button onClick={() => { setShowModal(false); setEditingOrdem(null); }} className="p-2 hover:bg-[#2A2A2A] rounded-lg text-[#9E9E9E] hover:text-[#E8E8E8] transition-colors">
                 <X size={20} />
               </button>
             </div>
@@ -797,15 +900,26 @@ function OrdensPageContent() {
                     )}
                   </div>
                   {selectedVeiculoId && (
-                    <div className="pt-4 border-t border-[#333333]">
-                      <label className="block text-sm font-medium text-[#9E9E9E] mb-2">KM de Entrada</label>
-                      <input
-                        type="number"
-                        value={kmEntrada}
-                        onChange={(e) => setKmEntrada(e.target.value)}
-                        placeholder="Ex: 45000"
-                        className="w-full bg-[#121212] border border-[#333333] rounded-xl px-4 py-3 text-[#E8E8E8] placeholder-gray-400 focus:outline-none focus:border-[#43A047]"
-                      />
+                    <div className="pt-4 border-t border-[#333333] space-y-4">
+                      <div>
+                        <label className="block text-sm font-medium text-[#9E9E9E] mb-2">KM de Entrada</label>
+                        <input
+                          type="number"
+                          value={kmEntrada}
+                          onChange={(e) => setKmEntrada(e.target.value)}
+                          placeholder="Ex: 45000"
+                          className="w-full bg-[#121212] border border-[#333333] rounded-xl px-4 py-3 text-[#E8E8E8] placeholder-gray-400 focus:outline-none focus:border-[#43A047]"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-[#9E9E9E] mb-2">Data e Hora do Agendamento</label>
+                        <input
+                          type="datetime-local"
+                          value={dataAgendada}
+                          onChange={(e) => setDataAgendada(e.target.value)}
+                          className="w-full bg-[#121212] border border-[#333333] rounded-xl px-4 py-3 text-[#E8E8E8] placeholder-gray-400 focus:outline-none focus:border-[#43A047] [color-scheme:dark]"
+                        />
+                      </div>
                     </div>
                   )}
                 </div>
@@ -930,6 +1044,7 @@ function OrdensPageContent() {
                           <p className="text-[#E8E8E8] font-bold">{veiculo.placa} - {veiculo.marca} {veiculo.modelo}</p>
                           <p className="text-sm text-[#9E9E9E]">{veiculo.cliente.nome}</p>
                           {kmEntrada && <p className="text-sm text-[#9E9E9E]">KM: {kmEntrada}</p>}
+                          {dataAgendada && <p className="text-sm text-[#9E9E9E]">Agendamento: {new Date(dataAgendada).toLocaleString('pt-BR')}</p>}
                         </div>
                       ) : null;
                     })()}
@@ -988,7 +1103,7 @@ function OrdensPageContent() {
 
             <div className="p-6 border-t border-[#333333] flex gap-3 justify-between">
               <button
-                onClick={() => step > 1 ? setStep(step - 1) : setShowModal(false)}
+                onClick={() => step > 1 ? setStep(step - 1) : (setShowModal(false), setEditingOrdem(null))}
                 className="px-6 py-3 border border-[#333333] rounded-xl text-[#9E9E9E] hover:bg-[#121212] transition-colors"
               >
                 {step > 1 ? 'Voltar' : 'Cancelar'}
@@ -1012,7 +1127,10 @@ function OrdensPageContent() {
                   disabled={saving}
                   className="px-6 py-3 bg-gradient-to-r from-[#43A047] to-[#1B5E20] rounded-xl text-white font-medium hover:opacity-90 transition-opacity disabled:opacity-50"
                 >
-                  {saving ? 'Criando...' : 'Criar O.S.'}
+                  {saving
+                    ? (editingOrdem ? 'Salvando...' : 'Criando...')
+                    : (editingOrdem ? 'Salvar Alterações' : 'Criar O.S.')
+                  }
                 </button>
               )}
             </div>
@@ -1064,11 +1182,17 @@ function OrdensPageContent() {
               </div>
 
               {/* Dates */}
-              <div className="grid grid-cols-3 gap-4">
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                 <div className="p-4 bg-[#121212] rounded-xl">
                   <p className="text-xs text-[#9E9E9E] mb-1">Criada em</p>
                   <p className="text-[#E8E8E8]">{formatDateTime(selectedOrdem.createdAt)}</p>
                 </div>
+                {selectedOrdem.dataAgendada && (
+                  <div className="p-4 bg-[#121212] rounded-xl">
+                    <p className="text-xs text-[#9E9E9E] mb-1">Agendada para</p>
+                    <p className="text-[#E8E8E8]">{formatDateTime(selectedOrdem.dataAgendada)}</p>
+                  </div>
+                )}
                 {selectedOrdem.dataInicio && (
                   <div className="p-4 bg-[#121212] rounded-xl">
                     <p className="text-xs text-[#9E9E9E] mb-1">Iniciada em</p>
@@ -1136,6 +1260,18 @@ function OrdensPageContent() {
               </div>
             </div>
             <div className="p-6 border-t border-[#333333] flex gap-3 justify-end">
+              {(selectedOrdem.status === 'AGENDADO' || selectedOrdem.status === 'EM_ANDAMENTO') && (
+                <button
+                  onClick={() => {
+                    setShowDetailModal(false);
+                    openEditModal(selectedOrdem);
+                  }}
+                  className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-amber-500 to-amber-700 rounded-xl text-white font-medium hover:opacity-90 transition-opacity"
+                >
+                  <Edit size={18} />
+                  Editar
+                </button>
+              )}
               <button
                 onClick={() => downloadOrdemPDF(selectedOrdem)}
                 className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-[#43A047] to-[#1B5E20] rounded-xl text-white font-medium hover:opacity-90 transition-opacity"
