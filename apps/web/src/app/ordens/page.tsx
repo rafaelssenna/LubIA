@@ -221,7 +221,7 @@ function OrdensPageContent() {
     }
   }, [searchParams]);
 
-  const openNewModal = () => {
+  const openNewModal = (presetDate?: string) => {
     fetchVeiculos();
     fetchServicos();
     fetchProdutos();
@@ -229,12 +229,20 @@ function OrdensPageContent() {
     setSelectedVeiculoId(null);
     setKmEntrada('');
     setObservacoes('');
-    setDataAgendada('');
+    setDataAgendada(presetDate || '');
     setSelectedServicos([]);
     setSelectedProdutos([]);
     setSearchVeiculo('');
     setStep(1);
     setShowModal(true);
+  };
+
+  const openNewModalFromCalendar = (date: Date, hora: string) => {
+    const [hours, minutes] = hora.split(':');
+    const scheduledDate = new Date(date);
+    scheduledDate.setHours(parseInt(hours), parseInt(minutes), 0, 0);
+    const formattedDate = scheduledDate.toISOString().slice(0, 16);
+    openNewModal(formattedDate);
   };
 
   const openEditModal = (ordem: OrdemServico) => {
@@ -601,7 +609,7 @@ function OrdensPageContent() {
             )}
           </div>
           <button
-            onClick={openNewModal}
+            onClick={() => openNewModal()}
             className="flex items-center gap-2 px-6 py-3.5 bg-gradient-to-r from-[#43A047] to-[#16a34a] rounded-xl text-white font-semibold shadow-lg shadow-green-500/10 hover:shadow-xl hover:shadow-green-500/10 hover:scale-[1.02] active:scale-[0.98] transition-all duration-200"
           >
             <Plus size={18} strokeWidth={2.5} />
@@ -645,8 +653,18 @@ function OrdensPageContent() {
                     return (
                       <div
                         key={idx}
-                        className={`p-1 border-l border-[#333333]/50 relative ${isTodayDate ? 'bg-green-500/10/50' : ''} hover:bg-[#121212] transition-all duration-200`}
+                        onClick={() => {
+                          if (diaOrdens.length === 0) {
+                            openNewModalFromCalendar(date, hora);
+                          }
+                        }}
+                        className={`p-1 border-l border-[#333333]/50 relative ${isTodayDate ? 'bg-green-500/10/50' : ''} hover:bg-[#121212] transition-all duration-200 ${diaOrdens.length === 0 ? 'cursor-pointer group' : ''}`}
                       >
+                        {diaOrdens.length === 0 && (
+                          <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                            <Plus size={20} className="text-[#43A047]" />
+                          </div>
+                        )}
                         {diaOrdens.map((ordem) => {
                           const status = statusConfig[ordem.status] || statusConfig.AGENDADO;
                           return (
