@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 
+const UAZAPI_URL = process.env.UAZAPI_URL || 'https://hia-clientes.uazapi.com';
+
 // POST - Desconectar WhatsApp
 export async function POST() {
   try {
@@ -8,14 +10,14 @@ export async function POST() {
       where: { id: 1 },
     });
 
-    if (!config?.uazapiToken || !config?.uazapiUrl) {
+    if (!config?.uazapiToken) {
       return NextResponse.json({
-        error: 'WhatsApp não configurado',
+        error: 'WhatsApp nao configurado',
       }, { status: 400 });
     }
 
     // Chamar UazAPI para desconectar
-    const response = await fetch(`${config.uazapiUrl}/instance/disconnect`, {
+    const response = await fetch(`${UAZAPI_URL}/instance/disconnect`, {
       method: 'GET',
       headers: {
         'token': config.uazapiToken,

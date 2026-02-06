@@ -244,8 +244,8 @@ model Configuracao {
   cnpj                String?
   telefone            String?
   endereco            String?
-  // WhatsApp/UazAPI
-  uazapiUrl           String?  @default("https://free.uazapi.com")
+  // WhatsApp/UazAPI (token e instanceId criados automaticamente)
+  uazapiInstanceId    String?
   uazapiToken         String?
   whatsappConnected   Boolean  @default(false)
   whatsappNumber      String?

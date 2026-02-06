@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 
+const UAZAPI_URL = process.env.UAZAPI_URL || 'https://hia-clientes.uazapi.com';
+
 // POST - Enviar mensagem WhatsApp
 export async function POST(request: NextRequest) {
   try {
@@ -8,15 +10,15 @@ export async function POST(request: NextRequest) {
       where: { id: 1 },
     });
 
-    if (!config?.uazapiToken || !config?.uazapiUrl) {
+    if (!config?.uazapiToken) {
       return NextResponse.json({
-        error: 'WhatsApp não configurado',
+        error: 'WhatsApp nao configurado',
       }, { status: 400 });
     }
 
     if (!config.whatsappConnected) {
       return NextResponse.json({
-        error: 'WhatsApp não está conectado',
+        error: 'WhatsApp nao esta conectado',
       }, { status: 400 });
     }
 
@@ -25,7 +27,7 @@ export async function POST(request: NextRequest) {
 
     if (!number) {
       return NextResponse.json({
-        error: 'Número de telefone é obrigatório',
+        error: 'Numero de telefone e obrigatorio',
       }, { status: 400 });
     }
 
@@ -55,7 +57,7 @@ export async function POST(request: NextRequest) {
       payload.linkPreview = true;
     }
 
-    const response = await fetch(`${config.uazapiUrl}${endpoint}`, {
+    const response = await fetch(`${UAZAPI_URL}${endpoint}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

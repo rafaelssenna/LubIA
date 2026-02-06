@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 
+const UAZAPI_URL = process.env.UAZAPI_URL || 'https://hia-clientes.uazapi.com';
+
 // GET - Verificar status da conexão WhatsApp
 export async function GET() {
   try {
@@ -8,7 +10,7 @@ export async function GET() {
       where: { id: 1 },
     });
 
-    if (!config?.uazapiToken || !config?.uazapiUrl) {
+    if (!config?.uazapiToken) {
       return NextResponse.json({
         connected: false,
         configured: false,
@@ -17,7 +19,7 @@ export async function GET() {
     }
 
     // Chamar UazAPI para verificar status
-    const response = await fetch(`${config.uazapiUrl}/instance/status`, {
+    const response = await fetch(`${UAZAPI_URL}/instance/status`, {
       method: 'GET',
       headers: {
         'token': config.uazapiToken,
@@ -25,6 +27,16 @@ export async function GET() {
     });
 
     if (!response.ok) {
+      // Se token inválido, limpar
+      if (response.status === 401) {
+        await prisma.configuracao.update({
+          where: { id: 1 },
+          data: {
+            whatsappConnected: false,
+          },
+        });
+      }
+
       return NextResponse.json({
         connected: false,
         configured: true,

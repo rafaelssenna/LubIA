@@ -21,9 +21,7 @@ export async function GET() {
         cnpj: config.cnpj,
         telefone: config.telefone,
         endereco: config.endereco,
-        uazapiUrl: config.uazapiUrl,
-        uazapiToken: config.uazapiToken ? '********' : null, // Não expor token completo
-        uazapiConfigured: !!config.uazapiToken,
+        whatsappConfigured: !!config.uazapiToken,
         whatsappConnected: config.whatsappConnected,
         whatsappNumber: config.whatsappNumber,
         whatsappName: config.whatsappName,
@@ -33,7 +31,7 @@ export async function GET() {
   } catch (error: any) {
     console.error('[CONFIG GET] Erro:', error?.message);
     return NextResponse.json({
-      error: 'Erro ao buscar configuração',
+      error: 'Erro ao buscar configuracao',
     }, { status: 500 });
   }
 }
@@ -62,10 +60,6 @@ export async function PUT(request: NextRequest) {
     if (body.telefone !== undefined) updateData.telefone = body.telefone;
     if (body.endereco !== undefined) updateData.endereco = body.endereco;
 
-    // Campos UazAPI
-    if (body.uazapiUrl !== undefined) updateData.uazapiUrl = body.uazapiUrl;
-    if (body.uazapiToken !== undefined) updateData.uazapiToken = body.uazapiToken;
-
     // Configurações gerais
     if (body.lembreteAntecedencia !== undefined) {
       updateData.lembreteAntecedencia = parseInt(body.lembreteAntecedencia);
@@ -80,14 +74,13 @@ export async function PUT(request: NextRequest) {
       success: true,
       data: {
         nomeOficina: config.nomeOficina,
-        uazapiConfigured: !!config.uazapiToken,
         whatsappConnected: config.whatsappConnected,
       },
     });
   } catch (error: any) {
     console.error('[CONFIG PUT] Erro:', error?.message);
     return NextResponse.json({
-      error: 'Erro ao atualizar configuração',
+      error: 'Erro ao atualizar configuracao',
     }, { status: 500 });
   }
 }

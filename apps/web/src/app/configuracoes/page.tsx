@@ -14,7 +14,6 @@ import {
   Loader2,
   Unplug,
   Smartphone,
-  HelpCircle,
 } from 'lucide-react';
 import { useState, useEffect } from 'react';
 
@@ -23,13 +22,10 @@ interface Config {
   cnpj: string | null;
   telefone: string | null;
   endereco: string | null;
-  uazapiUrl: string | null;
-  uazapiToken: string | null;
-  uazapiConfigured: boolean;
+  whatsappConfigured: boolean;
   whatsappConnected: boolean;
   whatsappNumber: string | null;
   whatsappName: string | null;
-  lembreteAntecedencia: number;
 }
 
 interface WhatsAppStatus {
@@ -60,8 +56,6 @@ export default function ConfiguracoesPage() {
   const [cnpj, setCnpj] = useState('');
   const [telefone, setTelefone] = useState('');
   const [endereco, setEndereco] = useState('');
-  const [uazapiUrl, setUazapiUrl] = useState('https://free.uazapi.com');
-  const [uazapiToken, setUazapiToken] = useState('');
 
   const fetchConfig = async () => {
     try {
@@ -73,7 +67,6 @@ export default function ConfiguracoesPage() {
         setCnpj(data.data.cnpj || '');
         setTelefone(data.data.telefone || '');
         setEndereco(data.data.endereco || '');
-        setUazapiUrl(data.data.uazapiUrl || 'https://free.uazapi.com');
       }
     } catch (error) {
       console.error('Erro ao buscar config:', error);
@@ -125,17 +118,12 @@ export default function ConfiguracoesPage() {
           cnpj,
           telefone,
           endereco,
-          uazapiUrl,
-          uazapiToken: uazapiToken || undefined,
         }),
       });
 
       if (res.ok) {
         toast.success('Configuracoes salvas com sucesso!');
         fetchConfig();
-        if (uazapiToken) {
-          checkWhatsAppStatus();
-        }
       } else {
         toast.error('Erro ao salvar configuracoes');
       }
@@ -147,11 +135,6 @@ export default function ConfiguracoesPage() {
   };
 
   const handleConnect = async () => {
-    if (!config?.uazapiConfigured) {
-      toast.warning('Configure o token da UazAPI primeiro');
-      return;
-    }
-
     setConnecting(true);
     try {
       const res = await fetch('/api/whatsapp/connect');
@@ -183,7 +166,7 @@ export default function ConfiguracoesPage() {
 
       if (data.success) {
         toast.success('WhatsApp desconectado');
-        setWhatsappStatus({ connected: false, configured: true });
+        setWhatsappStatus({ connected: false, configured: false });
         setQrCode(null);
         setPairCode(null);
       }
@@ -289,30 +272,6 @@ export default function ConfiguracoesPage() {
           </div>
 
           <div className="p-6 space-y-6">
-            {/* Config UazAPI */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-medium text-[#9E9E9E] mb-2">URL da UazAPI</label>
-                <input
-                  type="text"
-                  value={uazapiUrl}
-                  onChange={(e) => setUazapiUrl(e.target.value)}
-                  placeholder="https://free.uazapi.com"
-                  className="w-full bg-[#121212] border border-[#333333] rounded-xl px-4 py-3 text-[#E8E8E8] placeholder-gray-500 focus:outline-none focus:border-[#43A047]"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-[#9E9E9E] mb-2">Token da Instancia</label>
-                <input
-                  type="password"
-                  value={uazapiToken}
-                  onChange={(e) => setUazapiToken(e.target.value)}
-                  placeholder={config?.uazapiConfigured ? '********' : 'Cole o token aqui'}
-                  className="w-full bg-[#121212] border border-[#333333] rounded-xl px-4 py-3 text-[#E8E8E8] placeholder-gray-500 focus:outline-none focus:border-[#43A047]"
-                />
-              </div>
-            </div>
-
             {/* Status e Conexao */}
             {whatsappStatus?.connected ? (
               <div className="bg-green-500/5 border border-[#43A047]/30 rounded-xl p-4">
@@ -361,38 +320,35 @@ export default function ConfiguracoesPage() {
                 </button>
               </div>
             ) : (
-              <div className="flex items-center gap-4">
-                <button
-                  onClick={handleConnect}
-                  disabled={connecting || !config?.uazapiConfigured}
-                  className="flex items-center gap-2 px-6 py-3 bg-[#25D366] rounded-xl text-white font-medium hover:bg-[#25D366]/90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-                >
-                  {connecting ? (
-                    <Loader2 className="animate-spin" size={20} />
-                  ) : (
-                    <QrCode size={20} />
-                  )}
-                  {connecting ? 'Gerando QR Code...' : 'Conectar WhatsApp'}
-                </button>
-                <button
-                  onClick={checkWhatsAppStatus}
-                  disabled={checkingStatus}
-                  className="p-3 bg-[#121212] border border-[#333333] rounded-xl text-[#9E9E9E] hover:text-[#E8E8E8] hover:border-[#43A047]/40 transition-colors"
-                  title="Verificar status"
-                >
-                  <RefreshCw size={20} className={checkingStatus ? 'animate-spin' : ''} />
-                </button>
-              </div>
-            )}
-
-            {!config?.uazapiConfigured && (
-              <div className="flex items-start gap-3 p-4 bg-amber-500/5 border border-amber-500/30 rounded-xl">
-                <HelpCircle size={20} className="text-amber-400 mt-0.5" />
-                <div>
-                  <p className="text-sm text-amber-400 font-medium">Configure a UazAPI primeiro</p>
-                  <p className="text-sm text-[#9E9E9E]">
-                    Acesse <a href="https://uazapi.com" target="_blank" className="text-[#25D366] hover:underline">uazapi.com</a> para criar uma instancia e obter o token.
-                  </p>
+              <div className="text-center py-8">
+                <div className="w-16 h-16 mx-auto mb-4 bg-[#25D366]/10 rounded-full flex items-center justify-center">
+                  <MessageCircle size={32} className="text-[#25D366]" />
+                </div>
+                <p className="text-[#E8E8E8] font-medium mb-2">Conecte seu WhatsApp</p>
+                <p className="text-sm text-[#6B7280] mb-6 max-w-md mx-auto">
+                  Ao conectar, voce podera enviar mensagens automaticas de lembretes e acompanhamento para seus clientes.
+                </p>
+                <div className="flex items-center justify-center gap-4">
+                  <button
+                    onClick={handleConnect}
+                    disabled={connecting}
+                    className="flex items-center gap-2 px-6 py-3 bg-[#25D366] rounded-xl text-white font-medium hover:bg-[#25D366]/90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                  >
+                    {connecting ? (
+                      <Loader2 className="animate-spin" size={20} />
+                    ) : (
+                      <QrCode size={20} />
+                    )}
+                    {connecting ? 'Gerando QR Code...' : 'Conectar WhatsApp'}
+                  </button>
+                  <button
+                    onClick={checkWhatsAppStatus}
+                    disabled={checkingStatus}
+                    className="p-3 bg-[#121212] border border-[#333333] rounded-xl text-[#9E9E9E] hover:text-[#E8E8E8] hover:border-[#43A047]/40 transition-colors"
+                    title="Verificar status"
+                  >
+                    <RefreshCw size={20} className={checkingStatus ? 'animate-spin' : ''} />
+                  </button>
                 </div>
               </div>
             )}
