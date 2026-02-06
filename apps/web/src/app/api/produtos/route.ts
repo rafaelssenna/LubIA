@@ -83,13 +83,17 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     console.log('[PRODUTOS API] Body recebido:', JSON.stringify(body, null, 2));
 
+    // Convert categoria and unidade to uppercase (enum format)
+    const categoria = body.categoria?.toUpperCase?.() || body.categoria;
+    const unidade = (body.unidade?.toUpperCase?.() || body.unidade) || 'UNIDADE';
+
     const produto = await prisma.produto.create({
       data: {
         codigo: body.codigo,
         nome: body.nome,
         marca: body.marca,
-        categoria: body.categoria,
-        unidade: body.unidade || 'UNIDADE',
+        categoria: categoria,
+        unidade: unidade,
         quantidade: body.quantidade || 0,
         estoqueMinimo: body.estoqueMinimo || 0,
         precoCompra: body.precoCompra || 0,

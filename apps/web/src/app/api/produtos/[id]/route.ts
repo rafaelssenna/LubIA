@@ -44,14 +44,18 @@ export async function PUT(
 
     const body = await request.json();
 
+    // Convert categoria and unidade to uppercase (enum format)
+    const categoria = body.categoria?.toUpperCase?.() || body.categoria;
+    const unidade = body.unidade?.toUpperCase?.() || body.unidade;
+
     const produto = await prisma.produto.update({
       where: { id: produtoId },
       data: {
         codigo: body.codigo,
         nome: body.nome,
         marca: body.marca,
-        categoria: body.categoria,
-        unidade: body.unidade,
+        categoria: categoria,
+        unidade: unidade,
         quantidade: body.quantidade,
         estoqueMinimo: body.estoqueMinimo,
         precoCompra: body.precoCompra,
