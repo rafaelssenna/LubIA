@@ -240,16 +240,47 @@ export default function LembretesPage() {
     }
   };
 
-  const openWhatsApp = (lembrete: Lembrete) => {
+  const sendWhatsApp = async (lembrete: Lembrete) => {
     const telefone = lembrete.veiculo.cliente.telefone.replace(/\D/g, '');
-    const msg = encodeURIComponent(
+    const mensagem =
       `Ola ${lembrete.veiculo.cliente.nome}! ` +
       `Estamos entrando em contato para lembrar da ${tipoLabels[lembrete.tipo] || lembrete.tipo} ` +
       `do seu ${lembrete.veiculo.marca} ${lembrete.veiculo.modelo} (${lembrete.veiculo.placa}). ` +
-      `Podemos agendar para voce?`
-    );
+      `Podemos agendar para voce?`;
+
+    try {
+      // Tentar enviar via API
+      const res = await fetch('/api/whatsapp/send', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          number: telefone,
+          text: mensagem,
+        }),
+      });
+
+      const data = await res.json();
+
+      if (res.ok && data.success) {
+        toast.success('Mensagem enviada via WhatsApp!');
+        handleMarkAsSent(lembrete);
+      } else if (data.error?.includes('nao configurado') || data.error?.includes('nao esta conectado')) {
+        // Fallback para wa.me se API nao configurada
+        openWhatsAppLink(telefone, mensagem);
+        handleMarkAsSent(lembrete);
+      } else {
+        toast.error(data.error || 'Erro ao enviar mensagem');
+      }
+    } catch (error) {
+      // Fallback para wa.me em caso de erro
+      openWhatsAppLink(telefone, mensagem);
+      handleMarkAsSent(lembrete);
+    }
+  };
+
+  const openWhatsAppLink = (telefone: string, mensagem: string) => {
+    const msg = encodeURIComponent(mensagem);
     window.open(`https://wa.me/55${telefone}?text=${msg}`, '_blank');
-    handleMarkAsSent(lembrete);
   };
 
   const formatDate = (date: string) => {
@@ -441,7 +472,7 @@ export default function LembretesPage() {
 
                       <div className="flex gap-2 bg-[#121212] rounded-xl p-1.5">
                         <button
-                          onClick={() => openWhatsApp(lembrete)}
+                          onClick={() => sendWhatsApp(lembrete)}
                           className="p-2.5 bg-[#25D366]/20 rounded-lg text-[#25D366] hover:bg-[#25D366]/30 transition-all duration-200"
                           title="Enviar WhatsApp"
                         >

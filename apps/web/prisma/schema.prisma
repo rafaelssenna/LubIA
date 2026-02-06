@@ -235,3 +235,24 @@ model ItemOrdemProduto {
 
   @@map("itens_ordem_produto")
 }
+
+// Configurações do sistema (singleton)
+model Configuracao {
+  id                  Int      @id @default(1)
+  // Dados da oficina
+  nomeOficina         String?
+  cnpj                String?
+  telefone            String?
+  endereco            String?
+  // WhatsApp/UazAPI
+  uazapiUrl           String?  @default("https://free.uazapi.com")
+  uazapiToken         String?
+  whatsappConnected   Boolean  @default(false)
+  whatsappNumber      String?
+  whatsappName        String?
+  // Configurações gerais
+  lembreteAntecedencia Int     @default(7) // dias antes para lembrar
+  updatedAt           DateTime @updatedAt
+
+  @@map("configuracoes")
+}
