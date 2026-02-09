@@ -21,6 +21,7 @@ model Cliente {
   updatedAt DateTime  @updatedAt
 
   veiculos  Veiculo[]
+  conversas Conversa[]
 
   @@map("clientes")
 }
@@ -234,6 +235,55 @@ model ItemOrdemProduto {
   produto       Produto      @relation(fields: [produtoId], references: [id])
 
   @@map("itens_ordem_produto")
+}
+
+// Conversa do WhatsApp
+model Conversa {
+  id            Int        @id @default(autoincrement())
+  telefone      String     @unique // Número do contato (formato: 5511999999999)
+  nome          String?    // Nome do contato
+  clienteId     Int?       // Vínculo opcional com cliente
+  ultimaMensagem String?   // Preview da última mensagem
+  ultimaData    DateTime   @default(now())
+  naoLidas      Int        @default(0)
+  arquivada     Boolean    @default(false)
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
+
+  cliente       Cliente?   @relation(fields: [clienteId], references: [id], onDelete: SetNull)
+  mensagens     Mensagem[]
+
+  @@map("conversas")
+}
+
+// Mensagem do WhatsApp
+model Mensagem {
+  id            Int        @id @default(autoincrement())
+  conversaId    Int
+  messageId     String?    @unique // ID da mensagem no WhatsApp
+  tipo          TipoMensagem @default(TEXTO)
+  conteudo      String     // Texto ou URL do arquivo
+  enviada       Boolean    // true = enviada pela oficina, false = recebida
+  lida          Boolean    @default(false)
+  dataEnvio     DateTime   @default(now())
+  metadata      String?    // JSON com dados extras (caption, mimetype, etc)
+  createdAt     DateTime   @default(now())
+
+  conversa      Conversa   @relation(fields: [conversaId], references: [id], onDelete: Cascade)
+
+  @@index([conversaId, dataEnvio])
+  @@map("mensagens")
+}
+
+// Tipo de mensagem
+enum TipoMensagem {
+  TEXTO
+  IMAGEM
+  AUDIO
+  VIDEO
+  DOCUMENTO
+  STICKER
+  LOCALIZACAO
 }
 
 // Configurações do sistema (singleton)

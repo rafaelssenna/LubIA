@@ -4,8 +4,109 @@ import { generateChatResponse } from '@/lib/chatbot';
 
 const UAZAPI_URL = process.env.UAZAPI_URL || 'https://hia-clientes.uazapi.com';
 
+// Tipo de mensagem baseado no enum do Prisma
+type TipoMensagem = 'TEXTO' | 'IMAGEM' | 'AUDIO' | 'VIDEO' | 'DOCUMENTO' | 'STICKER' | 'LOCALIZACAO';
+
+// Função para determinar o tipo de mensagem
+function getTipoMensagem(message: any): TipoMensagem {
+  if (message.type === 'image' || message.mimetype?.startsWith('image')) return 'IMAGEM';
+  if (message.type === 'audio' || message.type === 'ptt' || message.mimetype?.startsWith('audio')) return 'AUDIO';
+  if (message.type === 'video' || message.mimetype?.startsWith('video')) return 'VIDEO';
+  if (message.type === 'document' || message.type === 'file') return 'DOCUMENTO';
+  if (message.type === 'sticker') return 'STICKER';
+  if (message.type === 'location') return 'LOCALIZACAO';
+  return 'TEXTO';
+}
+
+// Função para salvar mensagem no banco
+async function saveMessage(
+  telefone: string,
+  nome: string | null,
+  conteudo: string,
+  enviada: boolean,
+  tipo: TipoMensagem = 'TEXTO',
+  messageId?: string,
+  metadata?: any
+): Promise<void> {
+  try {
+    // Buscar ou criar conversa
+    let conversa = await prisma.conversa.findUnique({
+      where: { telefone },
+    });
+
+    // Tentar vincular a cliente existente
+    let clienteId: number | null = null;
+    if (!conversa) {
+      // Buscar cliente pelo telefone (com diferentes formatos)
+      const telefoneLimpo = telefone.replace(/\D/g, '');
+      const telefoneFormatos = [
+        telefoneLimpo,
+        telefoneLimpo.slice(-11), // Últimos 11 dígitos
+        telefoneLimpo.slice(-10), // Últimos 10 dígitos
+        telefoneLimpo.startsWith('55') ? telefoneLimpo.slice(2) : telefoneLimpo,
+      ];
+
+      const cliente = await prisma.cliente.findFirst({
+        where: {
+          OR: telefoneFormatos.map(t => ({
+            telefone: { contains: t },
+          })),
+        },
+      });
+
+      if (cliente) {
+        clienteId = cliente.id;
+        nome = nome || cliente.nome;
+      }
+    }
+
+    if (conversa) {
+      // Atualizar conversa existente
+      await prisma.conversa.update({
+        where: { id: conversa.id },
+        data: {
+          nome: nome || conversa.nome,
+          ultimaMensagem: conteudo.substring(0, 200),
+          ultimaData: new Date(),
+          naoLidas: enviada ? 0 : { increment: 1 },
+        },
+      });
+    } else {
+      // Criar nova conversa
+      conversa = await prisma.conversa.create({
+        data: {
+          telefone,
+          nome: nome || null,
+          clienteId,
+          ultimaMensagem: conteudo.substring(0, 200),
+          ultimaData: new Date(),
+          naoLidas: enviada ? 0 : 1,
+        },
+      });
+    }
+
+    // Salvar mensagem
+    await prisma.mensagem.create({
+      data: {
+        conversaId: conversa.id,
+        messageId: messageId || null,
+        tipo,
+        conteudo,
+        enviada,
+        lida: enviada,
+        dataEnvio: new Date(),
+        metadata: metadata ? JSON.stringify(metadata) : null,
+      },
+    });
+
+    console.log('[WEBHOOK] Mensagem salva:', { telefone, enviada, tipo });
+  } catch (error: any) {
+    console.error('[WEBHOOK] Erro ao salvar mensagem:', error?.message);
+  }
+}
+
 // Função para enviar mensagem via UazAPI
-async function sendWhatsAppMessage(token: string, to: string, text: string) {
+async function sendWhatsAppMessage(token: string, to: string, text: string): Promise<string | null> {
   try {
     const response = await fetch(`${UAZAPI_URL}/send/text`, {
       method: 'POST',
@@ -22,14 +123,15 @@ async function sendWhatsAppMessage(token: string, to: string, text: string) {
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));
       console.error('[WEBHOOK] Erro ao enviar mensagem:', errorData);
-      return false;
+      return null;
     }
 
+    const data = await response.json();
     console.log('[WEBHOOK] Mensagem enviada para:', to);
-    return true;
+    return data.key?.id || data.id || null;
   } catch (error: any) {
     console.error('[WEBHOOK] Erro ao enviar mensagem:', error?.message);
-    return false;
+    return null;
   }
 }
 
@@ -88,6 +190,21 @@ export async function POST(request: NextRequest) {
         text: text.substring(0, 100),
       });
 
+      // Determinar tipo da mensagem
+      const tipoMensagem = getTipoMensagem(message);
+      const messageId = message.id || message.key?.id;
+
+      // Salvar mensagem recebida no banco
+      await saveMessage(
+        from,
+        pushName,
+        text,
+        false, // recebida
+        tipoMensagem,
+        messageId,
+        { type: message.type, mimetype: message.mimetype }
+      );
+
       // Buscar token da instância
       const config = await prisma.configuracao.findUnique({
         where: { id: 1 },
@@ -108,7 +225,19 @@ export async function POST(request: NextRequest) {
       }
 
       // Enviar resposta
-      await sendWhatsAppMessage(config.uazapiToken, from, aiResponse);
+      const sentMessageId = await sendWhatsAppMessage(config.uazapiToken, from, aiResponse);
+
+      // Salvar resposta enviada no banco
+      if (sentMessageId !== null) {
+        await saveMessage(
+          from,
+          null,
+          aiResponse,
+          true, // enviada
+          'TEXTO',
+          sentMessageId
+        );
+      }
 
       return NextResponse.json({ success: true, responded: true });
 
