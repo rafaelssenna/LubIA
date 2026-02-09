@@ -1,11 +1,26 @@
 import { GoogleGenerativeAI } from '@google/generative-ai';
+import { prisma } from './prisma';
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || '');
 
-const SYSTEM_PROMPT = `Você é a LubIA, assistente virtual de uma oficina de troca de óleo e serviços automotivos.
+// Histórico de conversas por número (cache simples em memória)
+const conversationHistory: Map<string, { role: string; parts: { text: string }[] }[]> = new Map();
+
+function buildSystemPrompt(config: {
+  chatbotNome?: string | null;
+  chatbotHorario?: string | null;
+  chatbotServicos?: string | null;
+  nomeOficina?: string | null;
+}) {
+  const nome = config.chatbotNome || 'LoopIA';
+  const horario = config.chatbotHorario || 'Segunda a Sexta 8h-18h, Sábado 8h-12h';
+  const servicos = config.chatbotServicos || 'troca de óleo, filtros, fluidos';
+  const oficina = config.nomeOficina || 'nossa oficina';
+
+  return `Você é a ${nome}, assistente virtual de ${oficina}, uma oficina de troca de óleo e serviços automotivos.
 
 Suas funções são:
-- Responder dúvidas sobre serviços (troca de óleo, filtros, fluidos, etc.)
+- Responder dúvidas sobre serviços (${servicos})
 - Informar sobre agendamentos e horários
 - Tirar dúvidas sobre manutenção preventiva de veículos
 - Ser cordial e profissional
@@ -18,13 +33,11 @@ Regras:
 - Sempre seja educado e prestativo
 
 Contexto da oficina:
-- Trabalhamos com troca de óleo, filtros, fluidos de freio, arrefecimento, direção hidráulica
+- Trabalhamos com: ${servicos}
 - Atendemos carros, motos e utilitários leves
-- Horário de funcionamento: Segunda a Sexta 8h-18h, Sábado 8h-12h
+- Horário de funcionamento: ${horario}
 `;
-
-// Histórico de conversas por número (cache simples em memória)
-const conversationHistory: Map<string, { role: string; parts: { text: string }[] }[]> = new Map();
+}
 
 export async function generateChatResponse(
   userMessage: string,
@@ -32,6 +45,17 @@ export async function generateChatResponse(
   userName?: string
 ): Promise<string> {
   try {
+    // Buscar configurações do banco
+    const config = await prisma.configuracao.findUnique({
+      where: { id: 1 },
+    });
+
+    // Verificar se chatbot está habilitado
+    if (config && config.chatbotEnabled === false) {
+      console.log('[CHATBOT] Chatbot desabilitado');
+      return ''; // Retorna vazio para não responder
+    }
+
     if (!process.env.GEMINI_API_KEY) {
       console.error('[CHATBOT] GEMINI_API_KEY não configurada');
       return 'Desculpe, estou com problemas técnicos no momento. Por favor, ligue para a oficina.';
@@ -62,8 +86,9 @@ export async function generateChatResponse(
       : userMessage;
 
     // Primeira mensagem inclui o system prompt
+    const systemPrompt = buildSystemPrompt(config || {});
     const fullMessage = history.length === 0
-      ? `${SYSTEM_PROMPT}\n\nMensagem do cliente:\n${contextMessage}`
+      ? `${systemPrompt}\n\nMensagem do cliente:\n${contextMessage}`
       : contextMessage;
 
     console.log('[CHATBOT] Enviando para Gemini:', fullMessage.substring(0, 100) + '...');

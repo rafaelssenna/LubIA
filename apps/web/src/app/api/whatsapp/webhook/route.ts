@@ -98,6 +98,12 @@ export async function POST(request: NextRequest) {
       // Gerar resposta com IA
       const aiResponse = await generateChatResponse(text, from, pushName);
 
+      // Se resposta vazia, chatbot está desabilitado
+      if (!aiResponse) {
+        console.log('[WEBHOOK] Chatbot desabilitado, não respondendo');
+        return NextResponse.json({ success: true, chatbotDisabled: true });
+      }
+
       // Enviar resposta
       await sendWhatsAppMessage(config.uazapiToken, from, aiResponse);
 

@@ -250,6 +250,12 @@ model Configuracao {
   whatsappConnected   Boolean  @default(false)
   whatsappNumber      String?
   whatsappName        String?
+  // Configurações do Chatbot LoopIA
+  chatbotEnabled      Boolean  @default(true)
+  chatbotNome         String?  @default("LoopIA")
+  chatbotHorario      String?  @default("Segunda a Sexta 8h-18h, Sábado 8h-12h")
+  chatbotServicos     String?  @default("troca de óleo, filtros, fluidos de freio, arrefecimento, direção hidráulica")
+  chatbotBoasVindas   String?  @default("Olá! Sou a LoopIA, assistente virtual da oficina. Como posso ajudar?")
   // Configurações gerais
   lembreteAntecedencia Int     @default(7) // dias antes para lembrar
   updatedAt           DateTime @updatedAt

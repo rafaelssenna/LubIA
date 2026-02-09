@@ -26,6 +26,12 @@ export async function GET() {
         whatsappNumber: config.whatsappNumber,
         whatsappName: config.whatsappName,
         lembreteAntecedencia: config.lembreteAntecedencia,
+        // Chatbot
+        chatbotEnabled: config.chatbotEnabled,
+        chatbotNome: config.chatbotNome,
+        chatbotHorario: config.chatbotHorario,
+        chatbotServicos: config.chatbotServicos,
+        chatbotBoasVindas: config.chatbotBoasVindas,
       },
     });
   } catch (error: any) {
@@ -64,6 +70,13 @@ export async function PUT(request: NextRequest) {
     if (body.lembreteAntecedencia !== undefined) {
       updateData.lembreteAntecedencia = parseInt(body.lembreteAntecedencia);
     }
+
+    // Chatbot
+    if (body.chatbotEnabled !== undefined) updateData.chatbotEnabled = body.chatbotEnabled;
+    if (body.chatbotNome !== undefined) updateData.chatbotNome = body.chatbotNome;
+    if (body.chatbotHorario !== undefined) updateData.chatbotHorario = body.chatbotHorario;
+    if (body.chatbotServicos !== undefined) updateData.chatbotServicos = body.chatbotServicos;
+    if (body.chatbotBoasVindas !== undefined) updateData.chatbotBoasVindas = body.chatbotBoasVindas;
 
     const config = await prisma.configuracao.update({
       where: { id: 1 },

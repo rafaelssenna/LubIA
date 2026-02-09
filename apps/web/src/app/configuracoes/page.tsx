@@ -14,6 +14,8 @@ import {
   Loader2,
   Unplug,
   Smartphone,
+  Bot,
+  Power,
 } from 'lucide-react';
 import { useState, useEffect } from 'react';
 
@@ -26,6 +28,12 @@ interface Config {
   whatsappConnected: boolean;
   whatsappNumber: string | null;
   whatsappName: string | null;
+  // Chatbot
+  chatbotEnabled: boolean;
+  chatbotNome: string | null;
+  chatbotHorario: string | null;
+  chatbotServicos: string | null;
+  chatbotBoasVindas: string | null;
 }
 
 interface WhatsAppStatus {
@@ -57,6 +65,13 @@ export default function ConfiguracoesPage() {
   const [telefone, setTelefone] = useState('');
   const [endereco, setEndereco] = useState('');
 
+  // Chatbot states
+  const [chatbotEnabled, setChatbotEnabled] = useState(true);
+  const [chatbotNome, setChatbotNome] = useState('LoopIA');
+  const [chatbotHorario, setChatbotHorario] = useState('Segunda a Sexta 8h-18h, Sábado 8h-12h');
+  const [chatbotServicos, setChatbotServicos] = useState('troca de óleo, filtros, fluidos de freio, arrefecimento');
+  const [chatbotBoasVindas, setChatbotBoasVindas] = useState('Olá! Sou a LoopIA, assistente virtual da oficina. Como posso ajudar?');
+
   const fetchConfig = async () => {
     try {
       const res = await fetch('/api/whatsapp/config');
@@ -67,6 +82,12 @@ export default function ConfiguracoesPage() {
         setCnpj(data.data.cnpj || '');
         setTelefone(data.data.telefone || '');
         setEndereco(data.data.endereco || '');
+        // Chatbot
+        setChatbotEnabled(data.data.chatbotEnabled ?? true);
+        setChatbotNome(data.data.chatbotNome || 'LoopIA');
+        setChatbotHorario(data.data.chatbotHorario || 'Segunda a Sexta 8h-18h, Sábado 8h-12h');
+        setChatbotServicos(data.data.chatbotServicos || 'troca de óleo, filtros, fluidos');
+        setChatbotBoasVindas(data.data.chatbotBoasVindas || 'Olá! Sou a LoopIA, assistente virtual da oficina.');
       }
     } catch (error) {
       console.error('Erro ao buscar config:', error);
@@ -126,6 +147,11 @@ export default function ConfiguracoesPage() {
           cnpj,
           telefone,
           endereco,
+          chatbotEnabled,
+          chatbotNome,
+          chatbotHorario,
+          chatbotServicos,
+          chatbotBoasVindas,
         }),
       });
 
@@ -381,6 +407,104 @@ export default function ConfiguracoesPage() {
               </div>
             )}
           </div>
+        </div>
+
+        {/* Chatbot LoopIA */}
+        <div className="bg-[#1E1E1E] border border-[#333333] rounded-2xl overflow-hidden">
+          <div className="p-6 border-b border-[#333333] flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="p-2.5 bg-purple-500/10 rounded-xl">
+                <Bot size={20} className="text-purple-400" />
+              </div>
+              <div>
+                <h2 className="text-lg font-semibold text-[#E8E8E8]">Chatbot LoopIA</h2>
+                <p className="text-sm text-[#6B7280]">Assistente virtual com inteligencia artificial</p>
+              </div>
+            </div>
+            <button
+              onClick={() => setChatbotEnabled(!chatbotEnabled)}
+              className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
+                chatbotEnabled ? 'bg-[#43A047]' : 'bg-[#333333]'
+              }`}
+            >
+              <span
+                className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                  chatbotEnabled ? 'translate-x-6' : 'translate-x-1'
+                }`}
+              />
+            </button>
+          </div>
+
+          {chatbotEnabled && (
+            <div className="p-6 space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-[#9E9E9E] mb-2">Nome do Assistente</label>
+                  <input
+                    type="text"
+                    value={chatbotNome}
+                    onChange={(e) => setChatbotNome(e.target.value)}
+                    placeholder="LoopIA"
+                    className="w-full bg-[#121212] border border-[#333333] rounded-xl px-4 py-3 text-[#E8E8E8] placeholder-gray-500 focus:outline-none focus:border-purple-500"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-[#9E9E9E] mb-2">Horario de Funcionamento</label>
+                  <input
+                    type="text"
+                    value={chatbotHorario}
+                    onChange={(e) => setChatbotHorario(e.target.value)}
+                    placeholder="Segunda a Sexta 8h-18h, Sabado 8h-12h"
+                    className="w-full bg-[#121212] border border-[#333333] rounded-xl px-4 py-3 text-[#E8E8E8] placeholder-gray-500 focus:outline-none focus:border-purple-500"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-[#9E9E9E] mb-2">Servicos Oferecidos</label>
+                <input
+                  type="text"
+                  value={chatbotServicos}
+                  onChange={(e) => setChatbotServicos(e.target.value)}
+                  placeholder="troca de oleo, filtros, fluidos..."
+                  className="w-full bg-[#121212] border border-[#333333] rounded-xl px-4 py-3 text-[#E8E8E8] placeholder-gray-500 focus:outline-none focus:border-purple-500"
+                />
+                <p className="mt-1 text-xs text-[#6B7280]">Separe os servicos por virgula</p>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-[#9E9E9E] mb-2">Mensagem de Boas-Vindas</label>
+                <textarea
+                  value={chatbotBoasVindas}
+                  onChange={(e) => setChatbotBoasVindas(e.target.value)}
+                  placeholder="Ola! Sou a LoopIA, assistente virtual da oficina..."
+                  rows={2}
+                  className="w-full bg-[#121212] border border-[#333333] rounded-xl px-4 py-3 text-[#E8E8E8] placeholder-gray-500 focus:outline-none focus:border-purple-500 resize-none"
+                />
+              </div>
+
+              <div className="bg-purple-500/5 border border-purple-500/20 rounded-xl p-4">
+                <div className="flex items-start gap-3">
+                  <Bot size={20} className="text-purple-400 mt-0.5" />
+                  <div>
+                    <p className="text-sm text-[#E8E8E8] font-medium">Como funciona</p>
+                    <p className="text-xs text-[#9E9E9E] mt-1">
+                      A LoopIA responde automaticamente as mensagens recebidas no WhatsApp usando inteligencia artificial (Gemini).
+                      Ela conhece os servicos da oficina e pode tirar duvidas dos clientes.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {!chatbotEnabled && (
+            <div className="p-6 text-center">
+              <Power size={32} className="text-[#6B7280] mx-auto mb-3" />
+              <p className="text-[#9E9E9E]">Chatbot desativado</p>
+              <p className="text-xs text-[#6B7280] mt-1">Ative para responder mensagens automaticamente</p>
+            </div>
+          )}
         </div>
 
         {/* Botao Salvar */}
