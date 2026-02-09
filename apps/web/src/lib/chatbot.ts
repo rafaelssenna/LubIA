@@ -481,8 +481,15 @@ export async function generateChatResponse(
     let agendamento = agendamentoState.get(phoneNumber) || { ativo: false, etapa: 'inicio' as const };
     const msgLower = userMessage.toLowerCase();
 
-    // Detectar intenção de agendar
-    const querAgendar = /quer[oe]?\s*(sim|agendar|marcar)|sim.*agendar|vamos\s*l[áa]|pode\s*ser|bora|fechado|quero|vou|marca|agenda|combina/i.test(msgLower);
+    // Detectar intenção de agendar (mais inteligente)
+    const querAgendar = (
+      // Frases diretas de agendamento
+      /quer[oe]?\s*(sim|agendar|marcar)|sim.*agendar|vamos\s*l[áa]|pode\s*ser|bora|fechado|quero|vou|marca|agenda|combina/i.test(msgLower) ||
+      // Perguntas sobre horário/disponibilidade = quer agendar
+      /qual\s*hor[aá]rio|que\s*hora|tem\s*(hor[aá]rio|vaga|disponibilidade)|quando\s*(posso|pode|d[aá])|posso\s*ir|d[aá]\s*pra|consigo\s*(ir|levar)|levo\s*(ele|o\s*carro)|preciso\s*(marcar|agendar)/i.test(msgLower) ||
+      // Respostas afirmativas após oferta de agendamento
+      /^(sim|quero|vamos|bora|pode|ok|beleza|isso|claro|com\s*certeza)$/i.test(msgLower.trim())
+    );
     const confirmacao = /^(sim|isso|ok|pode|certo|confirma|fechado|perfeito|combinado|bora|vamos)$/i.test(msgLower.trim()) ||
                        /confirm[ao]|t[áa]\s*(certo|bom|[óo]timo)|pode\s*ser|fechado/i.test(msgLower);
 
