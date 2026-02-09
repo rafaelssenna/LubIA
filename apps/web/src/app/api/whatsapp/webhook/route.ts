@@ -65,8 +65,15 @@ export async function POST(request: NextRequest) {
       }
 
       // Extrair informações da mensagem (formato UazAPI)
-      const from = (message.sender || message.chatid || '').replace('@s.whatsapp.net', '');
-      const text = message.content || message.text || '';
+      // sender pode ser @lid, então usar sender_pn ou chatid que tem o número real
+      const from = (message.sender_pn || message.chatid || '').replace('@s.whatsapp.net', '');
+
+      // content pode ser string ou objeto { text: "...", contextInfo: {...} }
+      const rawContent = message.content;
+      const text = typeof rawContent === 'string'
+        ? rawContent
+        : (rawContent?.text || message.text || '');
+
       const pushName = message.senderName || '';
 
       // Se não tem texto, ignorar (pode ser sticker, audio, etc.)
