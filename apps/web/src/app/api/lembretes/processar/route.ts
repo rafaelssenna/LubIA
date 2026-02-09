@@ -66,17 +66,17 @@ function gerarMensagem(
 
   // Mensagens padrão por tipo
   const mensagens: Record<string, string> = {
-    TROCA_OLEO: `Oi ${primeiroNome}! 🚗\n\nPassando pra lembrar que seu ${veiculoDesc} está chegando na hora da troca de óleo${lembrete.kmLembrete ? ` (${lembrete.kmLembrete.toLocaleString('pt-BR')} km)` : ''}!\n\nQuer agendar um horário? É rapidinho!\n\n${oficina}`,
+    TROCA_OLEO: `Oi ${primeiroNome}! 🚗\n\nPassando pra lembrar que seu ${veiculoDesc} está chegando na hora da troca de óleo${lembrete.kmLembrete ? ` (${lembrete.kmLembrete.toLocaleString('pt-BR')} km)` : ''}!\n\n${oficina}`,
 
-    REVISAO: `Olá ${primeiroNome}! 👋\n\nSeu ${veiculoDesc} está precisando de uma revisão.\n\nQue tal agendar pra essa semana?\n\n${oficina}`,
+    REVISAO: `Olá ${primeiroNome}! 👋\n\nSeu ${veiculoDesc} está precisando de uma revisão.\n\n${oficina}`,
 
-    FILTROS: `Oi ${primeiroNome}!\n\nLembrete: está na hora de trocar os filtros do seu ${veiculoDesc}.\n\nPodemos fazer junto com a troca de óleo se preferir!\n\n${oficina}`,
+    FILTROS: `Oi ${primeiroNome}!\n\nLembrete: está na hora de trocar os filtros do seu ${veiculoDesc}.\n\n${oficina}`,
 
-    PNEUS: `Olá ${primeiroNome}! 🛞\n\nSeu ${veiculoDesc} pode estar precisando de uma olhada nos pneus.\n\nPasse aqui pra gente verificar!\n\n${oficina}`,
+    PNEUS: `Olá ${primeiroNome}! 🛞\n\nSeu ${veiculoDesc} pode estar precisando de uma olhada nos pneus.\n\n${oficina}`,
 
-    FREIOS: `Oi ${primeiroNome}! 🔴\n\nLembrete importante: verifique os freios do seu ${veiculoDesc}.\n\nSegurança em primeiro lugar! Quer agendar uma inspeção?\n\n${oficina}`,
+    FREIOS: `Oi ${primeiroNome}! 🔴\n\nLembrete importante: verifique os freios do seu ${veiculoDesc}.\n\n${oficina}`,
 
-    OUTRO: `Olá ${primeiroNome}!\n\nTemos um lembrete de manutenção para seu ${veiculoDesc}.\n\nEntre em contato para mais detalhes!\n\n${oficina}`,
+    OUTRO: `Olá ${primeiroNome}!\n\nTemos um lembrete de manutenção para seu ${veiculoDesc}.\n\n${oficina}`,
   };
 
   return mensagens[lembrete.tipo] || mensagens.OUTRO;
