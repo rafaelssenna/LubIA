@@ -292,6 +292,19 @@ async function getHorariosDisponiveis(): Promise<{ data: Date; label: string }[]
     const config = await prisma.configuracao.findUnique({ where: { id: 1 } });
     const horarioConfig = config?.chatbotHorario;
 
+    // Buscar duração do serviço de troca de óleo (padrão: 60 minutos)
+    const servicoTrocaOleo = await prisma.servico.findFirst({
+      where: {
+        OR: [
+          { categoria: 'TROCA_OLEO' },
+          { nome: { contains: 'Troca de Óleo', mode: 'insensitive' } },
+        ],
+        ativo: true,
+      },
+      select: { duracaoMin: true },
+    });
+    const duracaoServico = servicoTrocaOleo?.duracaoMin || 60; // minutos
+
     // Parse do horário de funcionamento
     let horariosPorDia: Record<number, { abertura: number; fechamento: number }> = {
       1: { abertura: 8, fechamento: 18 }, // Segunda
@@ -319,7 +332,7 @@ async function getHorariosDisponiveis(): Promise<{ data: Date; label: string }[]
       } catch {}
     }
 
-    // Buscar agendamentos existentes nos próximos 7 dias
+    // Buscar agendamentos existentes nos próximos 7 dias com duração dos serviços
     const hoje = new Date();
     const fim = new Date(hoje);
     fim.setDate(fim.getDate() + 7);
@@ -329,21 +342,47 @@ async function getHorariosDisponiveis(): Promise<{ data: Date; label: string }[]
         dataAgendada: { gte: hoje, lte: fim },
         status: { in: ['AGENDADO', 'EM_ANDAMENTO'] },
       },
-      select: { dataAgendada: true },
+      include: {
+        itens: {
+          include: {
+            servico: true,
+          },
+        },
+      },
     });
 
-    // Criar set de horários já ocupados
-    const ocupados = new Set(
-      agendamentosExistentes
-        .filter(a => a.dataAgendada)
-        .map(a => a.dataAgendada!.toISOString())
-    );
+    // Criar lista de períodos ocupados (início e fim de cada agendamento)
+    const periodosOcupados: { inicio: Date; fim: Date }[] = [];
+    for (const ag of agendamentosExistentes) {
+      if (!ag.dataAgendada) continue;
+
+      // Calcular duração total dos serviços da O.S. (ou usar padrão de 60min)
+      const duracaoTotal = ag.itens.reduce((acc: number, item) => acc + (item.servico.duracaoMin || 60), 0) || 60;
+
+      const inicio = new Date(ag.dataAgendada);
+      const fim = new Date(inicio.getTime() + duracaoTotal * 60 * 1000);
+
+      periodosOcupados.push({ inicio, fim });
+    }
+
+    // Função para verificar se um slot está disponível
+    const slotDisponivel = (slotInicio: Date): boolean => {
+      const slotFim = new Date(slotInicio.getTime() + duracaoServico * 60 * 1000);
+
+      for (const periodo of periodosOcupados) {
+        // Verifica se há sobreposição
+        if (slotInicio < periodo.fim && slotFim > periodo.inicio) {
+          return false;
+        }
+      }
+      return true;
+    };
 
     // Gerar slots disponíveis
     const slots: { data: Date; label: string }[] = [];
     const diasSemana = ['domingo', 'segunda', 'terça', 'quarta', 'quinta', 'sexta', 'sábado'];
 
-    for (let d = 1; d <= 5 && slots.length < 4; d++) {
+    for (let d = 1; d <= 7 && slots.length < 4; d++) {
       const data = new Date(hoje);
       data.setDate(data.getDate() + d);
       const diaSemana = data.getDay();
@@ -352,11 +391,11 @@ async function getHorariosDisponiveis(): Promise<{ data: Date; label: string }[]
       if (!horario) continue;
 
       // Gerar slots de hora em hora
-      for (let hora = horario.abertura; hora < horario.fechamento && slots.length < 4; hora += 2) {
+      for (let hora = horario.abertura; hora < horario.fechamento && slots.length < 4; hora++) {
         const slot = new Date(data);
         slot.setHours(hora, 0, 0, 0);
 
-        if (!ocupados.has(slot.toISOString())) {
+        if (slotDisponivel(slot)) {
           const diaNome = diasSemana[diaSemana];
           const periodo = hora < 12 ? 'manhã' : 'tarde';
           slots.push({
