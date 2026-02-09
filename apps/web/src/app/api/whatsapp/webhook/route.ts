@@ -37,17 +37,24 @@ async function sendWhatsAppMessage(token: string, to: string, text: string) {
 export async function POST(request: NextRequest) {
   try {
     const data = await request.json();
-    console.log('[WEBHOOK] Evento recebido:', data.event);
 
-    const event = data.event;
-    const messageData = data.data;
+    // Log completo do payload para debug
+    console.log('[WEBHOOK] Payload recebido:', JSON.stringify(data, null, 2));
+
+    // UazAPI pode enviar em diferentes formatos
+    // Formato 1: { event: 'messages', data: {...} }
+    // Formato 2: { type: 'messages', ... }
+    // Formato 3: Dados direto no root com key, message, etc.
+    const event = data.event || data.type || (data.key ? 'messages' : undefined);
+    const messageData = data.data || data;
 
     if (event === 'messages' && messageData) {
-      const key = messageData.key || {};
-      const message = messageData.message || {};
+      // UazAPI pode enviar key/message em níveis diferentes
+      const key = messageData.key || data.key || {};
+      const message = messageData.message || data.message || {};
 
       // Ignorar mensagens enviadas pela API (evitar loop)
-      if (messageData.wasSentByApi) {
+      if (messageData.wasSentByApi || data.wasSentByApi) {
         console.log('[WEBHOOK] Ignorando mensagem enviada pela API');
         return NextResponse.json({ success: true, ignored: true });
       }
@@ -71,7 +78,7 @@ export async function POST(request: NextRequest) {
         message.imageMessage?.caption ||
         message.videoMessage?.caption ||
         '';
-      const pushName = messageData.pushName || '';
+      const pushName = messageData.pushName || data.pushName || '';
 
       // Se não tem texto, ignorar (pode ser sticker, audio, etc.)
       if (!text.trim()) {
@@ -109,21 +116,24 @@ export async function POST(request: NextRequest) {
 
       return NextResponse.json({ success: true, responded: true });
 
-    } else if (event === 'connection') {
+    } else if (event === 'connection' || data.status) {
       // Evento de conexão/desconexão
-      console.log('[WEBHOOK] Evento de conexão:', messageData?.status);
+      const status = messageData?.status || data.status;
+      console.log('[WEBHOOK] Evento de conexão:', status);
 
-      if (messageData?.status === 'connected') {
+      if (status === 'connected' || status === 'open') {
         await prisma.configuracao.update({
           where: { id: 1 },
           data: { whatsappConnected: true },
         }).catch(() => { });
-      } else if (messageData?.status === 'disconnected') {
+      } else if (status === 'disconnected' || status === 'close') {
         await prisma.configuracao.update({
           where: { id: 1 },
           data: { whatsappConnected: false },
         }).catch(() => { });
       }
+    } else {
+      console.log('[WEBHOOK] Evento não tratado:', event);
     }
 
     return NextResponse.json({ success: true });
