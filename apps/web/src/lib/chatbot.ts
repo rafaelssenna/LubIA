@@ -11,6 +11,8 @@ interface AgendamentoState {
   ativo: boolean;
   veiculoId?: number;
   veiculoNome?: string;
+  veiculoIds?: number[]; // Para múltiplos veículos
+  veiculoNomes?: string[]; // Para múltiplos veículos
   dataHora?: Date;
   servico?: string;
   etapa: 'inicio' | 'escolher_veiculo' | 'escolher_data' | 'confirmar';
@@ -637,8 +639,42 @@ export async function generateChatResponse(
 
     // Processar resposta de seleção de veículo via botão
     if (isButtonResponse && userMessage.startsWith('veiculo_')) {
-      const veiculoId = parseInt(userMessage.replace('veiculo_', ''));
       if (customerData) {
+        const primeiroNome = customerData.nome.split(' ')[0];
+
+        // Opção "Todos os veículos"
+        if (userMessage === 'veiculo_todos') {
+          agendamento.veiculoIds = customerData.veiculos.map(v => v.id);
+          agendamento.veiculoNomes = customerData.veiculos.map(v => `${v.marca} ${v.modelo}`);
+          agendamento.veiculoNome = `${customerData.veiculos.length} veículos`;
+          agendamento.etapa = 'escolher_data';
+          agendamento.horariosDisponiveis = await getHorariosDisponiveis();
+          agendamentoState.set(phoneNumber, agendamento);
+          console.log('[CHATBOT] Todos os veículos selecionados:', agendamento.veiculoNomes);
+
+          if (agendamento.horariosDisponiveis.length > 0) {
+            const listaVeiculos = agendamento.veiculoNomes.map(n => `• ${n}`).join('\n');
+            const choices = [
+              '[Horários Disponíveis]',
+              ...agendamento.horariosDisponiveis.map(slot => {
+                const diaNome = slot.label.split(' ')[0];
+                const horaInfo = slot.label.replace(diaNome + ' ', '');
+                return `${diaNome}|horario_${slot.data.toISOString()}|${horaInfo}`;
+              }),
+            ];
+
+            return {
+              type: 'list',
+              text: `Ótimo, ${primeiroNome}! 🚗\n\nVou agendar a troca de óleo dos seus veículos:\n${listaVeiculos}\n\nQual horário fica bom pra você?`,
+              listButton: 'Ver Horários',
+              footerText: 'Escolha o melhor horário',
+              choices,
+            };
+          }
+        }
+
+        // Veículo específico
+        const veiculoId = parseInt(userMessage.replace('veiculo_', ''));
         const veiculo = customerData.veiculos.find(v => v.id === veiculoId);
         if (veiculo) {
           agendamento.veiculoId = veiculo.id;
@@ -650,7 +686,6 @@ export async function generateChatResponse(
 
           // Retornar lista de horários
           if (agendamento.horariosDisponiveis.length > 0) {
-            const primeiroNome = customerData.nome.split(' ')[0];
             const choices = [
               '[Horários Disponíveis]',
               ...agendamento.horariosDisponiveis.map(slot => {
@@ -692,6 +727,18 @@ export async function generateChatResponse(
 
         const primeiroNome = customerData?.nome.split(' ')[0] || 'Cliente';
 
+        // Múltiplos veículos
+        if (agendamento.veiculoIds && agendamento.veiculoIds.length > 1) {
+          const listaVeiculos = agendamento.veiculoNomes?.map(n => `• ${n}`).join('\n') || '';
+          return {
+            type: 'button',
+            text: `Perfeito, ${primeiroNome}! 📋\n\n*Confirme seu agendamento:*\n\n🚗 Veículos:\n${listaVeiculos}\n📅 Data: ${dataFormatada}\n🔧 Serviço: Troca de Óleo`,
+            footerText: 'Confirma o agendamento?',
+            choices: ['✅ Confirmar|confirmar_sim', '❌ Cancelar|cancelar'],
+          };
+        }
+
+        // Veículo único
         return {
           type: 'button',
           text: `Perfeito, ${primeiroNome}! 📋\n\n*Confirme seu agendamento:*\n\n🚗 Veículo: ${agendamento.veiculoNome}\n📅 Data: ${dataFormatada}\n🔧 Serviço: Troca de Óleo`,
@@ -703,6 +750,45 @@ export async function generateChatResponse(
 
     // Processar confirmação via botão
     if (isButtonResponse && userMessage === 'confirmar_sim') {
+      const primeiroNome = customerData?.nome.split(' ')[0] || 'Cliente';
+      const dataFormatada = agendamento.dataHora?.toLocaleDateString('pt-BR', {
+        weekday: 'long',
+        day: 'numeric',
+        month: 'long',
+        hour: '2-digit',
+        minute: '2-digit',
+      });
+
+      // Múltiplos veículos
+      if (agendamento.veiculoIds && agendamento.veiculoIds.length > 0 && agendamento.dataHora) {
+        const resultados: { success: boolean; veiculo: string; numero?: string }[] = [];
+
+        for (let i = 0; i < agendamento.veiculoIds.length; i++) {
+          const veiculoId = agendamento.veiculoIds[i];
+          const veiculoNome = agendamento.veiculoNomes?.[i] || 'Veículo';
+          const resultado = await criarOrdemServico(veiculoId, agendamento.dataHora, 'Troca de Óleo');
+          resultados.push({ success: resultado.success, veiculo: veiculoNome, numero: resultado.numero });
+        }
+
+        agendamentoState.delete(phoneNumber);
+
+        const sucessos = resultados.filter(r => r.success);
+        if (sucessos.length === resultados.length) {
+          const listaVeiculos = agendamento.veiculoNomes?.map(n => `• ${n}`).join('\n') || '';
+          console.log('[CHATBOT] Agendamentos criados:', sucessos.length);
+          return {
+            type: 'text',
+            message: `Pronto, ${primeiroNome}! ✅\n\nSeus veículos estão agendados para ${dataFormatada}:\n${listaVeiculos}\n\nTe esperamos! Qualquer coisa é só chamar aqui. 😊`,
+          };
+        } else {
+          return {
+            type: 'text',
+            message: `Ops, consegui agendar ${sucessos.length} de ${resultados.length} veículos. 😅\n\nPode ligar pra oficina que a gente resolve o resto!`,
+          };
+        }
+      }
+
+      // Veículo único
       if (agendamento.veiculoId && agendamento.dataHora) {
         const resultado = await criarOrdemServico(
           agendamento.veiculoId,
@@ -713,17 +799,10 @@ export async function generateChatResponse(
         agendamentoState.delete(phoneNumber);
 
         if (resultado.success) {
-          const dataFormatada = agendamento.dataHora.toLocaleDateString('pt-BR', {
-            weekday: 'long',
-            day: 'numeric',
-            month: 'long',
-            hour: '2-digit',
-            minute: '2-digit',
-          });
           console.log('[CHATBOT] Agendamento criado! O.S.:', resultado.numero);
           return {
             type: 'text',
-            message: `Pronto, ${customerData?.nome.split(' ')[0]}! ✅\n\nSeu ${agendamento.veiculoNome} está agendado para ${dataFormatada}.\n\nTe esperamos! Qualquer coisa é só chamar aqui. 😊`,
+            message: `Pronto, ${primeiroNome}! ✅\n\nSeu ${agendamento.veiculoNome} está agendado para ${dataFormatada}.\n\nTe esperamos! Qualquer coisa é só chamar aqui. 😊`,
           };
         } else {
           console.error('[CHATBOT] Erro ao criar agendamento:', resultado.error);
@@ -772,6 +851,7 @@ export async function generateChatResponse(
 
         const choices = [
           '[Seus Veículos]',
+          `Todos os veículos|veiculo_todos|Agendar para ${customerData.veiculos.length} veículos`,
           ...customerData.veiculos.map(v => {
             const descricao = v.kmAtual ? `${v.kmAtual.toLocaleString('pt-BR')} km` : v.placa;
             return `${v.marca} ${v.modelo}|veiculo_${v.id}|${descricao}`;
@@ -782,7 +862,7 @@ export async function generateChatResponse(
           type: 'list',
           text: `Oi ${primeiroNome}! Vamos agendar? 🚗\n\nVi que você tem ${customerData.veiculos.length} veículos cadastrados. Qual deles você quer trazer?`,
           listButton: 'Escolher Veículo',
-          footerText: 'Selecione um veículo',
+          footerText: 'Selecione um ou todos',
           choices,
         };
       }
