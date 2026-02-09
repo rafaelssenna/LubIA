@@ -6,16 +6,29 @@ const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || '');
 // Histórico de conversas por número (cache simples em memória)
 const conversationHistory: Map<string, { role: string; parts: { text: string }[] }[]> = new Map();
 
+// Estado de agendamento por número
+interface AgendamentoState {
+  ativo: boolean;
+  veiculoId?: number;
+  veiculoNome?: string;
+  dataHora?: Date;
+  servico?: string;
+  etapa: 'inicio' | 'escolher_veiculo' | 'escolher_data' | 'confirmar';
+}
+const agendamentoState: Map<string, AgendamentoState> = new Map();
+
 // Interface para dados do cliente
 interface CustomerData {
+  id: number;
   nome: string;
-  veiculo?: {
+  veiculos: {
+    id: number;
     marca: string;
     modelo: string;
     ano: number | null;
     placa: string;
     kmAtual: number | null;
-  };
+  }[];
   ultimoServico?: {
     data: Date;
     tipo: string;
@@ -27,6 +40,7 @@ interface CustomerData {
 
 // Interface para serviços
 interface ServicoData {
+  id: number;
   nome: string;
   categoria: string;
   preco: number;
@@ -41,6 +55,7 @@ async function getServicos(): Promise<ServicoData[]> {
     });
 
     return servicos.map(s => ({
+      id: s.id,
       nome: s.nome,
       categoria: s.categoria,
       preco: Number(s.precoBase),
@@ -57,7 +72,6 @@ function formatServicosParaPrompt(servicos: ServicoData[]): string {
     return 'troca de óleo, filtros, fluidos';
   }
 
-  // Agrupar por categoria
   const porCategoria: Record<string, ServicoData[]> = {};
   for (const s of servicos) {
     if (!porCategoria[s.categoria]) {
@@ -66,7 +80,6 @@ function formatServicosParaPrompt(servicos: ServicoData[]): string {
     porCategoria[s.categoria].push(s);
   }
 
-  // Formatar com preços
   const linhas: string[] = [];
   for (const [categoria, items] of Object.entries(porCategoria)) {
     const categoriaFormatada = categoria.replace(/_/g, ' ').toLowerCase();
@@ -82,15 +95,13 @@ function formatServicosParaPrompt(servicos: ServicoData[]): string {
 // Buscar dados do cliente pelo telefone
 async function getCustomerData(phoneNumber: string): Promise<CustomerData | null> {
   try {
-    // Formatar telefone para busca (pode vir como 5511999999999 ou 11999999999)
     const cleanPhone = phoneNumber.replace(/\D/g, '');
 
-    // Buscar cliente por telefone (tentando com e sem código do país)
     const cliente = await prisma.cliente.findFirst({
       where: {
         OR: [
-          { telefone: { contains: cleanPhone.slice(-11) } }, // últimos 11 dígitos
-          { telefone: { contains: cleanPhone.slice(-10) } }, // últimos 10 dígitos
+          { telefone: { contains: cleanPhone.slice(-11) } },
+          { telefone: { contains: cleanPhone.slice(-10) } },
           { telefone: cleanPhone },
         ],
       },
@@ -115,13 +126,9 @@ async function getCustomerData(phoneNumber: string): Promise<CustomerData | null
       return null;
     }
 
-    // Pegar o veículo principal (primeiro cadastrado ou mais recente com serviço)
     const veiculoPrincipal = cliente.veiculos[0];
-
-    // Pegar última ordem de serviço
     const ultimaOrdem = veiculoPrincipal?.ordens[0];
 
-    // Montar histórico de serviços
     const historicoServicos: string[] = [];
     if (veiculoPrincipal?.ordens) {
       for (const ordem of veiculoPrincipal.ordens.slice(0, 3)) {
@@ -132,14 +139,16 @@ async function getCustomerData(phoneNumber: string): Promise<CustomerData | null
     }
 
     return {
+      id: cliente.id,
       nome: cliente.nome,
-      veiculo: veiculoPrincipal ? {
-        marca: veiculoPrincipal.marca,
-        modelo: veiculoPrincipal.modelo,
-        ano: veiculoPrincipal.ano,
-        placa: veiculoPrincipal.placa,
-        kmAtual: veiculoPrincipal.kmAtual,
-      } : undefined,
+      veiculos: cliente.veiculos.map(v => ({
+        id: v.id,
+        marca: v.marca,
+        modelo: v.modelo,
+        ano: v.ano,
+        placa: v.placa,
+        kmAtual: v.kmAtual,
+      })),
       ultimoServico: ultimaOrdem ? {
         data: ultimaOrdem.createdAt,
         tipo: ultimaOrdem.itens.map(i => i.servico.nome).join(', ') || 'Serviço',
@@ -176,7 +185,6 @@ function parseHorarioParaString(horarioJson: string | null): string {
   if (!horarioJson) return 'Segunda a Sexta 8h-18h, Sábado 8h-12h';
 
   try {
-    // Se não começa com {, é string legada
     if (!horarioJson.startsWith('{')) {
       return horarioJson;
     }
@@ -219,6 +227,132 @@ function parseHorarioParaString(horarioJson: string | null): string {
   }
 }
 
+// Criar ordem de serviço automaticamente
+async function criarOrdemServico(
+  veiculoId: number,
+  dataAgendada: Date,
+  servico: string = 'Troca de Óleo'
+): Promise<{ success: boolean; numero?: string; error?: string }> {
+  try {
+    // Buscar veículo com cliente
+    const veiculo = await prisma.veiculo.findUnique({
+      where: { id: veiculoId },
+      include: { cliente: true },
+    });
+
+    if (!veiculo) {
+      return { success: false, error: 'Veículo não encontrado' };
+    }
+
+    // Buscar serviço de troca de óleo
+    const servicoTrocaOleo = await prisma.servico.findFirst({
+      where: {
+        OR: [
+          { categoria: 'TROCA_OLEO' },
+          { nome: { contains: 'Troca de Óleo' } },
+        ],
+        ativo: true,
+      },
+    });
+
+    if (!servicoTrocaOleo) {
+      return { success: false, error: 'Serviço não encontrado' };
+    }
+
+    // Criar ordem de serviço
+    const ordem = await prisma.ordemServico.create({
+      data: {
+        veiculoId: veiculo.id,
+        status: 'AGENDADO',
+        dataAgendada,
+        kmEntrada: veiculo.kmAtual,
+        observacoes: `Agendamento automático via WhatsApp - ${servico}`,
+        itens: {
+          create: {
+            servicoId: servicoTrocaOleo.id,
+            quantidade: 1,
+            precoUnitario: servicoTrocaOleo.precoBase,
+            subtotal: servicoTrocaOleo.precoBase,
+          },
+        },
+      },
+    });
+
+    console.log('[CHATBOT] Ordem criada:', ordem.id);
+    return { success: true, numero: ordem.id.toString() };
+  } catch (error: any) {
+    console.error('[CHATBOT] Erro ao criar ordem:', error?.message);
+    return { success: false, error: error?.message };
+  }
+}
+
+// Interpretar data/hora do texto do usuário
+function interpretarDataHora(texto: string): Date | null {
+  const hoje = new Date();
+  const textoLower = texto.toLowerCase();
+
+  // Padrões de dia da semana
+  const diasSemana: Record<string, number> = {
+    'domingo': 0, 'segunda': 1, 'terça': 2, 'terca': 2, 'quarta': 3,
+    'quinta': 4, 'sexta': 5, 'sábado': 6, 'sabado': 6,
+  };
+
+  // Verificar "hoje", "amanhã"
+  if (textoLower.includes('hoje')) {
+    return hoje;
+  }
+  if (textoLower.includes('amanhã') || textoLower.includes('amanha')) {
+    const amanha = new Date(hoje);
+    amanha.setDate(amanha.getDate() + 1);
+    return amanha;
+  }
+
+  // Verificar dia da semana
+  for (const [dia, numero] of Object.entries(diasSemana)) {
+    if (textoLower.includes(dia)) {
+      const data = new Date(hoje);
+      const diasAteProximo = (numero - hoje.getDay() + 7) % 7 || 7;
+      data.setDate(data.getDate() + diasAteProximo);
+
+      // Extrair hora se mencionada
+      const horaMatch = texto.match(/(\d{1,2})\s*(h|hora|:)/i);
+      if (horaMatch) {
+        data.setHours(parseInt(horaMatch[1]), 0, 0, 0);
+      } else if (textoLower.includes('manhã') || textoLower.includes('manha')) {
+        data.setHours(9, 0, 0, 0);
+      } else if (textoLower.includes('tarde')) {
+        data.setHours(14, 0, 0, 0);
+      } else {
+        data.setHours(9, 0, 0, 0); // Padrão: 9h
+      }
+
+      return data;
+    }
+  }
+
+  // Verificar padrão de data DD/MM
+  const dataMatch = texto.match(/(\d{1,2})[\/\-](\d{1,2})/);
+  if (dataMatch) {
+    const dia = parseInt(dataMatch[1]);
+    const mes = parseInt(dataMatch[2]) - 1;
+    const data = new Date(hoje.getFullYear(), mes, dia);
+    if (data < hoje) {
+      data.setFullYear(data.getFullYear() + 1);
+    }
+
+    const horaMatch = texto.match(/(\d{1,2})\s*(h|hora|:)/i);
+    if (horaMatch) {
+      data.setHours(parseInt(horaMatch[1]), 0, 0, 0);
+    } else {
+      data.setHours(9, 0, 0, 0);
+    }
+
+    return data;
+  }
+
+  return null;
+}
+
 function buildSystemPrompt(
   config: {
     chatbotNome?: string | null;
@@ -226,34 +360,23 @@ function buildSystemPrompt(
     nomeOficina?: string | null;
   },
   customerData: CustomerData | null,
-  servicosFormatados: string
+  servicosFormatados: string,
+  agendamento: AgendamentoState | null
 ) {
   const nome = config.chatbotNome || 'LoopIA';
   const horario = parseHorarioParaString(config.chatbotHorario || null);
   const oficina = config.nomeOficina || 'nossa oficina';
 
-  // Contexto do cliente
   let contextoCliente = '';
   if (customerData && !customerData.isNewCustomer) {
     contextoCliente = `
 ## Dados do Cliente (USE para personalizar as respostas)
-- Nome: ${customerData.nome}`;
+- Nome: ${customerData.nome}
+- Veículos cadastrados:`;
 
-    if (customerData.veiculo) {
-      const v = customerData.veiculo;
+    for (const v of customerData.veiculos) {
       contextoCliente += `
-- Veículo: ${v.marca} ${v.modelo}${v.ano ? ` ${v.ano}` : ''} (Placa: ${v.placa})`;
-
-      if (v.kmAtual) {
-        contextoCliente += `
-- KM Atual: ${v.kmAtual.toLocaleString('pt-BR')} km`;
-
-        const proximaTroca = calcularProximaTroca(v.kmAtual, customerData.ultimoServico?.km || null);
-        if (proximaTroca) {
-          contextoCliente += `
-- ${proximaTroca}`;
-        }
-      }
+  * ${v.marca} ${v.modelo}${v.ano ? ` ${v.ano}` : ''} (Placa: ${v.placa})${v.kmAtual ? ` - ${v.kmAtual.toLocaleString('pt-BR')} km` : ''}`;
     }
 
     if (customerData.ultimoServico) {
@@ -263,58 +386,70 @@ function buildSystemPrompt(
       contextoCliente += `
 - Último serviço: ${customerData.ultimoServico.tipo} (há ${diasDesdeUltimo} dias)`;
     }
-
-    if (customerData.historicoServicos.length > 0) {
-      contextoCliente += `
-- Histórico recente:
-  ${customerData.historicoServicos.join('\n  ')}`;
-    }
   } else {
     contextoCliente = `
 ## Cliente Novo
-Este cliente ainda não está cadastrado no sistema. Seja acolhedor e convide-o a conhecer a oficina!`;
+Este cliente ainda não está cadastrado. Seja acolhedor!`;
   }
 
-  return `Você é a ${nome}, assistente virtual inteligente de ${oficina}.
+  // Contexto de agendamento em andamento
+  let contextoAgendamento = '';
+  if (agendamento?.ativo) {
+    contextoAgendamento = `
+
+## AGENDAMENTO EM ANDAMENTO
+O cliente está no processo de agendar um serviço.`;
+
+    if (agendamento.etapa === 'escolher_veiculo') {
+      contextoAgendamento += `
+- Etapa atual: ESCOLHER VEÍCULO
+- Pergunte qual veículo ele quer trazer (liste as opções)`;
+    } else if (agendamento.etapa === 'escolher_data') {
+      contextoAgendamento += `
+- Veículo escolhido: ${agendamento.veiculoNome}
+- Etapa atual: ESCOLHER DATA/HORA
+- Pergunte qual dia e horário fica bom`;
+    } else if (agendamento.etapa === 'confirmar') {
+      const dataFormatada = agendamento.dataHora?.toLocaleDateString('pt-BR', {
+        weekday: 'long', day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit'
+      });
+      contextoAgendamento += `
+- Veículo: ${agendamento.veiculoNome}
+- Data/Hora: ${dataFormatada}
+- Etapa atual: AGUARDANDO CONFIRMAÇÃO
+- Peça confirmação do agendamento`;
+    }
+  }
+
+  return `Você é a ${nome}, assistente virtual de ${oficina}.
 
 ## Sua Personalidade
 - Simpática, profissional e objetiva
-- Fala de forma natural, como um atendente humano experiente
-- Usa emojis ocasionalmente para deixar a conversa leve
-- Nunca é robótica ou excessivamente formal
+- Fala de forma natural, como um atendente humano
+- Usa emojis ocasionalmente
+- Nunca é robótica
 
-## Serviços e Preços da Oficina
+## Serviços e Preços
 ${servicosFormatados}
 
 ## Horário de Funcionamento
 ${horario}
-
-## Suas Capacidades
-- Informar sobre serviços e PREÇOS (use os valores acima!)
-- Consultar dados do cliente se disponíveis
-- Sugerir agendamentos e lembretes de manutenção
-- Tirar dúvidas sobre manutenção preventiva
 ${contextoCliente}
+${contextoAgendamento}
 
-## Regras de Comportamento
-1. SEMPRE use o nome do cliente quando disponível
-2. Se o cliente tem veículo cadastrado, mencione o modelo naturalmente
-3. Se está perto da km de troca, sugira agendar
-4. Seja breve - máximo 2-3 frases por resposta
-5. PODE informar preços dos serviços listados acima!
-6. NUNCA invente serviços ou preços que não estão na lista
-7. Se o cliente parece frustrado, seja empático
+## IMPORTANTE - Fluxo de Agendamento
+Quando o cliente quiser agendar/marcar:
+1. Se tem mais de 1 veículo: pergunte qual
+2. Pergunte dia e horário preferido
+3. Confirme os dados antes de finalizar
+4. Diga algo como "Vou agendar pra você!"
 
-## Exemplos de Respostas Personalizadas
-- "Oi João! Vi que seu Civic já está com 48.000 km. Está na hora da troca de óleo! Quer agendar?"
-- "Bom dia Maria! Faz 4 meses desde a última revisão do seu Corolla. Tudo certo com ele?"
-- "A troca de óleo sintético sai por R$ 89,90. Quer agendar um horário?"
-- "Olá! Ainda não te conheço, mas fico feliz em ajudar! Em que posso ser útil?"
-
-## Formato das Respostas
-- Use linguagem informal mas profissional
-- Quebre linhas para facilitar leitura no WhatsApp
-- Emojis são bem-vindos, mas com moderação
+## Regras
+1. SEMPRE use o nome do cliente
+2. Seja breve - máximo 2-3 frases
+3. PODE informar preços!
+4. NUNCA invente serviços ou preços
+5. Quando o cliente confirmar o agendamento, diga "Pronto, agendado!"
 `;
 }
 
@@ -324,47 +459,117 @@ export async function generateChatResponse(
   userName?: string
 ): Promise<string> {
   try {
-    // Buscar configurações do banco
     const config = await prisma.configuracao.findUnique({
       where: { id: 1 },
     });
 
-    // Verificar se chatbot está habilitado
     if (config && config.chatbotEnabled === false) {
       console.log('[CHATBOT] Chatbot desabilitado');
-      return ''; // Retorna vazio para não responder
+      return '';
     }
 
     if (!process.env.GEMINI_API_KEY) {
       console.error('[CHATBOT] GEMINI_API_KEY não configurada');
-      return 'Desculpe, estou com problemas técnicos no momento. Por favor, ligue para a oficina.';
+      return 'Desculpe, estou com problemas técnicos. Por favor, ligue para a oficina.';
     }
 
-    // Buscar dados do cliente pelo telefone
     const customerData = await getCustomerData(phoneNumber);
-
-    if (customerData) {
-      console.log('[CHATBOT] Cliente encontrado:', customerData.nome);
-    } else {
-      console.log('[CHATBOT] Cliente novo (não cadastrado)');
-    }
-
-    // Buscar serviços do banco
     const servicos = await getServicos();
     const servicosFormatados = formatServicosParaPrompt(servicos);
-    console.log('[CHATBOT] Serviços carregados:', servicos.length);
 
+    // Gerenciar estado de agendamento
+    let agendamento = agendamentoState.get(phoneNumber) || { ativo: false, etapa: 'inicio' as const };
+    const msgLower = userMessage.toLowerCase();
+
+    // Detectar intenção de agendar
+    const querAgendar = /quer[oe]?\s*(sim|agendar|marcar)|sim.*agendar|vamos\s*l[áa]|pode\s*ser|bora|fechado|quero|vou|marca|agenda|combina/i.test(msgLower);
+    const confirmacao = /^(sim|isso|ok|pode|certo|confirma|fechado|perfeito|combinado|bora|vamos)$/i.test(msgLower.trim()) ||
+                       /confirm[ao]|t[áa]\s*(certo|bom|[óo]timo)|pode\s*ser|fechado/i.test(msgLower);
+
+    // Iniciar agendamento se cliente quiser
+    if (querAgendar && !agendamento.ativo && customerData && customerData.veiculos.length > 0) {
+      agendamento = {
+        ativo: true,
+        etapa: customerData.veiculos.length > 1 ? 'escolher_veiculo' : 'escolher_data',
+      };
+
+      // Se só tem 1 veículo, já seleciona
+      if (customerData.veiculos.length === 1) {
+        const v = customerData.veiculos[0];
+        agendamento.veiculoId = v.id;
+        agendamento.veiculoNome = `${v.marca} ${v.modelo}`;
+      }
+
+      agendamentoState.set(phoneNumber, agendamento);
+      console.log('[CHATBOT] Iniciando agendamento para:', customerData.nome);
+    }
+
+    // Processar escolha de veículo
+    if (agendamento.ativo && agendamento.etapa === 'escolher_veiculo' && customerData) {
+      for (const v of customerData.veiculos) {
+        if (msgLower.includes(v.modelo.toLowerCase()) ||
+            msgLower.includes(v.marca.toLowerCase()) ||
+            msgLower.includes(v.placa.toLowerCase())) {
+          agendamento.veiculoId = v.id;
+          agendamento.veiculoNome = `${v.marca} ${v.modelo}`;
+          agendamento.etapa = 'escolher_data';
+          agendamentoState.set(phoneNumber, agendamento);
+          console.log('[CHATBOT] Veículo selecionado:', agendamento.veiculoNome);
+          break;
+        }
+      }
+    }
+
+    // Processar escolha de data
+    if (agendamento.ativo && agendamento.etapa === 'escolher_data') {
+      const dataInterpretada = interpretarDataHora(userMessage);
+      if (dataInterpretada) {
+        agendamento.dataHora = dataInterpretada;
+        agendamento.etapa = 'confirmar';
+        agendamentoState.set(phoneNumber, agendamento);
+        console.log('[CHATBOT] Data selecionada:', dataInterpretada);
+      }
+    }
+
+    // Processar confirmação final
+    if (agendamento.ativo && agendamento.etapa === 'confirmar' && confirmacao) {
+      if (agendamento.veiculoId && agendamento.dataHora) {
+        const resultado = await criarOrdemServico(
+          agendamento.veiculoId,
+          agendamento.dataHora,
+          'Troca de Óleo'
+        );
+
+        // Limpar estado
+        agendamentoState.delete(phoneNumber);
+
+        if (resultado.success) {
+          const dataFormatada = agendamento.dataHora.toLocaleDateString('pt-BR', {
+            weekday: 'long', day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit'
+          });
+          console.log('[CHATBOT] Agendamento criado! O.S.:', resultado.numero);
+          return `Pronto, ${customerData?.nome.split(' ')[0]}! ✅
+
+Seu ${agendamento.veiculoNome} está agendado para ${dataFormatada}.
+
+Te esperamos! Qualquer coisa é só chamar aqui. 😊`;
+        } else {
+          console.error('[CHATBOT] Erro ao criar agendamento:', resultado.error);
+          return `Ops, tive um probleminha pra criar o agendamento. 😅
+
+Pode ligar pra oficina que a gente resolve rapidinho!`;
+        }
+      }
+    }
+
+    // Gerar resposta via Gemini
     const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' });
-
-    // Recuperar ou iniciar histórico
     let history = conversationHistory.get(phoneNumber) || [];
 
-    // Limitar histórico a últimas 20 mensagens para economizar tokens
     if (history.length > 20) {
       history = history.slice(-20);
     }
 
-    // Criar chat com histórico
     const chat = model.startChat({
       history: history,
       generationConfig: {
@@ -373,24 +578,17 @@ export async function generateChatResponse(
       },
     });
 
-    // Montar mensagem com contexto do usuário
     const nomeCliente = customerData?.nome || userName || 'Cliente';
     const contextMessage = `[${nomeCliente}]: ${userMessage}`;
 
-    // Primeira mensagem inclui o system prompt
-    const systemPrompt = buildSystemPrompt(config || {}, customerData, servicosFormatados);
+    const systemPrompt = buildSystemPrompt(config || {}, customerData, servicosFormatados, agendamento.ativo ? agendamento : null);
     const fullMessage = history.length === 0
       ? `${systemPrompt}\n\n--- Início da Conversa ---\n\n${contextMessage}`
       : contextMessage;
 
-    console.log('[CHATBOT] Enviando para Gemini:', fullMessage.substring(0, 150) + '...');
-
     const result = await chat.sendMessage(fullMessage);
     const response = result.response.text();
 
-    console.log('[CHATBOT] Resposta Gemini:', response.substring(0, 100) + '...');
-
-    // Atualizar histórico
     history.push({ role: 'user', parts: [{ text: fullMessage }] });
     history.push({ role: 'model', parts: [{ text: response }] });
     conversationHistory.set(phoneNumber, history);
@@ -405,9 +603,11 @@ export async function generateChatResponse(
 // Limpar histórico de um número específico
 export function clearHistory(phoneNumber: string) {
   conversationHistory.delete(phoneNumber);
+  agendamentoState.delete(phoneNumber);
 }
 
-// Limpar todo o histórico (útil para liberar memória)
+// Limpar todo o histórico
 export function clearAllHistory() {
   conversationHistory.clear();
+  agendamentoState.clear();
 }
