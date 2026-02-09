@@ -16,6 +16,8 @@ import {
   Smartphone,
   Bot,
   Power,
+  Wrench,
+  DollarSign,
 } from 'lucide-react';
 import { useState, useEffect } from 'react';
 
@@ -32,7 +34,6 @@ interface Config {
   chatbotEnabled: boolean;
   chatbotNome: string | null;
   chatbotHorario: string | null;
-  chatbotServicos: string | null;
   chatbotBoasVindas: string | null;
 }
 
@@ -44,6 +45,14 @@ interface WhatsAppStatus {
   profilePicUrl?: string;
   number?: string;
   isBusiness?: boolean;
+}
+
+interface Servico {
+  id: number;
+  nome: string;
+  categoria: string;
+  precoBase: string;
+  ativo: boolean;
 }
 
 export default function ConfiguracoesPage() {
@@ -69,8 +78,10 @@ export default function ConfiguracoesPage() {
   const [chatbotEnabled, setChatbotEnabled] = useState(true);
   const [chatbotNome, setChatbotNome] = useState('LoopIA');
   const [chatbotHorario, setChatbotHorario] = useState('Segunda a Sexta 8h-18h, Sábado 8h-12h');
-  const [chatbotServicos, setChatbotServicos] = useState('troca de óleo, filtros, fluidos de freio, arrefecimento');
   const [chatbotBoasVindas, setChatbotBoasVindas] = useState('Olá! Sou a LoopIA, assistente virtual da oficina. Como posso ajudar?');
+
+  // Serviços do banco
+  const [servicos, setServicos] = useState<Servico[]>([]);
 
   const fetchConfig = async () => {
     try {
@@ -86,13 +97,24 @@ export default function ConfiguracoesPage() {
         setChatbotEnabled(data.data.chatbotEnabled ?? true);
         setChatbotNome(data.data.chatbotNome || 'LoopIA');
         setChatbotHorario(data.data.chatbotHorario || 'Segunda a Sexta 8h-18h, Sábado 8h-12h');
-        setChatbotServicos(data.data.chatbotServicos || 'troca de óleo, filtros, fluidos');
         setChatbotBoasVindas(data.data.chatbotBoasVindas || 'Olá! Sou a LoopIA, assistente virtual da oficina.');
       }
     } catch (error) {
       console.error('Erro ao buscar config:', error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchServicos = async () => {
+    try {
+      const res = await fetch('/api/servicos');
+      const data = await res.json();
+      if (data.data) {
+        setServicos(data.data.filter((s: Servico) => s.ativo));
+      }
+    } catch (error) {
+      console.error('Erro ao buscar servicos:', error);
     }
   };
 
@@ -123,6 +145,7 @@ export default function ConfiguracoesPage() {
 
   useEffect(() => {
     fetchConfig();
+    fetchServicos();
     checkWhatsAppStatus();
   }, []);
 
@@ -150,7 +173,6 @@ export default function ConfiguracoesPage() {
           chatbotEnabled,
           chatbotNome,
           chatbotHorario,
-          chatbotServicos,
           chatbotBoasVindas,
         }),
       });
@@ -460,16 +482,43 @@ export default function ConfiguracoesPage() {
                 </div>
               </div>
 
+              {/* Servicos do Sistema */}
               <div>
-                <label className="block text-sm font-medium text-[#9E9E9E] mb-2">Servicos Oferecidos</label>
-                <input
-                  type="text"
-                  value={chatbotServicos}
-                  onChange={(e) => setChatbotServicos(e.target.value)}
-                  placeholder="troca de oleo, filtros, fluidos..."
-                  className="w-full bg-[#121212] border border-[#333333] rounded-xl px-4 py-3 text-[#E8E8E8] placeholder-gray-500 focus:outline-none focus:border-purple-500"
-                />
-                <p className="mt-1 text-xs text-[#6B7280]">Separe os servicos por virgula</p>
+                <label className="block text-sm font-medium text-[#9E9E9E] mb-2">
+                  Servicos que a LoopIA conhece
+                </label>
+                <div className="bg-[#121212] border border-[#333333] rounded-xl p-4">
+                  {servicos.length > 0 ? (
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                      {servicos.map((servico) => (
+                        <div
+                          key={servico.id}
+                          className="flex items-center justify-between p-2 bg-[#1E1E1E] rounded-lg"
+                        >
+                          <div className="flex items-center gap-2">
+                            <Wrench size={14} className="text-purple-400" />
+                            <span className="text-sm text-[#E8E8E8]">{servico.nome}</span>
+                          </div>
+                          <span className="text-sm text-[#43A047] font-medium">
+                            R$ {Number(servico.precoBase).toFixed(2).replace('.', ',')}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="text-center py-4">
+                      <Wrench size={24} className="text-[#6B7280] mx-auto mb-2" />
+                      <p className="text-sm text-[#6B7280]">Nenhum servico cadastrado</p>
+                      <p className="text-xs text-[#6B7280] mt-1">
+                        Cadastre servicos em Servicos para a LoopIA poder informar precos
+                      </p>
+                    </div>
+                  )}
+                </div>
+                <p className="mt-2 text-xs text-[#6B7280] flex items-center gap-1">
+                  <DollarSign size={12} />
+                  A LoopIA usa automaticamente os servicos e precos cadastrados no sistema
+                </p>
               </div>
 
               <div>
@@ -490,7 +539,7 @@ export default function ConfiguracoesPage() {
                     <p className="text-sm text-[#E8E8E8] font-medium">Como funciona</p>
                     <p className="text-xs text-[#9E9E9E] mt-1">
                       A LoopIA responde automaticamente as mensagens recebidas no WhatsApp usando inteligencia artificial (Gemini).
-                      Ela conhece os servicos da oficina e pode tirar duvidas dos clientes.
+                      Ela conhece os servicos da oficina, precos, e dados dos clientes cadastrados.
                     </p>
                   </div>
                 </div>

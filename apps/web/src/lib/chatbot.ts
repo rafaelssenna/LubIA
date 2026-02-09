@@ -25,6 +25,60 @@ interface CustomerData {
   isNewCustomer: boolean;
 }
 
+// Interface para serviços
+interface ServicoData {
+  nome: string;
+  categoria: string;
+  preco: number;
+}
+
+// Buscar serviços ativos do banco
+async function getServicos(): Promise<ServicoData[]> {
+  try {
+    const servicos = await prisma.servico.findMany({
+      where: { ativo: true },
+      orderBy: { categoria: 'asc' },
+    });
+
+    return servicos.map(s => ({
+      nome: s.nome,
+      categoria: s.categoria,
+      preco: Number(s.precoBase),
+    }));
+  } catch (error: any) {
+    console.error('[CHATBOT] Erro ao buscar serviços:', error?.message);
+    return [];
+  }
+}
+
+// Formatar serviços para o prompt
+function formatServicosParaPrompt(servicos: ServicoData[]): string {
+  if (servicos.length === 0) {
+    return 'troca de óleo, filtros, fluidos';
+  }
+
+  // Agrupar por categoria
+  const porCategoria: Record<string, ServicoData[]> = {};
+  for (const s of servicos) {
+    if (!porCategoria[s.categoria]) {
+      porCategoria[s.categoria] = [];
+    }
+    porCategoria[s.categoria].push(s);
+  }
+
+  // Formatar com preços
+  const linhas: string[] = [];
+  for (const [categoria, items] of Object.entries(porCategoria)) {
+    const categoriaFormatada = categoria.replace(/_/g, ' ').toLowerCase();
+    const servicosLista = items.map(s =>
+      `  - ${s.nome}: R$ ${s.preco.toFixed(2).replace('.', ',')}`
+    ).join('\n');
+    linhas.push(`${categoriaFormatada}:\n${servicosLista}`);
+  }
+
+  return linhas.join('\n');
+}
+
 // Buscar dados do cliente pelo telefone
 async function getCustomerData(phoneNumber: string): Promise<CustomerData | null> {
   try {
@@ -121,14 +175,13 @@ function buildSystemPrompt(
   config: {
     chatbotNome?: string | null;
     chatbotHorario?: string | null;
-    chatbotServicos?: string | null;
     nomeOficina?: string | null;
   },
-  customerData: CustomerData | null
+  customerData: CustomerData | null,
+  servicosFormatados: string
 ) {
   const nome = config.chatbotNome || 'LoopIA';
   const horario = config.chatbotHorario || 'Segunda a Sexta 8h-18h, Sábado 8h-12h';
-  const servicos = config.chatbotServicos || 'troca de óleo, filtros, fluidos';
   const oficina = config.nomeOficina || 'nossa oficina';
 
   // Contexto do cliente
@@ -182,9 +235,14 @@ Este cliente ainda não está cadastrado no sistema. Seja acolhedor e convide-o 
 - Usa emojis ocasionalmente para deixar a conversa leve
 - Nunca é robótica ou excessivamente formal
 
+## Serviços e Preços da Oficina
+${servicosFormatados}
+
+## Horário de Funcionamento
+${horario}
+
 ## Suas Capacidades
-- Responder sobre serviços: ${servicos}
-- Informar horários de funcionamento: ${horario}
+- Informar sobre serviços e PREÇOS (use os valores acima!)
 - Consultar dados do cliente se disponíveis
 - Sugerir agendamentos e lembretes de manutenção
 - Tirar dúvidas sobre manutenção preventiva
@@ -195,13 +253,14 @@ ${contextoCliente}
 2. Se o cliente tem veículo cadastrado, mencione o modelo naturalmente
 3. Se está perto da km de troca, sugira agendar
 4. Seja breve - máximo 2-3 frases por resposta
-5. Se não souber algo específico (preços exatos, disponibilidade), sugira entrar em contato
-6. NUNCA invente informações
+5. PODE informar preços dos serviços listados acima!
+6. NUNCA invente serviços ou preços que não estão na lista
 7. Se o cliente parece frustrado, seja empático
 
 ## Exemplos de Respostas Personalizadas
 - "Oi João! Vi que seu Civic já está com 48.000 km. Está na hora da troca de óleo! Quer agendar?"
 - "Bom dia Maria! Faz 4 meses desde a última revisão do seu Corolla. Tudo certo com ele?"
+- "A troca de óleo sintético sai por R$ 89,90. Quer agendar um horário?"
 - "Olá! Ainda não te conheço, mas fico feliz em ajudar! Em que posso ser útil?"
 
 ## Formato das Respostas
@@ -242,6 +301,11 @@ export async function generateChatResponse(
       console.log('[CHATBOT] Cliente novo (não cadastrado)');
     }
 
+    // Buscar serviços do banco
+    const servicos = await getServicos();
+    const servicosFormatados = formatServicosParaPrompt(servicos);
+    console.log('[CHATBOT] Serviços carregados:', servicos.length);
+
     const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
 
     // Recuperar ou iniciar histórico
@@ -266,7 +330,7 @@ export async function generateChatResponse(
     const contextMessage = `[${nomeCliente}]: ${userMessage}`;
 
     // Primeira mensagem inclui o system prompt
-    const systemPrompt = buildSystemPrompt(config || {}, customerData);
+    const systemPrompt = buildSystemPrompt(config || {}, customerData, servicosFormatados);
     const fullMessage = history.length === 0
       ? `${systemPrompt}\n\n--- Início da Conversa ---\n\n${contextMessage}`
       : contextMessage;
