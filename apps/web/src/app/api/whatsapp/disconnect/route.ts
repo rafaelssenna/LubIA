@@ -25,13 +25,12 @@ export async function POST() {
       },
     });
 
-    // Atualizar status no banco independente do resultado
+    // Atualizar status no banco (NÃO apagar token para poder reconectar na mesma instância)
     await prisma.configuracao.update({
       where: { id: 1 },
       data: {
         whatsappConnected: false,
-        whatsappNumber: null,
-        whatsappName: null,
+        // Mantém uazapiToken e uazapiInstanceId para reconectar
       },
     });
 

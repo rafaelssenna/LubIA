@@ -80,10 +80,18 @@ export default function ConfiguracoesPage() {
     try {
       const res = await fetch('/api/whatsapp/status');
       const data = await res.json();
+      console.log('[STATUS CHECK]', data);
       setWhatsappStatus(data);
+
       if (data.connected) {
+        // Conectou! Limpar QR code e parar polling
         setQrCode(null);
         setPairCode(null);
+        toast.success('WhatsApp conectado com sucesso!');
+      } else if (data.qrcode && qrCode) {
+        // QR code atualizado durante polling
+        setQrCode(data.qrcode);
+        if (data.paircode) setPairCode(data.paircode);
       }
     } catch (error) {
       console.error('Erro ao verificar status:', error);

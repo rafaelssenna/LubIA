@@ -45,26 +45,36 @@ export async function GET() {
     }
 
     const data = await response.json();
+    console.log('[WHATSAPP STATUS] Resposta UazAPI:', JSON.stringify(data, null, 2));
+
+    // A resposta tem: instance (objeto com dados) e status (objeto com connected/loggedIn)
+    const instance = data.instance || {};
+    const statusObj = data.status || {};
+
+    // Verificar se está conectado: status.connected (boolean) ou instance.status (string)
+    const isConnected = statusObj.connected === true || instance.status === 'connected';
 
     // Atualizar status no banco
-    const isConnected = data.status === 'connected';
     await prisma.configuracao.update({
       where: { id: 1 },
       data: {
         whatsappConnected: isConnected,
-        whatsappNumber: data.owner || null,
-        whatsappName: data.profileName || null,
+        whatsappNumber: instance.owner || null,
+        whatsappName: instance.profileName || null,
       },
     });
 
     return NextResponse.json({
       connected: isConnected,
       configured: true,
-      status: data.status,
-      profileName: data.profileName,
-      profilePicUrl: data.profilePicUrl,
-      number: data.owner,
-      isBusiness: data.isBusiness,
+      status: instance.status || (isConnected ? 'connected' : 'disconnected'),
+      profileName: instance.profileName,
+      profilePicUrl: instance.profilePicUrl,
+      number: instance.owner,
+      isBusiness: instance.isBusiness,
+      // Se está conectando, retornar QR code atualizado
+      qrcode: instance.qrcode,
+      paircode: instance.paircode,
     });
   } catch (error: any) {
     console.error('[WHATSAPP STATUS] Erro:', error?.message);
