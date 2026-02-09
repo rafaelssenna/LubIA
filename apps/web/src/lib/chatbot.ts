@@ -116,6 +116,39 @@ function formatServicosParaPrompt(servicos: ServicoData[]): string {
   return linhas.join('\n');
 }
 
+// Buscar histórico recente de mensagens do banco
+async function getRecentMessages(phoneNumber: string): Promise<string[]> {
+  try {
+    const cleanPhone = phoneNumber.replace(/\D/g, '');
+
+    const conversa = await prisma.conversa.findFirst({
+      where: {
+        OR: [
+          { telefone: { contains: cleanPhone.slice(-11) } },
+          { telefone: { contains: cleanPhone } },
+          { telefone: cleanPhone },
+        ],
+      },
+      include: {
+        mensagens: {
+          orderBy: { dataEnvio: 'desc' },
+          take: 5, // Últimas 5 mensagens para contexto
+        },
+      },
+    });
+
+    if (!conversa?.mensagens) return [];
+
+    // Retornar mensagens em ordem cronológica
+    return conversa.mensagens
+      .reverse()
+      .map(m => `${m.enviada ? '[Bot]' : '[Cliente]'}: ${m.conteudo}`);
+  } catch (error: any) {
+    console.error('[CHATBOT] Erro ao buscar histórico:', error?.message);
+    return [];
+  }
+}
+
 // Buscar dados do cliente pelo telefone
 async function getCustomerData(phoneNumber: string): Promise<CustomerData | null> {
   try {
@@ -481,9 +514,11 @@ function buildSystemPrompt(
 
   let contextoCliente = '';
   if (customerData && !customerData.isNewCustomer) {
+    const primeiroNomeCliente = customerData.nome.split(' ')[0];
     contextoCliente = `
-## Dados do Cliente (USE para personalizar as respostas)
-- Nome: ${customerData.nome}
+## Dados do Cliente (OBRIGATÓRIO usar estes dados)
+- Nome do cliente: ${customerData.nome}
+- IMPORTANTE: Chame o cliente de "${primeiroNomeCliente}" (NUNCA use outro nome!)
 - Veículos cadastrados:`;
 
     for (const v of customerData.veiculos) {
@@ -715,8 +750,8 @@ export async function generateChatResponse(
       /quer[oe]?\s*(sim|agendar|marcar)|sim.*agendar|vamos\s*l[áa]|pode\s*ser|bora|fechado|quero|vou|marca|agenda|combina/i.test(msgLower) ||
       // Perguntas sobre horário/disponibilidade = quer agendar
       /qual\s*hor[aá]rio|que\s*hora|tem\s*(hor[aá]rio|vaga|disponibilidade)|quando\s*(posso|pode|d[aá])|posso\s*ir|d[aá]\s*pra|consigo\s*(ir|levar)|levo\s*(ele|o\s*carro)|preciso\s*(marcar|agendar)/i.test(msgLower) ||
-      // Respostas afirmativas após oferta de agendamento
-      /^(sim|quero|vamos|bora|pode|ok|beleza|isso|claro|com\s*certeza)$/i.test(msgLower.trim())
+      // Respostas afirmativas após oferta de agendamento (incluindo typos comuns)
+      /^(sim+|zim|sin|sn|s|quero|vamos|bora|pode|ok|beleza|isso|claro|com\s*certeza|vamo|ss|sss)!*$/i.test(msgLower.trim())
     );
     const confirmacao = /^(sim|isso|ok|pode|certo|confirma|fechado|perfeito|combinado|bora|vamos)$/i.test(msgLower.trim()) ||
                        /confirm[ao]|t[áa]\s*(certo|bom|[óo]timo)|pode\s*ser|fechado/i.test(msgLower);
@@ -926,6 +961,22 @@ export async function generateChatResponse(
       history = history.slice(-20);
     }
 
+    // Se não temos histórico em memória, buscar do banco de dados
+    let historicoDobanco = '';
+    if (history.length === 0) {
+      const mensagensRecentes = await getRecentMessages(phoneNumber);
+      if (mensagensRecentes.length > 0) {
+        historicoDobanco = `\n\n## Histórico Recente de Mensagens (contexto importante!)
+As mensagens abaixo foram enviadas ANTES desta conversa começar. Use este contexto para entender o que o cliente está respondendo:
+
+${mensagensRecentes.join('\n')}
+
+---
+`;
+        console.log('[CHATBOT] Carregado histórico do banco:', mensagensRecentes.length, 'mensagens');
+      }
+    }
+
     const chat = model.startChat({
       history: history,
       generationConfig: {
@@ -939,7 +990,7 @@ export async function generateChatResponse(
 
     const systemPrompt = buildSystemPrompt(config || {}, customerData, servicosFormatados, agendamento.ativo ? agendamento : null);
     const fullMessage = history.length === 0
-      ? `${systemPrompt}\n\n--- Início da Conversa ---\n\n${contextMessage}`
+      ? `${systemPrompt}${historicoDobanco}\n\n--- Início da Conversa ---\n\n${contextMessage}`
       : contextMessage;
 
     const result = await chat.sendMessage(fullMessage);
