@@ -14,6 +14,7 @@ interface AgendamentoState {
   dataHora?: Date;
   servico?: string;
   etapa: 'inicio' | 'escolher_veiculo' | 'escolher_data' | 'confirmar';
+  horariosDisponiveis?: { data: Date; label: string }[];
 }
 const agendamentoState: Map<string, AgendamentoState> = new Map();
 
@@ -227,6 +228,94 @@ function parseHorarioParaString(horarioJson: string | null): string {
   }
 }
 
+// Buscar horários disponíveis nos próximos dias
+async function getHorariosDisponiveis(): Promise<{ data: Date; label: string }[]> {
+  try {
+    const config = await prisma.configuracao.findUnique({ where: { id: 1 } });
+    const horarioConfig = config?.chatbotHorario;
+
+    // Parse do horário de funcionamento
+    let horariosPorDia: Record<number, { abertura: number; fechamento: number }> = {
+      1: { abertura: 8, fechamento: 18 }, // Segunda
+      2: { abertura: 8, fechamento: 18 }, // Terça
+      3: { abertura: 8, fechamento: 18 }, // Quarta
+      4: { abertura: 8, fechamento: 18 }, // Quinta
+      5: { abertura: 8, fechamento: 18 }, // Sexta
+      6: { abertura: 8, fechamento: 12 }, // Sábado
+    };
+
+    if (horarioConfig && horarioConfig.startsWith('{')) {
+      try {
+        const h = JSON.parse(horarioConfig);
+        const diasMap: Record<string, number> = { seg: 1, ter: 2, qua: 3, qui: 4, sex: 5, sab: 6, dom: 0 };
+        for (const [dia, num] of Object.entries(diasMap)) {
+          if (h[dia]?.ativo) {
+            horariosPorDia[num] = {
+              abertura: parseInt(h[dia].abertura.split(':')[0]),
+              fechamento: parseInt(h[dia].fechamento.split(':')[0]),
+            };
+          } else {
+            delete horariosPorDia[num];
+          }
+        }
+      } catch {}
+    }
+
+    // Buscar agendamentos existentes nos próximos 7 dias
+    const hoje = new Date();
+    const fim = new Date(hoje);
+    fim.setDate(fim.getDate() + 7);
+
+    const agendamentosExistentes = await prisma.ordemServico.findMany({
+      where: {
+        dataAgendada: { gte: hoje, lte: fim },
+        status: { in: ['AGENDADO', 'EM_ANDAMENTO'] },
+      },
+      select: { dataAgendada: true },
+    });
+
+    // Criar set de horários já ocupados
+    const ocupados = new Set(
+      agendamentosExistentes
+        .filter(a => a.dataAgendada)
+        .map(a => a.dataAgendada!.toISOString())
+    );
+
+    // Gerar slots disponíveis
+    const slots: { data: Date; label: string }[] = [];
+    const diasSemana = ['domingo', 'segunda', 'terça', 'quarta', 'quinta', 'sexta', 'sábado'];
+
+    for (let d = 1; d <= 5 && slots.length < 4; d++) {
+      const data = new Date(hoje);
+      data.setDate(data.getDate() + d);
+      const diaSemana = data.getDay();
+
+      const horario = horariosPorDia[diaSemana];
+      if (!horario) continue;
+
+      // Gerar slots de hora em hora
+      for (let hora = horario.abertura; hora < horario.fechamento && slots.length < 4; hora += 2) {
+        const slot = new Date(data);
+        slot.setHours(hora, 0, 0, 0);
+
+        if (!ocupados.has(slot.toISOString())) {
+          const diaNome = diasSemana[diaSemana];
+          const periodo = hora < 12 ? 'manhã' : 'tarde';
+          slots.push({
+            data: slot,
+            label: `${diaNome} às ${hora}h (${periodo})`,
+          });
+        }
+      }
+    }
+
+    return slots;
+  } catch (error: any) {
+    console.error('[CHATBOT] Erro ao buscar horários:', error?.message);
+    return [];
+  }
+}
+
 // Criar ordem de serviço automaticamente
 async function criarOrdemServico(
   veiculoId: number,
@@ -405,10 +494,14 @@ O cliente está no processo de agendar um serviço.`;
 - Etapa atual: ESCOLHER VEÍCULO
 - Pergunte qual veículo ele quer trazer (liste as opções)`;
     } else if (agendamento.etapa === 'escolher_data') {
+      const slots = agendamento.horariosDisponiveis || [];
+      const slotsTexto = slots.map((s, i) => `${i + 1}. ${s.label}`).join('\n');
       contextoAgendamento += `
 - Veículo escolhido: ${agendamento.veiculoNome}
-- Etapa atual: ESCOLHER DATA/HORA
-- Pergunte qual dia e horário fica bom`;
+- Etapa atual: OFERECER HORÁRIOS DISPONÍVEIS
+- IMPORTANTE: Ofereça estas opções numeradas:
+${slotsTexto || '(sem horários disponíveis)'}
+- Pergunte qual opção o cliente prefere (1, 2, 3 ou 4)`;
     } else if (agendamento.etapa === 'confirmar') {
       const dataFormatada = agendamento.dataHora?.toLocaleDateString('pt-BR', {
         weekday: 'long', day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit'
@@ -500,11 +593,12 @@ export async function generateChatResponse(
         etapa: customerData.veiculos.length > 1 ? 'escolher_veiculo' : 'escolher_data',
       };
 
-      // Se só tem 1 veículo, já seleciona
+      // Se só tem 1 veículo, já seleciona e busca horários
       if (customerData.veiculos.length === 1) {
         const v = customerData.veiculos[0];
         agendamento.veiculoId = v.id;
         agendamento.veiculoNome = `${v.marca} ${v.modelo}`;
+        agendamento.horariosDisponiveis = await getHorariosDisponiveis();
       }
 
       agendamentoState.set(phoneNumber, agendamento);
@@ -520,6 +614,7 @@ export async function generateChatResponse(
           agendamento.veiculoId = v.id;
           agendamento.veiculoNome = `${v.marca} ${v.modelo}`;
           agendamento.etapa = 'escolher_data';
+          agendamento.horariosDisponiveis = await getHorariosDisponiveis();
           agendamentoState.set(phoneNumber, agendamento);
           console.log('[CHATBOT] Veículo selecionado:', agendamento.veiculoNome);
           break;
@@ -527,14 +622,50 @@ export async function generateChatResponse(
       }
     }
 
-    // Processar escolha de data
-    if (agendamento.ativo && agendamento.etapa === 'escolher_data') {
-      const dataInterpretada = interpretarDataHora(userMessage);
-      if (dataInterpretada) {
-        agendamento.dataHora = dataInterpretada;
+    // Processar escolha de horário (por número ou por nome do dia)
+    if (agendamento.ativo && agendamento.etapa === 'escolher_data' && agendamento.horariosDisponiveis) {
+      const slots = agendamento.horariosDisponiveis;
+      let slotEscolhido: { data: Date; label: string } | null = null;
+
+      // Tentar por número (1, 2, 3, 4)
+      const numMatch = msgLower.match(/^[^\d]*(\d)[^\d]*$/);
+      if (numMatch) {
+        const num = parseInt(numMatch[1]);
+        if (num >= 1 && num <= slots.length) {
+          slotEscolhido = slots[num - 1];
+        }
+      }
+
+      // Tentar por nome do dia ou palavra-chave
+      if (!slotEscolhido) {
+        for (const slot of slots) {
+          const labelLower = slot.label.toLowerCase();
+          if (msgLower.includes('segunda') && labelLower.includes('segunda')) slotEscolhido = slot;
+          else if (msgLower.includes('terça') && labelLower.includes('terça')) slotEscolhido = slot;
+          else if (msgLower.includes('quarta') && labelLower.includes('quarta')) slotEscolhido = slot;
+          else if (msgLower.includes('quinta') && labelLower.includes('quinta')) slotEscolhido = slot;
+          else if (msgLower.includes('sexta') && labelLower.includes('sexta')) slotEscolhido = slot;
+          else if (msgLower.includes('sábado') && labelLower.includes('sábado')) slotEscolhido = slot;
+          else if (msgLower.includes('sabado') && labelLower.includes('sábado')) slotEscolhido = slot;
+          else if (msgLower.includes('manhã') && labelLower.includes('manhã')) slotEscolhido = slot;
+          else if (msgLower.includes('tarde') && labelLower.includes('tarde')) slotEscolhido = slot;
+          if (slotEscolhido) break;
+        }
+      }
+
+      // Fallback: tentar interpretar data livremente
+      if (!slotEscolhido) {
+        const dataInterpretada = interpretarDataHora(userMessage);
+        if (dataInterpretada) {
+          slotEscolhido = { data: dataInterpretada, label: '' };
+        }
+      }
+
+      if (slotEscolhido) {
+        agendamento.dataHora = slotEscolhido.data;
         agendamento.etapa = 'confirmar';
         agendamentoState.set(phoneNumber, agendamento);
-        console.log('[CHATBOT] Data selecionada:', dataInterpretada);
+        console.log('[CHATBOT] Horário selecionado:', slotEscolhido.label || slotEscolhido.data);
       }
     }
 
