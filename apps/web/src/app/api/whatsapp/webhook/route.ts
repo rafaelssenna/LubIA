@@ -41,44 +41,33 @@ export async function POST(request: NextRequest) {
     // Log completo do payload para debug
     console.log('[WEBHOOK] Payload recebido:', JSON.stringify(data, null, 2));
 
-    // UazAPI pode enviar em diferentes formatos
-    // Formato 1: { event: 'messages', data: {...} }
-    // Formato 2: { type: 'messages', ... }
-    // Formato 3: Dados direto no root com key, message, etc.
-    const event = data.event || data.type || (data.key ? 'messages' : undefined);
-    const messageData = data.data || data;
+    // UazAPI envia: { EventType: 'messages', message: {...}, chat: {...} }
+    const event = data.EventType || data.event || data.type;
+    const message = data.message || {};
 
-    if (event === 'messages' && messageData) {
-      // UazAPI pode enviar key/message em níveis diferentes
-      const key = messageData.key || data.key || {};
-      const message = messageData.message || data.message || {};
-
+    if (event === 'messages' && message) {
       // Ignorar mensagens enviadas pela API (evitar loop)
-      if (messageData.wasSentByApi || data.wasSentByApi) {
+      if (message.wasSentByApi) {
         console.log('[WEBHOOK] Ignorando mensagem enviada pela API');
         return NextResponse.json({ success: true, ignored: true });
       }
 
       // Ignorar mensagens de grupo
-      if (key.remoteJid?.includes('@g.us')) {
+      if (message.isGroup) {
         console.log('[WEBHOOK] Ignorando mensagem de grupo');
         return NextResponse.json({ success: true, ignored: true });
       }
 
       // Ignorar mensagens enviadas por mim
-      if (key.fromMe) {
+      if (message.fromMe) {
         console.log('[WEBHOOK] Ignorando mensagem própria');
         return NextResponse.json({ success: true, ignored: true });
       }
 
-      // Extrair informações da mensagem
-      const from = key.remoteJid?.replace('@s.whatsapp.net', '') || '';
-      const text = message.conversation ||
-        message.extendedTextMessage?.text ||
-        message.imageMessage?.caption ||
-        message.videoMessage?.caption ||
-        '';
-      const pushName = messageData.pushName || data.pushName || '';
+      // Extrair informações da mensagem (formato UazAPI)
+      const from = (message.sender || message.chatid || '').replace('@s.whatsapp.net', '');
+      const text = message.content || message.text || '';
+      const pushName = message.senderName || '';
 
       // Se não tem texto, ignorar (pode ser sticker, audio, etc.)
       if (!text.trim()) {
@@ -118,7 +107,7 @@ export async function POST(request: NextRequest) {
 
     } else if (event === 'connection' || data.status) {
       // Evento de conexão/desconexão
-      const status = messageData?.status || data.status;
+      const status = data.status || message?.status;
       console.log('[WEBHOOK] Evento de conexão:', status);
 
       if (status === 'connected' || status === 'open') {
