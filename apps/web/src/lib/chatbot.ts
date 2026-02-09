@@ -171,6 +171,54 @@ function calcularProximaTroca(kmAtual: number | null, kmUltimaOrdem: number | nu
   return `Próxima troca: ${proximaTroca.toLocaleString('pt-BR')} km`;
 }
 
+// Converter JSON de horário para string legível
+function parseHorarioParaString(horarioJson: string | null): string {
+  if (!horarioJson) return 'Segunda a Sexta 8h-18h, Sábado 8h-12h';
+
+  try {
+    // Se não começa com {, é string legada
+    if (!horarioJson.startsWith('{')) {
+      return horarioJson;
+    }
+
+    const horario = JSON.parse(horarioJson);
+    const DIAS = [
+      { key: 'seg', label: 'Segunda' },
+      { key: 'ter', label: 'Terça' },
+      { key: 'qua', label: 'Quarta' },
+      { key: 'qui', label: 'Quinta' },
+      { key: 'sex', label: 'Sexta' },
+      { key: 'sab', label: 'Sábado' },
+      { key: 'dom', label: 'Domingo' },
+    ];
+
+    const grupos: { dias: string[]; abertura: string; fechamento: string }[] = [];
+
+    for (const dia of DIAS) {
+      const h = horario[dia.key];
+      if (!h?.ativo) continue;
+
+      const ultimoGrupo = grupos[grupos.length - 1];
+      if (ultimoGrupo && ultimoGrupo.abertura === h.abertura && ultimoGrupo.fechamento === h.fechamento) {
+        ultimoGrupo.dias.push(dia.label);
+      } else {
+        grupos.push({ dias: [dia.label], abertura: h.abertura, fechamento: h.fechamento });
+      }
+    }
+
+    if (grupos.length === 0) return 'Horário não definido';
+
+    return grupos.map(g => {
+      const diasStr = g.dias.length > 2
+        ? `${g.dias[0]} a ${g.dias[g.dias.length - 1]}`
+        : g.dias.join(' e ');
+      return `${diasStr} ${g.abertura.replace(':', 'h')}-${g.fechamento.replace(':', 'h')}`;
+    }).join(', ');
+  } catch {
+    return horarioJson || 'Segunda a Sexta 8h-18h, Sábado 8h-12h';
+  }
+}
+
 function buildSystemPrompt(
   config: {
     chatbotNome?: string | null;
@@ -181,7 +229,7 @@ function buildSystemPrompt(
   servicosFormatados: string
 ) {
   const nome = config.chatbotNome || 'LoopIA';
-  const horario = config.chatbotHorario || 'Segunda a Sexta 8h-18h, Sábado 8h-12h';
+  const horario = parseHorarioParaString(config.chatbotHorario || null);
   const oficina = config.nomeOficina || 'nossa oficina';
 
   // Contexto do cliente

@@ -55,6 +55,79 @@ interface Servico {
   ativo: boolean;
 }
 
+interface DiaHorario {
+  ativo: boolean;
+  abertura: string;
+  fechamento: string;
+}
+
+interface HorarioSemana {
+  seg: DiaHorario;
+  ter: DiaHorario;
+  qua: DiaHorario;
+  qui: DiaHorario;
+  sex: DiaHorario;
+  sab: DiaHorario;
+  dom: DiaHorario;
+}
+
+const DIAS_SEMANA = [
+  { key: 'seg', label: 'Segunda' },
+  { key: 'ter', label: 'Terça' },
+  { key: 'qua', label: 'Quarta' },
+  { key: 'qui', label: 'Quinta' },
+  { key: 'sex', label: 'Sexta' },
+  { key: 'sab', label: 'Sábado' },
+  { key: 'dom', label: 'Domingo' },
+] as const;
+
+const HORARIOS = [
+  '06:00', '06:30', '07:00', '07:30', '08:00', '08:30', '09:00', '09:30',
+  '10:00', '10:30', '11:00', '11:30', '12:00', '12:30', '13:00', '13:30',
+  '14:00', '14:30', '15:00', '15:30', '16:00', '16:30', '17:00', '17:30',
+  '18:00', '18:30', '19:00', '19:30', '20:00', '20:30', '21:00', '21:30', '22:00',
+];
+
+const horarioPadrao: HorarioSemana = {
+  seg: { ativo: true, abertura: '08:00', fechamento: '18:00' },
+  ter: { ativo: true, abertura: '08:00', fechamento: '18:00' },
+  qua: { ativo: true, abertura: '08:00', fechamento: '18:00' },
+  qui: { ativo: true, abertura: '08:00', fechamento: '18:00' },
+  sex: { ativo: true, abertura: '08:00', fechamento: '18:00' },
+  sab: { ativo: true, abertura: '08:00', fechamento: '12:00' },
+  dom: { ativo: false, abertura: '08:00', fechamento: '12:00' },
+};
+
+// Converter horário estruturado para string legível
+function horarioParaString(horario: HorarioSemana): string {
+  const grupos: { dias: string[]; abertura: string; fechamento: string }[] = [];
+
+  for (const dia of DIAS_SEMANA) {
+    const h = horario[dia.key];
+    if (!h.ativo) continue;
+
+    const ultimoGrupo = grupos[grupos.length - 1];
+    if (ultimoGrupo && ultimoGrupo.abertura === h.abertura && ultimoGrupo.fechamento === h.fechamento) {
+      ultimoGrupo.dias.push(dia.label);
+    } else {
+      grupos.push({ dias: [dia.label], abertura: h.abertura, fechamento: h.fechamento });
+    }
+  }
+
+  return grupos.map(g => {
+    const diasStr = g.dias.length > 2
+      ? `${g.dias[0]} a ${g.dias[g.dias.length - 1]}`
+      : g.dias.join(' e ');
+    return `${diasStr} ${g.abertura.replace(':', 'h')}-${g.fechamento.replace(':', 'h')}`;
+  }).join(', ');
+}
+
+// Tentar converter string para horário estruturado (fallback para padrão)
+function stringParaHorario(str: string): HorarioSemana {
+  // Por simplicidade, sempre retorna o padrão - a string é só para exibição
+  return { ...horarioPadrao };
+}
+
 export default function ConfiguracoesPage() {
   const toast = useToast();
   const [loading, setLoading] = useState(true);
@@ -77,11 +150,19 @@ export default function ConfiguracoesPage() {
   // Chatbot states
   const [chatbotEnabled, setChatbotEnabled] = useState(true);
   const [chatbotNome, setChatbotNome] = useState('LoopIA');
-  const [chatbotHorario, setChatbotHorario] = useState('Segunda a Sexta 8h-18h, Sábado 8h-12h');
+  const [chatbotHorario, setChatbotHorario] = useState<HorarioSemana>(horarioPadrao);
   const [chatbotBoasVindas, setChatbotBoasVindas] = useState('Olá! Sou a LoopIA, assistente virtual da oficina. Como posso ajudar?');
 
   // Serviços do banco
   const [servicos, setServicos] = useState<Servico[]>([]);
+
+  // Atualizar dia específico do horário
+  const updateHorarioDia = (dia: keyof HorarioSemana, campo: keyof DiaHorario, valor: boolean | string) => {
+    setChatbotHorario(prev => ({
+      ...prev,
+      [dia]: { ...prev[dia], [campo]: valor },
+    }));
+  };
 
   const fetchConfig = async () => {
     try {
@@ -96,7 +177,17 @@ export default function ConfiguracoesPage() {
         // Chatbot
         setChatbotEnabled(data.data.chatbotEnabled ?? true);
         setChatbotNome(data.data.chatbotNome || 'LoopIA');
-        setChatbotHorario(data.data.chatbotHorario || 'Segunda a Sexta 8h-18h, Sábado 8h-12h');
+        // Tentar carregar horário salvo como JSON, senão usar padrão
+        try {
+          const horarioSalvo = data.data.chatbotHorario;
+          if (horarioSalvo && horarioSalvo.startsWith('{')) {
+            setChatbotHorario(JSON.parse(horarioSalvo));
+          } else {
+            setChatbotHorario(horarioPadrao);
+          }
+        } catch {
+          setChatbotHorario(horarioPadrao);
+        }
         setChatbotBoasVindas(data.data.chatbotBoasVindas || 'Olá! Sou a LoopIA, assistente virtual da oficina.');
       }
     } catch (error) {
@@ -172,7 +263,7 @@ export default function ConfiguracoesPage() {
           endereco,
           chatbotEnabled,
           chatbotNome,
-          chatbotHorario,
+          chatbotHorario: JSON.stringify(chatbotHorario),
           chatbotBoasVindas,
         }),
       });
@@ -459,27 +550,74 @@ export default function ConfiguracoesPage() {
 
           {chatbotEnabled && (
             <div className="p-6 space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-[#9E9E9E] mb-2">Nome do Assistente</label>
-                  <input
-                    type="text"
-                    value={chatbotNome}
-                    onChange={(e) => setChatbotNome(e.target.value)}
-                    placeholder="LoopIA"
-                    className="w-full bg-[#121212] border border-[#333333] rounded-xl px-4 py-3 text-[#E8E8E8] placeholder-gray-500 focus:outline-none focus:border-purple-500"
-                  />
+              <div>
+                <label className="block text-sm font-medium text-[#9E9E9E] mb-2">Nome do Assistente</label>
+                <input
+                  type="text"
+                  value={chatbotNome}
+                  onChange={(e) => setChatbotNome(e.target.value)}
+                  placeholder="LoopIA"
+                  className="w-full bg-[#121212] border border-[#333333] rounded-xl px-4 py-3 text-[#E8E8E8] placeholder-gray-500 focus:outline-none focus:border-purple-500"
+                />
+              </div>
+
+              {/* Horário de Funcionamento */}
+              <div>
+                <label className="block text-sm font-medium text-[#9E9E9E] mb-2">Horario de Funcionamento</label>
+                <div className="bg-[#121212] border border-[#333333] rounded-xl p-4 space-y-2">
+                  {DIAS_SEMANA.map((dia) => (
+                    <div
+                      key={dia.key}
+                      className={`flex items-center gap-3 p-2 rounded-lg transition-colors ${
+                        chatbotHorario[dia.key].ativo ? 'bg-[#1E1E1E]' : 'bg-transparent opacity-50'
+                      }`}
+                    >
+                      <button
+                        type="button"
+                        onClick={() => updateHorarioDia(dia.key, 'ativo', !chatbotHorario[dia.key].ativo)}
+                        className={`w-5 h-5 rounded flex items-center justify-center border transition-colors ${
+                          chatbotHorario[dia.key].ativo
+                            ? 'bg-[#43A047] border-[#43A047]'
+                            : 'bg-transparent border-[#333333]'
+                        }`}
+                      >
+                        {chatbotHorario[dia.key].ativo && (
+                          <CheckCircle size={14} className="text-white" />
+                        )}
+                      </button>
+                      <span className="w-20 text-sm text-[#E8E8E8]">{dia.label}</span>
+                      {chatbotHorario[dia.key].ativo && (
+                        <>
+                          <select
+                            value={chatbotHorario[dia.key].abertura}
+                            onChange={(e) => updateHorarioDia(dia.key, 'abertura', e.target.value)}
+                            className="bg-[#121212] border border-[#333333] rounded-lg px-2 py-1 text-sm text-[#E8E8E8] focus:outline-none focus:border-purple-500"
+                          >
+                            {HORARIOS.map((h) => (
+                              <option key={h} value={h}>{h}</option>
+                            ))}
+                          </select>
+                          <span className="text-[#6B7280]">às</span>
+                          <select
+                            value={chatbotHorario[dia.key].fechamento}
+                            onChange={(e) => updateHorarioDia(dia.key, 'fechamento', e.target.value)}
+                            className="bg-[#121212] border border-[#333333] rounded-lg px-2 py-1 text-sm text-[#E8E8E8] focus:outline-none focus:border-purple-500"
+                          >
+                            {HORARIOS.map((h) => (
+                              <option key={h} value={h}>{h}</option>
+                            ))}
+                          </select>
+                        </>
+                      )}
+                      {!chatbotHorario[dia.key].ativo && (
+                        <span className="text-sm text-[#6B7280]">Fechado</span>
+                      )}
+                    </div>
+                  ))}
                 </div>
-                <div>
-                  <label className="block text-sm font-medium text-[#9E9E9E] mb-2">Horario de Funcionamento</label>
-                  <input
-                    type="text"
-                    value={chatbotHorario}
-                    onChange={(e) => setChatbotHorario(e.target.value)}
-                    placeholder="Segunda a Sexta 8h-18h, Sabado 8h-12h"
-                    className="w-full bg-[#121212] border border-[#333333] rounded-xl px-4 py-3 text-[#E8E8E8] placeholder-gray-500 focus:outline-none focus:border-purple-500"
-                  />
-                </div>
+                <p className="mt-2 text-xs text-[#9E9E9E]">
+                  Resumo: {horarioParaString(chatbotHorario) || 'Nenhum dia selecionado'}
+                </p>
               </div>
 
               {/* Servicos do Sistema */}
