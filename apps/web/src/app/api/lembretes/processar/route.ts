@@ -3,6 +3,23 @@ import { prisma } from '@/lib/prisma';
 
 const UAZAPI_URL = process.env.UAZAPI_URL || 'https://hia-clientes.uazapi.com';
 
+// Tipo para veículo com lembrete
+interface VeiculoLembrete {
+  lembreteId: number;
+  modelo: string;
+  marca: string;
+  kmLembrete: number | null;
+  tipo: string;
+}
+
+// Tipo para grupo de lembretes por cliente
+interface GrupoCliente {
+  clienteNome: string;
+  telefone: string;
+  veiculos: VeiculoLembrete[];
+  lembreteIds: number[];
+}
+
 // Função para salvar mensagem enviada no histórico de conversas
 async function saveOutgoingMessage(
   telefone: string,
@@ -10,13 +27,11 @@ async function saveOutgoingMessage(
   clienteNome?: string
 ): Promise<void> {
   try {
-    // Buscar ou criar conversa
     let conversa = await prisma.conversa.findUnique({
       where: { telefone },
     });
 
     if (conversa) {
-      // Atualizar conversa existente
       await prisma.conversa.update({
         where: { id: conversa.id },
         data: {
@@ -25,7 +40,6 @@ async function saveOutgoingMessage(
         },
       });
     } else {
-      // Tentar vincular a cliente existente
       const telefoneLimpo = telefone.replace(/\D/g, '');
       const cliente = await prisma.cliente.findFirst({
         where: {
@@ -48,7 +62,6 @@ async function saveOutgoingMessage(
       });
     }
 
-    // Salvar mensagem
     await prisma.mensagem.create({
       data: {
         conversaId: conversa.id,
@@ -74,7 +87,6 @@ async function sendWhatsAppMessage(
   clienteNome?: string
 ): Promise<boolean> {
   try {
-    // Limpar e formatar número
     const cleanNumber = phone.replace(/\D/g, '');
     const formattedNumber = cleanNumber.length === 10 || cleanNumber.length === 11
       ? `55${cleanNumber}`
@@ -97,9 +109,7 @@ async function sendWhatsAppMessage(
       return false;
     }
 
-    // Salvar mensagem no histórico de conversas
     await saveOutgoingMessage(formattedNumber, message, clienteNome);
-
     console.log('[LEMBRETES] Mensagem enviada para:', formattedNumber);
     return true;
   } catch (error: any) {
@@ -108,55 +118,54 @@ async function sendWhatsAppMessage(
   }
 }
 
-// Gerar mensagem personalizada para o lembrete
-function gerarMensagem(
-  lembrete: {
-    tipo: string;
-    kmLembrete: number | null;
-    mensagem: string | null;
-  },
-  veiculo: {
-    marca: string;
-    modelo: string;
-    placa: string;
-    kmAtual: number | null;
-  },
-  cliente: { nome: string },
-  oficina: string
-): string {
-  const primeiroNome = cliente.nome.split(' ')[0];
-  const veiculoDesc = `${veiculo.marca} ${veiculo.modelo} (${veiculo.placa})`;
+// Gerar mensagem humanizada agrupando veículos do mesmo cliente
+function gerarMensagemHumanizada(grupo: GrupoCliente): string {
+  const primeiroNome = grupo.clienteNome.split(' ')[0];
+  const veiculos = grupo.veiculos;
 
-  // Se tem mensagem customizada, usar ela
-  if (lembrete.mensagem) {
-    return lembrete.mensagem
-      .replace('{nome}', primeiroNome)
-      .replace('{veiculo}', veiculoDesc)
-      .replace('{km}', lembrete.kmLembrete?.toLocaleString('pt-BR') || '');
+  // Saudação personalizada
+  const saudacoes = [
+    `Oi ${primeiroNome}! Tudo bem? 😊`,
+    `E aí ${primeiroNome}, tudo certo?`,
+    `Oi ${primeiroNome}! Como você está?`,
+  ];
+  const saudacao = saudacoes[Math.floor(Math.random() * saudacoes.length)];
+
+  // Montar lista de veículos
+  if (veiculos.length === 1) {
+    // Um veículo só
+    const v = veiculos[0];
+    const kmInfo = v.kmLembrete ? ` nos ${v.kmLembrete.toLocaleString('pt-BR')} km` : '';
+
+    return `${saudacao}
+
+Passando pra te dar um toque: vi aqui que o ${v.modelo} está chegando na hora da troca de óleo${kmInfo}.
+
+A troca no prazo certo ajuda a proteger o motor e evitar dor de cabeça lá na frente.
+
+Quer que eu reserve um horário pra dar uma olhada? Consigo encaixar ainda essa semana!`;
   }
 
-  // Mensagens padrão por tipo
-  const mensagens: Record<string, string> = {
-    TROCA_OLEO: `Oi ${primeiroNome}! 🚗\n\nPassando pra lembrar que seu ${veiculoDesc} está chegando na hora da troca de óleo${lembrete.kmLembrete ? ` (${lembrete.kmLembrete.toLocaleString('pt-BR')} km)` : ''}!\n\n${oficina}`,
+  // Múltiplos veículos - agrupar na mesma mensagem
+  const listaVeiculos = veiculos.map(v => {
+    const kmInfo = v.kmLembrete ? `${v.kmLembrete.toLocaleString('pt-BR')} km` : 'em breve';
+    return `🔧 ${v.modelo} — próxima troca nos ${kmInfo}`;
+  }).join('\n');
 
-    REVISAO: `Olá ${primeiroNome}! 👋\n\nSeu ${veiculoDesc} está precisando de uma revisão.\n\n${oficina}`,
+  return `${saudacao}
 
-    FILTROS: `Oi ${primeiroNome}!\n\nLembrete: está na hora de trocar os filtros do seu ${veiculoDesc}.\n\n${oficina}`,
+Passando pra te dar um toque: vi aqui que seus veículos estão chegando na hora da troca de óleo:
 
-    PNEUS: `Olá ${primeiroNome}! 🛞\n\nSeu ${veiculoDesc} pode estar precisando de uma olhada nos pneus.\n\n${oficina}`,
+${listaVeiculos}
 
-    FREIOS: `Oi ${primeiroNome}! 🔴\n\nLembrete importante: verifique os freios do seu ${veiculoDesc}.\n\n${oficina}`,
+A troca no prazo certo ajuda a proteger o motor e evitar dor de cabeça lá na frente.
 
-    OUTRO: `Olá ${primeiroNome}!\n\nTemos um lembrete de manutenção para seu ${veiculoDesc}.\n\n${oficina}`,
-  };
-
-  return mensagens[lembrete.tipo] || mensagens.OUTRO;
+Quer que eu reserve um horário pra gente dar uma olhada neles? Consigo encaixar ainda essa semana!`;
 }
 
 // POST - Processar e enviar lembretes pendentes
 export async function POST() {
   try {
-    // Buscar configuração
     const config = await prisma.configuracao.findUnique({
       where: { id: 1 },
     });
@@ -174,9 +183,9 @@ export async function POST() {
     }
 
     const hoje = new Date();
-    hoje.setHours(23, 59, 59, 999); // Até o fim do dia
+    hoje.setHours(23, 59, 59, 999);
 
-    // Buscar lembretes pendentes que vencem hoje ou antes
+    // Buscar lembretes pendentes
     const lembretesPendentes = await prisma.lembrete.findMany({
       where: {
         enviado: false,
@@ -194,84 +203,89 @@ export async function POST() {
 
     console.log(`[LEMBRETES] Encontrados ${lembretesPendentes.length} lembretes pendentes`);
 
-    const oficina = config.nomeOficina || 'Sua oficina de confiança';
-    const resultados = {
-      total: lembretesPendentes.length,
-      enviados: 0,
-      falhas: 0,
-      detalhes: [] as { id: number; cliente: string; status: string }[],
-    };
+    // Agrupar lembretes por cliente (telefone)
+    const gruposPorCliente = new Map<string, GrupoCliente>();
 
-    // Processar cada lembrete
     for (const lembrete of lembretesPendentes) {
       const cliente = lembrete.veiculo.cliente;
 
-      // Verificar se cliente tem telefone
       if (!cliente.telefone) {
-        resultados.falhas++;
-        resultados.detalhes.push({
-          id: lembrete.id,
-          cliente: cliente.nome,
-          status: 'sem_telefone',
-        });
-        continue;
+        continue; // Pular clientes sem telefone
       }
 
-      // Gerar mensagem personalizada
-      const mensagem = gerarMensagem(
-        {
-          tipo: lembrete.tipo,
-          kmLembrete: lembrete.kmLembrete,
-          mensagem: lembrete.mensagem,
-        },
-        {
-          marca: lembrete.veiculo.marca,
-          modelo: lembrete.veiculo.modelo,
-          placa: lembrete.veiculo.placa,
-          kmAtual: lembrete.veiculo.kmAtual,
-        },
-        { nome: cliente.nome },
-        oficina
-      );
+      const telefone = cliente.telefone;
 
-      // Enviar mensagem
+      if (!gruposPorCliente.has(telefone)) {
+        gruposPorCliente.set(telefone, {
+          clienteNome: cliente.nome,
+          telefone,
+          veiculos: [],
+          lembreteIds: [],
+        });
+      }
+
+      const grupo = gruposPorCliente.get(telefone)!;
+      grupo.veiculos.push({
+        lembreteId: lembrete.id,
+        modelo: lembrete.veiculo.modelo,
+        marca: lembrete.veiculo.marca,
+        kmLembrete: lembrete.kmLembrete,
+        tipo: lembrete.tipo,
+      });
+      grupo.lembreteIds.push(lembrete.id);
+    }
+
+    const resultados = {
+      totalLembretes: lembretesPendentes.length,
+      totalClientes: gruposPorCliente.size,
+      enviados: 0,
+      falhas: 0,
+      detalhes: [] as { cliente: string; veiculos: number; status: string }[],
+    };
+
+    // Processar cada grupo (um envio por cliente)
+    for (const [telefone, grupo] of gruposPorCliente) {
+      // Gerar mensagem humanizada
+      const mensagem = gerarMensagemHumanizada(grupo);
+
+      // Enviar mensagem única para o cliente
       const enviado = await sendWhatsAppMessage(
         config.uazapiToken,
-        cliente.telefone,
+        telefone,
         mensagem,
-        cliente.nome
+        grupo.clienteNome
       );
 
       if (enviado) {
-        // Marcar como enviado
-        await prisma.lembrete.update({
-          where: { id: lembrete.id },
+        // Marcar TODOS os lembretes do grupo como enviados
+        await prisma.lembrete.updateMany({
+          where: { id: { in: grupo.lembreteIds } },
           data: {
             enviado: true,
             dataEnvio: new Date(),
           },
         });
 
-        resultados.enviados++;
+        resultados.enviados += grupo.lembreteIds.length;
         resultados.detalhes.push({
-          id: lembrete.id,
-          cliente: cliente.nome,
+          cliente: grupo.clienteNome,
+          veiculos: grupo.veiculos.length,
           status: 'enviado',
         });
       } else {
-        resultados.falhas++;
+        resultados.falhas += grupo.lembreteIds.length;
         resultados.detalhes.push({
-          id: lembrete.id,
-          cliente: cliente.nome,
+          cliente: grupo.clienteNome,
+          veiculos: grupo.veiculos.length,
           status: 'erro_envio',
         });
       }
 
-      // Pequeno delay entre envios para não sobrecarregar
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      // Delay entre envios
+      await new Promise(resolve => setTimeout(resolve, 1500));
     }
 
-    console.log(`[LEMBRETES] Processamento concluído: ${resultados.enviados} enviados, ${resultados.falhas} falhas`);
+    console.log(`[LEMBRETES] Processamento concluído: ${resultados.enviados} enviados para ${gruposPorCliente.size} clientes`);
 
     return NextResponse.json({
       success: true,
