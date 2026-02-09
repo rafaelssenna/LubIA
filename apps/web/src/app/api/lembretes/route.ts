@@ -178,3 +178,38 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Erro ao criar lembrete' }, { status: 500 });
   }
 }
+
+// PATCH - Resetar lembretes (marcar como não enviados)
+export async function PATCH(request: NextRequest) {
+  try {
+    const body = await request.json();
+    const { action, ids } = body;
+
+    if (action === 'reset') {
+      // Resetar lembretes específicos ou todos os enviados
+      const where = ids && ids.length > 0
+        ? { id: { in: ids } }
+        : { enviado: true };
+
+      const result = await prisma.lembrete.updateMany({
+        where,
+        data: {
+          enviado: false,
+          dataEnvio: null,
+        },
+      });
+
+      console.log(`[LEMBRETES API PATCH] Resetados ${result.count} lembretes`);
+
+      return NextResponse.json({
+        success: true,
+        resetados: result.count,
+      });
+    }
+
+    return NextResponse.json({ error: 'Ação inválida' }, { status: 400 });
+  } catch (error: any) {
+    console.error('[LEMBRETES API PATCH] Erro:', error?.message);
+    return NextResponse.json({ error: 'Erro ao resetar lembretes' }, { status: 500 });
+  }
+}
