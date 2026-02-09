@@ -3,8 +3,76 @@ import { prisma } from '@/lib/prisma';
 
 const UAZAPI_URL = process.env.UAZAPI_URL || 'https://hia-clientes.uazapi.com';
 
+// Função para salvar mensagem enviada no histórico de conversas
+async function saveOutgoingMessage(
+  telefone: string,
+  conteudo: string,
+  clienteNome?: string
+): Promise<void> {
+  try {
+    // Buscar ou criar conversa
+    let conversa = await prisma.conversa.findUnique({
+      where: { telefone },
+    });
+
+    if (conversa) {
+      // Atualizar conversa existente
+      await prisma.conversa.update({
+        where: { id: conversa.id },
+        data: {
+          ultimaMensagem: conteudo.substring(0, 200),
+          ultimaData: new Date(),
+        },
+      });
+    } else {
+      // Tentar vincular a cliente existente
+      const telefoneLimpo = telefone.replace(/\D/g, '');
+      const cliente = await prisma.cliente.findFirst({
+        where: {
+          OR: [
+            { telefone: { contains: telefoneLimpo } },
+            { telefone: { contains: telefoneLimpo.slice(-11) } },
+          ],
+        },
+      });
+
+      conversa = await prisma.conversa.create({
+        data: {
+          telefone,
+          nome: cliente?.nome || clienteNome || null,
+          clienteId: cliente?.id || null,
+          ultimaMensagem: conteudo.substring(0, 200),
+          ultimaData: new Date(),
+          naoLidas: 0,
+        },
+      });
+    }
+
+    // Salvar mensagem
+    await prisma.mensagem.create({
+      data: {
+        conversaId: conversa.id,
+        tipo: 'TEXTO',
+        conteudo,
+        enviada: true,
+        lida: true,
+        dataEnvio: new Date(),
+      },
+    });
+
+    console.log('[LEMBRETES] Mensagem salva no histórico para:', telefone);
+  } catch (error: any) {
+    console.error('[LEMBRETES] Erro ao salvar mensagem no histórico:', error?.message);
+  }
+}
+
 // Função para enviar mensagem via WhatsApp
-async function sendWhatsAppMessage(token: string, phone: string, message: string): Promise<boolean> {
+async function sendWhatsAppMessage(
+  token: string,
+  phone: string,
+  message: string,
+  clienteNome?: string
+): Promise<boolean> {
   try {
     // Limpar e formatar número
     const cleanNumber = phone.replace(/\D/g, '');
@@ -28,6 +96,9 @@ async function sendWhatsAppMessage(token: string, phone: string, message: string
       console.error('[LEMBRETES] Erro ao enviar para:', formattedNumber);
       return false;
     }
+
+    // Salvar mensagem no histórico de conversas
+    await saveOutgoingMessage(formattedNumber, message, clienteNome);
 
     console.log('[LEMBRETES] Mensagem enviada para:', formattedNumber);
     return true;
@@ -167,7 +238,8 @@ export async function POST() {
       const enviado = await sendWhatsAppMessage(
         config.uazapiToken,
         cliente.telefone,
-        mensagem
+        mensagem,
+        cliente.nome
       );
 
       if (enviado) {

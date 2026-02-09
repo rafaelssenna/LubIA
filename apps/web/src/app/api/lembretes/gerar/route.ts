@@ -1,6 +1,36 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 
+// Calcular média de km/mês baseado no histórico de ordens
+function calcularMediaKmMes(ordens: { kmEntrada: number | null; createdAt: Date }[]): number {
+  // Filtrar ordens com km registrado e ordenar por data
+  const ordensComKm = ordens
+    .filter(o => o.kmEntrada !== null)
+    .sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
+
+  if (ordensComKm.length < 2) {
+    // Sem histórico suficiente, usar média padrão de 1000 km/mês
+    return 1000;
+  }
+
+  // Calcular diferença total de km e tempo
+  const primeiraOrdem = ordensComKm[0];
+  const ultimaOrdem = ordensComKm[ordensComKm.length - 1];
+
+  const kmTotal = ultimaOrdem.kmEntrada! - primeiraOrdem.kmEntrada!;
+  const diasTotal = Math.max(1,
+    (new Date(ultimaOrdem.createdAt).getTime() - new Date(primeiraOrdem.createdAt).getTime())
+    / (1000 * 60 * 60 * 24)
+  );
+
+  // Converter para km/mês
+  const kmPorDia = kmTotal / diasTotal;
+  const kmPorMes = kmPorDia * 30;
+
+  // Limitar entre 500 e 5000 km/mês (valores razoáveis)
+  return Math.max(500, Math.min(5000, kmPorMes));
+}
+
 // POST - Gerar lembretes automáticos baseado no KM dos veículos
 export async function POST() {
   try {
@@ -24,7 +54,6 @@ export async function POST() {
             status: { in: ['CONCLUIDO', 'ENTREGUE'] },
           },
           orderBy: { createdAt: 'desc' },
-          take: 1,
           include: {
             itens: {
               include: { servico: true },
@@ -40,7 +69,7 @@ export async function POST() {
       },
     });
 
-    const lembretesGerados: { veiculoId: number; placa: string; kmLembrete: number }[] = [];
+    const lembretesGerados: { veiculoId: number; placa: string; kmLembrete: number; mediaKmMes: number; diasEstimados: number }[] = [];
 
     for (const veiculo of veiculos) {
       // Se já tem lembrete pendente de troca de óleo, pular
@@ -73,8 +102,13 @@ export async function POST() {
 
       // Se faltam menos de 500km, criar lembrete
       if (kmRestantes <= kmAntecedencia && kmRestantes > -1000) {
-        // Calcular data estimada (assumindo ~1000km/mês)
-        const diasEstimados = Math.max(1, Math.floor(kmRestantes / 33)); // ~33km/dia
+        // Calcular média de km/mês baseada no histórico REAL do veículo
+        const mediaKmMes = calcularMediaKmMes(veiculo.ordens);
+        const kmPorDia = mediaKmMes / 30;
+
+        // Estimar quantos dias até atingir o km da próxima troca
+        const diasEstimados = kmRestantes > 0 ? Math.max(1, Math.ceil(kmRestantes / kmPorDia)) : 1;
+
         const dataLembrete = new Date();
         dataLembrete.setDate(dataLembrete.getDate() + Math.min(diasEstimados, diasAntecedencia));
 
@@ -93,6 +127,8 @@ export async function POST() {
           veiculoId: veiculo.id,
           placa: veiculo.placa,
           kmLembrete: proximaTroca,
+          mediaKmMes: Math.round(mediaKmMes),
+          diasEstimados,
         });
       }
     }
@@ -129,7 +165,6 @@ export async function GET() {
             status: { in: ['CONCLUIDO', 'ENTREGUE'] },
           },
           orderBy: { createdAt: 'desc' },
-          take: 1,
           include: {
             itens: {
               include: { servico: true },
@@ -152,6 +187,8 @@ export async function GET() {
       kmAtual: number;
       proximaTroca: number;
       kmRestantes: number;
+      mediaKmMes: number;
+      diasEstimados: number;
       jaTemLembrete: boolean;
     }[] = [];
 
@@ -174,6 +211,11 @@ export async function GET() {
 
       // Mostrar veículos que precisam de lembrete em breve
       if (kmRestantes <= kmAntecedencia) {
+        // Calcular média baseada no histórico
+        const mediaKmMes = calcularMediaKmMes(veiculo.ordens);
+        const kmPorDia = mediaKmMes / 30;
+        const diasEstimados = kmRestantes > 0 ? Math.max(1, Math.ceil(kmRestantes / kmPorDia)) : 1;
+
         preview.push({
           veiculo: `${veiculo.marca} ${veiculo.modelo} (${veiculo.placa})`,
           cliente: veiculo.cliente.nome,
@@ -181,6 +223,8 @@ export async function GET() {
           kmAtual,
           proximaTroca,
           kmRestantes,
+          mediaKmMes: Math.round(mediaKmMes),
+          diasEstimados,
           jaTemLembrete: veiculo.lembretes.length > 0,
         });
       }
