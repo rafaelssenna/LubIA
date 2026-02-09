@@ -1,12 +1,52 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { headers } from 'next/headers';
 
 const UAZAPI_URL = process.env.UAZAPI_URL || 'https://hia-clientes.uazapi.com';
 const UAZAPI_ADMIN_TOKEN = process.env.UAZAPI_ADMIN_TOKEN;
 
+// Função para configurar webhook na UazAPI
+async function configureWebhook(token: string, webhookUrl: string) {
+  try {
+    console.log('[WHATSAPP CONNECT] Configurando webhook:', webhookUrl);
+
+    const response = await fetch(`${UAZAPI_URL}/webhook`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'token': token,
+      },
+      body: JSON.stringify({
+        enabled: true,
+        url: webhookUrl,
+        events: ['messages', 'connection'],
+        excludeMessages: ['wasSentByApi', 'isGroupYes'],
+      }),
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      console.error('[WHATSAPP CONNECT] Erro ao configurar webhook:', errorData);
+      return false;
+    }
+
+    console.log('[WHATSAPP CONNECT] Webhook configurado com sucesso');
+    return true;
+  } catch (error: any) {
+    console.error('[WHATSAPP CONNECT] Erro ao configurar webhook:', error?.message);
+    return false;
+  }
+}
+
 // GET - Obter QR Code para conexão (cria instância se necessário)
 export async function GET() {
   try {
+    // Obter URL base para o webhook
+    const headersList = await headers();
+    const host = headersList.get('host') || 'localhost:3000';
+    const protocol = host.includes('localhost') ? 'http' : 'https';
+    const webhookUrl = `${protocol}://${host}/api/whatsapp/webhook`;
+
     // Garantir que existe registro de configuração
     let config = await prisma.configuracao.findUnique({
       where: { id: 1 },
@@ -59,6 +99,9 @@ export async function GET() {
         },
       });
     }
+
+    // Configurar webhook (sempre, para garantir que está configurado)
+    await configureWebhook(config.uazapiToken!, webhookUrl);
 
     // Chamar UazAPI para obter QR Code (POST sem phone = QR code)
     const response = await fetch(`${UAZAPI_URL}/instance/connect`, {

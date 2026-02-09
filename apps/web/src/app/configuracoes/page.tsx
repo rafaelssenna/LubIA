@@ -147,6 +147,7 @@ export default function ConfiguracoesPage() {
     try {
       const res = await fetch('/api/whatsapp/connect');
       const data = await res.json();
+      console.log('[CONNECT]', data);
 
       if (data.error) {
         toast.error(data.error);
@@ -159,6 +160,25 @@ export default function ConfiguracoesPage() {
       } else if (data.status === 'connected') {
         toast.success('WhatsApp ja esta conectado!');
         checkWhatsAppStatus();
+      } else if (data.status === 'connecting' || data.status === 'disconnected') {
+        // Instância existe mas precisa reconectar - buscar status para obter QR
+        toast.info('Obtendo QR Code...');
+        // Fazer polling até obter QR code
+        const pollForQR = async () => {
+          const statusRes = await fetch('/api/whatsapp/status');
+          const statusData = await statusRes.json();
+          if (statusData.qrcode) {
+            setQrCode(statusData.qrcode);
+            if (statusData.paircode) setPairCode(statusData.paircode);
+          } else if (statusData.connected) {
+            toast.success('WhatsApp conectado!');
+            setWhatsappStatus(statusData);
+          } else {
+            // Tentar novamente após 2 segundos
+            setTimeout(pollForQR, 2000);
+          }
+        };
+        pollForQR();
       }
     } catch (error) {
       toast.error('Erro ao conectar WhatsApp');
