@@ -123,6 +123,10 @@ export default function LembretesPage() {
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [deletingLembrete, setDeletingLembrete] = useState<Lembrete | null>(null);
 
+  // Auto actions
+  const [generating, setGenerating] = useState(false);
+  const [sending, setSending] = useState(false);
+
   const fetchLembretes = async () => {
     try {
       const params = new URLSearchParams();
@@ -283,6 +287,59 @@ export default function LembretesPage() {
     window.open(`https://wa.me/55${telefone}?text=${msg}`, '_blank');
   };
 
+  // Gerar lembretes automaticos baseado no km
+  const handleGerarLembretes = async () => {
+    setGenerating(true);
+    try {
+      const res = await fetch('/api/lembretes/gerar', { method: 'POST' });
+      const data = await res.json();
+
+      if (res.ok) {
+        if (data.total > 0) {
+          toast.success(`${data.total} lembrete(s) gerado(s) automaticamente!`);
+          fetchLembretes();
+        } else {
+          toast.info('Nenhum veiculo precisando de lembrete no momento');
+        }
+      } else {
+        toast.error(data.error || 'Erro ao gerar lembretes');
+      }
+    } catch (error) {
+      toast.error('Erro ao gerar lembretes');
+    } finally {
+      setGenerating(false);
+    }
+  };
+
+  // Enviar todos os lembretes pendentes via WhatsApp
+  const handleEnviarTodos = async () => {
+    setSending(true);
+    try {
+      const res = await fetch('/api/lembretes/processar', { method: 'POST' });
+      const data = await res.json();
+
+      if (res.ok) {
+        if (data.enviados > 0) {
+          toast.success(`${data.enviados} mensagem(ns) enviada(s) via WhatsApp!`);
+          if (data.falhas > 0) {
+            toast.warning(`${data.falhas} falha(s) no envio`);
+          }
+          fetchLembretes();
+        } else if (data.total === 0) {
+          toast.info('Nenhum lembrete pendente para enviar');
+        } else {
+          toast.error('Nenhuma mensagem foi enviada');
+        }
+      } else {
+        toast.error(data.error || 'Erro ao enviar lembretes');
+      }
+    } catch (error) {
+      toast.error('Erro ao enviar lembretes');
+    } finally {
+      setSending(false);
+    }
+  };
+
   const formatDate = (date: string) => {
     return new Date(date).toLocaleDateString('pt-BR');
   };
@@ -388,13 +445,33 @@ export default function LembretesPage() {
               <RefreshCw size={20} className={loading ? 'animate-spin' : ''} />
             </button>
           </div>
-          <button
-            onClick={openNewModal}
-            className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-[#43A047] to-[#1B5E20] rounded-xl text-white font-medium hover:shadow-lg hover:shadow-green-500/10 hover:scale-[1.02] active:scale-[0.98] transition-all duration-200"
-          >
-            <Plus size={20} />
-            Novo Lembrete
-          </button>
+          <div className="flex gap-2">
+            <button
+              onClick={handleGerarLembretes}
+              disabled={generating}
+              className="flex items-center gap-2 px-4 py-3 bg-purple-600/20 border border-purple-500/30 rounded-xl text-purple-400 font-medium hover:bg-purple-600/30 hover:border-purple-500/50 disabled:opacity-50 transition-all duration-200"
+              title="Gerar lembretes automaticos baseado no km dos veiculos"
+            >
+              {generating ? <Loader2 size={18} className="animate-spin" /> : <RefreshCw size={18} />}
+              <span className="hidden md:inline">Gerar Auto</span>
+            </button>
+            <button
+              onClick={handleEnviarTodos}
+              disabled={sending || stats.vencidos + stats.pendentes === 0}
+              className="flex items-center gap-2 px-4 py-3 bg-[#25D366]/20 border border-[#25D366]/30 rounded-xl text-[#25D366] font-medium hover:bg-[#25D366]/30 hover:border-[#25D366]/50 disabled:opacity-50 transition-all duration-200"
+              title="Enviar todos os lembretes pendentes via WhatsApp"
+            >
+              {sending ? <Loader2 size={18} className="animate-spin" /> : <Send size={18} />}
+              <span className="hidden md:inline">Enviar Todos</span>
+            </button>
+            <button
+              onClick={openNewModal}
+              className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-[#43A047] to-[#1B5E20] rounded-xl text-white font-medium hover:shadow-lg hover:shadow-green-500/10 hover:scale-[1.02] active:scale-[0.98] transition-all duration-200"
+            >
+              <Plus size={20} />
+              <span className="hidden md:inline">Novo Lembrete</span>
+            </button>
+          </div>
         </div>
 
         {/* Lista de Lembretes */}
