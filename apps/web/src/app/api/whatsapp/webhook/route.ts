@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import { generateChatResponse } from '@/lib/chatbot';
+import { generateChatResponse, ChatResponse, ChatResponseList, ChatResponseButton } from '@/lib/chatbot';
 
 const UAZAPI_URL = process.env.UAZAPI_URL || 'https://hia-clientes.uazapi.com';
 
@@ -105,7 +105,7 @@ async function saveMessage(
   }
 }
 
-// Função para enviar mensagem via UazAPI
+// Função para enviar mensagem de texto via UazAPI
 async function sendWhatsAppMessage(token: string, to: string, text: string): Promise<string | null> {
   try {
     const response = await fetch(`${UAZAPI_URL}/send/text`, {
@@ -127,11 +127,107 @@ async function sendWhatsAppMessage(token: string, to: string, text: string): Pro
     }
 
     const data = await response.json();
-    console.log('[WEBHOOK] Mensagem enviada para:', to);
+    console.log('[WEBHOOK] Mensagem de texto enviada para:', to);
     return data.key?.id || data.id || null;
   } catch (error: any) {
     console.error('[WEBHOOK] Erro ao enviar mensagem:', error?.message);
     return null;
+  }
+}
+
+// Função para enviar mensagem de lista interativa via UazAPI
+async function sendWhatsAppListMessage(
+  token: string,
+  to: string,
+  listData: ChatResponseList
+): Promise<string | null> {
+  try {
+    const response = await fetch(`${UAZAPI_URL}/send/menu`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'token': token,
+      },
+      body: JSON.stringify({
+        number: to,
+        type: 'list',
+        text: listData.text,
+        listButton: listData.listButton,
+        footerText: listData.footerText || '',
+        choices: listData.choices,
+      }),
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      console.error('[WEBHOOK] Erro ao enviar lista:', errorData);
+      // Fallback para mensagem de texto se lista falhar
+      return sendWhatsAppMessage(token, to, listData.text);
+    }
+
+    const data = await response.json();
+    console.log('[WEBHOOK] Mensagem de lista enviada para:', to);
+    return data.key?.id || data.id || null;
+  } catch (error: any) {
+    console.error('[WEBHOOK] Erro ao enviar lista:', error?.message);
+    // Fallback para mensagem de texto
+    return sendWhatsAppMessage(token, to, listData.text);
+  }
+}
+
+// Função para enviar mensagem com botões via UazAPI
+async function sendWhatsAppButtonMessage(
+  token: string,
+  to: string,
+  buttonData: ChatResponseButton
+): Promise<string | null> {
+  try {
+    const response = await fetch(`${UAZAPI_URL}/send/menu`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'token': token,
+      },
+      body: JSON.stringify({
+        number: to,
+        type: 'button',
+        text: buttonData.text,
+        footerText: buttonData.footerText || '',
+        choices: buttonData.choices,
+      }),
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      console.error('[WEBHOOK] Erro ao enviar botões:', errorData);
+      // Fallback para mensagem de texto se botões falhar
+      return sendWhatsAppMessage(token, to, buttonData.text);
+    }
+
+    const data = await response.json();
+    console.log('[WEBHOOK] Mensagem de botões enviada para:', to);
+    return data.key?.id || data.id || null;
+  } catch (error: any) {
+    console.error('[WEBHOOK] Erro ao enviar botões:', error?.message);
+    // Fallback para mensagem de texto
+    return sendWhatsAppMessage(token, to, buttonData.text);
+  }
+}
+
+// Função para enviar resposta do chatbot (texto, lista ou botões)
+async function sendChatResponse(
+  token: string,
+  to: string,
+  response: ChatResponse
+): Promise<string | null> {
+  switch (response.type) {
+    case 'list':
+      return sendWhatsAppListMessage(token, to, response);
+    case 'button':
+      return sendWhatsAppButtonMessage(token, to, response);
+    case 'text':
+    default:
+      return sendWhatsAppMessage(token, to, response.message);
   }
 }
 
@@ -172,14 +268,21 @@ export async function POST(request: NextRequest) {
 
       // content pode ser string ou objeto { text: "...", contextInfo: {...} }
       const rawContent = message.content;
-      const text = typeof rawContent === 'string'
+      let text = typeof rawContent === 'string'
         ? rawContent
         : (rawContent?.text || message.text || '');
 
+      // Verificar se é resposta de botão/lista interativa
+      const buttonOrListId = message.buttonOrListid || message.selectedButtonId || message.listResponseMessage?.singleSelectReply?.selectedRowId;
+      if (buttonOrListId) {
+        console.log('[WEBHOOK] Resposta de botão/lista recebida:', buttonOrListId);
+        text = buttonOrListId; // Usar o ID do botão/lista como texto
+      }
+
       const pushName = message.senderName || '';
 
-      // Se não tem texto, ignorar (pode ser sticker, audio, etc.)
-      if (!text.trim()) {
+      // Se não tem texto e não é botão, ignorar (pode ser sticker, audio, etc.)
+      if (!text.trim() && !buttonOrListId) {
         console.log('[WEBHOOK] Ignorando mensagem sem texto');
         return NextResponse.json({ success: true, ignored: true });
       }
@@ -219,27 +322,35 @@ export async function POST(request: NextRequest) {
       const aiResponse = await generateChatResponse(text, from, pushName);
 
       // Se resposta vazia, chatbot está desabilitado
-      if (!aiResponse) {
+      if (aiResponse.type === 'text' && !aiResponse.message) {
         console.log('[WEBHOOK] Chatbot desabilitado, não respondendo');
         return NextResponse.json({ success: true, chatbotDisabled: true });
       }
 
-      // Enviar resposta
-      const sentMessageId = await sendWhatsAppMessage(config.uazapiToken, from, aiResponse);
+      // Enviar resposta (texto, lista ou botões)
+      const sentMessageId = await sendChatResponse(config.uazapiToken, from, aiResponse);
+
+      // Determinar conteúdo para salvar no histórico
+      let conteudoParaSalvar = '';
+      if (aiResponse.type === 'text') {
+        conteudoParaSalvar = aiResponse.message;
+      } else if (aiResponse.type === 'list' || aiResponse.type === 'button') {
+        conteudoParaSalvar = aiResponse.text;
+      }
 
       // Salvar resposta enviada no banco
-      if (sentMessageId !== null) {
+      if (sentMessageId !== null && conteudoParaSalvar) {
         await saveMessage(
           from,
           null,
-          aiResponse,
+          conteudoParaSalvar,
           true, // enviada
           'TEXTO',
           sentMessageId
         );
       }
 
-      return NextResponse.json({ success: true, responded: true });
+      return NextResponse.json({ success: true, responded: true, responseType: aiResponse.type });
 
     } else if (event === 'connection' || data.status) {
       // Evento de conexão/desconexão

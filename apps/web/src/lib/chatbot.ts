@@ -18,6 +18,29 @@ interface AgendamentoState {
 }
 const agendamentoState: Map<string, AgendamentoState> = new Map();
 
+// Tipos de resposta do chatbot
+export interface ChatResponseText {
+  type: 'text';
+  message: string;
+}
+
+export interface ChatResponseList {
+  type: 'list';
+  text: string;
+  listButton: string;
+  footerText?: string;
+  choices: string[]; // formato: "[Seção]" ou "Título|id|descrição"
+}
+
+export interface ChatResponseButton {
+  type: 'button';
+  text: string;
+  footerText?: string;
+  choices: string[]; // formato: "Texto|id"
+}
+
+export type ChatResponse = ChatResponseText | ChatResponseList | ChatResponseButton;
+
 // Interface para dados do cliente
 interface CustomerData {
   id: number;
@@ -550,7 +573,7 @@ export async function generateChatResponse(
   userMessage: string,
   phoneNumber: string,
   userName?: string
-): Promise<string> {
+): Promise<ChatResponse> {
   try {
     const config = await prisma.configuracao.findUnique({
       where: { id: 1 },
@@ -558,12 +581,12 @@ export async function generateChatResponse(
 
     if (config && config.chatbotEnabled === false) {
       console.log('[CHATBOT] Chatbot desabilitado');
-      return '';
+      return { type: 'text', message: '' };
     }
 
     if (!process.env.GEMINI_API_KEY) {
       console.error('[CHATBOT] GEMINI_API_KEY não configurada');
-      return 'Desculpe, estou com problemas técnicos. Por favor, ligue para a oficina.';
+      return { type: 'text', message: 'Desculpe, estou com problemas técnicos. Por favor, ligue para a oficina.' };
     }
 
     const customerData = await getCustomerData(phoneNumber);
@@ -573,6 +596,118 @@ export async function generateChatResponse(
     // Gerenciar estado de agendamento
     let agendamento = agendamentoState.get(phoneNumber) || { ativo: false, etapa: 'inicio' as const };
     const msgLower = userMessage.toLowerCase();
+
+    // Detectar se é resposta de botão/lista (buttonOrListid)
+    const isButtonResponse = /^(veiculo_|horario_|confirmar_|cancelar)/.test(userMessage);
+
+    // Processar resposta de seleção de veículo via botão
+    if (isButtonResponse && userMessage.startsWith('veiculo_')) {
+      const veiculoId = parseInt(userMessage.replace('veiculo_', ''));
+      if (customerData) {
+        const veiculo = customerData.veiculos.find(v => v.id === veiculoId);
+        if (veiculo) {
+          agendamento.veiculoId = veiculo.id;
+          agendamento.veiculoNome = `${veiculo.marca} ${veiculo.modelo}`;
+          agendamento.etapa = 'escolher_data';
+          agendamento.horariosDisponiveis = await getHorariosDisponiveis();
+          agendamentoState.set(phoneNumber, agendamento);
+          console.log('[CHATBOT] Veículo selecionado via botão:', agendamento.veiculoNome);
+
+          // Retornar lista de horários
+          if (agendamento.horariosDisponiveis.length > 0) {
+            const primeiroNome = customerData.nome.split(' ')[0];
+            const choices = [
+              '[Horários Disponíveis]',
+              ...agendamento.horariosDisponiveis.map(slot => {
+                const diaNome = slot.label.split(' ')[0];
+                const horaInfo = slot.label.replace(diaNome + ' ', '');
+                return `${diaNome}|horario_${slot.data.toISOString()}|${horaInfo}`;
+              }),
+            ];
+
+            return {
+              type: 'list',
+              text: `Ótimo, ${primeiroNome}! 🚗\n\nVou agendar a troca de óleo do seu ${agendamento.veiculoNome}.\n\nQual horário fica bom pra você?`,
+              listButton: 'Ver Horários',
+              footerText: 'Escolha o melhor horário',
+              choices,
+            };
+          }
+        }
+      }
+    }
+
+    // Processar resposta de seleção de horário via botão
+    if (isButtonResponse && userMessage.startsWith('horario_')) {
+      const dataISO = userMessage.replace('horario_', '');
+      const dataEscolhida = new Date(dataISO);
+
+      if (!isNaN(dataEscolhida.getTime())) {
+        agendamento.dataHora = dataEscolhida;
+        agendamento.etapa = 'confirmar';
+        agendamentoState.set(phoneNumber, agendamento);
+
+        const dataFormatada = dataEscolhida.toLocaleDateString('pt-BR', {
+          weekday: 'long',
+          day: 'numeric',
+          month: 'long',
+          hour: '2-digit',
+          minute: '2-digit',
+        });
+
+        const primeiroNome = customerData?.nome.split(' ')[0] || 'Cliente';
+
+        return {
+          type: 'button',
+          text: `Perfeito, ${primeiroNome}! 📋\n\n*Confirme seu agendamento:*\n\n🚗 Veículo: ${agendamento.veiculoNome}\n📅 Data: ${dataFormatada}\n🔧 Serviço: Troca de Óleo`,
+          footerText: 'Confirma o agendamento?',
+          choices: ['✅ Confirmar|confirmar_sim', '❌ Cancelar|cancelar'],
+        };
+      }
+    }
+
+    // Processar confirmação via botão
+    if (isButtonResponse && userMessage === 'confirmar_sim') {
+      if (agendamento.veiculoId && agendamento.dataHora) {
+        const resultado = await criarOrdemServico(
+          agendamento.veiculoId,
+          agendamento.dataHora,
+          'Troca de Óleo'
+        );
+
+        agendamentoState.delete(phoneNumber);
+
+        if (resultado.success) {
+          const dataFormatada = agendamento.dataHora.toLocaleDateString('pt-BR', {
+            weekday: 'long',
+            day: 'numeric',
+            month: 'long',
+            hour: '2-digit',
+            minute: '2-digit',
+          });
+          console.log('[CHATBOT] Agendamento criado! O.S.:', resultado.numero);
+          return {
+            type: 'text',
+            message: `Pronto, ${customerData?.nome.split(' ')[0]}! ✅\n\nSeu ${agendamento.veiculoNome} está agendado para ${dataFormatada}.\n\nTe esperamos! Qualquer coisa é só chamar aqui. 😊`,
+          };
+        } else {
+          console.error('[CHATBOT] Erro ao criar agendamento:', resultado.error);
+          return {
+            type: 'text',
+            message: `Ops, tive um probleminha pra criar o agendamento. 😅\n\nPode ligar pra oficina que a gente resolve rapidinho!`,
+          };
+        }
+      }
+    }
+
+    // Processar cancelamento via botão
+    if (isButtonResponse && userMessage === 'cancelar') {
+      agendamentoState.delete(phoneNumber);
+      return {
+        type: 'text',
+        message: `Tudo bem! Cancelei o agendamento. 😊\n\nQuando quiser marcar, é só me chamar aqui!`,
+      };
+    }
 
     // Detectar intenção de agendar (mais inteligente)
     const querAgendar = (
@@ -593,19 +728,64 @@ export async function generateChatResponse(
         etapa: customerData.veiculos.length > 1 ? 'escolher_veiculo' : 'escolher_data',
       };
 
-      // Se só tem 1 veículo, já seleciona e busca horários
-      if (customerData.veiculos.length === 1) {
-        const v = customerData.veiculos[0];
-        agendamento.veiculoId = v.id;
-        agendamento.veiculoNome = `${v.marca} ${v.modelo}`;
-        agendamento.horariosDisponiveis = await getHorariosDisponiveis();
+      const primeiroNome = customerData.nome.split(' ')[0];
+
+      // Se tem mais de 1 veículo, enviar lista para escolha
+      if (customerData.veiculos.length > 1) {
+        agendamentoState.set(phoneNumber, agendamento);
+        console.log('[CHATBOT] Iniciando agendamento - escolha de veículo para:', customerData.nome);
+
+        const choices = [
+          '[Seus Veículos]',
+          ...customerData.veiculos.map(v => {
+            const descricao = v.kmAtual ? `${v.kmAtual.toLocaleString('pt-BR')} km` : v.placa;
+            return `${v.marca} ${v.modelo}|veiculo_${v.id}|${descricao}`;
+          }),
+        ];
+
+        return {
+          type: 'list',
+          text: `Oi ${primeiroNome}! Vamos agendar? 🚗\n\nVi que você tem ${customerData.veiculos.length} veículos cadastrados. Qual deles você quer trazer?`,
+          listButton: 'Escolher Veículo',
+          footerText: 'Selecione um veículo',
+          choices,
+        };
       }
 
+      // Se só tem 1 veículo, já seleciona e oferece horários
+      const v = customerData.veiculos[0];
+      agendamento.veiculoId = v.id;
+      agendamento.veiculoNome = `${v.marca} ${v.modelo}`;
+      agendamento.horariosDisponiveis = await getHorariosDisponiveis();
       agendamentoState.set(phoneNumber, agendamento);
-      console.log('[CHATBOT] Iniciando agendamento para:', customerData.nome);
+      console.log('[CHATBOT] Iniciando agendamento - horários para:', customerData.nome);
+
+      if (agendamento.horariosDisponiveis.length > 0) {
+        const choices = [
+          '[Horários Disponíveis]',
+          ...agendamento.horariosDisponiveis.map(slot => {
+            const diaNome = slot.label.split(' ')[0];
+            const horaInfo = slot.label.replace(diaNome + ' ', '');
+            return `${diaNome}|horario_${slot.data.toISOString()}|${horaInfo}`;
+          }),
+        ];
+
+        return {
+          type: 'list',
+          text: `Oi ${primeiroNome}! Vamos agendar a troca de óleo do seu ${agendamento.veiculoNome}? 🚗\n\nEscolha um horário que fica bom pra você:`,
+          listButton: 'Ver Horários',
+          footerText: 'Escolha o melhor horário',
+          choices,
+        };
+      } else {
+        return {
+          type: 'text',
+          message: `Oi ${primeiroNome}! Quero agendar seu ${agendamento.veiculoNome}, mas não encontrei horários disponíveis essa semana. 😅\n\nPode ligar pra oficina que a gente encontra um horário?`,
+        };
+      }
     }
 
-    // Processar escolha de veículo
+    // Processar escolha de veículo por texto (fallback)
     if (agendamento.ativo && agendamento.etapa === 'escolher_veiculo' && customerData) {
       for (const v of customerData.veiculos) {
         if (msgLower.includes(v.modelo.toLowerCase()) ||
@@ -616,13 +796,34 @@ export async function generateChatResponse(
           agendamento.etapa = 'escolher_data';
           agendamento.horariosDisponiveis = await getHorariosDisponiveis();
           agendamentoState.set(phoneNumber, agendamento);
-          console.log('[CHATBOT] Veículo selecionado:', agendamento.veiculoNome);
+          console.log('[CHATBOT] Veículo selecionado por texto:', agendamento.veiculoNome);
+
+          // Retornar lista de horários
+          if (agendamento.horariosDisponiveis.length > 0) {
+            const primeiroNome = customerData.nome.split(' ')[0];
+            const choices = [
+              '[Horários Disponíveis]',
+              ...agendamento.horariosDisponiveis.map(slot => {
+                const diaNome = slot.label.split(' ')[0];
+                const horaInfo = slot.label.replace(diaNome + ' ', '');
+                return `${diaNome}|horario_${slot.data.toISOString()}|${horaInfo}`;
+              }),
+            ];
+
+            return {
+              type: 'list',
+              text: `Ótimo, ${primeiroNome}! 🚗\n\nVou agendar a troca de óleo do seu ${agendamento.veiculoNome}.\n\nQual horário fica bom pra você?`,
+              listButton: 'Ver Horários',
+              footerText: 'Escolha o melhor horário',
+              choices,
+            };
+          }
           break;
         }
       }
     }
 
-    // Processar escolha de horário (por número ou por nome do dia)
+    // Processar escolha de horário por texto (fallback)
     if (agendamento.ativo && agendamento.etapa === 'escolher_data' && agendamento.horariosDisponiveis) {
       const slots = agendamento.horariosDisponiveis;
       let slotEscolhido: { data: Date; label: string } | null = null;
@@ -665,11 +866,28 @@ export async function generateChatResponse(
         agendamento.dataHora = slotEscolhido.data;
         agendamento.etapa = 'confirmar';
         agendamentoState.set(phoneNumber, agendamento);
-        console.log('[CHATBOT] Horário selecionado:', slotEscolhido.label || slotEscolhido.data);
+        console.log('[CHATBOT] Horário selecionado por texto:', slotEscolhido.label || slotEscolhido.data);
+
+        const dataFormatada = slotEscolhido.data.toLocaleDateString('pt-BR', {
+          weekday: 'long',
+          day: 'numeric',
+          month: 'long',
+          hour: '2-digit',
+          minute: '2-digit',
+        });
+
+        const primeiroNome = customerData?.nome.split(' ')[0] || 'Cliente';
+
+        return {
+          type: 'button',
+          text: `Perfeito, ${primeiroNome}! 📋\n\n*Confirme seu agendamento:*\n\n🚗 Veículo: ${agendamento.veiculoNome}\n📅 Data: ${dataFormatada}\n🔧 Serviço: Troca de Óleo`,
+          footerText: 'Confirma o agendamento?',
+          choices: ['✅ Confirmar|confirmar_sim', '❌ Cancelar|cancelar'],
+        };
       }
     }
 
-    // Processar confirmação final
+    // Processar confirmação final por texto (fallback)
     if (agendamento.ativo && agendamento.etapa === 'confirmar' && confirmacao) {
       if (agendamento.veiculoId && agendamento.dataHora) {
         const resultado = await criarOrdemServico(
@@ -686,16 +904,16 @@ export async function generateChatResponse(
             weekday: 'long', day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit'
           });
           console.log('[CHATBOT] Agendamento criado! O.S.:', resultado.numero);
-          return `Pronto, ${customerData?.nome.split(' ')[0]}! ✅
-
-Seu ${agendamento.veiculoNome} está agendado para ${dataFormatada}.
-
-Te esperamos! Qualquer coisa é só chamar aqui. 😊`;
+          return {
+            type: 'text',
+            message: `Pronto, ${customerData?.nome.split(' ')[0]}! ✅\n\nSeu ${agendamento.veiculoNome} está agendado para ${dataFormatada}.\n\nTe esperamos! Qualquer coisa é só chamar aqui. 😊`,
+          };
         } else {
           console.error('[CHATBOT] Erro ao criar agendamento:', resultado.error);
-          return `Ops, tive um probleminha pra criar o agendamento. 😅
-
-Pode ligar pra oficina que a gente resolve rapidinho!`;
+          return {
+            type: 'text',
+            message: `Ops, tive um probleminha pra criar o agendamento. 😅\n\nPode ligar pra oficina que a gente resolve rapidinho!`,
+          };
         }
       }
     }
@@ -731,10 +949,10 @@ Pode ligar pra oficina que a gente resolve rapidinho!`;
     history.push({ role: 'model', parts: [{ text: response }] });
     conversationHistory.set(phoneNumber, history);
 
-    return response;
+    return { type: 'text', message: response };
   } catch (error: any) {
     console.error('[CHATBOT] Erro ao gerar resposta:', error?.message);
-    return 'Desculpe, não consegui processar sua mensagem. Tente novamente ou ligue para a oficina.';
+    return { type: 'text', message: 'Desculpe, não consegui processar sua mensagem. Tente novamente ou ligue para a oficina.' };
   }
 }
 
