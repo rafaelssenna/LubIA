@@ -95,29 +95,47 @@ export async function GET() {
     }
 
     const data = await response.json();
+    console.log('[WHATSAPP CONNECT] Resposta UazAPI:', JSON.stringify(data, null, 2));
+
+    // A resposta tem: connected, loggedIn, jid, instance
+    // O QR code está em instance.qrcode
+    const instance = data.instance || {};
 
     // Se já está conectado
-    if (data.status === 'connected') {
+    if (data.connected || instance.status === 'connected') {
+      console.log('[WHATSAPP CONNECT] Já conectado!', instance.profileName);
       await prisma.configuracao.update({
         where: { id: 1 },
         data: {
           whatsappConnected: true,
-          whatsappNumber: data.owner || null,
-          whatsappName: data.profileName || null,
+          whatsappNumber: instance.owner || null,
+          whatsappName: instance.profileName || null,
         },
       });
 
       return NextResponse.json({
         status: 'connected',
-        profileName: data.profileName,
-        number: data.owner,
+        profileName: instance.profileName,
+        number: instance.owner,
       });
     }
 
+    // Se tem QR code na instância
+    if (instance.qrcode) {
+      console.log('[WHATSAPP CONNECT] QR code encontrado');
+      return NextResponse.json({
+        qrcode: instance.qrcode,
+        paircode: instance.paircode,
+        status: instance.status || 'connecting',
+      });
+    }
+
+    // Se não tem QR code, retornar o status atual
+    console.log('[WHATSAPP CONNECT] Sem QR code, status:', instance.status || data);
     return NextResponse.json({
-      qrcode: data.qrcode,
-      paircode: data.paircode,
-      status: data.status,
+      status: instance.status || 'disconnected',
+      message: 'Aguardando QR Code...',
+      raw: data, // Para debug
     });
   } catch (error: any) {
     console.error('[WHATSAPP CONNECT] Erro:', error?.message);
