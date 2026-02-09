@@ -354,7 +354,7 @@ export async function generateChatResponse(
     const servicosFormatados = formatServicosParaPrompt(servicos);
     console.log('[CHATBOT] Serviços carregados:', servicos.length);
 
-    const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
+    const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' });
 
     // Recuperar ou iniciar histórico
     let history = conversationHistory.get(phoneNumber) || [];

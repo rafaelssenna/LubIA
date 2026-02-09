@@ -14,7 +14,7 @@ async function sendWhatsAppMessage(token: string, to: string, text: string) {
         'token': token,
       },
       body: JSON.stringify({
-        phone: to,
+        number: to,
         text: text,
       }),
     });
