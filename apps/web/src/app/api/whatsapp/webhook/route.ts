@@ -398,15 +398,16 @@ export async function POST(request: NextRequest) {
       // Adicionar mensagem ao buffer e (re)iniciar timer
       let buffer = messageBuffers.get(from);
 
-      if (!buffer) {
+      // Se está processando, criar novo buffer para próximo ciclo
+      if (buffer?.processing) {
+        console.log('[WEBHOOK] Buffer em processamento, criando novo buffer para próxima mensagem');
         buffer = { messages: [], timer: null, processing: false };
         messageBuffers.set(from, buffer);
       }
 
-      // Se já está processando, aguardar próximo ciclo
-      if (buffer.processing) {
-        console.log('[WEBHOOK] Buffer em processamento, mensagem será ignorada');
-        return NextResponse.json({ success: true, buffering: true });
+      if (!buffer) {
+        buffer = { messages: [], timer: null, processing: false };
+        messageBuffers.set(from, buffer);
       }
 
       // Adicionar mensagem ao buffer
@@ -427,7 +428,7 @@ export async function POST(request: NextRequest) {
         processBufferedMessages(from);
       }, MESSAGE_BUFFER_MS);
 
-      console.log('[WEBHOOK] Mensagem adicionada ao buffer, aguardando', MESSAGE_BUFFER_MS / 1000, 'segundos...');
+      console.log('[WEBHOOK] Mensagem adicionada ao buffer (' + buffer.messages.length + '), aguardando', MESSAGE_BUFFER_MS / 1000, 'segundos...');
 
       return NextResponse.json({ success: true, buffered: true, bufferSize: buffer.messages.length });
 

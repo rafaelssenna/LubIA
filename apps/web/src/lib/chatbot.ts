@@ -262,23 +262,6 @@ async function getCustomerData(phoneNumber: string): Promise<CustomerData | null
   }
 }
 
-// Calcular próxima troca baseado no KM
-function calcularProximaTroca(kmAtual: number | null, kmUltimaOrdem: number | null): string | null {
-  if (!kmAtual) return null;
-
-  const kmBase = kmUltimaOrdem || kmAtual;
-  const proximaTroca = Math.ceil((kmBase + 5000) / 5000) * 5000;
-  const kmRestantes = proximaTroca - kmAtual;
-
-  if (kmRestantes <= 0) {
-    return `Já passou da km de troca (${proximaTroca.toLocaleString('pt-BR')} km)`;
-  } else if (kmRestantes <= 500) {
-    return `Próxima troca em breve: ${proximaTroca.toLocaleString('pt-BR')} km (faltam ${kmRestantes} km)`;
-  }
-
-  return `Próxima troca: ${proximaTroca.toLocaleString('pt-BR')} km`;
-}
-
 // Converter JSON de horário para string legível
 function parseHorarioParaString(horarioJson: string | null): string {
   if (!horarioJson) return 'Segunda a Sexta 8h-18h, Sábado 8h-12h';
