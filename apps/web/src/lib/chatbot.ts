@@ -1,7 +1,97 @@
-import { GoogleGenerativeAI } from '@google/generative-ai';
+import { GoogleGenerativeAI, FunctionDeclarationsTool, SchemaType } from '@google/generative-ai';
 import { prisma } from './prisma';
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || '');
+
+// ==========================================
+// FUNCTION CALLING - Definição das ferramentas
+// ==========================================
+
+const chatbotTools: FunctionDeclarationsTool[] = [{
+  functionDeclarations: [
+    {
+      name: 'iniciar_agendamento',
+      description: 'Inicia o processo de agendamento quando o cliente quer marcar/agendar um serviço. Use quando o cliente demonstrar intenção de agendar, marcar horário, fazer revisão, trocar óleo, etc. Exemplos: "quero agendar", "pode sim", "vamos marcar", "preciso trocar o óleo", "qual horário tem?", "posso ir amanhã?"',
+      parameters: {
+        type: SchemaType.OBJECT,
+        properties: {},
+        required: []
+      }
+    },
+    {
+      name: 'selecionar_veiculo',
+      description: 'Seleciona um veículo específico do cliente para o agendamento. Use quando o cliente indicar qual carro quer trazer.',
+      parameters: {
+        type: SchemaType.OBJECT,
+        properties: {
+          veiculoIndex: {
+            type: SchemaType.NUMBER,
+            description: 'Índice do veículo na lista (0 para primeiro, 1 para segundo, etc). Use -1 para todos os veículos.'
+          }
+        },
+        required: ['veiculoIndex']
+      }
+    },
+    {
+      name: 'selecionar_horario',
+      description: 'Seleciona um horário para o agendamento. Use quando o cliente escolher ou indicar preferência de dia/horário.',
+      parameters: {
+        type: SchemaType.OBJECT,
+        properties: {
+          horarioIndex: {
+            type: SchemaType.NUMBER,
+            description: 'Índice do horário na lista de horários disponíveis (0 para primeiro, 1 para segundo, etc)'
+          },
+          diaSemana: {
+            type: SchemaType.STRING,
+            description: 'Dia da semana mencionado pelo cliente (segunda, terça, quarta, quinta, sexta, sábado)'
+          },
+          periodo: {
+            type: SchemaType.STRING,
+            description: 'Período do dia (manhã ou tarde)'
+          },
+          hora: {
+            type: SchemaType.NUMBER,
+            description: 'Hora específica mencionada (8, 9, 10, 11, 14, 15, 16, 17)'
+          }
+        },
+        required: []
+      }
+    },
+    {
+      name: 'confirmar_agendamento',
+      description: 'Confirma e finaliza o agendamento. Use quando o cliente confirmar que quer prosseguir.',
+      parameters: {
+        type: SchemaType.OBJECT,
+        properties: {},
+        required: []
+      }
+    },
+    {
+      name: 'cancelar_agendamento',
+      description: 'Cancela o processo de agendamento em andamento. Use quando o cliente desistir ou quiser cancelar.',
+      parameters: {
+        type: SchemaType.OBJECT,
+        properties: {},
+        required: []
+      }
+    },
+    {
+      name: 'responder_texto',
+      description: 'Envia uma resposta de texto normal para o cliente. Use para saudações, dúvidas gerais, informações sobre preços, horários de funcionamento, etc.',
+      parameters: {
+        type: SchemaType.OBJECT,
+        properties: {
+          mensagem: {
+            type: SchemaType.STRING,
+            description: 'A mensagem de texto para enviar ao cliente'
+          }
+        },
+        required: ['mensagem']
+      }
+    }
+  ]
+}];
 
 // Timezone de Brasília (UTC-3)
 const TIMEZONE = 'America/Sao_Paulo';
@@ -158,39 +248,6 @@ function formatServicosParaPrompt(servicos: ServicoData[]): string {
   return linhas.join('\n');
 }
 
-// Buscar histórico recente de mensagens do banco
-async function getRecentMessages(phoneNumber: string, empresaId: number): Promise<string[]> {
-  try {
-    const cleanPhone = phoneNumber.replace(/\D/g, '');
-
-    const conversa = await prisma.conversa.findFirst({
-      where: {
-        empresaId,
-        OR: [
-          { telefone: { contains: cleanPhone.slice(-11) } },
-          { telefone: { contains: cleanPhone } },
-          { telefone: cleanPhone },
-        ],
-      },
-      include: {
-        mensagens: {
-          orderBy: { dataEnvio: 'desc' },
-          take: 5, // Últimas 5 mensagens para contexto
-        },
-      },
-    });
-
-    if (!conversa?.mensagens) return [];
-
-    // Retornar mensagens em ordem cronológica
-    return conversa.mensagens
-      .reverse()
-      .map(m => `${m.enviada ? '[Bot]' : '[Cliente]'}: ${m.conteudo}`);
-  } catch (error: any) {
-    console.error('[CHATBOT] Erro ao buscar histórico:', error?.message);
-    return [];
-  }
-}
 
 // Buscar dados do cliente pelo telefone
 async function getCustomerData(phoneNumber: string, empresaId: number): Promise<CustomerData | null> {
@@ -508,176 +565,7 @@ async function criarOrdemServico(
   }
 }
 
-// Interpretar data/hora do texto do usuário
-function interpretarDataHora(texto: string): Date | null {
-  const hoje = new Date();
-  const textoLower = texto.toLowerCase();
 
-  // Padrões de dia da semana
-  const diasSemana: Record<string, number> = {
-    'domingo': 0, 'segunda': 1, 'terça': 2, 'terca': 2, 'quarta': 3,
-    'quinta': 4, 'sexta': 5, 'sábado': 6, 'sabado': 6,
-  };
-
-  // Verificar "hoje", "amanhã"
-  if (textoLower.includes('hoje')) {
-    return hoje;
-  }
-  if (textoLower.includes('amanhã') || textoLower.includes('amanha')) {
-    const amanha = new Date(hoje);
-    amanha.setDate(amanha.getDate() + 1);
-    return amanha;
-  }
-
-  // Verificar dia da semana
-  for (const [dia, numero] of Object.entries(diasSemana)) {
-    if (textoLower.includes(dia)) {
-      const data = new Date(hoje);
-      const diasAteProximo = (numero - hoje.getDay() + 7) % 7 || 7;
-      data.setDate(data.getDate() + diasAteProximo);
-
-      // Extrair hora se mencionada
-      const horaMatch = texto.match(/(\d{1,2})\s*(h|hora|:)/i);
-      if (horaMatch) {
-        data.setHours(parseInt(horaMatch[1]), 0, 0, 0);
-      } else if (textoLower.includes('manhã') || textoLower.includes('manha')) {
-        data.setHours(9, 0, 0, 0);
-      } else if (textoLower.includes('tarde')) {
-        data.setHours(14, 0, 0, 0);
-      } else {
-        data.setHours(9, 0, 0, 0); // Padrão: 9h
-      }
-
-      return data;
-    }
-  }
-
-  // Verificar padrão de data DD/MM
-  const dataMatch = texto.match(/(\d{1,2})[\/\-](\d{1,2})/);
-  if (dataMatch) {
-    const dia = parseInt(dataMatch[1]);
-    const mes = parseInt(dataMatch[2]) - 1;
-    const data = new Date(hoje.getFullYear(), mes, dia);
-    if (data < hoje) {
-      data.setFullYear(data.getFullYear() + 1);
-    }
-
-    const horaMatch = texto.match(/(\d{1,2})\s*(h|hora|:)/i);
-    if (horaMatch) {
-      data.setHours(parseInt(horaMatch[1]), 0, 0, 0);
-    } else {
-      data.setHours(9, 0, 0, 0);
-    }
-
-    return data;
-  }
-
-  return null;
-}
-
-function buildSystemPrompt(
-  config: {
-    chatbotNome?: string | null;
-    chatbotHorario?: string | null;
-    nomeOficina?: string | null;
-  },
-  customerData: CustomerData | null,
-  servicosFormatados: string,
-  agendamento: AgendamentoState | null
-) {
-  const nome = config.chatbotNome || 'LoopIA';
-  const horario = parseHorarioParaString(config.chatbotHorario || null);
-  const oficina = config.nomeOficina || 'nossa oficina';
-
-  let contextoCliente = '';
-  if (customerData && !customerData.isNewCustomer) {
-    const primeiroNomeCliente = customerData.nome.split(' ')[0];
-    contextoCliente = `
-## Dados do Cliente (OBRIGATÓRIO usar estes dados)
-- Nome do cliente: ${customerData.nome}
-- IMPORTANTE: Chame o cliente de "${primeiroNomeCliente}" (NUNCA use outro nome!)
-- Veículos cadastrados:`;
-
-    for (const v of customerData.veiculos) {
-      contextoCliente += `
-  * ${v.marca} ${v.modelo}${v.ano ? ` ${v.ano}` : ''} (Placa: ${v.placa})${v.kmAtual ? ` - ${v.kmAtual.toLocaleString('pt-BR')} km` : ''}`;
-    }
-
-    if (customerData.ultimoServico) {
-      const diasDesdeUltimo = Math.floor(
-        (Date.now() - customerData.ultimoServico.data.getTime()) / (1000 * 60 * 60 * 24)
-      );
-      contextoCliente += `
-- Último serviço: ${customerData.ultimoServico.tipo} (há ${diasDesdeUltimo} dias)`;
-    }
-  } else {
-    contextoCliente = `
-## Cliente Novo
-Este cliente ainda não está cadastrado. Seja acolhedor!`;
-  }
-
-  // Contexto de agendamento em andamento
-  let contextoAgendamento = '';
-  if (agendamento?.ativo) {
-    contextoAgendamento = `
-
-## AGENDAMENTO EM ANDAMENTO
-O cliente está no processo de agendar um serviço.`;
-
-    if (agendamento.etapa === 'escolher_veiculo') {
-      contextoAgendamento += `
-- Etapa atual: ESCOLHER VEÍCULO
-- Pergunte qual veículo ele quer trazer (liste as opções)`;
-    } else if (agendamento.etapa === 'escolher_data') {
-      const slots = agendamento.horariosDisponiveis || [];
-      const slotsTexto = slots.map((s, i) => `${i + 1}. ${s.label}`).join('\n');
-      contextoAgendamento += `
-- Veículo escolhido: ${agendamento.veiculoNome}
-- Etapa atual: OFERECER HORÁRIOS DISPONÍVEIS
-- IMPORTANTE: Ofereça estas opções numeradas:
-${slotsTexto || '(sem horários disponíveis)'}
-- Pergunte qual opção o cliente prefere (1, 2, 3 ou 4)`;
-    } else if (agendamento.etapa === 'confirmar') {
-      const dataFormatada = agendamento.dataHora ? formatDateBrazil(agendamento.dataHora) : '';
-      contextoAgendamento += `
-- Veículo: ${agendamento.veiculoNome}
-- Data/Hora: ${dataFormatada}
-- Etapa atual: AGUARDANDO CONFIRMAÇÃO
-- Peça confirmação do agendamento`;
-    }
-  }
-
-  return `Você é a ${nome}, assistente virtual de ${oficina}.
-
-## Sua Personalidade
-- Simpática, profissional e objetiva
-- Fala de forma natural, como um atendente humano
-- Usa emojis ocasionalmente
-- Nunca é robótica
-
-## Serviços e Preços
-${servicosFormatados}
-
-## Horário de Funcionamento
-${horario}
-${contextoCliente}
-${contextoAgendamento}
-
-## IMPORTANTE - Fluxo de Agendamento
-Quando o cliente quiser agendar/marcar:
-1. Se tem mais de 1 veículo: pergunte qual
-2. Pergunte dia e horário preferido
-3. Confirme os dados antes de finalizar
-4. Diga algo como "Vou agendar pra você!"
-
-## Regras
-1. SEMPRE use o nome do cliente
-2. Seja breve - máximo 2-3 frases
-3. PODE informar preços!
-4. NUNCA invente serviços ou preços
-5. Quando o cliente confirmar o agendamento, diga "Pronto, agendado!"
-`;
-}
 
 export async function generateChatResponse(
   userMessage: string,
@@ -906,32 +794,140 @@ export async function generateChatResponse(
       };
     }
 
-    // Detectar intenção de agendar (mais inteligente)
-    const querAgendar = (
-      // Frases diretas de agendamento
-      /quer[oe]?\s*(sim|agendar|marcar)|sim.*agendar|vamos\s*l[áa]|pode\s*(ser|sim)|bora|fechado|quero|vou|marca|agenda|combina/i.test(msgLower) ||
-      // Perguntas sobre horário/disponibilidade = quer agendar
-      /qual\s*hor[aá]rio|que\s*hora|tem\s*(hor[aá]rio|vaga|disponibilidade)|quando\s*(posso|pode|d[aá])|posso\s*ir|d[aá]\s*pra|consigo\s*(ir|levar)|levo\s*(ele|o\s*carro)|preciso\s*(marcar|agendar)/i.test(msgLower) ||
-      // Respostas afirmativas após oferta de agendamento (incluindo typos comuns)
-      /^(sim+|zim|sin|sn|s|quero|vamos|bora|pode|pode\s*sim|ok|beleza|isso|claro|com\s*certeza|vamo|ss|sss)!*$/i.test(msgLower.trim())
-    );
-    const confirmacao = /^(sim|isso|ok|pode|certo|confirma|fechado|perfeito|combinado|bora|vamos)$/i.test(msgLower.trim()) ||
-                       /confirm[ao]|t[áa]\s*(certo|bom|[óo]timo)|pode\s*ser|fechado/i.test(msgLower);
+    // ==========================================
+    // FUNCTION CALLING - Gemini decide a ação
+    // ==========================================
 
-    // Iniciar agendamento se cliente quiser
-    if (querAgendar && !agendamento.ativo && customerData && customerData.veiculos.length > 0) {
-      agendamento = {
-        ativo: true,
-        etapa: customerData.veiculos.length > 1 ? 'escolher_veiculo' : 'escolher_data',
-        timestamp: Date.now(),
-      };
+    // Preparar contexto para o modelo
+    const primeiroNome = customerData?.nome.split(' ')[0] || userName || 'Cliente';
 
-      const primeiroNome = customerData.nome.split(' ')[0];
+    // Informações de contexto para o modelo
+    let contextoAgendamento = '';
+    if (agendamento.ativo) {
+      contextoAgendamento = `\n\n[ESTADO ATUAL: Agendamento em andamento]`;
+      if (agendamento.etapa === 'escolher_veiculo') {
+        contextoAgendamento += `\n- Etapa: Aguardando escolha de veículo`;
+        contextoAgendamento += `\n- Veículos disponíveis: ${customerData?.veiculos.map((v, i) => `${i}: ${v.marca} ${v.modelo}`).join(', ')}`;
+      } else if (agendamento.etapa === 'escolher_data') {
+        contextoAgendamento += `\n- Etapa: Aguardando escolha de horário`;
+        contextoAgendamento += `\n- Veículo selecionado: ${agendamento.veiculoNome}`;
+        if (agendamento.horariosDisponiveis) {
+          contextoAgendamento += `\n- Horários disponíveis: ${agendamento.horariosDisponiveis.map((h, i) => `${i}: ${h.label}`).join(', ')}`;
+        }
+      } else if (agendamento.etapa === 'confirmar') {
+        contextoAgendamento += `\n- Etapa: Aguardando confirmação`;
+        contextoAgendamento += `\n- Veículo: ${agendamento.veiculoNome}`;
+        contextoAgendamento += `\n- Data/Hora: ${agendamento.dataHora ? formatDateBrazil(agendamento.dataHora) : 'não definida'}`;
+      }
+    }
 
-      // Se tem mais de 1 veículo, enviar lista para escolha
+    let contextoCliente = '';
+    if (customerData) {
+      contextoCliente = `\n\n[DADOS DO CLIENTE]`;
+      contextoCliente += `\n- Nome: ${customerData.nome}`;
+      contextoCliente += `\n- Veículos: ${customerData.veiculos.map((v, i) => `${i}: ${v.marca} ${v.modelo} (${v.placa})`).join(', ')}`;
+      if (customerData.ultimoServico) {
+        contextoCliente += `\n- Último serviço: ${customerData.ultimoServico.tipo}`;
+      }
+    } else {
+      contextoCliente = `\n\n[CLIENTE NÃO CADASTRADO]`;
+    }
+
+    // Construir prompt para function calling
+    const systemPromptFC = `Você é a assistente virtual de uma oficina mecânica. Seu nome é ${config?.chatbotNome || 'LoopIA'}.
+Oficina: ${config?.nomeOficina || 'Oficina'}
+Horário: ${parseHorarioParaString(config?.chatbotHorario || null)}
+
+Serviços disponíveis:
+${servicosFormatados}
+${contextoCliente}
+${contextoAgendamento}
+
+REGRAS IMPORTANTES:
+1. Chame o cliente pelo primeiro nome: "${primeiroNome}"
+2. Seja simpática e objetiva (máximo 2-3 frases)
+3. Use a função apropriada baseado na intenção do cliente
+4. Para agendar: use iniciar_agendamento
+5. Para selecionar veículo: use selecionar_veiculo com o índice correto
+6. Para selecionar horário: use selecionar_horario
+7. Para confirmar: use confirmar_agendamento
+8. Para cancelar: use cancelar_agendamento
+9. Para responder normalmente: use responder_texto
+
+Mensagem do cliente: "${userMessage}"`;
+
+    // Chamar Gemini com function calling
+    const model = genAI.getGenerativeModel({
+      model: 'gemini-2.0-flash',
+      tools: chatbotTools,
+    });
+
+    const result = await model.generateContent(systemPromptFC);
+    const response = result.response;
+
+    // Verificar se há function call
+    const functionCall = response.functionCalls()?.[0];
+
+    if (functionCall) {
+      console.log('[CHATBOT] Function call:', functionCall.name, functionCall.args);
+
+      // Executar a função apropriada
+      return await executeFunctionCall(
+        functionCall.name,
+        (functionCall.args || {}) as Record<string, unknown>,
+        phoneNumber,
+        empresaId,
+        customerData,
+        agendamento,
+        primeiroNome
+      );
+    }
+
+    // Se não houver function call, usar a resposta de texto
+    const textResponse = response.text();
+    if (textResponse) {
+      return { type: 'text', message: textResponse };
+    }
+
+    // Fallback
+    return { type: 'text', message: `Olá ${primeiroNome}! Como posso ajudar?` };
+  } catch (error: any) {
+    console.error('[CHATBOT] Erro ao gerar resposta:', error?.message);
+    return { type: 'text', message: 'Desculpe, não consegui processar sua mensagem. Tente novamente ou ligue para a oficina.' };
+  }
+}
+
+// ==========================================
+// FUNÇÃO PARA EXECUTAR FUNCTION CALLS
+// ==========================================
+
+async function executeFunctionCall(
+  functionName: string,
+  args: Record<string, unknown>,
+  phoneNumber: string,
+  empresaId: number,
+  customerData: CustomerData | null,
+  agendamento: AgendamentoState,
+  primeiroNome: string
+): Promise<ChatResponse> {
+  console.log('[CHATBOT] Executando função:', functionName, args);
+
+  switch (functionName) {
+    case 'iniciar_agendamento': {
+      if (!customerData || customerData.veiculos.length === 0) {
+        return {
+          type: 'text',
+          message: `Oi ${primeiroNome}! Para agendar, preciso que você tenha um veículo cadastrado. Pode ligar pra oficina que a gente te cadastra rapidinho! 😊`,
+        };
+      }
+
+      // Iniciar novo agendamento
+      agendamento.ativo = true;
+      agendamento.timestamp = Date.now();
+
       if (customerData.veiculos.length > 1) {
+        agendamento.etapa = 'escolher_veiculo';
         agendamentoState.set(phoneNumber, agendamento);
-        console.log('[CHATBOT] Iniciando agendamento - escolha de veículo para:', customerData.nome);
 
         const choices = [
           '[Seus Veículos]',
@@ -951,13 +947,13 @@ export async function generateChatResponse(
         };
       }
 
-      // Se só tem 1 veículo, já seleciona e oferece horários
+      // Se só tem 1 veículo
       const v = customerData.veiculos[0];
       agendamento.veiculoId = v.id;
       agendamento.veiculoNome = `${v.marca} ${v.modelo}`;
+      agendamento.etapa = 'escolher_data';
       agendamento.horariosDisponiveis = await getHorariosDisponiveis(empresaId);
       agendamentoState.set(phoneNumber, agendamento);
-      console.log('[CHATBOT] Iniciando agendamento - horários para:', customerData.nome);
 
       if (agendamento.horariosDisponiveis.length > 0) {
         const choices = [
@@ -971,246 +967,202 @@ export async function generateChatResponse(
 
         return {
           type: 'list',
-          text: `Oi ${primeiroNome}! Vamos agendar a troca de óleo do seu ${agendamento.veiculoNome}? 🚗\n\nEscolha um horário que fica bom pra você:`,
+          text: `Oi ${primeiroNome}! Vamos agendar a troca de óleo do seu ${agendamento.veiculoNome}? 🚗\n\nEscolha um horário:`,
           listButton: 'Ver Horários',
           footerText: 'Escolha o melhor horário',
           choices,
         };
+      }
+
+      return {
+        type: 'text',
+        message: `Oi ${primeiroNome}! Quero agendar seu ${agendamento.veiculoNome}, mas não encontrei horários disponíveis essa semana. 😅\n\nPode ligar pra oficina?`,
+      };
+    }
+
+    case 'selecionar_veiculo': {
+      if (!customerData) {
+        return { type: 'text', message: 'Não encontrei seus dados. Pode ligar pra oficina?' };
+      }
+
+      const veiculoIndex = args.veiculoIndex as number;
+
+      // Todos os veículos
+      if (veiculoIndex === -1) {
+        agendamento.veiculoIds = customerData.veiculos.map(v => v.id);
+        agendamento.veiculoNomes = customerData.veiculos.map(v => `${v.marca} ${v.modelo}`);
+        agendamento.veiculoNome = `${customerData.veiculos.length} veículos`;
+      } else if (veiculoIndex >= 0 && veiculoIndex < customerData.veiculos.length) {
+        const v = customerData.veiculos[veiculoIndex];
+        agendamento.veiculoId = v.id;
+        agendamento.veiculoNome = `${v.marca} ${v.modelo}`;
       } else {
+        return { type: 'text', message: `Qual veículo você quer trazer, ${primeiroNome}?` };
+      }
+
+      agendamento.etapa = 'escolher_data';
+      agendamento.horariosDisponiveis = await getHorariosDisponiveis(empresaId);
+      agendamentoState.set(phoneNumber, agendamento);
+
+      if (agendamento.horariosDisponiveis.length > 0) {
+        const choices = [
+          '[Horários Disponíveis]',
+          ...agendamento.horariosDisponiveis.map(slot => {
+            const diaNome = slot.label.split(' ')[0];
+            const horaInfo = slot.label.replace(diaNome + ' ', '');
+            return `${diaNome}|horario_${slot.data.toISOString()}|${horaInfo}`;
+          }),
+        ];
+
         return {
-          type: 'text',
-          message: `Oi ${primeiroNome}! Quero agendar seu ${agendamento.veiculoNome}, mas não encontrei horários disponíveis essa semana. 😅\n\nPode ligar pra oficina que a gente encontra um horário?`,
+          type: 'list',
+          text: `Ótimo, ${primeiroNome}! 🚗\n\nVou agendar a troca de óleo do seu ${agendamento.veiculoNome}.\n\nQual horário fica bom?`,
+          listButton: 'Ver Horários',
+          footerText: 'Escolha o melhor horário',
+          choices,
         };
       }
+
+      return { type: 'text', message: 'Não encontrei horários disponíveis. Pode ligar pra oficina?' };
     }
 
-    // Processar escolha de veículo por texto (fallback)
-    if (agendamento.ativo && agendamento.etapa === 'escolher_veiculo' && customerData) {
-      for (const v of customerData.veiculos) {
-        if (msgLower.includes(v.modelo.toLowerCase()) ||
-            msgLower.includes(v.marca.toLowerCase()) ||
-            msgLower.includes(v.placa.toLowerCase())) {
-          agendamento.veiculoId = v.id;
-          agendamento.veiculoNome = `${v.marca} ${v.modelo}`;
-          agendamento.etapa = 'escolher_data';
-          agendamento.horariosDisponiveis = await getHorariosDisponiveis(empresaId);
-          agendamentoState.set(phoneNumber, agendamento);
-          console.log('[CHATBOT] Veículo selecionado por texto:', agendamento.veiculoNome);
-
-          // Retornar lista de horários
-          if (agendamento.horariosDisponiveis.length > 0) {
-            const primeiroNome = customerData.nome.split(' ')[0];
-            const choices = [
-              '[Horários Disponíveis]',
-              ...agendamento.horariosDisponiveis.map(slot => {
-                const diaNome = slot.label.split(' ')[0];
-                const horaInfo = slot.label.replace(diaNome + ' ', '');
-                return `${diaNome}|horario_${slot.data.toISOString()}|${horaInfo}`;
-              }),
-            ];
-
-            return {
-              type: 'list',
-              text: `Ótimo, ${primeiroNome}! 🚗\n\nVou agendar a troca de óleo do seu ${agendamento.veiculoNome}.\n\nQual horário fica bom pra você?`,
-              listButton: 'Ver Horários',
-              footerText: 'Escolha o melhor horário',
-              choices,
-            };
-          }
-          break;
-        }
-      }
-    }
-
-    // Processar escolha de horário por texto (fallback)
-    if (agendamento.ativo && agendamento.etapa === 'escolher_data' && agendamento.horariosDisponiveis) {
+    case 'selecionar_horario': {
       const slots = agendamento.horariosDisponiveis;
+      if (!slots || slots.length === 0) {
+        return { type: 'text', message: 'Não encontrei horários disponíveis. Pode ligar pra oficina?' };
+      }
+
       let slotEscolhido: { data: Date; label: string } | null = null;
 
-      // Tentar por número (1, 2, 3, 4, etc)
-      const numMatch = msgLower.match(/^[^\d]*(\d)[^\d]*$/);
-      if (numMatch) {
-        const num = parseInt(numMatch[1]);
-        if (num >= 1 && num <= slots.length) {
-          slotEscolhido = slots[num - 1];
-        }
+      // Tentar pelo índice
+      const horarioIndex = args.horarioIndex as number | undefined;
+      if (horarioIndex !== undefined && horarioIndex >= 0 && horarioIndex < slots.length) {
+        slotEscolhido = slots[horarioIndex];
       }
 
-      // Extrair hora mencionada pelo usuário (ex: "10h", "às 8", "8 horas")
-      const horaMatch = msgLower.match(/(\d{1,2})\s*(h|hora|:|\s|$)/i);
-      const horaMencionada = horaMatch ? parseInt(horaMatch[1]) : null;
+      // Tentar pelo dia da semana e/ou hora
+      if (!slotEscolhido) {
+        const diaSemana = (args.diaSemana as string)?.toLowerCase();
+        const hora = args.hora as number | undefined;
+        const periodo = (args.periodo as string)?.toLowerCase();
 
-      // Mapear dias da semana para busca
-      const diasMapeados: Record<string, string[]> = {
-        'segunda': ['segunda'],
-        'terça': ['terça', 'terca'],
-        'quarta': ['quarta'],
-        'quinta': ['quinta'],
-        'sexta': ['sexta'],
-        'sábado': ['sábado', 'sabado'],
-      };
-
-      // Detectar qual dia o usuário mencionou
-      let diaMencionado: string | null = null;
-      for (const [diaNome, variantes] of Object.entries(diasMapeados)) {
-        if (variantes.some(v => msgLower.includes(v))) {
-          diaMencionado = diaNome;
-          break;
-        }
-      }
-
-      // Buscar slot que combina dia E hora (se ambos mencionados)
-      if (!slotEscolhido && diaMencionado && horaMencionada) {
-        slotEscolhido = slots.find(slot => {
+        for (const slot of slots) {
           const labelLower = slot.label.toLowerCase();
-          const slotHora = slot.data.getUTCHours() - 3; // Converter de UTC para Brasília
-          return labelLower.includes(diaMencionado!) && slotHora === horaMencionada;
-        }) || null;
+          const slotHora = slot.data.getUTCHours() - 3; // UTC para Brasília
 
-        if (slotEscolhido) {
-          console.log('[CHATBOT] Slot encontrado por dia+hora:', diaMencionado, horaMencionada + 'h');
+          // Match por dia + hora
+          if (diaSemana && hora && labelLower.includes(diaSemana) && slotHora === hora) {
+            slotEscolhido = slot;
+            break;
+          }
+          // Match só por dia
+          if (diaSemana && labelLower.includes(diaSemana)) {
+            slotEscolhido = slot;
+            break;
+          }
+          // Match só por hora
+          if (hora && slotHora === hora) {
+            slotEscolhido = slot;
+            break;
+          }
+          // Match por período
+          if (periodo && labelLower.includes(periodo)) {
+            slotEscolhido = slot;
+            break;
+          }
         }
       }
 
-      // Se não encontrou com dia+hora, tentar só pelo dia (pegar o primeiro do dia)
-      if (!slotEscolhido && diaMencionado) {
-        slotEscolhido = slots.find(slot => slot.label.toLowerCase().includes(diaMencionado!)) || null;
-        if (slotEscolhido) {
-          console.log('[CHATBOT] Slot encontrado por dia:', diaMencionado);
-        }
-      }
-
-      // Se não encontrou com dia, tentar só pela hora
-      if (!slotEscolhido && horaMencionada) {
-        slotEscolhido = slots.find(slot => {
-          const slotHora = slot.data.getUTCHours() - 3;
-          return slotHora === horaMencionada;
-        }) || null;
-        if (slotEscolhido) {
-          console.log('[CHATBOT] Slot encontrado por hora:', horaMencionada + 'h');
-        }
-      }
-
-      // Tentar por período (manhã/tarde)
       if (!slotEscolhido) {
-        if (msgLower.includes('manhã') || msgLower.includes('manha')) {
-          slotEscolhido = slots.find(slot => slot.label.includes('manhã')) || null;
-        } else if (msgLower.includes('tarde')) {
-          slotEscolhido = slots.find(slot => slot.label.includes('tarde')) || null;
-        }
-      }
-
-      // Fallback: tentar interpretar data livremente
-      if (!slotEscolhido) {
-        const dataInterpretada = interpretarDataHora(userMessage);
-        if (dataInterpretada) {
-          slotEscolhido = { data: dataInterpretada, label: '' };
-          console.log('[CHATBOT] Data interpretada livremente:', dataInterpretada);
-        }
-      }
-
-      if (slotEscolhido) {
-        agendamento.dataHora = slotEscolhido.data;
-        agendamento.etapa = 'confirmar';
-        agendamentoState.set(phoneNumber, agendamento);
-        console.log('[CHATBOT] Horário selecionado por texto:', slotEscolhido.label || slotEscolhido.data);
-
-        const dataFormatada = formatDateBrazil(slotEscolhido.data);
-
-        const primeiroNome = customerData?.nome.split(' ')[0] || 'Cliente';
+        // Mostrar lista de horários novamente
+        const choices = [
+          '[Horários Disponíveis]',
+          ...slots.map(slot => {
+            const diaNome = slot.label.split(' ')[0];
+            const horaInfo = slot.label.replace(diaNome + ' ', '');
+            return `${diaNome}|horario_${slot.data.toISOString()}|${horaInfo}`;
+          }),
+        ];
 
         return {
-          type: 'button',
-          text: `Perfeito, ${primeiroNome}! 📋\n\n*Confirme seu agendamento:*\n\n🚗 Veículo: ${agendamento.veiculoNome}\n📅 Data: ${dataFormatada}\n🔧 Serviço: Troca de Óleo`,
-          footerText: 'Confirma o agendamento?',
-          choices: ['✅ Confirmar|confirmar_sim', '❌ Cancelar|cancelar'],
+          type: 'list',
+          text: `${primeiroNome}, qual desses horários fica bom pra você?`,
+          listButton: 'Ver Horários',
+          footerText: 'Escolha o melhor horário',
+          choices,
         };
       }
+
+      // Horário selecionado - ir para confirmação
+      agendamento.dataHora = slotEscolhido.data;
+      agendamento.etapa = 'confirmar';
+      agendamentoState.set(phoneNumber, agendamento);
+
+      const dataFormatada = formatDateBrazil(slotEscolhido.data);
+
+      return {
+        type: 'button',
+        text: `Perfeito, ${primeiroNome}! 📋\n\n*Confirme seu agendamento:*\n\n🚗 Veículo: ${agendamento.veiculoNome}\n📅 Data: ${dataFormatada}\n🔧 Serviço: Troca de Óleo`,
+        footerText: 'Confirma o agendamento?',
+        choices: ['✅ Confirmar|confirmar_sim', '❌ Cancelar|cancelar'],
+      };
     }
 
-    // Processar confirmação final por texto (fallback)
-    if (agendamento.ativo && agendamento.etapa === 'confirmar' && confirmacao) {
-      if (agendamento.veiculoId && agendamento.dataHora) {
-        const resultado = await criarOrdemServico(
-          agendamento.veiculoId,
-          agendamento.dataHora,
-          empresaId,
-          'Troca de Óleo'
-        );
-
-        // Limpar estado
-        agendamentoState.delete(phoneNumber);
-
-        if (resultado.success) {
-          const dataFormatada = formatDateBrazil(agendamento.dataHora);
-          console.log('[CHATBOT] Agendamento criado! O.S.:', resultado.numero);
-          return {
-            type: 'text',
-            message: `Pronto, ${customerData?.nome.split(' ')[0]}! ✅\n\nSeu ${agendamento.veiculoNome} está agendado para ${dataFormatada}.\n\nTe esperamos! Qualquer coisa é só chamar aqui. 😊`,
-          };
-        } else {
-          console.error('[CHATBOT] Erro ao criar agendamento:', resultado.error);
-          return {
-            type: 'text',
-            message: `Ops, tive um probleminha pra criar o agendamento. 😅\n\nPode ligar pra oficina que a gente resolve rapidinho!`,
-          };
-        }
+    case 'confirmar_agendamento': {
+      if (!agendamento.veiculoId || !agendamento.dataHora) {
+        return { type: 'text', message: 'Algo deu errado. Vamos começar de novo?' };
       }
-    }
 
-    // Gerar resposta via Gemini
-    const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' });
-    let history = conversationHistory.get(phoneNumber) || [];
+      const resultado = await criarOrdemServico(
+        agendamento.veiculoId,
+        agendamento.dataHora,
+        empresaId,
+        'Troca de Óleo'
+      );
 
-    if (history.length > 20) {
-      history = history.slice(-20);
-    }
+      agendamentoState.delete(phoneNumber);
 
-    // Se não temos histórico em memória, buscar do banco de dados
-    let historicoDobanco = '';
-    if (history.length === 0) {
-      const mensagensRecentes = await getRecentMessages(phoneNumber, empresaId);
-      if (mensagensRecentes.length > 0) {
-        historicoDobanco = `\n\n## Histórico Recente de Mensagens (contexto importante!)
-As mensagens abaixo foram enviadas ANTES desta conversa começar. Use este contexto para entender o que o cliente está respondendo:
-
-${mensagensRecentes.join('\n')}
-
----
-`;
-        console.log('[CHATBOT] Carregado histórico do banco:', mensagensRecentes.length, 'mensagens');
+      if (resultado.success) {
+        const dataFormatada = formatDateBrazil(agendamento.dataHora);
+        return {
+          type: 'text',
+          message: `Pronto, ${primeiroNome}! ✅\n\nSeu ${agendamento.veiculoNome} está agendado para ${dataFormatada}.\n\nTe esperamos! 😊`,
+        };
       }
+
+      return {
+        type: 'text',
+        message: `Ops, tive um probleminha pra criar o agendamento. 😅\n\nPode ligar pra oficina que a gente resolve!`,
+      };
     }
 
-    const chat = model.startChat({
-      history: history,
-      generationConfig: {
-        maxOutputTokens: 500,
-        temperature: 0.7,
-      },
-    });
+    case 'cancelar_agendamento': {
+      agendamentoState.delete(phoneNumber);
+      return {
+        type: 'text',
+        message: `Tudo bem! Cancelei o agendamento. 😊\n\nQuando quiser marcar, é só me chamar!`,
+      };
+    }
 
-    const nomeCliente = customerData?.nome || userName || 'Cliente';
-    const contextMessage = `[${nomeCliente}]: ${userMessage}`;
+    case 'responder_texto': {
+      const mensagem = args.mensagem as string;
+      return { type: 'text', message: mensagem || `Olá ${primeiroNome}! Como posso ajudar?` };
+    }
 
-    const systemPrompt = buildSystemPrompt(config || {}, customerData, servicosFormatados, agendamento.ativo ? agendamento : null);
-    const fullMessage = history.length === 0
-      ? `${systemPrompt}${historicoDobanco}\n\n--- Início da Conversa ---\n\n${contextMessage}`
-      : contextMessage;
-
-    const result = await chat.sendMessage(fullMessage);
-    const response = result.response.text();
-
-    history.push({ role: 'user', parts: [{ text: fullMessage }] });
-    history.push({ role: 'model', parts: [{ text: response }] });
-    conversationHistory.set(phoneNumber, history);
-
-    return { type: 'text', message: response };
-  } catch (error: any) {
-    console.error('[CHATBOT] Erro ao gerar resposta:', error?.message);
-    return { type: 'text', message: 'Desculpe, não consegui processar sua mensagem. Tente novamente ou ligue para a oficina.' };
+    default: {
+      return { type: 'text', message: `Olá ${primeiroNome}! Como posso ajudar?` };
+    }
   }
 }
+
+// CÓDIGO ANTIGO REMOVIDO - Agora usa function calling
+
+// Iniciar agendamento se cliente quiser - REMOVIDO
+// A lógica agora está em executeFunctionCall('iniciar_agendamento')
+
+// ==========================================
+// FIM DO CHATBOT COM FUNCTION CALLING
+// ==========================================
 
 // Limpar histórico de um número específico
 export function clearHistory(phoneNumber: string) {
