@@ -167,32 +167,36 @@ async function sendWhatsAppListMessage(
   listData: ChatResponseList
 ): Promise<string | null> {
   try {
+    const payload = {
+      number: to,
+      type: 'list',
+      text: listData.text,
+      listButton: listData.listButton,
+      footerText: listData.footerText || '',
+      choices: listData.choices,
+    };
+    console.log('[WEBHOOK] Enviando lista interativa:', JSON.stringify(payload, null, 2));
+
     const response = await fetch(`${UAZAPI_URL}/send/menu`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         'token': token,
       },
-      body: JSON.stringify({
-        number: to,
-        type: 'list',
-        text: listData.text,
-        listButton: listData.listButton,
-        footerText: listData.footerText || '',
-        choices: listData.choices,
-      }),
+      body: JSON.stringify(payload),
     });
 
+    const responseData = await response.json().catch(() => ({}));
+    console.log('[WEBHOOK] Resposta da lista:', response.status, JSON.stringify(responseData));
+
     if (!response.ok) {
-      const errorData = await response.json().catch(() => ({}));
-      console.error('[WEBHOOK] Erro ao enviar lista:', errorData);
+      console.error('[WEBHOOK] Erro ao enviar lista - usando fallback de texto');
       // Fallback para mensagem de texto se lista falhar
       return sendWhatsAppMessage(token, to, listData.text);
     }
 
-    const data = await response.json();
-    console.log('[WEBHOOK] Mensagem de lista enviada para:', to);
-    return data.key?.id || data.id || null;
+    console.log('[WEBHOOK] Mensagem de lista enviada com sucesso para:', to);
+    return responseData.key?.id || responseData.id || null;
   } catch (error: any) {
     console.error('[WEBHOOK] Erro ao enviar lista:', error?.message);
     // Fallback para mensagem de texto
