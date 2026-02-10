@@ -19,6 +19,8 @@ interface MessageBuffer {
   messages: BufferedMessage[];
   timer: NodeJS.Timeout | null;
   processing: boolean;
+  empresaId: number;
+  token: string;
 }
 
 const messageBuffers = new Map<string, MessageBuffer>();
@@ -268,22 +270,15 @@ async function processBufferedMessages(phoneNumber: string): Promise<void> {
     const combinedText = buffer.messages.map(m => m.text).join(' ');
     const pushName = buffer.messages[0].pushName;
 
-    console.log('[WEBHOOK] Processando buffer com', buffer.messages.length, 'mensagens:', combinedText.substring(0, 100));
+    // Usar empresaId e token armazenados no buffer
+    const { empresaId, token } = buffer;
 
-    // Buscar configuração com token ativo (encontrar a empresa)
-    const config = await prisma.configuracao.findFirst({
-      where: {
-        uazapiToken: { not: null },
-        chatbotEnabled: true,
-      },
-    });
+    console.log('[WEBHOOK] Processando buffer com', buffer.messages.length, 'mensagens para empresa', empresaId, ':', combinedText.substring(0, 100));
 
-    if (!config?.uazapiToken || !config.empresaId) {
-      console.error('[WEBHOOK] Token ou empresa não encontrado');
+    if (!token || !empresaId) {
+      console.error('[WEBHOOK] Token ou empresa não encontrado no buffer');
       return;
     }
-
-    const empresaId = config.empresaId;
 
     // Gerar resposta com IA usando texto combinado
     const aiResponse = await generateChatResponse(combinedText, phoneNumber, empresaId, pushName);
@@ -295,7 +290,7 @@ async function processBufferedMessages(phoneNumber: string): Promise<void> {
     }
 
     // Enviar resposta (texto, lista ou botões)
-    const sentMessageId = await sendChatResponse(config.uazapiToken, phoneNumber, aiResponse);
+    const sentMessageId = await sendChatResponse(token, phoneNumber, aiResponse);
 
     // Determinar conteúdo para salvar no histórico
     let conteudoParaSalvar = '';
@@ -327,6 +322,48 @@ async function processBufferedMessages(phoneNumber: string): Promise<void> {
   }
 }
 
+// Função para encontrar empresa pelo token ou instância
+async function findEmpresaByToken(request: NextRequest, data: any): Promise<{ empresaId: number; token: string } | null> {
+  // Opção 1: Token no header (UazAPI pode enviar assim)
+  const headerToken = request.headers.get('token') || request.headers.get('x-api-token');
+
+  // Opção 2: Token/instância no body do webhook
+  const instanceToken = data.token || data.instance?.token || data.instanceToken;
+  const instanceId = data.instance?.id || data.instanceId || data.instance;
+
+  // Log para debug
+  console.log('[WEBHOOK] Identificação:', { headerToken: !!headerToken, instanceToken: !!instanceToken, instanceId });
+
+  let config = null;
+
+  // Tentar encontrar pelo token do header
+  if (headerToken) {
+    config = await prisma.configuracao.findFirst({
+      where: { uazapiToken: headerToken },
+    });
+  }
+
+  // Tentar encontrar pelo token do body
+  if (!config && instanceToken) {
+    config = await prisma.configuracao.findFirst({
+      where: { uazapiToken: instanceToken },
+    });
+  }
+
+  // Tentar encontrar pelo ID da instância
+  if (!config && instanceId) {
+    config = await prisma.configuracao.findFirst({
+      where: { uazapiInstanceId: instanceId },
+    });
+  }
+
+  if (config?.empresaId && config?.uazapiToken) {
+    return { empresaId: config.empresaId, token: config.uazapiToken };
+  }
+
+  return null;
+}
+
 // POST - Receber mensagens do WhatsApp via UazAPI webhook
 export async function POST(request: NextRequest) {
   try {
@@ -334,6 +371,28 @@ export async function POST(request: NextRequest) {
 
     // Log completo do payload para debug
     console.log('[WEBHOOK] Payload recebido:', JSON.stringify(data, null, 2));
+
+    // Identificar a empresa pelo token/instância
+    const empresaInfo = await findEmpresaByToken(request, data);
+
+    let empresaId: number | undefined;
+    let token: string | undefined;
+
+    if (empresaInfo) {
+      empresaId = empresaInfo.empresaId;
+      token = empresaInfo.token;
+    } else {
+      console.warn('[WEBHOOK] Não foi possível identificar a empresa pelo token');
+      // Fallback para primeira config encontrada (compatibilidade com instância única)
+      const fallbackConfig = await prisma.configuracao.findFirst({
+        where: { uazapiToken: { not: null } },
+      }) as { empresaId: number; uazapiToken: string | null } | null;
+      if (fallbackConfig?.empresaId && fallbackConfig?.uazapiToken) {
+        empresaId = fallbackConfig.empresaId;
+        token = fallbackConfig.uazapiToken;
+        console.log('[WEBHOOK] Usando fallback para empresa:', empresaId);
+      }
+    }
 
     // UazAPI envia: { EventType: 'messages', message: {...}, chat: {...} }
     const event = data.EventType || data.event || data.type;
@@ -387,21 +446,14 @@ export async function POST(request: NextRequest) {
         from,
         pushName,
         text: text.substring(0, 100),
+        empresaId,
       });
 
-      // Buscar configuração com token ativo (encontrar a empresa)
-      const config = await prisma.configuracao.findFirst({
-        where: {
-          uazapiToken: { not: null },
-        },
-      });
-
-      if (!config?.empresaId) {
+      // Verificar se empresa foi identificada
+      if (!empresaId) {
         console.error('[WEBHOOK] Empresa não encontrada para processar mensagem');
         return NextResponse.json({ success: false, error: 'Empresa não configurada' });
       }
-
-      const empresaId = config.empresaId;
 
       // Determinar tipo da mensagem
       const tipoMensagem = getTipoMensagem(message);
@@ -426,12 +478,12 @@ export async function POST(request: NextRequest) {
       // Se está processando, criar novo buffer para próximo ciclo
       if (buffer?.processing) {
         console.log('[WEBHOOK] Buffer em processamento, criando novo buffer para próxima mensagem');
-        buffer = { messages: [], timer: null, processing: false };
+        buffer = { messages: [], timer: null, processing: false, empresaId, token: token! };
         messageBuffers.set(from, buffer);
       }
 
       if (!buffer) {
-        buffer = { messages: [], timer: null, processing: false };
+        buffer = { messages: [], timer: null, processing: false, empresaId, token: token! };
         messageBuffers.set(from, buffer);
       }
 
@@ -460,18 +512,20 @@ export async function POST(request: NextRequest) {
     } else if (event === 'connection' || data.status) {
       // Evento de conexão/desconexão
       const status = data.status || message?.status;
-      console.log('[WEBHOOK] Evento de conexão:', status);
+      console.log('[WEBHOOK] Evento de conexão:', status, 'empresaId:', empresaId);
 
-      if (status === 'connected' || status === 'open') {
-        await prisma.configuracao.update({
-          where: { id: 1 },
-          data: { whatsappConnected: true },
-        }).catch(() => { });
-      } else if (status === 'disconnected' || status === 'close') {
-        await prisma.configuracao.update({
-          where: { id: 1 },
-          data: { whatsappConnected: false },
-        }).catch(() => { });
+      if (empresaId) {
+        if (status === 'connected' || status === 'open') {
+          await prisma.configuracao.updateMany({
+            where: { empresaId },
+            data: { whatsappConnected: true },
+          }).catch(() => { });
+        } else if (status === 'disconnected' || status === 'close') {
+          await prisma.configuracao.updateMany({
+            where: { empresaId },
+            data: { whatsappConnected: false },
+          }).catch(() => { });
+        }
       }
     } else {
       console.log('[WEBHOOK] Evento não tratado:', event);
