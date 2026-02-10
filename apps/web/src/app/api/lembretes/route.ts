@@ -1,8 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { getSession } from '@/lib/auth';
 
 // GET - Listar lembretes com filtros
 export async function GET(request: NextRequest) {
+  const session = await getSession();
+  if (!session) {
+    return NextResponse.json({ error: 'Não autorizado' }, { status: 401 });
+  }
+
   try {
     const { searchParams } = new URL(request.url);
     const busca = searchParams.get('busca') || '';
@@ -12,7 +18,9 @@ export async function GET(request: NextRequest) {
     const hoje = new Date();
     hoje.setHours(0, 0, 0, 0);
 
-    const where: any = {};
+    const where: any = {
+      empresaId: session.empresaId,
+    };
 
     // Busca por cliente ou placa
     if (busca) {
@@ -53,16 +61,17 @@ export async function GET(request: NextRequest) {
     // Calcular stats
     const [totalPendentes, totalEnviados, totalVencidos, totalUrgentes] = await Promise.all([
       prisma.lembrete.count({
-        where: { enviado: false, dataLembrete: { gte: hoje } },
+        where: { empresaId: session.empresaId, enviado: false, dataLembrete: { gte: hoje } },
       }),
       prisma.lembrete.count({
-        where: { enviado: true },
+        where: { empresaId: session.empresaId, enviado: true },
       }),
       prisma.lembrete.count({
-        where: { enviado: false, dataLembrete: { lt: hoje } },
+        where: { empresaId: session.empresaId, enviado: false, dataLembrete: { lt: hoje } },
       }),
       prisma.lembrete.count({
         where: {
+          empresaId: session.empresaId,
           enviado: false,
           dataLembrete: {
             gte: hoje,
@@ -124,6 +133,11 @@ export async function GET(request: NextRequest) {
 
 // POST - Criar novo lembrete
 export async function POST(request: NextRequest) {
+  const session = await getSession();
+  if (!session) {
+    return NextResponse.json({ error: 'Não autorizado' }, { status: 401 });
+  }
+
   try {
     const body = await request.json();
     const { veiculoId, tipo, dataLembrete, kmLembrete, mensagem } = body;
@@ -135,9 +149,9 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Verificar se veículo existe
-    const veiculo = await prisma.veiculo.findUnique({
-      where: { id: veiculoId },
+    // Verificar se veículo existe e pertence à empresa
+    const veiculo = await prisma.veiculo.findFirst({
+      where: { id: veiculoId, empresaId: session.empresaId },
       include: { cliente: true },
     });
 
@@ -152,6 +166,7 @@ export async function POST(request: NextRequest) {
         dataLembrete: new Date(dataLembrete),
         kmLembrete: kmLembrete || null,
         mensagem: mensagem || null,
+        empresaId: session.empresaId,
       },
       include: {
         veiculo: {
@@ -181,6 +196,11 @@ export async function POST(request: NextRequest) {
 
 // DELETE - Excluir lembretes
 export async function DELETE(request: NextRequest) {
+  const session = await getSession();
+  if (!session) {
+    return NextResponse.json({ error: 'Não autorizado' }, { status: 401 });
+  }
+
   try {
     const { searchParams } = new URL(request.url);
     const ids = searchParams.get('ids');
@@ -188,14 +208,14 @@ export async function DELETE(request: NextRequest) {
     if (ids) {
       const idArray = ids.split(',').map(id => parseInt(id, 10)).filter(id => !isNaN(id));
       await prisma.lembrete.deleteMany({
-        where: { id: { in: idArray } },
+        where: { id: { in: idArray }, empresaId: session.empresaId },
       });
       return NextResponse.json({ success: true, deleted: idArray.length });
     }
 
-    // Se não passar ids, deletar todos os não enviados
+    // Se não passar ids, deletar todos os não enviados da empresa
     const result = await prisma.lembrete.deleteMany({
-      where: { enviado: false },
+      where: { enviado: false, empresaId: session.empresaId },
     });
 
     return NextResponse.json({ success: true, deleted: result.count });
@@ -207,15 +227,23 @@ export async function DELETE(request: NextRequest) {
 
 // PATCH - Resetar lembretes (marcar como não enviados)
 export async function PATCH(request: NextRequest) {
+  const session = await getSession();
+  if (!session) {
+    return NextResponse.json({ error: 'Não autorizado' }, { status: 401 });
+  }
+
   try {
     const body = await request.json();
     const { action, ids } = body;
 
     if (action === 'reset') {
-      // Resetar lembretes específicos ou todos os enviados
-      const where = ids && ids.length > 0
-        ? { id: { in: ids } }
-        : { enviado: true };
+      // Resetar lembretes específicos ou todos os enviados da empresa
+      const where: any = { empresaId: session.empresaId };
+      if (ids && ids.length > 0) {
+        where.id = { in: ids };
+      } else {
+        where.enviado = true;
+      }
 
       const result = await prisma.lembrete.updateMany({
         where,

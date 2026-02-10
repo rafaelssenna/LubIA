@@ -1,7 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { getSession } from '@/lib/auth';
 
 export async function GET(request: NextRequest) {
+  const session = await getSession();
+  if (!session) {
+    return NextResponse.json({ error: 'Não autorizado' }, { status: 401 });
+  }
+
   console.log('========================================');
   console.log('[PRODUTOS API] GET request iniciado');
   console.log('[PRODUTOS API] URL:', request.url);
@@ -18,6 +24,7 @@ export async function GET(request: NextRequest) {
 
     const produtos = await prisma.produto.findMany({
       where: {
+        empresaId: session.empresaId,
         ativo: true,
         ...(busca && {
           OR: [
@@ -75,6 +82,11 @@ export async function GET(request: NextRequest) {
 }
 
 export async function POST(request: NextRequest) {
+  const session = await getSession();
+  if (!session) {
+    return NextResponse.json({ error: 'Não autorizado' }, { status: 401 });
+  }
+
   console.log('========================================');
   console.log('[PRODUTOS API] POST request iniciado');
   console.log('[PRODUTOS API] DATABASE_URL exists:', !!process.env.DATABASE_URL);
@@ -86,6 +98,16 @@ export async function POST(request: NextRequest) {
     // Convert categoria and unidade to uppercase (enum format)
     const categoria = body.categoria?.toUpperCase?.() || body.categoria;
     const unidade = (body.unidade?.toUpperCase?.() || body.unidade) || 'UNIDADE';
+
+    // Check if codigo already exists for this empresa
+    if (body.codigo) {
+      const existing = await prisma.produto.findFirst({
+        where: { codigo: body.codigo, empresaId: session.empresaId }
+      });
+      if (existing) {
+        return NextResponse.json({ error: 'Código já cadastrado' }, { status: 400 });
+      }
+    }
 
     const produto = await prisma.produto.create({
       data: {
@@ -101,6 +123,7 @@ export async function POST(request: NextRequest) {
         precoVenda: body.precoVenda || 0,
         precoGranel: body.precoGranel || null,
         localizacao: body.localizacao || null,
+        empresaId: session.empresaId,
       },
     });
 

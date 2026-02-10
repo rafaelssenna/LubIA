@@ -1,20 +1,29 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { getSession } from '@/lib/auth';
 
 // GET all clients with optional search
 export async function GET(request: NextRequest) {
   try {
+    const session = await getSession();
+    if (!session) {
+      return NextResponse.json({ error: 'Não autorizado' }, { status: 401 });
+    }
+
     const { searchParams } = new URL(request.url);
     const busca = searchParams.get('busca');
 
     const clientes = await prisma.cliente.findMany({
-      where: busca ? {
-        OR: [
-          { nome: { contains: busca, mode: 'insensitive' } },
-          { telefone: { contains: busca } },
-          { cpf: { contains: busca } },
-        ]
-      } : undefined,
+      where: {
+        empresaId: session.empresaId,
+        ...(busca ? {
+          OR: [
+            { nome: { contains: busca, mode: 'insensitive' } },
+            { telefone: { contains: busca } },
+            { cpf: { contains: busca } },
+          ]
+        } : {}),
+      },
       include: {
         veiculos: {
           select: {
@@ -46,6 +55,11 @@ export async function GET(request: NextRequest) {
 // POST create new client
 export async function POST(request: NextRequest) {
   try {
+    const session = await getSession();
+    if (!session) {
+      return NextResponse.json({ error: 'Não autorizado' }, { status: 401 });
+    }
+
     const body = await request.json();
 
     // Validate required fields
@@ -53,10 +67,13 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Nome e telefone são obrigatórios' }, { status: 400 });
     }
 
-    // Check if CPF already exists (if provided)
+    // Check if CPF already exists in this empresa (if provided)
     if (body.cpf) {
-      const existing = await prisma.cliente.findUnique({
-        where: { cpf: body.cpf }
+      const existing = await prisma.cliente.findFirst({
+        where: {
+          cpf: body.cpf,
+          empresaId: session.empresaId,
+        }
       });
       if (existing) {
         return NextResponse.json({ error: 'CPF já cadastrado' }, { status: 400 });
@@ -65,6 +82,7 @@ export async function POST(request: NextRequest) {
 
     const cliente = await prisma.cliente.create({
       data: {
+        empresaId: session.empresaId,
         nome: body.nome,
         telefone: body.telefone,
         email: body.email || null,

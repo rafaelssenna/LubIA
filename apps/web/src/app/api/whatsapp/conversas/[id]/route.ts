@@ -1,11 +1,17 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { getSession } from '@/lib/auth';
 
 // GET - Buscar conversa com mensagens
 export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  const session = await getSession();
+  if (!session) {
+    return NextResponse.json({ error: 'Não autorizado' }, { status: 401 });
+  }
+
   try {
     const { id } = await params;
     const conversaId = parseInt(id);
@@ -14,8 +20,8 @@ export async function GET(
       return NextResponse.json({ error: 'ID inválido' }, { status: 400 });
     }
 
-    const conversa = await prisma.conversa.findUnique({
-      where: { id: conversaId },
+    const conversa = await prisma.conversa.findFirst({
+      where: { id: conversaId, empresaId: session.empresaId },
       include: {
         cliente: {
           select: {
@@ -76,6 +82,11 @@ export async function PUT(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  const session = await getSession();
+  if (!session) {
+    return NextResponse.json({ error: 'Não autorizado' }, { status: 401 });
+  }
+
   try {
     const { id } = await params;
     const conversaId = parseInt(id);
@@ -83,6 +94,14 @@ export async function PUT(
 
     if (isNaN(conversaId)) {
       return NextResponse.json({ error: 'ID inválido' }, { status: 400 });
+    }
+
+    // Verify conversation exists and belongs to this empresa
+    const existing = await prisma.conversa.findFirst({
+      where: { id: conversaId, empresaId: session.empresaId }
+    });
+    if (!existing) {
+      return NextResponse.json({ error: 'Conversa não encontrada' }, { status: 404 });
     }
 
     const { arquivada, nome } = body;
@@ -107,12 +126,25 @@ export async function DELETE(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  const session = await getSession();
+  if (!session) {
+    return NextResponse.json({ error: 'Não autorizado' }, { status: 401 });
+  }
+
   try {
     const { id } = await params;
     const conversaId = parseInt(id);
 
     if (isNaN(conversaId)) {
       return NextResponse.json({ error: 'ID inválido' }, { status: 400 });
+    }
+
+    // Verify conversation exists and belongs to this empresa
+    const existing = await prisma.conversa.findFirst({
+      where: { id: conversaId, empresaId: session.empresaId }
+    });
+    if (!existing) {
+      return NextResponse.json({ error: 'Conversa não encontrada' }, { status: 404 });
     }
 
     await prisma.conversa.delete({

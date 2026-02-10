@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { getSession } from '@/lib/auth';
 
 // Calcular média de km/mês baseado no histórico de ordens
 function calcularMediaKmMes(ordens: { kmEntrada: number | null; createdAt: Date }[]): number {
@@ -33,18 +34,24 @@ function calcularMediaKmMes(ordens: { kmEntrada: number | null; createdAt: Date 
 
 // POST - Gerar lembretes automáticos baseado no KM dos veículos
 export async function POST() {
+  const session = await getSession();
+  if (!session) {
+    return NextResponse.json({ error: 'Não autorizado' }, { status: 401 });
+  }
+
   try {
     // Buscar configuração de antecedência
-    const config = await prisma.configuracao.findUnique({
-      where: { id: 1 },
+    const config = await prisma.configuracao.findFirst({
+      where: { empresaId: session.empresaId },
     });
 
     const diasAntecedencia = config?.lembreteAntecedencia || 7;
     const kmAntecedencia = 500; // Avisar 500km antes
 
-    // Buscar todos os veículos com km cadastrado
+    // Buscar todos os veículos com km cadastrado da empresa
     const veiculos = await prisma.veiculo.findMany({
       where: {
+        empresaId: session.empresaId,
         kmAtual: { not: null },
       },
       include: {
@@ -123,6 +130,7 @@ export async function POST() {
             dataLembrete,
             kmLembrete: proximaTroca,
             mensagem: null,
+            empresaId: session.empresaId,
           },
         });
 
@@ -154,11 +162,17 @@ export async function POST() {
 
 // GET - Preview de lembretes que seriam gerados (sem criar)
 export async function GET() {
+  const session = await getSession();
+  if (!session) {
+    return NextResponse.json({ error: 'Não autorizado' }, { status: 401 });
+  }
+
   try {
     const kmAntecedencia = 500;
 
     const veiculos = await prisma.veiculo.findMany({
       where: {
+        empresaId: session.empresaId,
         kmAtual: { not: null },
       },
       include: {

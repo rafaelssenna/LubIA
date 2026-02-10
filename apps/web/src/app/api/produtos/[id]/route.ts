@@ -1,11 +1,17 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { getSession } from '@/lib/auth';
 
 // GET single product
 export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  const session = await getSession();
+  if (!session) {
+    return NextResponse.json({ error: 'Não autorizado' }, { status: 401 });
+  }
+
   try {
     const { id } = await params;
     const produtoId = parseInt(id);
@@ -14,8 +20,8 @@ export async function GET(
       return NextResponse.json({ error: 'ID inválido' }, { status: 400 });
     }
 
-    const produto = await prisma.produto.findUnique({
-      where: { id: produtoId },
+    const produto = await prisma.produto.findFirst({
+      where: { id: produtoId, empresaId: session.empresaId },
     });
 
     if (!produto) {
@@ -34,6 +40,11 @@ export async function PUT(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  const session = await getSession();
+  if (!session) {
+    return NextResponse.json({ error: 'Não autorizado' }, { status: 401 });
+  }
+
   try {
     const { id } = await params;
     const produtoId = parseInt(id);
@@ -42,7 +53,29 @@ export async function PUT(
       return NextResponse.json({ error: 'ID inválido' }, { status: 400 });
     }
 
+    // Verify product exists and belongs to this empresa
+    const existingProduto = await prisma.produto.findFirst({
+      where: { id: produtoId, empresaId: session.empresaId }
+    });
+    if (!existingProduto) {
+      return NextResponse.json({ error: 'Produto não encontrado' }, { status: 404 });
+    }
+
     const body = await request.json();
+
+    // Check if codigo is being changed and already exists for this empresa
+    if (body.codigo && body.codigo !== existingProduto.codigo) {
+      const existing = await prisma.produto.findFirst({
+        where: {
+          codigo: body.codigo,
+          empresaId: session.empresaId,
+          id: { not: produtoId }
+        }
+      });
+      if (existing) {
+        return NextResponse.json({ error: 'Código já cadastrado para outro produto' }, { status: 400 });
+      }
+    }
 
     // Convert categoria and unidade to uppercase (enum format)
     const categoria = body.categoria?.toUpperCase?.() || body.categoria;
@@ -78,12 +111,25 @@ export async function DELETE(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  const session = await getSession();
+  if (!session) {
+    return NextResponse.json({ error: 'Não autorizado' }, { status: 401 });
+  }
+
   try {
     const { id } = await params;
     const produtoId = parseInt(id);
 
     if (isNaN(produtoId)) {
       return NextResponse.json({ error: 'ID inválido' }, { status: 400 });
+    }
+
+    // Verify product exists and belongs to this empresa
+    const existingProduto = await prisma.produto.findFirst({
+      where: { id: produtoId, empresaId: session.empresaId }
+    });
+    if (!existingProduto) {
+      return NextResponse.json({ error: 'Produto não encontrado' }, { status: 404 });
     }
 
     // Soft delete - just set ativo to false

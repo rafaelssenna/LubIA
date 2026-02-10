@@ -1,9 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { validateStock, executeStockOperations, StockOperation } from '@/lib/estoque';
+import { getSession } from '@/lib/auth';
 
 // GET - Buscar todas as ordens de serviço
 export async function GET(request: NextRequest) {
+  const session = await getSession();
+  if (!session) {
+    return NextResponse.json({ error: 'Não autorizado' }, { status: 401 });
+  }
+
   try {
     const { searchParams } = new URL(request.url);
     const busca = searchParams.get('busca') || '';
@@ -13,7 +19,9 @@ export async function GET(request: NextRequest) {
     const page = Math.max(1, parseInt(searchParams.get('page') || '1'));
     const limit = Math.min(100, Math.max(1, parseInt(searchParams.get('limit') || '20')));
 
-    const where: any = {};
+    const where: any = {
+      empresaId: session.empresaId,
+    };
 
     if (busca) {
       where.OR = [
@@ -66,15 +74,15 @@ export async function GET(request: NextRequest) {
     hoje.setHours(0, 0, 0, 0);
 
     const [statsTotal, statsAbertas, statsConcluidas, statsHoje] = await Promise.all([
-      prisma.ordemServico.count(),
+      prisma.ordemServico.count({ where: { empresaId: session.empresaId } }),
       prisma.ordemServico.count({
-        where: { status: { in: ['AGENDADO', 'EM_ANDAMENTO', 'AGUARDANDO_PECAS'] } },
+        where: { empresaId: session.empresaId, status: { in: ['AGENDADO', 'EM_ANDAMENTO', 'AGUARDANDO_PECAS'] } },
       }),
       prisma.ordemServico.count({
-        where: { status: { in: ['CONCLUIDO', 'ENTREGUE'] } },
+        where: { empresaId: session.empresaId, status: { in: ['CONCLUIDO', 'ENTREGUE'] } },
       }),
       prisma.ordemServico.count({
-        where: { createdAt: { gte: hoje } },
+        where: { empresaId: session.empresaId, createdAt: { gte: hoje } },
       }),
     ]);
 
@@ -144,6 +152,11 @@ export async function GET(request: NextRequest) {
 
 // POST - Criar nova ordem de serviço
 export async function POST(request: NextRequest) {
+  const session = await getSession();
+  if (!session) {
+    return NextResponse.json({ error: 'Não autorizado' }, { status: 401 });
+  }
+
   try {
     const body = await request.json();
     const { veiculoId, dataAgendada, kmEntrada, observacoes, itens, itensProduto } = body;
@@ -152,9 +165,9 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Veículo é obrigatório' }, { status: 400 });
     }
 
-    // Verify vehicle exists
-    const veiculo = await prisma.veiculo.findUnique({
-      where: { id: veiculoId },
+    // Verify vehicle exists and belongs to this empresa
+    const veiculo = await prisma.veiculo.findFirst({
+      where: { id: veiculoId, empresaId: session.empresaId },
     });
 
     if (!veiculo) {
@@ -166,8 +179,8 @@ export async function POST(request: NextRequest) {
     const itensData: any[] = [];
     if (itens && itens.length > 0) {
       for (const item of itens) {
-        const servico = await prisma.servico.findUnique({
-          where: { id: item.servicoId },
+        const servico = await prisma.servico.findFirst({
+          where: { id: item.servicoId, empresaId: session.empresaId },
         });
         if (servico) {
           const precoUnit = item.precoUnitario || Number(servico.precoBase);
@@ -191,8 +204,8 @@ export async function POST(request: NextRequest) {
     const itensProdutoData: any[] = [];
     if (itensProduto && itensProduto.length > 0) {
       for (const item of itensProduto) {
-        const produto = await prisma.produto.findUnique({
-          where: { id: item.produtoId },
+        const produto = await prisma.produto.findFirst({
+          where: { id: item.produtoId, empresaId: session.empresaId },
         });
         if (produto) {
           const precoUnit = item.precoUnitario || Number(produto.precoVenda);
@@ -221,6 +234,7 @@ export async function POST(request: NextRequest) {
         tipo: 'SAIDA' as const,
         motivo: 'Saída por O.S.',
         documento: '',
+        empresaId: session.empresaId,
       }));
 
       const stockError = await validateStock(prisma, stockOps);
@@ -238,6 +252,7 @@ export async function POST(request: NextRequest) {
           kmEntrada: kmEntrada || null,
           observacoes: observacoes || null,
           total,
+          empresaId: session.empresaId,
           itens: {
             create: itensData,
           },
@@ -272,6 +287,7 @@ export async function POST(request: NextRequest) {
           tipo: 'SAIDA' as const,
           motivo: `Saída por O.S. ${novaOrdem.numero}`,
           documento: novaOrdem.numero,
+          empresaId: session.empresaId,
         })));
       }
 

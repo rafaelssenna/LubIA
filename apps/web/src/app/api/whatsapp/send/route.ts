@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { getSession } from '@/lib/auth';
 
 const UAZAPI_URL = process.env.UAZAPI_URL || 'https://hia-clientes.uazapi.com';
 
@@ -7,13 +8,14 @@ const UAZAPI_URL = process.env.UAZAPI_URL || 'https://hia-clientes.uazapi.com';
 async function saveOutgoingMessage(
   telefone: string,
   conteudo: string,
+  empresaId: number,
   tipo: 'TEXTO' | 'IMAGEM' | 'DOCUMENTO' = 'TEXTO',
   messageId?: string
 ): Promise<void> {
   try {
     // Buscar ou criar conversa
     let conversa = await prisma.conversa.findUnique({
-      where: { telefone },
+      where: { telefone_empresaId: { telefone, empresaId } },
     });
 
     if (conversa) {
@@ -31,6 +33,7 @@ async function saveOutgoingMessage(
       const telefoneLimpo = telefone.replace(/\D/g, '');
       const cliente = await prisma.cliente.findFirst({
         where: {
+          empresaId,
           OR: [
             { telefone: { contains: telefoneLimpo } },
             { telefone: { contains: telefoneLimpo.slice(-11) } },
@@ -40,6 +43,7 @@ async function saveOutgoingMessage(
 
       conversa = await prisma.conversa.create({
         data: {
+          empresaId,
           telefone,
           nome: cliente?.nome || null,
           clienteId: cliente?.id || null,
@@ -53,6 +57,7 @@ async function saveOutgoingMessage(
     // Salvar mensagem
     await prisma.mensagem.create({
       data: {
+        empresaId,
         conversaId: conversa.id,
         messageId: messageId || null,
         tipo,
@@ -70,8 +75,13 @@ async function saveOutgoingMessage(
 // POST - Enviar mensagem WhatsApp
 export async function POST(request: NextRequest) {
   try {
+    const session = await getSession();
+    if (!session) {
+      return NextResponse.json({ error: 'Não autorizado' }, { status: 401 });
+    }
+
     const config = await prisma.configuracao.findUnique({
-      where: { id: 1 },
+      where: { empresaId: session.empresaId },
     });
 
     if (!config?.uazapiToken) {
@@ -145,7 +155,7 @@ export async function POST(request: NextRequest) {
     // Salvar mensagem enviada no banco
     const conteudo = type === 'media' ? (caption || `[${file.includes('.pdf') ? 'Documento' : 'Mídia'}]`) : text;
     const tipoMsg = type === 'media' ? (file.includes('.pdf') ? 'DOCUMENTO' : 'IMAGEM') : 'TEXTO';
-    await saveOutgoingMessage(formattedNumber, conteudo, tipoMsg as any, messageId);
+    await saveOutgoingMessage(formattedNumber, conteudo, session.empresaId, tipoMsg as any, messageId);
 
     return NextResponse.json({
       success: true,

@@ -18,6 +18,7 @@ import {
   ClipboardList,
 } from 'lucide-react';
 import { useSidebar } from '@/contexts/SidebarContext';
+import { useAuth } from '@/contexts/AuthContext';
 
 const menuItems = [
   { icon: LayoutDashboard, label: 'Dashboard', href: '/' },
@@ -33,6 +34,7 @@ const menuItems = [
 export default function Sidebar() {
   const pathname = usePathname();
   const { collapsed, toggleCollapsed } = useSidebar();
+  const { logout } = useAuth();
 
   return (
     <aside
@@ -111,6 +113,7 @@ export default function Sidebar() {
           {!collapsed && <span className="font-medium">Configurações</span>}
         </Link>
         <button
+          onClick={logout}
           className={`flex items-center gap-3 px-4 py-3 rounded-xl text-white/70 hover:bg-red-500/20 hover:text-red-300 transition-all duration-300 w-full group ${
             collapsed ? 'justify-center px-3' : ''
           }`}

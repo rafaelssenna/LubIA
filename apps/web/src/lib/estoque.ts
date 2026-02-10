@@ -6,6 +6,7 @@ export interface StockOperation {
   tipo: 'SAIDA' | 'ENTRADA' | 'DEVOLUCAO';
   motivo: string;
   documento: string;
+  empresaId: number;
 }
 
 /**
@@ -59,6 +60,7 @@ export async function executeStockOperations(
 
     await tx.movimentacaoEstoque.create({
       data: {
+        empresaId: op.empresaId,
         produtoId: op.produtoId,
         tipo: op.tipo,
         quantidade: op.quantidade,

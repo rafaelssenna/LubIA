@@ -1,4 +1,5 @@
 // Prisma schema for LubIA - Sistema de Gestão de Oficinas
+// Multi-tenant: cada Empresa tem seus dados isolados
 
 generator client {
   provider = "prisma-client-js"
@@ -9,27 +10,83 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+// =============================================
+// MULTI-TENANCY: Empresa e Usuario
+// =============================================
+
+// Empresa (tenant) - cada oficina é uma empresa
+model Empresa {
+  id        Int      @id @default(autoincrement())
+  nome      String
+  slug      String   @unique
+  ativo     Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relações com todos os models
+  usuarios      Usuario[]
+  clientes      Cliente[]
+  veiculos      Veiculo[]
+  servicos      Servico[]
+  ordens        OrdemServico[]
+  lembretes     Lembrete[]
+  produtos      Produto[]
+  movimentacoes MovimentacaoEstoque[]
+  conversas     Conversa[]
+  mensagens     Mensagem[]
+  configuracao  Configuracao?
+
+  @@map("empresas")
+}
+
+// Usuario para autenticação
+model Usuario {
+  id          Int       @id @default(autoincrement())
+  email       String    @unique
+  senhaHash   String
+  nome        String
+  empresaId   Int
+  ativo       Boolean   @default(true)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  lastLoginAt DateTime?
+
+  empresa Empresa @relation(fields: [empresaId], references: [id], onDelete: Cascade)
+
+  @@index([empresaId])
+  @@map("usuarios")
+}
+
+// =============================================
+// CLIENTES E VEÍCULOS
+// =============================================
+
 // Cliente da oficina
 model Cliente {
   id        Int       @id @default(autoincrement())
+  empresaId Int
   nome      String
   telefone  String
   email     String?
-  cpf       String?   @unique
+  cpf       String?
   endereco  String?
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
 
+  empresa   Empresa    @relation(fields: [empresaId], references: [id], onDelete: Cascade)
   veiculos  Veiculo[]
   conversas Conversa[]
 
+  @@unique([cpf, empresaId])
+  @@index([empresaId])
   @@map("clientes")
 }
 
 // Veículo do cliente
 model Veiculo {
   id           Int      @id @default(autoincrement())
-  placa        String   @unique
+  empresaId    Int
+  placa        String
   marca        String
   modelo       String
   ano          Int?
@@ -39,12 +96,19 @@ model Veiculo {
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 
+  empresa      Empresa       @relation(fields: [empresaId], references: [id], onDelete: Cascade)
   cliente      Cliente       @relation(fields: [clienteId], references: [id], onDelete: Cascade)
   ordens       OrdemServico[]
   lembretes    Lembrete[]
 
+  @@unique([placa, empresaId])
+  @@index([empresaId])
   @@map("veiculos")
 }
+
+// =============================================
+// SERVIÇOS
+// =============================================
 
 // Categoria de serviço
 enum CategoriaServico {
@@ -62,43 +126,64 @@ enum CategoriaServico {
 // Tipos de serviço oferecidos
 model Servico {
   id          Int              @id @default(autoincrement())
+  empresaId   Int
   nome        String
   descricao   String?
   categoria   CategoriaServico @default(OUTROS)
   precoBase   Decimal          @db.Decimal(10, 2)
-  duracaoMin  Int?             // duração estimada em minutos
+  duracaoMin  Int?
   ativo       Boolean          @default(true)
   createdAt   DateTime         @default(now())
   updatedAt   DateTime         @updatedAt
 
+  empresa     Empresa     @relation(fields: [empresaId], references: [id], onDelete: Cascade)
   itensOrdem  ItemOrdem[]
 
+  @@index([empresaId])
   @@map("servicos")
+}
+
+// =============================================
+// ORDENS DE SERVIÇO
+// =============================================
+
+// Status da ordem de serviço
+enum StatusOS {
+  AGENDADO
+  AGUARDANDO_PECAS
+  EM_ANDAMENTO
+  CONCLUIDO
+  CANCELADO
+  ENTREGUE
 }
 
 // Ordem de serviço
 model OrdemServico {
-  id          Int         @id @default(autoincrement())
-  numero      String      @unique @default(cuid())
-  veiculoId   Int
-  status      StatusOS    @default(AGENDADO)
-  dataAgendada DateTime?
-  dataInicio   DateTime?
+  id            Int         @id @default(autoincrement())
+  empresaId     Int
+  numero        String      @default(cuid())
+  veiculoId     Int
+  status        StatusOS    @default(AGENDADO)
+  dataAgendada  DateTime?
+  dataInicio    DateTime?
   dataConclusao DateTime?
-  kmEntrada   Int?
-  observacoes String?
-  total       Decimal     @db.Decimal(10, 2) @default(0)
-  createdAt   DateTime    @default(now())
-  updatedAt   DateTime    @updatedAt
+  kmEntrada     Int?
+  observacoes   String?
+  total         Decimal     @db.Decimal(10, 2) @default(0)
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
 
+  empresa       Empresa            @relation(fields: [empresaId], references: [id], onDelete: Cascade)
   veiculo       Veiculo            @relation(fields: [veiculoId], references: [id], onDelete: Cascade)
   itens         ItemOrdem[]
   itensProduto  ItemOrdemProduto[]
 
+  @@unique([numero, empresaId])
+  @@index([empresaId])
   @@map("ordens_servico")
 }
 
-// Itens da ordem de serviço
+// Itens da ordem de serviço (serviços)
 model ItemOrdem {
   id            Int          @id @default(autoincrement())
   ordemId       Int
@@ -114,32 +199,9 @@ model ItemOrdem {
   @@map("itens_ordem")
 }
 
-// Lembretes de manutenção
-model Lembrete {
-  id            Int           @id @default(autoincrement())
-  veiculoId     Int
-  tipo          TipoLembrete
-  dataLembrete  DateTime
-  kmLembrete    Int?
-  mensagem      String?
-  enviado       Boolean       @default(false)
-  dataEnvio     DateTime?
-  createdAt     DateTime      @default(now())
-
-  veiculo       Veiculo       @relation(fields: [veiculoId], references: [id], onDelete: Cascade)
-
-  @@map("lembretes")
-}
-
-// Status da ordem de serviço
-enum StatusOS {
-  AGENDADO
-  AGUARDANDO_PECAS
-  EM_ANDAMENTO
-  CONCLUIDO
-  CANCELADO
-  ENTREGUE
-}
+// =============================================
+// LEMBRETES
+// =============================================
 
 // Tipo de lembrete
 enum TipoLembrete {
@@ -150,6 +212,30 @@ enum TipoLembrete {
   FREIOS
   OUTRO
 }
+
+// Lembretes de manutenção
+model Lembrete {
+  id            Int           @id @default(autoincrement())
+  empresaId     Int
+  veiculoId     Int
+  tipo          TipoLembrete
+  dataLembrete  DateTime
+  kmLembrete    Int?
+  mensagem      String?
+  enviado       Boolean       @default(false)
+  dataEnvio     DateTime?
+  createdAt     DateTime      @default(now())
+
+  empresa       Empresa       @relation(fields: [empresaId], references: [id], onDelete: Cascade)
+  veiculo       Veiculo       @relation(fields: [veiculoId], references: [id], onDelete: Cascade)
+
+  @@index([empresaId])
+  @@map("lembretes")
+}
+
+// =============================================
+// ESTOQUE
+// =============================================
 
 // Categoria de produto no estoque
 enum CategoriaProduto {
@@ -175,7 +261,8 @@ enum UnidadeMedida {
 // Produto no estoque
 model Produto {
   id                Int              @id @default(autoincrement())
-  codigo            String           @unique
+  empresaId         Int
+  codigo            String
   nome              String
   marca             String
   categoria         CategoriaProduto
@@ -191,26 +278,13 @@ model Produto {
   createdAt         DateTime         @default(now())
   updatedAt         DateTime         @updatedAt
 
+  empresa           Empresa              @relation(fields: [empresaId], references: [id], onDelete: Cascade)
   movimentacoes     MovimentacaoEstoque[]
   itensOrdem        ItemOrdemProduto[]
 
+  @@unique([codigo, empresaId])
+  @@index([empresaId])
   @@map("produtos")
-}
-
-// Movimentação de estoque
-model MovimentacaoEstoque {
-  id           Int              @id @default(autoincrement())
-  produtoId    Int
-  tipo         TipoMovimentacao
-  quantidade   Decimal          @db.Decimal(10, 2)
-  precoUnit    Decimal?         @db.Decimal(10, 2)
-  motivo       String?
-  documento    String?
-  createdAt    DateTime         @default(now())
-
-  produto      Produto          @relation(fields: [produtoId], references: [id], onDelete: Cascade)
-
-  @@map("movimentacoes_estoque")
 }
 
 // Tipo de movimentação
@@ -219,6 +293,25 @@ enum TipoMovimentacao {
   SAIDA
   AJUSTE
   DEVOLUCAO
+}
+
+// Movimentação de estoque
+model MovimentacaoEstoque {
+  id           Int              @id @default(autoincrement())
+  empresaId    Int
+  produtoId    Int
+  tipo         TipoMovimentacao
+  quantidade   Decimal          @db.Decimal(10, 2)
+  precoUnit    Decimal?         @db.Decimal(10, 2)
+  motivo       String?
+  documento    String?
+  createdAt    DateTime         @default(now())
+
+  empresa      Empresa @relation(fields: [empresaId], references: [id], onDelete: Cascade)
+  produto      Produto @relation(fields: [produtoId], references: [id], onDelete: Cascade)
+
+  @@index([empresaId])
+  @@map("movimentacoes_estoque")
 }
 
 // Produtos usados em ordem de serviço
@@ -237,43 +330,9 @@ model ItemOrdemProduto {
   @@map("itens_ordem_produto")
 }
 
-// Conversa do WhatsApp
-model Conversa {
-  id            Int        @id @default(autoincrement())
-  telefone      String     @unique // Número do contato (formato: 5511999999999)
-  nome          String?    // Nome do contato
-  clienteId     Int?       // Vínculo opcional com cliente
-  ultimaMensagem String?   // Preview da última mensagem
-  ultimaData    DateTime   @default(now())
-  naoLidas      Int        @default(0)
-  arquivada     Boolean    @default(false)
-  createdAt     DateTime   @default(now())
-  updatedAt     DateTime   @updatedAt
-
-  cliente       Cliente?   @relation(fields: [clienteId], references: [id], onDelete: SetNull)
-  mensagens     Mensagem[]
-
-  @@map("conversas")
-}
-
-// Mensagem do WhatsApp
-model Mensagem {
-  id            Int        @id @default(autoincrement())
-  conversaId    Int
-  messageId     String?    @unique // ID da mensagem no WhatsApp
-  tipo          TipoMensagem @default(TEXTO)
-  conteudo      String     // Texto ou URL do arquivo
-  enviada       Boolean    // true = enviada pela oficina, false = recebida
-  lida          Boolean    @default(false)
-  dataEnvio     DateTime   @default(now())
-  metadata      String?    // JSON com dados extras (caption, mimetype, etc)
-  createdAt     DateTime   @default(now())
-
-  conversa      Conversa   @relation(fields: [conversaId], references: [id], onDelete: Cascade)
-
-  @@index([conversaId, dataEnvio])
-  @@map("mensagens")
-}
+// =============================================
+// WHATSAPP
+// =============================================
 
 // Tipo de mensagem
 enum TipoMensagem {
@@ -286,29 +345,82 @@ enum TipoMensagem {
   LOCALIZACAO
 }
 
-// Configurações do sistema (singleton)
+// Conversa do WhatsApp
+model Conversa {
+  id             Int        @id @default(autoincrement())
+  empresaId      Int
+  telefone       String
+  nome           String?
+  clienteId      Int?
+  ultimaMensagem String?
+  ultimaData     DateTime   @default(now())
+  naoLidas       Int        @default(0)
+  arquivada      Boolean    @default(false)
+  createdAt      DateTime   @default(now())
+  updatedAt      DateTime   @updatedAt
+
+  empresa        Empresa    @relation(fields: [empresaId], references: [id], onDelete: Cascade)
+  cliente        Cliente?   @relation(fields: [clienteId], references: [id], onDelete: SetNull)
+  mensagens      Mensagem[]
+
+  @@unique([telefone, empresaId])
+  @@index([empresaId])
+  @@map("conversas")
+}
+
+// Mensagem do WhatsApp
+model Mensagem {
+  id            Int          @id @default(autoincrement())
+  empresaId     Int
+  conversaId    Int
+  messageId     String?
+  tipo          TipoMensagem @default(TEXTO)
+  conteudo      String
+  enviada       Boolean
+  lida          Boolean      @default(false)
+  dataEnvio     DateTime     @default(now())
+  metadata      String?
+  createdAt     DateTime     @default(now())
+
+  empresa       Empresa  @relation(fields: [empresaId], references: [id], onDelete: Cascade)
+  conversa      Conversa @relation(fields: [conversaId], references: [id], onDelete: Cascade)
+
+  @@unique([messageId, empresaId])
+  @@index([empresaId])
+  @@index([conversaId, dataEnvio])
+  @@map("mensagens")
+}
+
+// =============================================
+// CONFIGURAÇÕES (por empresa)
+// =============================================
+
+// Configurações do sistema (uma por empresa)
 model Configuracao {
-  id                  Int      @id @default(1)
+  id                   Int      @id @default(autoincrement())
+  empresaId            Int      @unique
   // Dados da oficina
-  nomeOficina         String?
-  cnpj                String?
-  telefone            String?
-  endereco            String?
-  // WhatsApp/UazAPI (token e instanceId criados automaticamente)
-  uazapiInstanceId    String?
-  uazapiToken         String?
-  whatsappConnected   Boolean  @default(false)
-  whatsappNumber      String?
-  whatsappName        String?
+  nomeOficina          String?
+  cnpj                 String?
+  telefone             String?
+  endereco             String?
+  // WhatsApp/UazAPI
+  uazapiInstanceId     String?
+  uazapiToken          String?
+  whatsappConnected    Boolean  @default(false)
+  whatsappNumber       String?
+  whatsappName         String?
   // Configurações do Chatbot LoopIA
-  chatbotEnabled      Boolean  @default(true)
-  chatbotNome         String?  @default("LoopIA")
-  chatbotHorario      String?  @default("Segunda a Sexta 8h-18h, Sábado 8h-12h")
-  chatbotServicos     String?  @default("troca de óleo, filtros, fluidos de freio, arrefecimento, direção hidráulica")
-  chatbotBoasVindas   String?  @default("Olá! Sou a LoopIA, assistente virtual da oficina. Como posso ajudar?")
+  chatbotEnabled       Boolean  @default(true)
+  chatbotNome          String?  @default("LoopIA")
+  chatbotHorario       String?  @default("Segunda a Sexta 8h-18h, Sábado 8h-12h")
+  chatbotServicos      String?  @default("troca de óleo, filtros, fluidos de freio, arrefecimento, direção hidráulica")
+  chatbotBoasVindas    String?  @default("Olá! Sou a LoopIA, assistente virtual da oficina. Como posso ajudar?")
   // Configurações gerais
-  lembreteAntecedencia Int     @default(7) // dias antes para lembrar
-  updatedAt           DateTime @updatedAt
+  lembreteAntecedencia Int      @default(7)
+  updatedAt            DateTime @updatedAt
+
+  empresa Empresa @relation(fields: [empresaId], references: [id], onDelete: Cascade)
 
   @@map("configuracoes")
 }

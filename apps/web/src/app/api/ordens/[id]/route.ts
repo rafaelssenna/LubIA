@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { executeStockOperations, hasStockMovements, StockOperation } from '@/lib/estoque';
+import { getSession } from '@/lib/auth';
 
 // Mapa de transições de status válidas
 const VALID_TRANSITIONS: Record<string, string[]> = {
@@ -17,6 +18,11 @@ export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  const session = await getSession();
+  if (!session) {
+    return NextResponse.json({ error: 'Não autorizado' }, { status: 401 });
+  }
+
   try {
     const { id } = await params;
     const ordemId = parseInt(id);
@@ -25,8 +31,8 @@ export async function GET(
       return NextResponse.json({ error: 'ID da ordem inválido' }, { status: 400 });
     }
 
-    const ordem = await prisma.ordemServico.findUnique({
-      where: { id: ordemId },
+    const ordem = await prisma.ordemServico.findFirst({
+      where: { id: ordemId, empresaId: session.empresaId },
       include: {
         veiculo: {
           include: {
@@ -109,6 +115,11 @@ export async function PUT(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  const session = await getSession();
+  if (!session) {
+    return NextResponse.json({ error: 'Não autorizado' }, { status: 401 });
+  }
+
   try {
     const { id } = await params;
     const ordemId = parseInt(id);
@@ -120,9 +131,9 @@ export async function PUT(
     const body = await request.json();
     const { status, veiculoId, dataAgendada, dataInicio, dataConclusao, kmEntrada, observacoes, itens, itensProduto } = body;
 
-    // Verify order exists
-    const existing = await prisma.ordemServico.findUnique({
-      where: { id: ordemId },
+    // Verify order exists and belongs to this empresa
+    const existing = await prisma.ordemServico.findFirst({
+      where: { id: ordemId, empresaId: session.empresaId },
       include: { veiculo: true },
     });
 
@@ -177,8 +188,8 @@ export async function PUT(
       // Process service items
       if (itens && itens.length > 0) {
         for (const item of itens) {
-          const servico = await prisma.servico.findUnique({
-            where: { id: item.servicoId },
+          const servico = await prisma.servico.findFirst({
+            where: { id: item.servicoId, empresaId: session.empresaId },
           });
           if (servico) {
             const precoUnit = item.precoUnitario || Number(servico.precoBase);
@@ -200,8 +211,8 @@ export async function PUT(
       // Process product items
       if (itensProduto && itensProduto.length > 0) {
         for (const item of itensProduto) {
-          const produto = await prisma.produto.findUnique({
-            where: { id: item.produtoId },
+          const produto = await prisma.produto.findFirst({
+            where: { id: item.produtoId, empresaId: session.empresaId },
           });
           if (produto) {
             const precoUnit = item.precoUnitario || Number(produto.precoVenda);
@@ -231,6 +242,7 @@ export async function PUT(
           tipo: 'DEVOLUCAO',
           motivo: `Devolução por edição da O.S. ${existing.numero}`,
           documento: existing.numero,
+          empresaId: session.empresaId,
         });
       }
 
@@ -242,6 +254,7 @@ export async function PUT(
           tipo: 'SAIDA',
           motivo: `Saída por edição da O.S. ${existing.numero}`,
           documento: existing.numero,
+          empresaId: session.empresaId,
         });
       }
 
@@ -328,6 +341,7 @@ export async function PUT(
           tipo: 'DEVOLUCAO' as const,
           motivo: `Devolução por cancelamento da O.S. ${existing.numero}`,
           documento: existing.numero,
+          empresaId: session.empresaId,
         }));
 
         const ordem = await prisma.$transaction(async (tx) => {
@@ -389,6 +403,11 @@ export async function DELETE(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  const session = await getSession();
+  if (!session) {
+    return NextResponse.json({ error: 'Não autorizado' }, { status: 401 });
+  }
+
   try {
     const { id } = await params;
     const ordemId = parseInt(id);
@@ -397,9 +416,9 @@ export async function DELETE(
       return NextResponse.json({ error: 'ID da ordem inválido' }, { status: 400 });
     }
 
-    // Check if order exists
-    const ordem = await prisma.ordemServico.findUnique({
-      where: { id: ordemId },
+    // Check if order exists and belongs to this empresa
+    const ordem = await prisma.ordemServico.findFirst({
+      where: { id: ordemId, empresaId: session.empresaId },
     });
 
     if (!ordem) {
@@ -424,6 +443,7 @@ export async function DELETE(
         tipo: 'DEVOLUCAO' as const,
         motivo: `Devolução por exclusão da O.S. ${ordem.numero}`,
         documento: ordem.numero,
+        empresaId: session.empresaId,
       }));
 
       await prisma.$transaction(async (tx) => {

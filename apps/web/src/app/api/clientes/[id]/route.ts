@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { getSession } from '@/lib/auth';
 
 // GET single client with vehicles
 export async function GET(
@@ -7,6 +8,11 @@ export async function GET(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const session = await getSession();
+    if (!session) {
+      return NextResponse.json({ error: 'Não autorizado' }, { status: 401 });
+    }
+
     const { id } = await params;
     const clienteId = parseInt(id);
 
@@ -14,8 +20,11 @@ export async function GET(
       return NextResponse.json({ error: 'ID inválido' }, { status: 400 });
     }
 
-    const cliente = await prisma.cliente.findUnique({
-      where: { id: clienteId },
+    const cliente = await prisma.cliente.findFirst({
+      where: {
+        id: clienteId,
+        empresaId: session.empresaId,
+      },
       include: {
         veiculos: true,
         _count: {
@@ -46,6 +55,11 @@ export async function PUT(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const session = await getSession();
+    if (!session) {
+      return NextResponse.json({ error: 'Não autorizado' }, { status: 401 });
+    }
+
     const { id } = await params;
     const clienteId = parseInt(id);
 
@@ -55,11 +69,20 @@ export async function PUT(
 
     const body = await request.json();
 
+    // Verify client belongs to this empresa
+    const existingCliente = await prisma.cliente.findFirst({
+      where: { id: clienteId, empresaId: session.empresaId }
+    });
+    if (!existingCliente) {
+      return NextResponse.json({ error: 'Cliente não encontrado' }, { status: 404 });
+    }
+
     // Check if CPF already exists (if provided and different)
     if (body.cpf) {
       const existing = await prisma.cliente.findFirst({
         where: {
           cpf: body.cpf,
+          empresaId: session.empresaId,
           id: { not: clienteId }
         }
       });
@@ -102,6 +125,11 @@ export async function DELETE(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const session = await getSession();
+    if (!session) {
+      return NextResponse.json({ error: 'Não autorizado' }, { status: 401 });
+    }
+
     const { id } = await params;
     const clienteId = parseInt(id);
 
@@ -109,9 +137,12 @@ export async function DELETE(
       return NextResponse.json({ error: 'ID inválido' }, { status: 400 });
     }
 
-    // Check if client has vehicles
-    const cliente = await prisma.cliente.findUnique({
-      where: { id: clienteId },
+    // Check if client exists and belongs to this empresa
+    const cliente = await prisma.cliente.findFirst({
+      where: {
+        id: clienteId,
+        empresaId: session.empresaId,
+      },
       include: { _count: { select: { veiculos: true } } }
     });
 

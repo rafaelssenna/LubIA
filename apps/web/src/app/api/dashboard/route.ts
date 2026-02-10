@@ -1,7 +1,13 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { getSession } from '@/lib/auth';
 
 export async function GET() {
+  const session = await getSession();
+  if (!session) {
+    return NextResponse.json({ error: 'Não autorizado' }, { status: 401 });
+  }
+
   try {
     const hoje = new Date();
     hoje.setHours(0, 0, 0, 0);
@@ -19,16 +25,18 @@ export async function GET() {
       ordensMes,
       ordensHoje,
     ] = await Promise.all([
-      prisma.cliente.count(),
-      prisma.veiculo.count(),
+      prisma.cliente.count({ where: { empresaId: session.empresaId } }),
+      prisma.veiculo.count({ where: { empresaId: session.empresaId } }),
       prisma.ordemServico.findMany({
         where: {
+          empresaId: session.empresaId,
           createdAt: { gte: inicioMes, lte: fimMes },
         },
         select: { total: true },
       }),
       prisma.ordemServico.findMany({
         where: {
+          empresaId: session.empresaId,
           OR: [
             { dataAgendada: { gte: hoje, lt: amanha } },
             {

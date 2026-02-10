@@ -1,6 +1,11 @@
 import { PrismaClient } from '@prisma/client';
+import bcrypt from 'bcrypt';
 
 const prisma = new PrismaClient();
+
+async function hashPassword(password: string): Promise<string> {
+  return bcrypt.hash(password, 12);
+}
 
 const produtos = [
   // ===== ÓLEOS LUBRIFICANTES =====
@@ -147,16 +152,137 @@ const produtos = [
 ];
 
 async function main() {
-  console.log('🌱 Iniciando seed do estoque...\n');
+  console.log('🌱 Iniciando seed do sistema...\n');
+
+  // 1. Criar empresa demo
+  console.log('📦 Criando empresa demo...');
+  let empresa = await prisma.empresa.findUnique({
+    where: { slug: 'demo' },
+  });
+
+  if (!empresa) {
+    empresa = await prisma.empresa.create({
+      data: {
+        nome: 'Oficina Demo',
+        slug: 'demo',
+        ativo: true,
+      },
+    });
+    console.log('✅ Empresa criada: Oficina Demo');
+  } else {
+    console.log('⏭️  Empresa demo já existe');
+  }
+
+  const empresaId = empresa.id;
+
+  // 2. Criar usuário admin
+  console.log('\n👤 Criando usuário admin...');
+  const existingUser = await prisma.usuario.findUnique({
+    where: { email: 'admin@demo.com' },
+  });
+
+  if (!existingUser) {
+    const senhaHash = await hashPassword('admin123');
+    await prisma.usuario.create({
+      data: {
+        email: 'admin@demo.com',
+        senhaHash,
+        nome: 'Administrador',
+        empresaId,
+        ativo: true,
+      },
+    });
+    console.log('✅ Usuário criado: admin@demo.com / admin123');
+  } else {
+    console.log('⏭️  Usuário admin já existe');
+  }
+
+  // 3. Criar configuração padrão
+  console.log('\n⚙️  Criando configuração padrão...');
+  const existingConfig = await prisma.configuracao.findUnique({
+    where: { empresaId },
+  });
+
+  if (!existingConfig) {
+    await prisma.configuracao.create({
+      data: {
+        empresaId,
+        nomeOficina: 'Oficina Demo',
+        chatbotEnabled: true,
+        chatbotNome: 'LoopIA',
+        chatbotHorario: JSON.stringify({
+          seg: { ativo: true, abertura: '08:00', fechamento: '18:00' },
+          ter: { ativo: true, abertura: '08:00', fechamento: '18:00' },
+          qua: { ativo: true, abertura: '08:00', fechamento: '18:00' },
+          qui: { ativo: true, abertura: '08:00', fechamento: '18:00' },
+          sex: { ativo: true, abertura: '08:00', fechamento: '18:00' },
+          sab: { ativo: true, abertura: '08:00', fechamento: '12:00' },
+          dom: { ativo: false, abertura: '08:00', fechamento: '12:00' },
+        }),
+      },
+    });
+    console.log('✅ Configuração criada');
+  } else {
+    console.log('⏭️  Configuração já existe');
+  }
+
+  // 4. Criar serviços padrão
+  console.log('\n🔧 Criando serviços padrão...');
+  const servicosExistentes = await prisma.servico.count({ where: { empresaId } });
+
+  if (servicosExistentes === 0) {
+    await prisma.servico.createMany({
+      data: [
+        {
+          empresaId,
+          nome: 'Troca de Óleo 5W30',
+          descricao: 'Troca de óleo do motor com óleo semi-sintético 5W30',
+          categoria: 'TROCA_OLEO',
+          precoBase: 180.00,
+          duracaoMin: 60,
+        },
+        {
+          empresaId,
+          nome: 'Troca de Óleo Sintético',
+          descricao: 'Troca de óleo do motor com óleo 100% sintético',
+          categoria: 'TROCA_OLEO',
+          precoBase: 280.00,
+          duracaoMin: 60,
+        },
+        {
+          empresaId,
+          nome: 'Alinhamento e Balanceamento',
+          descricao: 'Alinhamento das rodas dianteiras e traseiras + balanceamento das 4 rodas',
+          categoria: 'PNEUS',
+          precoBase: 140.00,
+          duracaoMin: 90,
+        },
+        {
+          empresaId,
+          nome: 'Troca de Filtros',
+          descricao: 'Substituição do filtro de óleo, ar e combustível',
+          categoria: 'FILTROS',
+          precoBase: 150.00,
+          duracaoMin: 45,
+        },
+      ],
+    });
+    console.log('✅ Serviços padrão criados');
+  } else {
+    console.log('⏭️  Serviços já existem');
+  }
+
+  // 5. Criar produtos do estoque
+  console.log('\n📦 Criando produtos do estoque...\n');
 
   let criados = 0;
   let ignorados = 0;
 
   for (const produto of produtos) {
     try {
-      // Verificar se já existe pelo código
+      // Verificar se já existe pelo código + empresaId
       const existente = await prisma.produto.findUnique({
-        where: { codigo: produto.codigo },
+        where: { codigo_empresaId: { codigo: produto.codigo, empresaId } },
       });
 
       if (existente) {
@@ -167,6 +293,7 @@ async function main() {
 
       await prisma.produto.create({
         data: {
+          empresaId,
           codigo: produto.codigo,
           nome: produto.nome,
           marca: produto.marca,
@@ -190,6 +317,8 @@ async function main() {
   }
 
   console.log(`\n📊 Resumo:`);
+  console.log(`   Empresa: ${empresa.nome}`);
+  console.log(`   Login: admin@demo.com / admin123`);
   console.log(`   Produtos criados: ${criados}`);
   console.log(`   Produtos ignorados: ${ignorados}`);
   console.log(`   Total no seed: ${produtos.length}`);

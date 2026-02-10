@@ -1,14 +1,21 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { getSession } from '@/lib/auth';
 
 // GET - Listar conversas
 export async function GET(request: NextRequest) {
+  const session = await getSession();
+  if (!session) {
+    return NextResponse.json({ error: 'Não autorizado' }, { status: 401 });
+  }
+
   try {
     const { searchParams } = new URL(request.url);
     const busca = searchParams.get('busca') || '';
     const arquivadas = searchParams.get('arquivadas') === 'true';
 
     const where: any = {
+      empresaId: session.empresaId,
       arquivada: arquivadas,
     };
 
@@ -35,13 +42,14 @@ export async function GET(request: NextRequest) {
 
     // Stats
     const [totalConversas, totalNaoLidas, conversasHoje] = await Promise.all([
-      prisma.conversa.count({ where: { arquivada: false } }),
+      prisma.conversa.count({ where: { empresaId: session.empresaId, arquivada: false } }),
       prisma.conversa.aggregate({
-        where: { arquivada: false },
+        where: { empresaId: session.empresaId, arquivada: false },
         _sum: { naoLidas: true },
       }),
       prisma.conversa.count({
         where: {
+          empresaId: session.empresaId,
           arquivada: false,
           ultimaData: {
             gte: new Date(new Date().setHours(0, 0, 0, 0)),

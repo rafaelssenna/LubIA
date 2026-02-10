@@ -1,17 +1,23 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { getSession } from '@/lib/auth';
 
 // GET - Obter configuração
 export async function GET() {
+  const session = await getSession();
+  if (!session) {
+    return NextResponse.json({ error: 'Não autorizado' }, { status: 401 });
+  }
+
   try {
-    let config = await prisma.configuracao.findUnique({
-      where: { id: 1 },
+    let config = await prisma.configuracao.findFirst({
+      where: { empresaId: session.empresaId },
     });
 
     // Criar registro se não existir
     if (!config) {
       config = await prisma.configuracao.create({
-        data: { id: 1 },
+        data: { empresaId: session.empresaId },
       });
     }
 
@@ -44,17 +50,22 @@ export async function GET() {
 
 // PUT - Atualizar configuração
 export async function PUT(request: NextRequest) {
+  const session = await getSession();
+  if (!session) {
+    return NextResponse.json({ error: 'Não autorizado' }, { status: 401 });
+  }
+
   try {
     const body = await request.json();
 
-    // Garantir que existe o registro
-    const existing = await prisma.configuracao.findUnique({
-      where: { id: 1 },
+    // Garantir que existe o registro para esta empresa
+    let existing = await prisma.configuracao.findFirst({
+      where: { empresaId: session.empresaId },
     });
 
     if (!existing) {
-      await prisma.configuracao.create({
-        data: { id: 1 },
+      existing = await prisma.configuracao.create({
+        data: { empresaId: session.empresaId },
       });
     }
 
@@ -79,7 +90,7 @@ export async function PUT(request: NextRequest) {
     if (body.chatbotBoasVindas !== undefined) updateData.chatbotBoasVindas = body.chatbotBoasVindas;
 
     const config = await prisma.configuracao.update({
-      where: { id: 1 },
+      where: { id: existing.id },
       data: updateData,
     });
 

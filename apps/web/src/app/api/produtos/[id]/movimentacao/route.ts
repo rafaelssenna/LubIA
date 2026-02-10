@@ -1,17 +1,31 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { getSession } from '@/lib/auth';
 
 // GET - Buscar histórico de movimentações
 export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  const session = await getSession();
+  if (!session) {
+    return NextResponse.json({ error: 'Não autorizado' }, { status: 401 });
+  }
+
   try {
     const { id } = await params;
     const produtoId = parseInt(id);
 
     if (isNaN(produtoId)) {
       return NextResponse.json({ error: 'ID do produto inválido' }, { status: 400 });
+    }
+
+    // Verify product belongs to this empresa
+    const produto = await prisma.produto.findFirst({
+      where: { id: produtoId, empresaId: session.empresaId }
+    });
+    if (!produto) {
+      return NextResponse.json({ error: 'Produto não encontrado' }, { status: 404 });
     }
 
     const movimentacoes = await prisma.movimentacaoEstoque.findMany({
@@ -41,6 +55,11 @@ export async function POST(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  const session = await getSession();
+  if (!session) {
+    return NextResponse.json({ error: 'Não autorizado' }, { status: 401 });
+  }
+
   console.log('========================================');
   console.log('[MOVIMENTACAO API] POST request iniciado');
   console.log('[MOVIMENTACAO API] URL:', request.url);
@@ -66,10 +85,10 @@ export async function POST(
     const { tipo, quantidade, motivo, documento } = body;
     console.log('[MOVIMENTACAO API] tipo:', tipo, 'quantidade:', quantidade);
 
-    // Busca produto atual
+    // Busca produto atual and verify it belongs to this empresa
     console.log('[MOVIMENTACAO API] Buscando produto no banco...');
-    const produto = await prisma.produto.findUnique({
-      where: { id: produtoId },
+    const produto = await prisma.produto.findFirst({
+      where: { id: produtoId, empresaId: session.empresaId },
     });
 
     if (!produto) {
@@ -102,6 +121,7 @@ export async function POST(
     await prisma.$transaction([
       prisma.movimentacaoEstoque.create({
         data: {
+          empresaId: session.empresaId,
           produtoId,
           tipo,
           quantidade,

@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { headers } from 'next/headers';
+import { getSession } from '@/lib/auth';
 
 const UAZAPI_URL = process.env.UAZAPI_URL || 'https://hia-clientes.uazapi.com';
 const UAZAPI_ADMIN_TOKEN = process.env.UAZAPI_ADMIN_TOKEN;
@@ -41,6 +42,11 @@ async function configureWebhook(token: string, webhookUrl: string) {
 // GET - Obter QR Code para conexão (cria instância se necessário)
 export async function GET() {
   try {
+    const session = await getSession();
+    if (!session) {
+      return NextResponse.json({ error: 'Não autorizado' }, { status: 401 });
+    }
+
     // Obter URL base para o webhook
     const headersList = await headers();
     const host = headersList.get('host') || 'localhost:3000';
@@ -49,12 +55,12 @@ export async function GET() {
 
     // Garantir que existe registro de configuração
     let config = await prisma.configuracao.findUnique({
-      where: { id: 1 },
+      where: { empresaId: session.empresaId },
     });
 
     if (!config) {
       config = await prisma.configuracao.create({
-        data: { id: 1 },
+        data: { empresaId: session.empresaId },
       });
     }
 
@@ -92,7 +98,7 @@ export async function GET() {
 
       // Salvar token e ID da instância
       config = await prisma.configuracao.update({
-        where: { id: 1 },
+        where: { empresaId: session.empresaId },
         data: {
           uazapiInstanceId: instanceData.id,
           uazapiToken: instanceData.token,
@@ -120,7 +126,7 @@ export async function GET() {
       // Se token inválido, limpar e pedir para reconectar
       if (response.status === 401) {
         await prisma.configuracao.update({
-          where: { id: 1 },
+          where: { empresaId: session.empresaId },
           data: {
             uazapiToken: null,
             uazapiInstanceId: null,
@@ -148,7 +154,7 @@ export async function GET() {
     if (data.connected || instance.status === 'connected') {
       console.log('[WHATSAPP CONNECT] Já conectado!', instance.profileName);
       await prisma.configuracao.update({
-        where: { id: 1 },
+        where: { empresaId: session.empresaId },
         data: {
           whatsappConnected: true,
           whatsappNumber: instance.owner || null,

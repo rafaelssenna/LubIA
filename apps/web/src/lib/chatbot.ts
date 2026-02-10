@@ -113,10 +113,10 @@ interface ServicoData {
 }
 
 // Buscar serviços ativos do banco
-async function getServicos(): Promise<ServicoData[]> {
+async function getServicos(empresaId: number): Promise<ServicoData[]> {
   try {
     const servicos = await prisma.servico.findMany({
-      where: { ativo: true },
+      where: { ativo: true, empresaId },
       orderBy: { categoria: 'asc' },
     });
 
@@ -159,12 +159,13 @@ function formatServicosParaPrompt(servicos: ServicoData[]): string {
 }
 
 // Buscar histórico recente de mensagens do banco
-async function getRecentMessages(phoneNumber: string): Promise<string[]> {
+async function getRecentMessages(phoneNumber: string, empresaId: number): Promise<string[]> {
   try {
     const cleanPhone = phoneNumber.replace(/\D/g, '');
 
     const conversa = await prisma.conversa.findFirst({
       where: {
+        empresaId,
         OR: [
           { telefone: { contains: cleanPhone.slice(-11) } },
           { telefone: { contains: cleanPhone } },
@@ -192,12 +193,13 @@ async function getRecentMessages(phoneNumber: string): Promise<string[]> {
 }
 
 // Buscar dados do cliente pelo telefone
-async function getCustomerData(phoneNumber: string): Promise<CustomerData | null> {
+async function getCustomerData(phoneNumber: string, empresaId: number): Promise<CustomerData | null> {
   try {
     const cleanPhone = phoneNumber.replace(/\D/g, '');
 
     const cliente = await prisma.cliente.findFirst({
       where: {
+        empresaId,
         OR: [
           { telefone: { contains: cleanPhone.slice(-11) } },
           { telefone: { contains: cleanPhone.slice(-10) } },
@@ -310,14 +312,15 @@ function parseHorarioParaString(horarioJson: string | null): string {
 }
 
 // Buscar horários disponíveis nos próximos dias
-async function getHorariosDisponiveis(): Promise<{ data: Date; label: string }[]> {
+async function getHorariosDisponiveis(empresaId: number): Promise<{ data: Date; label: string }[]> {
   try {
-    const config = await prisma.configuracao.findUnique({ where: { id: 1 } });
+    const config = await prisma.configuracao.findUnique({ where: { empresaId } });
     const horarioConfig = config?.chatbotHorario;
 
     // Buscar duração do serviço de troca de óleo (padrão: 60 minutos)
     const servicoTrocaOleo = await prisma.servico.findFirst({
       where: {
+        empresaId,
         OR: [
           { categoria: 'TROCA_OLEO' },
           { nome: { contains: 'Troca de Óleo', mode: 'insensitive' } },
@@ -362,6 +365,7 @@ async function getHorariosDisponiveis(): Promise<{ data: Date; label: string }[]
 
     const agendamentosExistentes = await prisma.ordemServico.findMany({
       where: {
+        empresaId,
         dataAgendada: { gte: hoje, lte: fim },
         status: { in: ['AGENDADO', 'EM_ANDAMENTO'] },
       },
@@ -446,6 +450,7 @@ async function getHorariosDisponiveis(): Promise<{ data: Date; label: string }[]
 async function criarOrdemServico(
   veiculoId: number,
   dataAgendada: Date,
+  empresaId: number,
   servico: string = 'Troca de Óleo'
 ): Promise<{ success: boolean; numero?: string; error?: string }> {
   try {
@@ -462,6 +467,7 @@ async function criarOrdemServico(
     // Buscar serviço de troca de óleo
     const servicoTrocaOleo = await prisma.servico.findFirst({
       where: {
+        empresaId,
         OR: [
           { categoria: 'TROCA_OLEO' },
           { nome: { contains: 'Troca de Óleo' } },
@@ -477,6 +483,7 @@ async function criarOrdemServico(
     // Criar ordem de serviço
     const ordem = await prisma.ordemServico.create({
       data: {
+        empresaId,
         veiculoId: veiculo.id,
         status: 'AGENDADO',
         dataAgendada,
@@ -675,11 +682,12 @@ Quando o cliente quiser agendar/marcar:
 export async function generateChatResponse(
   userMessage: string,
   phoneNumber: string,
+  empresaId: number,
   userName?: string
 ): Promise<ChatResponse> {
   try {
     const config = await prisma.configuracao.findUnique({
-      where: { id: 1 },
+      where: { empresaId },
     });
 
     if (config && config.chatbotEnabled === false) {
@@ -692,8 +700,8 @@ export async function generateChatResponse(
       return { type: 'text', message: 'Desculpe, estou com problemas técnicos. Por favor, ligue para a oficina.' };
     }
 
-    const customerData = await getCustomerData(phoneNumber);
-    const servicos = await getServicos();
+    const customerData = await getCustomerData(phoneNumber, empresaId);
+    const servicos = await getServicos(empresaId);
     const servicosFormatados = formatServicosParaPrompt(servicos);
 
     // Gerenciar estado de agendamento
@@ -734,7 +742,7 @@ export async function generateChatResponse(
           agendamento.veiculoNomes = customerData.veiculos.map(v => `${v.marca} ${v.modelo}`);
           agendamento.veiculoNome = `${customerData.veiculos.length} veículos`;
           agendamento.etapa = 'escolher_data';
-          agendamento.horariosDisponiveis = await getHorariosDisponiveis();
+          agendamento.horariosDisponiveis = await getHorariosDisponiveis(empresaId);
           agendamentoState.set(phoneNumber, agendamento);
           console.log('[CHATBOT] Todos os veículos selecionados:', agendamento.veiculoNomes);
 
@@ -766,7 +774,7 @@ export async function generateChatResponse(
           agendamento.veiculoId = veiculo.id;
           agendamento.veiculoNome = `${veiculo.marca} ${veiculo.modelo}`;
           agendamento.etapa = 'escolher_data';
-          agendamento.horariosDisponiveis = await getHorariosDisponiveis();
+          agendamento.horariosDisponiveis = await getHorariosDisponiveis(empresaId);
           agendamentoState.set(phoneNumber, agendamento);
           console.log('[CHATBOT] Veículo selecionado via botão:', agendamento.veiculoNome);
 
@@ -840,7 +848,7 @@ export async function generateChatResponse(
         for (let i = 0; i < agendamento.veiculoIds.length; i++) {
           const veiculoId = agendamento.veiculoIds[i];
           const veiculoNome = agendamento.veiculoNomes?.[i] || 'Veículo';
-          const resultado = await criarOrdemServico(veiculoId, agendamento.dataHora, 'Troca de Óleo');
+          const resultado = await criarOrdemServico(veiculoId, agendamento.dataHora, empresaId, 'Troca de Óleo');
           resultados.push({ success: resultado.success, veiculo: veiculoNome, numero: resultado.numero });
         }
 
@@ -867,6 +875,7 @@ export async function generateChatResponse(
         const resultado = await criarOrdemServico(
           agendamento.veiculoId,
           agendamento.dataHora,
+          empresaId,
           'Troca de Óleo'
         );
 
@@ -946,7 +955,7 @@ export async function generateChatResponse(
       const v = customerData.veiculos[0];
       agendamento.veiculoId = v.id;
       agendamento.veiculoNome = `${v.marca} ${v.modelo}`;
-      agendamento.horariosDisponiveis = await getHorariosDisponiveis();
+      agendamento.horariosDisponiveis = await getHorariosDisponiveis(empresaId);
       agendamentoState.set(phoneNumber, agendamento);
       console.log('[CHATBOT] Iniciando agendamento - horários para:', customerData.nome);
 
@@ -984,7 +993,7 @@ export async function generateChatResponse(
           agendamento.veiculoId = v.id;
           agendamento.veiculoNome = `${v.marca} ${v.modelo}`;
           agendamento.etapa = 'escolher_data';
-          agendamento.horariosDisponiveis = await getHorariosDisponiveis();
+          agendamento.horariosDisponiveis = await getHorariosDisponiveis(empresaId);
           agendamentoState.set(phoneNumber, agendamento);
           console.log('[CHATBOT] Veículo selecionado por texto:', agendamento.veiculoNome);
 
@@ -1125,6 +1134,7 @@ export async function generateChatResponse(
         const resultado = await criarOrdemServico(
           agendamento.veiculoId,
           agendamento.dataHora,
+          empresaId,
           'Troca de Óleo'
         );
 
@@ -1159,7 +1169,7 @@ export async function generateChatResponse(
     // Se não temos histórico em memória, buscar do banco de dados
     let historicoDobanco = '';
     if (history.length === 0) {
-      const mensagensRecentes = await getRecentMessages(phoneNumber);
+      const mensagensRecentes = await getRecentMessages(phoneNumber, empresaId);
       if (mensagensRecentes.length > 0) {
         historicoDobanco = `\n\n## Histórico Recente de Mensagens (contexto importante!)
 As mensagens abaixo foram enviadas ANTES desta conversa começar. Use este contexto para entender o que o cliente está respondendo:

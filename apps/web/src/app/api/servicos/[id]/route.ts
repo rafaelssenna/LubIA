@@ -1,11 +1,17 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { getSession } from '@/lib/auth';
 
 // GET - Buscar serviço por ID
 export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  const session = await getSession();
+  if (!session) {
+    return NextResponse.json({ error: 'Não autorizado' }, { status: 401 });
+  }
+
   try {
     const { id } = await params;
     const servicoId = parseInt(id);
@@ -14,8 +20,8 @@ export async function GET(
       return NextResponse.json({ error: 'ID do serviço inválido' }, { status: 400 });
     }
 
-    const servico = await prisma.servico.findUnique({
-      where: { id: servicoId },
+    const servico = await prisma.servico.findFirst({
+      where: { id: servicoId, empresaId: session.empresaId },
     });
 
     if (!servico) {
@@ -46,6 +52,11 @@ export async function PUT(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  const session = await getSession();
+  if (!session) {
+    return NextResponse.json({ error: 'Não autorizado' }, { status: 401 });
+  }
+
   try {
     const { id } = await params;
     const servicoId = parseInt(id);
@@ -57,9 +68,9 @@ export async function PUT(
     const body = await request.json();
     const { nome, descricao, categoria, precoBase, duracaoMin, ativo } = body;
 
-    // Verify service exists
-    const existing = await prisma.servico.findUnique({
-      where: { id: servicoId },
+    // Verify service exists and belongs to this empresa
+    const existing = await prisma.servico.findFirst({
+      where: { id: servicoId, empresaId: session.empresaId },
     });
 
     if (!existing) {
@@ -100,12 +111,26 @@ export async function DELETE(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  const session = await getSession();
+  if (!session) {
+    return NextResponse.json({ error: 'Não autorizado' }, { status: 401 });
+  }
+
   try {
     const { id } = await params;
     const servicoId = parseInt(id);
 
     if (isNaN(servicoId)) {
       return NextResponse.json({ error: 'ID do serviço inválido' }, { status: 400 });
+    }
+
+    // Verify service exists and belongs to this empresa
+    const existing = await prisma.servico.findFirst({
+      where: { id: servicoId, empresaId: session.empresaId },
+    });
+
+    if (!existing) {
+      return NextResponse.json({ error: 'Serviço não encontrado' }, { status: 404 });
     }
 
     // Check if service has orders

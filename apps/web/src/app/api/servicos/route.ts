@@ -1,15 +1,23 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { getSession } from '@/lib/auth';
 
 // GET - Buscar todos os serviços
 export async function GET(request: NextRequest) {
+  const session = await getSession();
+  if (!session) {
+    return NextResponse.json({ error: 'Não autorizado' }, { status: 401 });
+  }
+
   try {
     const { searchParams } = new URL(request.url);
     const busca = searchParams.get('busca') || '';
     const categoria = searchParams.get('categoria') || '';
     const ativo = searchParams.get('ativo');
 
-    const where: any = {};
+    const where: any = {
+      empresaId: session.empresaId,
+    };
 
     if (busca) {
       where.OR = [
@@ -31,8 +39,10 @@ export async function GET(request: NextRequest) {
       orderBy: { nome: 'asc' },
     });
 
-    // Get all services for stats (unfiltered)
-    const allServicos = await prisma.servico.findMany();
+    // Get all services for stats (unfiltered but scoped to empresa)
+    const allServicos = await prisma.servico.findMany({
+      where: { empresaId: session.empresaId },
+    });
 
     // Calculate stats from all services
     const total = allServicos.length;
@@ -75,6 +85,11 @@ export async function GET(request: NextRequest) {
 
 // POST - Criar novo serviço
 export async function POST(request: NextRequest) {
+  const session = await getSession();
+  if (!session) {
+    return NextResponse.json({ error: 'Não autorizado' }, { status: 401 });
+  }
+
   try {
     const body = await request.json();
     const { nome, descricao, categoria, precoBase, duracaoMin, ativo } = body;
@@ -95,6 +110,7 @@ export async function POST(request: NextRequest) {
         precoBase,
         duracaoMin: duracaoMin || null,
         ativo: ativo !== false,
+        empresaId: session.empresaId,
       },
     });
 

@@ -1,7 +1,8 @@
 'use client';
 
-import { Bell, Search, User, ChevronDown, Sparkles } from 'lucide-react';
+import { Bell, Search, User, ChevronDown, Sparkles, LogOut } from 'lucide-react';
 import { useState } from 'react';
+import { useAuth } from '@/contexts/AuthContext';
 
 interface HeaderProps {
   title: string;
@@ -11,6 +12,7 @@ interface HeaderProps {
 export default function Header({ title, subtitle }: HeaderProps) {
   const [showNotifications, setShowNotifications] = useState(false);
   const [showProfile, setShowProfile] = useState(false);
+  const { user, logout } = useAuth();
 
   const notifications = [
     { id: 1, text: 'Veículo ABC-1234 pronto para entrega', time: '5 min', type: 'success' },
@@ -102,8 +104,8 @@ export default function Header({ title, subtitle }: HeaderProps) {
                 <User size={20} className="text-white" />
               </div>
               <div className="text-left hidden md:block">
-                <p className="text-sm font-semibold text-[#E8E8E8]">Admin</p>
-                <p className="text-xs text-[#9E9E9E]">Oficina Demo</p>
+                <p className="text-sm font-semibold text-[#E8E8E8]">{user?.nome || 'Usuário'}</p>
+                <p className="text-xs text-[#9E9E9E]">{user?.empresaNome || 'Empresa'}</p>
               </div>
               <ChevronDown size={16} className="text-[#66BB6A] group-hover:text-[#43A047] transition-colors ml-1" />
             </button>
@@ -120,7 +122,11 @@ export default function Header({ title, subtitle }: HeaderProps) {
                     Configurações
                   </button>
                   <hr className="my-2 border-[#333333]" />
-                  <button className="w-full text-left px-4 py-3 text-sm text-red-400 hover:bg-red-500/10 rounded-xl transition-all duration-300">
+                  <button
+                    onClick={logout}
+                    className="w-full text-left px-4 py-3 text-sm text-red-400 hover:bg-red-500/10 rounded-xl transition-all duration-300 flex items-center gap-3"
+                  >
+                    <LogOut size={16} />
                     Sair
                   </button>
                 </div>

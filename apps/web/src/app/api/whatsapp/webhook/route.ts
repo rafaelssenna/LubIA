@@ -43,14 +43,15 @@ async function saveMessage(
   nome: string | null,
   conteudo: string,
   enviada: boolean,
+  empresaId: number,
   tipo: TipoMensagem = 'TEXTO',
   messageId?: string,
   metadata?: any
 ): Promise<void> {
   try {
-    // Buscar ou criar conversa
+    // Buscar ou criar conversa (unique por telefone + empresaId)
     let conversa = await prisma.conversa.findUnique({
-      where: { telefone },
+      where: { telefone_empresaId: { telefone, empresaId } },
     });
 
     // Tentar vincular a cliente existente
@@ -67,6 +68,7 @@ async function saveMessage(
 
       const cliente = await prisma.cliente.findFirst({
         where: {
+          empresaId,
           OR: telefoneFormatos.map(t => ({
             telefone: { contains: t },
           })),
@@ -94,6 +96,7 @@ async function saveMessage(
       // Criar nova conversa
       conversa = await prisma.conversa.create({
         data: {
+          empresaId,
           telefone,
           nome: nome || null,
           clienteId,
@@ -107,6 +110,7 @@ async function saveMessage(
     // Salvar mensagem
     await prisma.mensagem.create({
       data: {
+        empresaId,
         conversaId: conversa.id,
         messageId: messageId || null,
         tipo,
@@ -266,18 +270,23 @@ async function processBufferedMessages(phoneNumber: string): Promise<void> {
 
     console.log('[WEBHOOK] Processando buffer com', buffer.messages.length, 'mensagens:', combinedText.substring(0, 100));
 
-    // Buscar token da instância
-    const config = await prisma.configuracao.findUnique({
-      where: { id: 1 },
+    // Buscar configuração com token ativo (encontrar a empresa)
+    const config = await prisma.configuracao.findFirst({
+      where: {
+        uazapiToken: { not: null },
+        chatbotEnabled: true,
+      },
     });
 
-    if (!config?.uazapiToken) {
-      console.error('[WEBHOOK] Token não encontrado');
+    if (!config?.uazapiToken || !config.empresaId) {
+      console.error('[WEBHOOK] Token ou empresa não encontrado');
       return;
     }
 
+    const empresaId = config.empresaId;
+
     // Gerar resposta com IA usando texto combinado
-    const aiResponse = await generateChatResponse(combinedText, phoneNumber, pushName);
+    const aiResponse = await generateChatResponse(combinedText, phoneNumber, empresaId, pushName);
 
     // Se resposta vazia, chatbot está desabilitado
     if (aiResponse.type === 'text' && !aiResponse.message) {
@@ -303,6 +312,7 @@ async function processBufferedMessages(phoneNumber: string): Promise<void> {
         null,
         conteudoParaSalvar,
         true, // enviada
+        empresaId,
         'TEXTO',
         sentMessageId
       );
@@ -379,6 +389,20 @@ export async function POST(request: NextRequest) {
         text: text.substring(0, 100),
       });
 
+      // Buscar configuração com token ativo (encontrar a empresa)
+      const config = await prisma.configuracao.findFirst({
+        where: {
+          uazapiToken: { not: null },
+        },
+      });
+
+      if (!config?.empresaId) {
+        console.error('[WEBHOOK] Empresa não encontrada para processar mensagem');
+        return NextResponse.json({ success: false, error: 'Empresa não configurada' });
+      }
+
+      const empresaId = config.empresaId;
+
       // Determinar tipo da mensagem
       const tipoMensagem = getTipoMensagem(message);
       const messageId = message.id || message.key?.id;
@@ -389,6 +413,7 @@ export async function POST(request: NextRequest) {
         pushName,
         text,
         false, // recebida
+        empresaId,
         tipoMensagem,
         messageId,
         { type: message.type, mimetype: message.mimetype }

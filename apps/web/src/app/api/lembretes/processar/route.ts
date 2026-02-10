@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { getSession } from '@/lib/auth';
 
 const UAZAPI_URL = process.env.UAZAPI_URL || 'https://hia-clientes.uazapi.com';
 
@@ -24,11 +25,12 @@ interface GrupoCliente {
 async function saveOutgoingMessage(
   telefone: string,
   conteudo: string,
-  clienteNome?: string
+  clienteNome?: string,
+  empresaId?: number
 ): Promise<void> {
   try {
-    let conversa = await prisma.conversa.findUnique({
-      where: { telefone },
+    let conversa = await prisma.conversa.findFirst({
+      where: { telefone, empresaId },
     });
 
     if (conversa) {
@@ -43,6 +45,7 @@ async function saveOutgoingMessage(
       const telefoneLimpo = telefone.replace(/\D/g, '');
       const cliente = await prisma.cliente.findFirst({
         where: {
+          empresaId,
           OR: [
             { telefone: { contains: telefoneLimpo } },
             { telefone: { contains: telefoneLimpo.slice(-11) } },
@@ -58,12 +61,14 @@ async function saveOutgoingMessage(
           ultimaMensagem: conteudo.substring(0, 200),
           ultimaData: new Date(),
           naoLidas: 0,
+          empresaId: empresaId!,
         },
       });
     }
 
     await prisma.mensagem.create({
       data: {
+        empresaId: empresaId!,
         conversaId: conversa.id,
         tipo: 'TEXTO',
         conteudo,
@@ -84,7 +89,8 @@ async function sendWhatsAppMessage(
   token: string,
   phone: string,
   message: string,
-  clienteNome?: string
+  clienteNome?: string,
+  empresaId?: number
 ): Promise<boolean> {
   try {
     const cleanNumber = phone.replace(/\D/g, '');
@@ -109,7 +115,7 @@ async function sendWhatsAppMessage(
       return false;
     }
 
-    await saveOutgoingMessage(formattedNumber, message, clienteNome);
+    await saveOutgoingMessage(formattedNumber, message, clienteNome, empresaId);
     console.log('[LEMBRETES] Mensagem enviada para:', formattedNumber);
     return true;
   } catch (error: any) {
@@ -165,9 +171,14 @@ Quer que eu reserve um horário pra gente dar uma olhada neles? Consigo encaixar
 
 // POST - Processar e enviar lembretes pendentes
 export async function POST() {
+  const session = await getSession();
+  if (!session) {
+    return NextResponse.json({ error: 'Não autorizado' }, { status: 401 });
+  }
+
   try {
-    const config = await prisma.configuracao.findUnique({
-      where: { id: 1 },
+    const config = await prisma.configuracao.findFirst({
+      where: { empresaId: session.empresaId },
     });
 
     if (!config?.uazapiToken) {
@@ -185,9 +196,10 @@ export async function POST() {
     const hoje = new Date();
     hoje.setHours(23, 59, 59, 999);
 
-    // Buscar lembretes pendentes
+    // Buscar lembretes pendentes da empresa
     const lembretesPendentes = await prisma.lembrete.findMany({
       where: {
+        empresaId: session.empresaId,
         enviado: false,
         dataLembrete: { lte: hoje },
       },
@@ -253,7 +265,8 @@ export async function POST() {
         config.uazapiToken,
         telefone,
         mensagem,
-        grupo.clienteNome
+        grupo.clienteNome,
+        session.empresaId
       );
 
       if (enviado) {
@@ -302,12 +315,18 @@ export async function POST() {
 
 // GET - Verificar lembretes pendentes (sem enviar)
 export async function GET() {
+  const session = await getSession();
+  if (!session) {
+    return NextResponse.json({ error: 'Não autorizado' }, { status: 401 });
+  }
+
   try {
     const hoje = new Date();
     hoje.setHours(23, 59, 59, 999);
 
     const pendentes = await prisma.lembrete.count({
       where: {
+        empresaId: session.empresaId,
         enviado: false,
         dataLembrete: { lte: hoje },
       },
@@ -315,6 +334,7 @@ export async function GET() {
 
     const proximos7dias = await prisma.lembrete.count({
       where: {
+        empresaId: session.empresaId,
         enviado: false,
         dataLembrete: {
           gt: hoje,
