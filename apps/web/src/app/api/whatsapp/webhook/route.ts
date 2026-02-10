@@ -4,6 +4,25 @@ import { generateChatResponse, ChatResponse, ChatResponseList, ChatResponseButto
 
 const UAZAPI_URL = process.env.UAZAPI_URL || 'https://hia-clientes.uazapi.com';
 
+// Buffer de mensagens - aguarda 7 segundos para agrupar mensagens do mesmo usuário
+const MESSAGE_BUFFER_MS = 7000; // 7 segundos
+
+interface BufferedMessage {
+  text: string;
+  pushName: string;
+  tipoMensagem: TipoMensagem;
+  messageId?: string;
+  metadata?: any;
+}
+
+interface MessageBuffer {
+  messages: BufferedMessage[];
+  timer: NodeJS.Timeout | null;
+  processing: boolean;
+}
+
+const messageBuffers = new Map<string, MessageBuffer>();
+
 // Tipo de mensagem baseado no enum do Prisma
 type TipoMensagem = 'TEXTO' | 'IMAGEM' | 'AUDIO' | 'VIDEO' | 'DOCUMENTO' | 'STICKER' | 'LOCALIZACAO';
 
@@ -231,6 +250,73 @@ async function sendChatResponse(
   }
 }
 
+// Função para processar mensagens do buffer
+async function processBufferedMessages(phoneNumber: string): Promise<void> {
+  const buffer = messageBuffers.get(phoneNumber);
+  if (!buffer || buffer.messages.length === 0 || buffer.processing) {
+    return;
+  }
+
+  buffer.processing = true;
+
+  try {
+    // Combinar todas as mensagens em uma só
+    const combinedText = buffer.messages.map(m => m.text).join(' ');
+    const pushName = buffer.messages[0].pushName;
+
+    console.log('[WEBHOOK] Processando buffer com', buffer.messages.length, 'mensagens:', combinedText.substring(0, 100));
+
+    // Buscar token da instância
+    const config = await prisma.configuracao.findUnique({
+      where: { id: 1 },
+    });
+
+    if (!config?.uazapiToken) {
+      console.error('[WEBHOOK] Token não encontrado');
+      return;
+    }
+
+    // Gerar resposta com IA usando texto combinado
+    const aiResponse = await generateChatResponse(combinedText, phoneNumber, pushName);
+
+    // Se resposta vazia, chatbot está desabilitado
+    if (aiResponse.type === 'text' && !aiResponse.message) {
+      console.log('[WEBHOOK] Chatbot desabilitado, não respondendo');
+      return;
+    }
+
+    // Enviar resposta (texto, lista ou botões)
+    const sentMessageId = await sendChatResponse(config.uazapiToken, phoneNumber, aiResponse);
+
+    // Determinar conteúdo para salvar no histórico
+    let conteudoParaSalvar = '';
+    if (aiResponse.type === 'text') {
+      conteudoParaSalvar = aiResponse.message;
+    } else if (aiResponse.type === 'list' || aiResponse.type === 'button') {
+      conteudoParaSalvar = aiResponse.text;
+    }
+
+    // Salvar resposta enviada no banco
+    if (sentMessageId !== null && conteudoParaSalvar) {
+      await saveMessage(
+        phoneNumber,
+        null,
+        conteudoParaSalvar,
+        true, // enviada
+        'TEXTO',
+        sentMessageId
+      );
+    }
+
+    console.log('[WEBHOOK] Resposta enviada após buffer');
+  } catch (error: any) {
+    console.error('[WEBHOOK] Erro ao processar buffer:', error?.message);
+  } finally {
+    // Limpar buffer
+    messageBuffers.delete(phoneNumber);
+  }
+}
+
 // POST - Receber mensagens do WhatsApp via UazAPI webhook
 export async function POST(request: NextRequest) {
   try {
@@ -297,7 +383,7 @@ export async function POST(request: NextRequest) {
       const tipoMensagem = getTipoMensagem(message);
       const messageId = message.id || message.key?.id;
 
-      // Salvar mensagem recebida no banco
+      // Salvar mensagem recebida no banco imediatamente
       await saveMessage(
         from,
         pushName,
@@ -308,49 +394,42 @@ export async function POST(request: NextRequest) {
         { type: message.type, mimetype: message.mimetype }
       );
 
-      // Buscar token da instância
-      const config = await prisma.configuracao.findUnique({
-        where: { id: 1 },
+      // === BUFFER DE 7 SEGUNDOS ===
+      // Adicionar mensagem ao buffer e (re)iniciar timer
+      let buffer = messageBuffers.get(from);
+
+      if (!buffer) {
+        buffer = { messages: [], timer: null, processing: false };
+        messageBuffers.set(from, buffer);
+      }
+
+      // Se já está processando, aguardar próximo ciclo
+      if (buffer.processing) {
+        console.log('[WEBHOOK] Buffer em processamento, mensagem será ignorada');
+        return NextResponse.json({ success: true, buffering: true });
+      }
+
+      // Adicionar mensagem ao buffer
+      buffer.messages.push({
+        text,
+        pushName,
+        tipoMensagem,
+        messageId,
+        metadata: { type: message.type, mimetype: message.mimetype }
       });
 
-      if (!config?.uazapiToken) {
-        console.error('[WEBHOOK] Token não encontrado');
-        return NextResponse.json({ success: false, error: 'Token não configurado' });
+      // Cancelar timer anterior e iniciar novo
+      if (buffer.timer) {
+        clearTimeout(buffer.timer);
       }
 
-      // Gerar resposta com IA
-      const aiResponse = await generateChatResponse(text, from, pushName);
+      buffer.timer = setTimeout(() => {
+        processBufferedMessages(from);
+      }, MESSAGE_BUFFER_MS);
 
-      // Se resposta vazia, chatbot está desabilitado
-      if (aiResponse.type === 'text' && !aiResponse.message) {
-        console.log('[WEBHOOK] Chatbot desabilitado, não respondendo');
-        return NextResponse.json({ success: true, chatbotDisabled: true });
-      }
+      console.log('[WEBHOOK] Mensagem adicionada ao buffer, aguardando', MESSAGE_BUFFER_MS / 1000, 'segundos...');
 
-      // Enviar resposta (texto, lista ou botões)
-      const sentMessageId = await sendChatResponse(config.uazapiToken, from, aiResponse);
-
-      // Determinar conteúdo para salvar no histórico
-      let conteudoParaSalvar = '';
-      if (aiResponse.type === 'text') {
-        conteudoParaSalvar = aiResponse.message;
-      } else if (aiResponse.type === 'list' || aiResponse.type === 'button') {
-        conteudoParaSalvar = aiResponse.text;
-      }
-
-      // Salvar resposta enviada no banco
-      if (sentMessageId !== null && conteudoParaSalvar) {
-        await saveMessage(
-          from,
-          null,
-          conteudoParaSalvar,
-          true, // enviada
-          'TEXTO',
-          sentMessageId
-        );
-      }
-
-      return NextResponse.json({ success: true, responded: true, responseType: aiResponse.type });
+      return NextResponse.json({ success: true, buffered: true, bufferSize: buffer.messages.length });
 
     } else if (event === 'connection' || data.status) {
       // Evento de conexão/desconexão
