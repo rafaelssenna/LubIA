@@ -81,8 +81,7 @@ export async function POST() {
       const ultimaOrdem = veiculo.ordens[0];
 
       // Calcular próxima troca baseado na última ordem ou km atual
-      let kmBase = kmAtual;
-      let foiTrocaOleo = false;
+      let proximaTroca: number;
 
       if (ultimaOrdem) {
         // Verificar se a última ordem incluiu troca de óleo
@@ -91,13 +90,17 @@ export async function POST() {
         );
 
         if (temTrocaOleo && ultimaOrdem.kmEntrada) {
-          kmBase = ultimaOrdem.kmEntrada;
-          foiTrocaOleo = true;
+          // Se teve troca de óleo, próxima é 5000km depois
+          proximaTroca = ultimaOrdem.kmEntrada + 5000;
+        } else {
+          // Sem histórico de troca, usar próximo múltiplo de 5000
+          proximaTroca = Math.ceil(kmAtual / 5000) * 5000;
         }
+      } else {
+        // Sem histórico, usar próximo múltiplo de 5000
+        proximaTroca = Math.ceil(kmAtual / 5000) * 5000;
       }
 
-      // Próxima troca a cada 5000km
-      const proximaTroca = Math.ceil((kmBase + 5000) / 5000) * 5000;
       const kmRestantes = proximaTroca - kmAtual;
 
       // Se faltam menos de 500km, criar lembrete
@@ -109,8 +112,8 @@ export async function POST() {
         // Estimar quantos dias até atingir o km da próxima troca
         const diasEstimados = kmRestantes > 0 ? Math.max(1, Math.ceil(kmRestantes / kmPorDia)) : 1;
 
+        // Lembretes são sempre para hoje - já estamos dentro do threshold de urgência (500km)
         const dataLembrete = new Date();
-        dataLembrete.setDate(dataLembrete.getDate() + Math.min(diasEstimados, diasAntecedencia));
 
         // Criar lembrete
         await prisma.lembrete.create({
@@ -196,17 +199,20 @@ export async function GET() {
       const kmAtual = veiculo.kmAtual!;
       const ultimaOrdem = veiculo.ordens[0];
 
-      let kmBase = kmAtual;
+      let proximaTroca: number;
       if (ultimaOrdem?.kmEntrada) {
         const temTrocaOleo = ultimaOrdem.itens.some(
           item => item.servico.categoria === 'TROCA_OLEO'
         );
         if (temTrocaOleo) {
-          kmBase = ultimaOrdem.kmEntrada;
+          proximaTroca = ultimaOrdem.kmEntrada + 5000;
+        } else {
+          proximaTroca = Math.ceil(kmAtual / 5000) * 5000;
         }
+      } else {
+        proximaTroca = Math.ceil(kmAtual / 5000) * 5000;
       }
 
-      const proximaTroca = Math.ceil((kmBase + 5000) / 5000) * 5000;
       const kmRestantes = proximaTroca - kmAtual;
 
       // Mostrar veículos que precisam de lembrete em breve

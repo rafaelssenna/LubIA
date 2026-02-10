@@ -3,6 +3,36 @@ import { prisma } from './prisma';
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || '');
 
+// Timezone de Brasília (UTC-3)
+const TIMEZONE = 'America/Sao_Paulo';
+
+// Helper para criar data no fuso de Brasília
+function createDateInBrazil(year: number, month: number, day: number, hour: number = 0, minute: number = 0): Date {
+  // Cria a data local e ajusta para UTC considerando o offset de Brasília (-3h)
+  const date = new Date(Date.UTC(year, month, day, hour + 3, minute, 0, 0));
+  return date;
+}
+
+// Helper para obter "hoje" no horário de Brasília
+function getTodayInBrazil(): Date {
+  const now = new Date();
+  // Converte para string no timezone de Brasília e extrai componentes
+  const brazilStr = now.toLocaleString('en-US', { timeZone: TIMEZONE });
+  return new Date(brazilStr);
+}
+
+// Formatar data para exibição em português
+function formatDateBrazil(date: Date): string {
+  return date.toLocaleDateString('pt-BR', {
+    timeZone: TIMEZONE,
+    weekday: 'long',
+    day: 'numeric',
+    month: 'long',
+    hour: '2-digit',
+    minute: '2-digit',
+  });
+}
+
 // Histórico de conversas por número (cache simples em memória)
 const conversationHistory: Map<string, { role: string; parts: { text: string }[] }[]> = new Map();
 
@@ -17,8 +47,18 @@ interface AgendamentoState {
   servico?: string;
   etapa: 'inicio' | 'escolher_veiculo' | 'escolher_data' | 'confirmar';
   horariosDisponiveis?: { data: Date; label: string }[];
+  timestamp?: number; // Para timeout de estados antigos
 }
 const agendamentoState: Map<string, AgendamentoState> = new Map();
+
+// Timeout de estado de agendamento (30 minutos)
+const STATE_TIMEOUT_MS = 30 * 60 * 1000;
+
+// Verificar se estado está expirado
+function isStateExpired(state: AgendamentoState): boolean {
+  if (!state.timestamp) return false;
+  return Date.now() - state.timestamp > STATE_TIMEOUT_MS;
+}
 
 // Tipos de resposta do chatbot
 export interface ChatResponseText {
@@ -333,7 +373,7 @@ async function getHorariosDisponiveis(): Promise<{ data: Date; label: string }[]
     }
 
     // Buscar agendamentos existentes nos próximos 7 dias com duração dos serviços
-    const hoje = new Date();
+    const hoje = getTodayInBrazil();
     const fim = new Date(hoje);
     fim.setDate(fim.getDate() + 7);
 
@@ -382,7 +422,7 @@ async function getHorariosDisponiveis(): Promise<{ data: Date; label: string }[]
     const slots: { data: Date; label: string }[] = [];
     const diasSemana = ['domingo', 'segunda', 'terça', 'quarta', 'quinta', 'sexta', 'sábado'];
 
-    for (let d = 1; d <= 7 && slots.length < 4; d++) {
+    for (let d = 1; d <= 7 && slots.length < 8; d++) {
       const data = new Date(hoje);
       data.setDate(data.getDate() + d);
       const diaSemana = data.getDay();
@@ -391,9 +431,15 @@ async function getHorariosDisponiveis(): Promise<{ data: Date; label: string }[]
       if (!horario) continue;
 
       // Gerar slots de hora em hora
-      for (let hora = horario.abertura; hora < horario.fechamento && slots.length < 4; hora++) {
-        const slot = new Date(data);
-        slot.setHours(hora, 0, 0, 0);
+      for (let hora = horario.abertura; hora < horario.fechamento && slots.length < 8; hora++) {
+        // Criar data com timezone correto (UTC, já que Brasília = UTC-3 e adicionamos 3h)
+        const slot = createDateInBrazil(
+          data.getFullYear(),
+          data.getMonth(),
+          data.getDate(),
+          hora,
+          0
+        );
 
         if (slotDisponivel(slot)) {
           const diaNome = diasSemana[diaSemana];
@@ -602,9 +648,7 @@ O cliente está no processo de agendar um serviço.`;
 ${slotsTexto || '(sem horários disponíveis)'}
 - Pergunte qual opção o cliente prefere (1, 2, 3 ou 4)`;
     } else if (agendamento.etapa === 'confirmar') {
-      const dataFormatada = agendamento.dataHora?.toLocaleDateString('pt-BR', {
-        weekday: 'long', day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit'
-      });
+      const dataFormatada = agendamento.dataHora ? formatDateBrazil(agendamento.dataHora) : '';
       contextoAgendamento += `
 - Veículo: ${agendamento.veiculoNome}
 - Data/Hora: ${dataFormatada}
@@ -671,7 +715,27 @@ export async function generateChatResponse(
 
     // Gerenciar estado de agendamento
     let agendamento = agendamentoState.get(phoneNumber) || { ativo: false, etapa: 'inicio' as const };
-    const msgLower = userMessage.toLowerCase();
+    const msgLower = userMessage.toLowerCase().trim();
+
+    // Verificar se o estado expirou (30 min)
+    if (agendamento.ativo && isStateExpired(agendamento)) {
+      console.log('[CHATBOT] Estado de agendamento expirado, resetando');
+      agendamentoState.delete(phoneNumber);
+      agendamento = { ativo: false, etapa: 'inicio' as const };
+    }
+
+    // Detectar cancelamento por texto
+    const querCancelar = /^(cancelar?|n[aã]o|desist[io]|deixa|esquece|para|parar|sair|voltar)$/i.test(msgLower) ||
+                         /cancel|desist|n[aã]o\s*quero|mudei\s*de\s*ideia|outro\s*dia/i.test(msgLower);
+
+    if (agendamento.ativo && querCancelar) {
+      agendamentoState.delete(phoneNumber);
+      console.log('[CHATBOT] Agendamento cancelado pelo usuário');
+      return {
+        type: 'text',
+        message: `Tudo bem! Cancelei o agendamento. 😊\n\nQuando quiser marcar, é só me chamar aqui!`,
+      };
+    }
 
     // Detectar se é resposta de botão/lista (buttonOrListid)
     const isButtonResponse = /^(veiculo_|horario_|confirmar_|cancelar)/.test(userMessage);
@@ -756,13 +820,7 @@ export async function generateChatResponse(
         agendamento.etapa = 'confirmar';
         agendamentoState.set(phoneNumber, agendamento);
 
-        const dataFormatada = dataEscolhida.toLocaleDateString('pt-BR', {
-          weekday: 'long',
-          day: 'numeric',
-          month: 'long',
-          hour: '2-digit',
-          minute: '2-digit',
-        });
+        const dataFormatada = formatDateBrazil(dataEscolhida);
 
         const primeiroNome = customerData?.nome.split(' ')[0] || 'Cliente';
 
@@ -790,13 +848,7 @@ export async function generateChatResponse(
     // Processar confirmação via botão
     if (isButtonResponse && userMessage === 'confirmar_sim') {
       const primeiroNome = customerData?.nome.split(' ')[0] || 'Cliente';
-      const dataFormatada = agendamento.dataHora?.toLocaleDateString('pt-BR', {
-        weekday: 'long',
-        day: 'numeric',
-        month: 'long',
-        hour: '2-digit',
-        minute: '2-digit',
-      });
+      const dataFormatada = agendamento.dataHora ? formatDateBrazil(agendamento.dataHora) : '';
 
       // Múltiplos veículos
       if (agendamento.veiculoIds && agendamento.veiculoIds.length > 0 && agendamento.dataHora) {
@@ -879,6 +931,7 @@ export async function generateChatResponse(
       agendamento = {
         ativo: true,
         etapa: customerData.veiculos.length > 1 ? 'escolher_veiculo' : 'escolher_data',
+        timestamp: Date.now(),
       };
 
       const primeiroNome = customerData.nome.split(' ')[0];
@@ -982,7 +1035,7 @@ export async function generateChatResponse(
       const slots = agendamento.horariosDisponiveis;
       let slotEscolhido: { data: Date; label: string } | null = null;
 
-      // Tentar por número (1, 2, 3, 4)
+      // Tentar por número (1, 2, 3, 4, etc)
       const numMatch = msgLower.match(/^[^\d]*(\d)[^\d]*$/);
       if (numMatch) {
         const num = parseInt(numMatch[1]);
@@ -991,20 +1044,67 @@ export async function generateChatResponse(
         }
       }
 
-      // Tentar por nome do dia ou palavra-chave
-      if (!slotEscolhido) {
-        for (const slot of slots) {
+      // Extrair hora mencionada pelo usuário (ex: "10h", "às 8", "8 horas")
+      const horaMatch = msgLower.match(/(\d{1,2})\s*(h|hora|:|\s|$)/i);
+      const horaMencionada = horaMatch ? parseInt(horaMatch[1]) : null;
+
+      // Mapear dias da semana para busca
+      const diasMapeados: Record<string, string[]> = {
+        'segunda': ['segunda'],
+        'terça': ['terça', 'terca'],
+        'quarta': ['quarta'],
+        'quinta': ['quinta'],
+        'sexta': ['sexta'],
+        'sábado': ['sábado', 'sabado'],
+      };
+
+      // Detectar qual dia o usuário mencionou
+      let diaMencionado: string | null = null;
+      for (const [diaNome, variantes] of Object.entries(diasMapeados)) {
+        if (variantes.some(v => msgLower.includes(v))) {
+          diaMencionado = diaNome;
+          break;
+        }
+      }
+
+      // Buscar slot que combina dia E hora (se ambos mencionados)
+      if (!slotEscolhido && diaMencionado && horaMencionada) {
+        slotEscolhido = slots.find(slot => {
           const labelLower = slot.label.toLowerCase();
-          if (msgLower.includes('segunda') && labelLower.includes('segunda')) slotEscolhido = slot;
-          else if (msgLower.includes('terça') && labelLower.includes('terça')) slotEscolhido = slot;
-          else if (msgLower.includes('quarta') && labelLower.includes('quarta')) slotEscolhido = slot;
-          else if (msgLower.includes('quinta') && labelLower.includes('quinta')) slotEscolhido = slot;
-          else if (msgLower.includes('sexta') && labelLower.includes('sexta')) slotEscolhido = slot;
-          else if (msgLower.includes('sábado') && labelLower.includes('sábado')) slotEscolhido = slot;
-          else if (msgLower.includes('sabado') && labelLower.includes('sábado')) slotEscolhido = slot;
-          else if (msgLower.includes('manhã') && labelLower.includes('manhã')) slotEscolhido = slot;
-          else if (msgLower.includes('tarde') && labelLower.includes('tarde')) slotEscolhido = slot;
-          if (slotEscolhido) break;
+          const slotHora = slot.data.getUTCHours() - 3; // Converter de UTC para Brasília
+          return labelLower.includes(diaMencionado!) && slotHora === horaMencionada;
+        }) || null;
+
+        if (slotEscolhido) {
+          console.log('[CHATBOT] Slot encontrado por dia+hora:', diaMencionado, horaMencionada + 'h');
+        }
+      }
+
+      // Se não encontrou com dia+hora, tentar só pelo dia (pegar o primeiro do dia)
+      if (!slotEscolhido && diaMencionado) {
+        slotEscolhido = slots.find(slot => slot.label.toLowerCase().includes(diaMencionado!)) || null;
+        if (slotEscolhido) {
+          console.log('[CHATBOT] Slot encontrado por dia:', diaMencionado);
+        }
+      }
+
+      // Se não encontrou com dia, tentar só pela hora
+      if (!slotEscolhido && horaMencionada) {
+        slotEscolhido = slots.find(slot => {
+          const slotHora = slot.data.getUTCHours() - 3;
+          return slotHora === horaMencionada;
+        }) || null;
+        if (slotEscolhido) {
+          console.log('[CHATBOT] Slot encontrado por hora:', horaMencionada + 'h');
+        }
+      }
+
+      // Tentar por período (manhã/tarde)
+      if (!slotEscolhido) {
+        if (msgLower.includes('manhã') || msgLower.includes('manha')) {
+          slotEscolhido = slots.find(slot => slot.label.includes('manhã')) || null;
+        } else if (msgLower.includes('tarde')) {
+          slotEscolhido = slots.find(slot => slot.label.includes('tarde')) || null;
         }
       }
 
@@ -1013,6 +1113,7 @@ export async function generateChatResponse(
         const dataInterpretada = interpretarDataHora(userMessage);
         if (dataInterpretada) {
           slotEscolhido = { data: dataInterpretada, label: '' };
+          console.log('[CHATBOT] Data interpretada livremente:', dataInterpretada);
         }
       }
 
@@ -1022,13 +1123,7 @@ export async function generateChatResponse(
         agendamentoState.set(phoneNumber, agendamento);
         console.log('[CHATBOT] Horário selecionado por texto:', slotEscolhido.label || slotEscolhido.data);
 
-        const dataFormatada = slotEscolhido.data.toLocaleDateString('pt-BR', {
-          weekday: 'long',
-          day: 'numeric',
-          month: 'long',
-          hour: '2-digit',
-          minute: '2-digit',
-        });
+        const dataFormatada = formatDateBrazil(slotEscolhido.data);
 
         const primeiroNome = customerData?.nome.split(' ')[0] || 'Cliente';
 
@@ -1054,9 +1149,7 @@ export async function generateChatResponse(
         agendamentoState.delete(phoneNumber);
 
         if (resultado.success) {
-          const dataFormatada = agendamento.dataHora.toLocaleDateString('pt-BR', {
-            weekday: 'long', day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit'
-          });
+          const dataFormatada = formatDateBrazil(agendamento.dataHora);
           console.log('[CHATBOT] Agendamento criado! O.S.:', resultado.numero);
           return {
             type: 'text',

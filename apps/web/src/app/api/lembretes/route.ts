@@ -179,6 +179,32 @@ export async function POST(request: NextRequest) {
   }
 }
 
+// DELETE - Excluir lembretes
+export async function DELETE(request: NextRequest) {
+  try {
+    const { searchParams } = new URL(request.url);
+    const ids = searchParams.get('ids');
+
+    if (ids) {
+      const idArray = ids.split(',').map(id => parseInt(id, 10)).filter(id => !isNaN(id));
+      await prisma.lembrete.deleteMany({
+        where: { id: { in: idArray } },
+      });
+      return NextResponse.json({ success: true, deleted: idArray.length });
+    }
+
+    // Se não passar ids, deletar todos os não enviados
+    const result = await prisma.lembrete.deleteMany({
+      where: { enviado: false },
+    });
+
+    return NextResponse.json({ success: true, deleted: result.count });
+  } catch (error: any) {
+    console.error('[LEMBRETES API DELETE] Erro:', error?.message);
+    return NextResponse.json({ error: 'Erro ao excluir lembretes' }, { status: 500 });
+  }
+}
+
 // PATCH - Resetar lembretes (marcar como não enviados)
 export async function PATCH(request: NextRequest) {
   try {
