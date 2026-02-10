@@ -990,7 +990,8 @@ Mensagem atual do cliente: "${userMessage}"`;
         empresaId,
         customerData,
         agendamento,
-        primeiroNome
+        primeiroNome,
+        recentMessages
       );
     }
 
@@ -1019,7 +1020,8 @@ async function executeFunctionCall(
   empresaId: number,
   customerData: CustomerData | null,
   agendamento: AgendamentoState,
-  primeiroNome: string
+  primeiroNome: string,
+  recentMessages?: { role: 'user' | 'bot'; text: string }[]
 ): Promise<ChatResponse> {
   console.log('[CHATBOT] Executando função:', functionName, args);
 
@@ -1035,6 +1037,61 @@ async function executeFunctionCall(
       // Iniciar novo agendamento
       agendamento.ativo = true;
       agendamento.timestamp = Date.now();
+
+      // Verificar se um veículo específico foi mencionado nas mensagens recentes
+      let veiculoMencionado: typeof customerData.veiculos[0] | null = null;
+      if (recentMessages && recentMessages.length > 0 && customerData.veiculos.length > 1) {
+        // Pegar últimas mensagens do bot para ver se mencionou algum veículo
+        const lastBotMessages = recentMessages.filter(m => m.role === 'bot').slice(-3);
+        const textoBot = lastBotMessages.map(m => m.text.toLowerCase()).join(' ');
+
+        // Procurar por placa ou modelo mencionado
+        for (const v of customerData.veiculos) {
+          const placaLower = v.placa.toLowerCase().replace('-', '');
+          const modeloLower = v.modelo.toLowerCase();
+          const marcaLower = v.marca.toLowerCase();
+
+          if (textoBot.includes(placaLower) || textoBot.includes(v.placa.toLowerCase()) ||
+              (textoBot.includes(modeloLower) && textoBot.includes(marcaLower))) {
+            veiculoMencionado = v;
+            console.log('[CHATBOT] Veículo detectado no histórico:', v.marca, v.modelo, v.placa);
+            break;
+          }
+        }
+      }
+
+      // Se encontrou veículo mencionado, pular seleção
+      if (veiculoMencionado) {
+        agendamento.veiculoId = veiculoMencionado.id;
+        agendamento.veiculoNome = `${veiculoMencionado.marca} ${veiculoMencionado.modelo}`;
+        agendamento.etapa = 'escolher_data';
+        agendamento.horariosDisponiveis = await getHorariosDisponiveis(empresaId);
+        agendamentoState.set(phoneNumber, agendamento);
+
+        if (agendamento.horariosDisponiveis.length > 0) {
+          const choices = [
+            '[Horários Disponíveis]',
+            ...agendamento.horariosDisponiveis.map(slot => {
+              const diaNome = slot.label.split(' ')[0];
+              const horaInfo = slot.label.replace(diaNome + ' ', '');
+              return `${diaNome}|horario_${slot.data.toISOString()}|${horaInfo}`;
+            }),
+          ];
+
+          return {
+            type: 'list',
+            text: `Ótimo, ${primeiroNome}! 🚗\n\nVou agendar a troca de óleo do seu ${agendamento.veiculoNome}.\n\nQual horário fica bom?`,
+            listButton: 'Ver Horários',
+            footerText: 'Escolha o melhor horário',
+            choices,
+          };
+        }
+
+        return {
+          type: 'text',
+          message: `Oi ${primeiroNome}! Quero agendar seu ${agendamento.veiculoNome}, mas não encontrei horários disponíveis essa semana. 😅\n\nPode ligar pra oficina?`,
+        };
+      }
 
       if (customerData.veiculos.length > 1) {
         agendamento.etapa = 'escolher_veiculo';
@@ -1223,7 +1280,7 @@ async function executeFunctionCall(
       // Se não tem agendamento em andamento, iniciar um novo
       if (!agendamento.ativo || !agendamento.veiculoId || !agendamento.dataHora) {
         console.log('[CHATBOT] Confirmação sem agendamento ativo, redirecionando para iniciar_agendamento');
-        // Redirecionar para iniciar agendamento
+        // Redirecionar para iniciar agendamento (passando o histórico para detectar veículo)
         return executeFunctionCall(
           'iniciar_agendamento',
           {},
@@ -1231,7 +1288,8 @@ async function executeFunctionCall(
           empresaId,
           customerData,
           agendamento,
-          primeiroNome
+          primeiroNome,
+          recentMessages
         );
       }
 
