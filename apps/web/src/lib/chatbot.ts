@@ -4,6 +4,57 @@ import { prisma } from './prisma';
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || '');
 
 // ==========================================
+// TRANSCRIÇÃO DE ÁUDIO COM GEMINI
+// ==========================================
+
+// Transcrever áudio usando Gemini
+export async function transcribeAudio(audioUrl: string, token: string): Promise<string | null> {
+  try {
+    console.log('[CHATBOT] Iniciando transcrição de áudio:', audioUrl);
+
+    // Baixar o áudio da UazAPI
+    const audioResponse = await fetch(audioUrl, {
+      headers: { 'token': token },
+    });
+
+    if (!audioResponse.ok) {
+      console.error('[CHATBOT] Erro ao baixar áudio:', audioResponse.status);
+      return null;
+    }
+
+    const audioBuffer = await audioResponse.arrayBuffer();
+    const audioBase64 = Buffer.from(audioBuffer).toString('base64');
+
+    // Detectar mimetype do áudio
+    const contentType = audioResponse.headers.get('content-type') || 'audio/ogg';
+    console.log('[CHATBOT] Áudio baixado, tipo:', contentType, 'tamanho:', audioBuffer.byteLength);
+
+    // Usar Gemini para transcrever
+    const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' });
+
+    const result = await model.generateContent([
+      {
+        inlineData: {
+          mimeType: contentType,
+          data: audioBase64,
+        },
+      },
+      {
+        text: 'Transcreva este áudio em português brasileiro. Retorne APENAS o texto transcrito, sem explicações ou formatação adicional. Se não conseguir entender, retorne apenas "Não consegui entender o áudio".',
+      },
+    ]);
+
+    const transcription = result.response.text().trim();
+    console.log('[CHATBOT] Transcrição:', transcription.substring(0, 100));
+
+    return transcription || null;
+  } catch (error: any) {
+    console.error('[CHATBOT] Erro na transcrição:', error?.message);
+    return null;
+  }
+}
+
+// ==========================================
 // FUNCTION CALLING - Definição das ferramentas
 // ==========================================
 
@@ -603,6 +654,15 @@ export async function generateChatResponse(
       agendamento = { ativo: false, etapa: 'inicio' as const };
     }
 
+    // Tratar áudio não transcrito
+    if (userMessage === '[AUDIO_NAO_TRANSCRITO]' || userMessage === '[AUDIO_SEM_URL]') {
+      const primeiroNome = customerData?.nome.split(' ')[0] || userName || 'Cliente';
+      return {
+        type: 'text',
+        message: `Oi ${primeiroNome}! Recebi seu áudio mas não consegui entender. 😅\n\nPode digitar ou enviar outro áudio mais claro?`,
+      };
+    }
+
     // Detectar cancelamento por texto
     const querCancelar = /^(cancelar?|n[aã]o|desist[io]|deixa|esquece|para|parar|sair|voltar)$/i.test(msgLower) ||
                          /cancel|desist|n[aã]o\s*quero|mudei\s*de\s*ideia|outro\s*dia/i.test(msgLower);
@@ -1109,8 +1169,19 @@ async function executeFunctionCall(
     }
 
     case 'confirmar_agendamento': {
-      if (!agendamento.veiculoId || !agendamento.dataHora) {
-        return { type: 'text', message: 'Algo deu errado. Vamos começar de novo?' };
+      // Se não tem agendamento em andamento, iniciar um novo
+      if (!agendamento.ativo || !agendamento.veiculoId || !agendamento.dataHora) {
+        console.log('[CHATBOT] Confirmação sem agendamento ativo, redirecionando para iniciar_agendamento');
+        // Redirecionar para iniciar agendamento
+        return executeFunctionCall(
+          'iniciar_agendamento',
+          {},
+          phoneNumber,
+          empresaId,
+          customerData,
+          agendamento,
+          primeiroNome
+        );
       }
 
       const resultado = await criarOrdemServico(

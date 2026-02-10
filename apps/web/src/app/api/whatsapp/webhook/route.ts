@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import { generateChatResponse, ChatResponse, ChatResponseList, ChatResponseButton } from '@/lib/chatbot';
+import { generateChatResponse, ChatResponse, ChatResponseList, ChatResponseButton, transcribeAudio } from '@/lib/chatbot';
 
 const UAZAPI_URL = process.env.UAZAPI_URL || 'https://hia-clientes.uazapi.com';
 
@@ -440,7 +440,29 @@ export async function POST(request: NextRequest) {
 
       const pushName = message.senderName || '';
 
-      // Se não tem texto e não é botão, ignorar (pode ser sticker, audio, etc.)
+      // Verificar se é mensagem de áudio
+      const isAudio = message.type === 'audio' || message.type === 'ptt' || message.mimetype?.startsWith('audio');
+      if (isAudio && !text.trim() && token) {
+        console.log('[WEBHOOK] Mensagem de áudio detectada, iniciando transcrição...');
+        const audioUrl = message.mediaUrl || message.media?.url || message.file?.url;
+
+        if (audioUrl) {
+          const transcription = await transcribeAudio(audioUrl, token);
+          if (transcription && transcription !== 'Não consegui entender o áudio') {
+            text = transcription;
+            console.log('[WEBHOOK] Áudio transcrito:', text.substring(0, 100));
+          } else {
+            console.log('[WEBHOOK] Não foi possível transcrever o áudio');
+            // Não ignorar - vamos informar que não entendemos
+            text = '[AUDIO_NAO_TRANSCRITO]';
+          }
+        } else {
+          console.log('[WEBHOOK] URL do áudio não encontrada no payload');
+          text = '[AUDIO_SEM_URL]';
+        }
+      }
+
+      // Se não tem texto e não é botão, ignorar (pode ser sticker, imagem sem legenda, etc.)
       if (!text.trim() && !buttonOrListId) {
         console.log('[WEBHOOK] Ignorando mensagem sem texto');
         return NextResponse.json({ success: true, ignored: true });
