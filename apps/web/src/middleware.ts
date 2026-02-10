@@ -15,9 +15,10 @@ const publicPaths = [
   '/api/auth/register',
 ];
 
-// Rotas de API que devem permanecer públicas (webhooks externos)
+// Rotas de API que devem permanecer públicas (webhooks externos, cron jobs)
 const publicApiPaths = [
   '/api/whatsapp/webhook',
+  '/api/cron/',
 ];
 
 export async function middleware(request: NextRequest) {
