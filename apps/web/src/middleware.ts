@@ -10,7 +10,9 @@ const COOKIE_NAME = 'lubia-session';
 // Rotas públicas que não precisam de autenticação
 const publicPaths = [
   '/login',
+  '/cadastro',
   '/api/auth/login',
+  '/api/auth/register',
 ];
 
 // Rotas de API que devem permanecer públicas (webhooks externos)
