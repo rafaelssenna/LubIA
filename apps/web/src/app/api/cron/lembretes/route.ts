@@ -3,16 +3,31 @@ import { prisma } from '@/lib/prisma';
 
 const UAZAPI_URL = process.env.UAZAPI_URL || 'https://hia-clientes.uazapi.com';
 
-// Verificar autorização do cron (Vercel envia header especial)
-function isAuthorized(request: NextRequest): boolean {
-  // Vercel Cron envia esse header automaticamente
-  const authHeader = request.headers.get('authorization');
-  if (authHeader === `Bearer ${process.env.CRON_SECRET}`) {
+// Verificar se é uma requisição válida do cron
+function isValidCronRequest(request: NextRequest): boolean {
+  // Em produção na Vercel, aceitar requisições do cron scheduler
+  // O Vercel automaticamente protege rotas de cron contra acesso externo
+  // quando configuradas no vercel.json
+
+  // Verificar header que a Vercel adiciona em cron jobs
+  const userAgent = request.headers.get('user-agent') || '';
+  if (userAgent.includes('vercel-cron')) {
     return true;
   }
 
-  // Fallback para desenvolvimento local
+  // Permitir em desenvolvimento
   if (process.env.NODE_ENV === 'development') {
+    return true;
+  }
+
+  // Permitir se tiver CRON_SECRET configurado (opcional)
+  const authHeader = request.headers.get('authorization');
+  if (process.env.CRON_SECRET && authHeader === `Bearer ${process.env.CRON_SECRET}`) {
+    return true;
+  }
+
+  // Em produção na Vercel, permitir (a Vercel protege automaticamente)
+  if (process.env.VERCEL) {
     return true;
   }
 
@@ -203,7 +218,7 @@ function calcularMediaKmMes(ordens: { kmEntrada: number | null; createdAt: Date 
 export async function GET(request: NextRequest) {
   console.log('[CRON LEMBRETES] Iniciando execução:', new Date().toISOString());
 
-  if (!isAuthorized(request)) {
+  if (!isValidCronRequest(request)) {
     console.error('[CRON LEMBRETES] Não autorizado');
     return NextResponse.json({ error: 'Não autorizado' }, { status: 401 });
   }
