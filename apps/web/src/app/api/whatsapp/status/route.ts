@@ -1,13 +1,19 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { getSession } from '@/lib/auth';
 
 const UAZAPI_URL = process.env.UAZAPI_URL || 'https://hia-clientes.uazapi.com';
 
 // GET - Verificar status da conexão WhatsApp
 export async function GET() {
   try {
+    const session = await getSession();
+    if (!session) {
+      return NextResponse.json({ error: 'Não autorizado' }, { status: 401 });
+    }
+
     const config = await prisma.configuracao.findUnique({
-      where: { id: 1 },
+      where: { empresaId: session.empresaId },
     });
 
     if (!config?.uazapiToken) {
@@ -30,7 +36,7 @@ export async function GET() {
       // Se token inválido, limpar
       if (response.status === 401) {
         await prisma.configuracao.update({
-          where: { id: 1 },
+          where: { empresaId: session.empresaId },
           data: {
             whatsappConnected: false,
           },
@@ -56,7 +62,7 @@ export async function GET() {
 
     // Atualizar status no banco
     await prisma.configuracao.update({
-      where: { id: 1 },
+      where: { empresaId: session.empresaId },
       data: {
         whatsappConnected: isConnected,
         whatsappNumber: instance.owner || null,

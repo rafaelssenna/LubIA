@@ -1,13 +1,19 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { getSession } from '@/lib/auth';
 
 const UAZAPI_URL = process.env.UAZAPI_URL || 'https://hia-clientes.uazapi.com';
 
 // POST - Desconectar WhatsApp
 export async function POST() {
   try {
+    const session = await getSession();
+    if (!session) {
+      return NextResponse.json({ error: 'Não autorizado' }, { status: 401 });
+    }
+
     const config = await prisma.configuracao.findUnique({
-      where: { id: 1 },
+      where: { empresaId: session.empresaId },
     });
 
     if (!config?.uazapiToken) {
@@ -27,7 +33,7 @@ export async function POST() {
 
     // Atualizar status no banco (NÃO apagar token para poder reconectar na mesma instância)
     await prisma.configuracao.update({
-      where: { id: 1 },
+      where: { empresaId: session.empresaId },
       data: {
         whatsappConnected: false,
         // Mantém uazapiToken e uazapiInstanceId para reconectar
@@ -51,12 +57,15 @@ export async function POST() {
     console.error('[WHATSAPP DISCONNECT] Erro:', error?.message);
 
     // Mesmo com erro, marcar como desconectado localmente
-    await prisma.configuracao.update({
-      where: { id: 1 },
-      data: {
-        whatsappConnected: false,
-      },
-    }).catch(() => {});
+    const session = await getSession();
+    if (session) {
+      await prisma.configuracao.update({
+        where: { empresaId: session.empresaId },
+        data: {
+          whatsappConnected: false,
+        },
+      }).catch(() => {});
+    }
 
     return NextResponse.json({
       success: true,
