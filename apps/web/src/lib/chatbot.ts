@@ -299,6 +299,42 @@ function formatServicosParaPrompt(servicos: ServicoData[]): string {
   return linhas.join('\n');
 }
 
+// Buscar histórico recente de mensagens do banco
+async function getRecentMessages(phoneNumber: string, empresaId: number): Promise<{ role: 'user' | 'bot'; text: string }[]> {
+  try {
+    const cleanPhone = phoneNumber.replace(/\D/g, '');
+
+    const conversa = await prisma.conversa.findFirst({
+      where: {
+        empresaId,
+        OR: [
+          { telefone: { contains: cleanPhone.slice(-11) } },
+          { telefone: { contains: cleanPhone } },
+          { telefone: cleanPhone },
+        ],
+      },
+      include: {
+        mensagens: {
+          orderBy: { dataEnvio: 'desc' },
+          take: 10, // Últimas 10 mensagens para contexto
+        },
+      },
+    });
+
+    if (!conversa?.mensagens) return [];
+
+    // Retornar mensagens em ordem cronológica (mais antiga primeiro)
+    return conversa.mensagens
+      .reverse()
+      .map(m => ({
+        role: m.enviada ? 'bot' as const : 'user' as const,
+        text: m.conteudo,
+      }));
+  } catch (error: any) {
+    console.error('[CHATBOT] Erro ao buscar histórico:', error?.message);
+    return [];
+  }
+}
 
 // Buscar dados do cliente pelo telefone
 async function getCustomerData(phoneNumber: string, empresaId: number): Promise<CustomerData | null> {
@@ -861,6 +897,18 @@ export async function generateChatResponse(
     // Preparar contexto para o modelo
     const primeiroNome = customerData?.nome.split(' ')[0] || userName || 'Cliente';
 
+    // Buscar histórico recente de mensagens para contexto
+    const recentMessages = await getRecentMessages(phoneNumber, empresaId);
+    let historicoConversa = '';
+    if (recentMessages.length > 0) {
+      historicoConversa = `\n\n[HISTÓRICO DA CONVERSA - Use este contexto para entender o que o cliente está respondendo]`;
+      for (const msg of recentMessages.slice(-6)) { // Últimas 6 mensagens
+        const remetente = msg.role === 'bot' ? 'Você (bot)' : 'Cliente';
+        historicoConversa += `\n${remetente}: ${msg.text.substring(0, 200)}`;
+      }
+      historicoConversa += `\n[FIM DO HISTÓRICO]`;
+    }
+
     // Informações de contexto para o modelo
     let contextoAgendamento = '';
     if (agendamento.ativo) {
@@ -902,19 +950,22 @@ Serviços disponíveis:
 ${servicosFormatados}
 ${contextoCliente}
 ${contextoAgendamento}
+${historicoConversa}
 
 REGRAS IMPORTANTES:
 1. Chame o cliente pelo primeiro nome: "${primeiroNome}"
 2. Seja simpática e objetiva (máximo 2-3 frases)
 3. Use a função apropriada baseado na intenção do cliente
-4. Para agendar: use iniciar_agendamento
-5. Para selecionar veículo: use selecionar_veiculo com o índice correto
-6. Para selecionar horário: use selecionar_horario
-7. Para confirmar: use confirmar_agendamento
-8. Para cancelar: use cancelar_agendamento
-9. Para responder normalmente: use responder_texto
+4. IMPORTANTE: Leia o HISTÓRICO DA CONVERSA para entender o contexto
+5. Se a última mensagem do bot mencionou um veículo específico e o cliente confirma (sim, pode, ok), use iniciar_agendamento
+6. Para agendar: use iniciar_agendamento
+7. Para selecionar veículo: use selecionar_veiculo com o índice correto
+8. Para selecionar horário: use selecionar_horario
+9. Para confirmar: use confirmar_agendamento
+10. Para cancelar: use cancelar_agendamento
+11. Para responder normalmente: use responder_texto
 
-Mensagem do cliente: "${userMessage}"`;
+Mensagem atual do cliente: "${userMessage}"`;
 
     // Chamar Gemini com function calling
     const model = genAI.getGenerativeModel({
