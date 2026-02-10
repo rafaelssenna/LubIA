@@ -3,12 +3,15 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { LogIn, Loader2, AlertCircle, UserPlus } from 'lucide-react';
+import { UserPlus, Loader2, AlertCircle, ArrowLeft } from 'lucide-react';
 
-export default function LoginPage() {
+export default function CadastroPage() {
   const router = useRouter();
+  const [nome, setNome] = useState('');
   const [email, setEmail] = useState('');
   const [senha, setSenha] = useState('');
+  const [confirmarSenha, setConfirmarSenha] = useState('');
+  const [nomeEmpresa, setNomeEmpresa] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
@@ -17,20 +20,34 @@ export default function LoginPage() {
     setLoading(true);
     setError('');
 
+    // Validar senhas
+    if (senha !== confirmarSenha) {
+      setError('As senhas não coincidem');
+      setLoading(false);
+      return;
+    }
+
+    if (senha.length < 6) {
+      setError('A senha deve ter pelo menos 6 caracteres');
+      setLoading(false);
+      return;
+    }
+
     try {
-      const res = await fetch('/api/auth/login', {
+      const res = await fetch('/api/auth/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, senha }),
+        body: JSON.stringify({ nome, email, senha, nomeEmpresa }),
       });
 
       const data = await res.json();
 
       if (!res.ok) {
-        setError(data.error || 'Erro ao fazer login');
+        setError(data.error || 'Erro ao criar conta');
         return;
       }
 
+      // Cadastro bem sucedido - redireciona para dashboard
       router.push('/');
       router.refresh();
     } catch {
@@ -56,7 +73,7 @@ export default function LoginPage() {
 
         {/* Form */}
         <div className="bg-[#1E1E1E] border border-[#333333] rounded-2xl p-8">
-          <h2 className="text-2xl font-bold text-[#E8E8E8] mb-6">Entrar</h2>
+          <h2 className="text-2xl font-bold text-[#E8E8E8] mb-6">Criar Conta</h2>
 
           {error && (
             <div className="mb-4 p-3 bg-red-500/10 border border-red-500/30 rounded-xl flex items-center gap-2 text-red-400">
@@ -66,6 +83,34 @@ export default function LoginPage() {
           )}
 
           <form onSubmit={handleSubmit} className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium text-[#9E9E9E] mb-2">
+                Nome da Oficina/Empresa
+              </label>
+              <input
+                type="text"
+                value={nomeEmpresa}
+                onChange={(e) => setNomeEmpresa(e.target.value)}
+                required
+                className="w-full bg-[#121212] border border-[#333333] rounded-xl px-4 py-3 text-[#E8E8E8] focus:outline-none focus:border-[#43A047] transition-colors"
+                placeholder="Ex: Auto Center Silva"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-[#9E9E9E] mb-2">
+                Seu Nome
+              </label>
+              <input
+                type="text"
+                value={nome}
+                onChange={(e) => setNome(e.target.value)}
+                required
+                className="w-full bg-[#121212] border border-[#333333] rounded-xl px-4 py-3 text-[#E8E8E8] focus:outline-none focus:border-[#43A047] transition-colors"
+                placeholder="Seu nome completo"
+              />
+            </div>
+
             <div>
               <label className="block text-sm font-medium text-[#9E9E9E] mb-2">
                 Email
@@ -90,9 +135,24 @@ export default function LoginPage() {
                 value={senha}
                 onChange={(e) => setSenha(e.target.value)}
                 required
-                autoComplete="current-password"
+                autoComplete="new-password"
                 className="w-full bg-[#121212] border border-[#333333] rounded-xl px-4 py-3 text-[#E8E8E8] focus:outline-none focus:border-[#43A047] transition-colors"
-                placeholder="********"
+                placeholder="Mínimo 6 caracteres"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-[#9E9E9E] mb-2">
+                Confirmar Senha
+              </label>
+              <input
+                type="password"
+                value={confirmarSenha}
+                onChange={(e) => setConfirmarSenha(e.target.value)}
+                required
+                autoComplete="new-password"
+                className="w-full bg-[#121212] border border-[#333333] rounded-xl px-4 py-3 text-[#E8E8E8] focus:outline-none focus:border-[#43A047] transition-colors"
+                placeholder="Repita a senha"
               />
             </div>
 
@@ -104,19 +164,19 @@ export default function LoginPage() {
               {loading ? (
                 <Loader2 className="animate-spin" size={20} />
               ) : (
-                <LogIn size={20} />
+                <UserPlus size={20} />
               )}
-              {loading ? 'Entrando...' : 'Entrar'}
+              {loading ? 'Criando conta...' : 'Criar Conta'}
             </button>
           </form>
 
           <div className="mt-6 text-center">
             <Link
-              href="/cadastro"
+              href="/login"
               className="inline-flex items-center gap-2 text-[#9E9E9E] hover:text-[#43A047] transition-colors"
             >
-              <UserPlus size={16} />
-              Criar uma conta
+              <ArrowLeft size={16} />
+              Já tenho uma conta
             </Link>
           </div>
         </div>
