@@ -127,6 +127,71 @@ const chatbotTools: FunctionDeclarationsTool[] = [{
         required: []
       }
     },
+    // ==========================================
+    // FUNÇÕES DE CADASTRO DE CLIENTE/VEÍCULO
+    // ==========================================
+    {
+      name: 'iniciar_cadastro',
+      description: 'Inicia o cadastro de um cliente novo. Use APENAS quando o cliente não está cadastrado (CLIENTE NÃO CADASTRADO) e quer agendar um serviço. Não use para clientes já cadastrados.',
+      parameters: {
+        type: SchemaType.OBJECT,
+        properties: {},
+        required: []
+      }
+    },
+    {
+      name: 'salvar_nome_cliente',
+      description: 'Salva o nome do cliente durante o cadastro. Use quando o cliente informar seu nome completo.',
+      parameters: {
+        type: SchemaType.OBJECT,
+        properties: {
+          nome: {
+            type: SchemaType.STRING,
+            description: 'Nome completo do cliente'
+          }
+        },
+        required: ['nome']
+      }
+    },
+    {
+      name: 'salvar_dados_veiculo',
+      description: 'Salva os dados do veículo durante o cadastro. Use quando o cliente informar dados do carro (placa, modelo, marca, ano, km). Pode salvar parcialmente.',
+      parameters: {
+        type: SchemaType.OBJECT,
+        properties: {
+          placa: {
+            type: SchemaType.STRING,
+            description: 'Placa do veículo (formato ABC1234 ou ABC1D23)'
+          },
+          marca: {
+            type: SchemaType.STRING,
+            description: 'Marca do veículo (Fiat, Volkswagen, Chevrolet, etc)'
+          },
+          modelo: {
+            type: SchemaType.STRING,
+            description: 'Modelo do veículo (Uno, Gol, Onix, etc)'
+          },
+          ano: {
+            type: SchemaType.NUMBER,
+            description: 'Ano do veículo'
+          },
+          kmAtual: {
+            type: SchemaType.NUMBER,
+            description: 'Quilometragem atual do veículo'
+          }
+        },
+        required: []
+      }
+    },
+    {
+      name: 'confirmar_cadastro',
+      description: 'Finaliza o cadastro e cria o cliente e veículo no sistema. Use quando todos os dados obrigatórios (nome, placa, marca, modelo) estiverem preenchidos e o cliente confirmar.',
+      parameters: {
+        type: SchemaType.OBJECT,
+        properties: {},
+        required: []
+      }
+    },
     {
       name: 'responder_texto',
       description: 'Envia uma resposta de texto normal para o cliente. Use para saudações, dúvidas gerais, informações sobre preços, horários de funcionamento, etc.',
@@ -139,6 +204,102 @@ const chatbotTools: FunctionDeclarationsTool[] = [{
           }
         },
         required: ['mensagem']
+      }
+    },
+    // ==========================================
+    // FUNÇÕES INTELIGENTES
+    // ==========================================
+    {
+      name: 'consultar_status_veiculo',
+      description: 'Consulta o status do veículo/serviço do cliente. Use quando o cliente perguntar se o carro ficou pronto, qual o status, quando fica pronto, etc. Exemplos: "meu carro já ficou pronto?", "como está meu carro?", "já posso buscar?", "qual o status?"',
+      parameters: {
+        type: SchemaType.OBJECT,
+        properties: {
+          veiculoIndex: {
+            type: SchemaType.NUMBER,
+            description: 'Índice do veículo na lista (opcional, se não especificado busca todos)'
+          }
+        },
+        required: []
+      }
+    },
+    {
+      name: 'consultar_agendamentos',
+      description: 'Lista os agendamentos futuros do cliente. Use quando o cliente perguntar sobre seus agendamentos, quando é a próxima marcação, etc.',
+      parameters: {
+        type: SchemaType.OBJECT,
+        properties: {},
+        required: []
+      }
+    },
+    {
+      name: 'cancelar_ou_remarcar',
+      description: 'Inicia o processo de cancelamento ou remarcação de um agendamento. Use quando o cliente quiser cancelar, remarcar, reagendar, mudar horário, etc.',
+      parameters: {
+        type: SchemaType.OBJECT,
+        properties: {
+          acao: {
+            type: SchemaType.STRING,
+            description: 'A ação desejada: "cancelar" ou "remarcar"'
+          }
+        },
+        required: ['acao']
+      }
+    },
+    {
+      name: 'consultar_preco',
+      description: 'Consulta o preço de um serviço específico. Use quando o cliente perguntar quanto custa, qual o valor, preço de troca de óleo, filtro, etc.',
+      parameters: {
+        type: SchemaType.OBJECT,
+        properties: {
+          servico: {
+            type: SchemaType.STRING,
+            description: 'O serviço que o cliente quer saber o preço (óleo, filtro, fluido, revisão, etc)'
+          }
+        },
+        required: []
+      }
+    },
+    {
+      name: 'agendar_multiplos_servicos',
+      description: 'Agenda múltiplos serviços na mesma visita. Use quando o cliente quiser fazer mais de um serviço (ex: troca de óleo + filtro + alinhamento)',
+      parameters: {
+        type: SchemaType.OBJECT,
+        properties: {
+          servicos: {
+            type: SchemaType.ARRAY,
+            description: 'Lista de serviços desejados',
+            items: { type: SchemaType.STRING }
+          }
+        },
+        required: ['servicos']
+      }
+    },
+    {
+      name: 'registrar_preferencia',
+      description: 'Registra uma preferência ou informação do cliente para lembrar no futuro. Use quando o cliente mencionar preferências como: tipo de óleo preferido, horário preferido, dia preferido, etc.',
+      parameters: {
+        type: SchemaType.OBJECT,
+        properties: {
+          tipo: {
+            type: SchemaType.STRING,
+            description: 'Tipo da preferência: oleo, horario, dia, observacao'
+          },
+          valor: {
+            type: SchemaType.STRING,
+            description: 'O valor da preferência'
+          }
+        },
+        required: ['tipo', 'valor']
+      }
+    },
+    {
+      name: 'consultar_historico',
+      description: 'Consulta o histórico de serviços do cliente. Use quando o cliente perguntar sobre serviços anteriores, última troca, quando fez o último serviço, etc.',
+      parameters: {
+        type: SchemaType.OBJECT,
+        properties: {},
+        required: []
       }
     }
   ]
@@ -192,6 +353,20 @@ interface AgendamentoState {
 }
 const agendamentoState: Map<string, AgendamentoState> = new Map();
 
+// Estado de cadastro por número (para clientes novos)
+interface CadastroState {
+  ativo: boolean;
+  etapa: 'nome' | 'veiculo' | 'confirmar';
+  nome?: string;
+  placa?: string;
+  marca?: string;
+  modelo?: string;
+  ano?: number;
+  kmAtual?: number;
+  timestamp?: number;
+}
+const cadastroState: Map<string, CadastroState> = new Map();
+
 // Timeout de estado de agendamento (30 minutos)
 const STATE_TIMEOUT_MS = 30 * 60 * 1000;
 
@@ -243,6 +418,26 @@ interface CustomerData {
   };
   historicoServicos: string[];
   isNewCustomer: boolean;
+  preferencias?: {
+    oleo?: string;
+    horario?: string;
+    dia?: string;
+    observacoes?: string;
+  };
+  ordensEmAndamento?: {
+    id: number;
+    numero: string;
+    status: string;
+    veiculo: string;
+    servicos: string;
+    dataAgendada?: Date;
+  }[];
+  agendamentosFuturos?: {
+    id: number;
+    dataAgendada: Date;
+    veiculo: string;
+    servicos: string;
+  }[];
 }
 
 // Interface para serviços
@@ -355,7 +550,7 @@ async function getCustomerData(phoneNumber: string, empresaId: number): Promise<
           include: {
             ordens: {
               orderBy: { createdAt: 'desc' },
-              take: 5,
+              take: 10,
               include: {
                 itens: {
                   include: { servico: true },
@@ -375,11 +570,68 @@ async function getCustomerData(phoneNumber: string, empresaId: number): Promise<
     const ultimaOrdem = veiculoPrincipal?.ordens[0];
 
     const historicoServicos: string[] = [];
-    if (veiculoPrincipal?.ordens) {
-      for (const ordem of veiculoPrincipal.ordens.slice(0, 3)) {
-        const servicos = ordem.itens.map(i => i.servico.nome).join(', ');
+    const ordensEmAndamento: CustomerData['ordensEmAndamento'] = [];
+    const agendamentosFuturos: CustomerData['agendamentosFuturos'] = [];
+    const agora = new Date();
+
+    // Processar todas as ordens de todos os veículos
+    for (const veiculo of cliente.veiculos) {
+      for (const ordem of veiculo.ordens) {
+        const servicosNomes = ordem.itens.map(i => i.servico.nome).join(', ');
         const data = ordem.createdAt.toLocaleDateString('pt-BR');
-        historicoServicos.push(`${data}: ${servicos}`);
+        const veiculoNome = `${veiculo.marca} ${veiculo.modelo}`;
+
+        // Ordens em andamento (não finalizadas)
+        if (['AGENDADO', 'EM_ANDAMENTO', 'AGUARDANDO_PECAS'].includes(ordem.status)) {
+          ordensEmAndamento.push({
+            id: ordem.id,
+            numero: ordem.id.toString(),
+            status: ordem.status,
+            veiculo: veiculoNome,
+            servicos: servicosNomes || 'Serviço',
+            dataAgendada: ordem.dataAgendada || undefined,
+          });
+        }
+
+        // Agendamentos futuros
+        if (ordem.status === 'AGENDADO' && ordem.dataAgendada && ordem.dataAgendada > agora) {
+          agendamentosFuturos.push({
+            id: ordem.id,
+            dataAgendada: ordem.dataAgendada,
+            veiculo: veiculoNome,
+            servicos: servicosNomes || 'Serviço',
+          });
+        }
+
+        // Histórico (últimos 5 serviços)
+        if (historicoServicos.length < 5 && ordem.status === 'CONCLUIDO') {
+          historicoServicos.push(`${data}: ${veiculoNome} - ${servicosNomes}`);
+        }
+      }
+    }
+
+    // Ordenar agendamentos por data
+    agendamentosFuturos.sort((a, b) => a.dataAgendada.getTime() - b.dataAgendada.getTime());
+
+    // Extrair preferências das observações do cliente
+    let preferencias: CustomerData['preferencias'];
+    if (cliente.observacoes) {
+      try {
+        // Formato JSON nas observações
+        if (cliente.observacoes.startsWith('{')) {
+          preferencias = JSON.parse(cliente.observacoes);
+        } else {
+          // Extrair preferências do texto livre
+          preferencias = { observacoes: cliente.observacoes };
+          const obs = cliente.observacoes.toLowerCase();
+          if (obs.includes('sintético') || obs.includes('sintetico')) preferencias.oleo = 'sintético';
+          if (obs.includes('semi-sintético') || obs.includes('semi sintetico')) preferencias.oleo = 'semi-sintético';
+          if (obs.includes('mineral')) preferencias.oleo = 'mineral';
+          if (obs.includes('manhã') || obs.includes('manha')) preferencias.horario = 'manhã';
+          if (obs.includes('tarde')) preferencias.horario = 'tarde';
+        }
+      } catch {
+        preferencias = { observacoes: cliente.observacoes };
       }
     }
 
@@ -401,6 +653,9 @@ async function getCustomerData(phoneNumber: string, empresaId: number): Promise<
       } : undefined,
       historicoServicos,
       isNewCustomer: false,
+      preferencias,
+      ordensEmAndamento: ordensEmAndamento.length > 0 ? ordensEmAndamento : undefined,
+      agendamentosFuturos: agendamentosFuturos.length > 0 ? agendamentosFuturos : undefined,
     };
   } catch (error: any) {
     console.error('[CHATBOT] Erro ao buscar dados do cliente:', error?.message);
@@ -590,6 +845,160 @@ async function getHorariosDisponiveis(empresaId: number): Promise<{ data: Date; 
   }
 }
 
+// Criar cliente e veículo automaticamente (para cadastro via chatbot)
+async function criarClienteEVeiculo(
+  empresaId: number,
+  telefone: string,
+  nome: string,
+  placa: string,
+  marca: string,
+  modelo: string,
+  ano?: number,
+  kmAtual?: number
+): Promise<{ success: boolean; clienteId?: number; veiculoId?: number; error?: string }> {
+  try {
+    // Limpar telefone
+    const telefoneLimpo = telefone.replace(/\D/g, '');
+
+    // Verificar se já existe cliente com esse telefone
+    const clienteExistente = await prisma.cliente.findFirst({
+      where: {
+        empresaId,
+        OR: [
+          { telefone: { contains: telefoneLimpo.slice(-11) } },
+          { telefone: { contains: telefoneLimpo.slice(-10) } },
+          { telefone: telefoneLimpo },
+        ],
+      },
+    });
+
+    if (clienteExistente) {
+      // Cliente já existe, só criar o veículo
+      const veiculo = await prisma.veiculo.create({
+        data: {
+          empresaId,
+          clienteId: clienteExistente.id,
+          placa: placa.toUpperCase().replace(/[^A-Z0-9]/g, ''),
+          marca,
+          modelo,
+          ano,
+          kmAtual,
+        },
+      });
+
+      console.log('[CHATBOT] Veículo criado para cliente existente:', veiculo.id);
+      return { success: true, clienteId: clienteExistente.id, veiculoId: veiculo.id };
+    }
+
+    // Criar cliente e veículo
+    const cliente = await prisma.cliente.create({
+      data: {
+        empresaId,
+        nome,
+        telefone: telefoneLimpo,
+        veiculos: {
+          create: {
+            empresaId,
+            placa: placa.toUpperCase().replace(/[^A-Z0-9]/g, ''),
+            marca,
+            modelo,
+            ano,
+            kmAtual,
+          },
+        },
+      },
+      include: { veiculos: true },
+    });
+
+    console.log('[CHATBOT] Cliente e veículo criados:', cliente.id, cliente.veiculos[0]?.id);
+    return { success: true, clienteId: cliente.id, veiculoId: cliente.veiculos[0]?.id };
+  } catch (error: any) {
+    console.error('[CHATBOT] Erro ao criar cliente/veículo:', error?.message);
+
+    // Verificar se é erro de placa duplicada
+    if (error?.code === 'P2002') {
+      return { success: false, error: 'Placa já cadastrada' };
+    }
+
+    return { success: false, error: error?.message };
+  }
+}
+
+// Salvar preferência do cliente
+async function salvarPreferenciaCliente(
+  clienteId: number,
+  tipo: string,
+  valor: string
+): Promise<boolean> {
+  try {
+    // Buscar observações atuais
+    const cliente = await prisma.cliente.findUnique({
+      where: { id: clienteId },
+      select: { observacoes: true },
+    });
+
+    let preferencias: Record<string, string> = {};
+
+    // Tentar parsear JSON existente
+    if (cliente?.observacoes) {
+      try {
+        if (cliente.observacoes.startsWith('{')) {
+          preferencias = JSON.parse(cliente.observacoes);
+        } else {
+          preferencias = { observacoes: cliente.observacoes };
+        }
+      } catch {
+        preferencias = { observacoes: cliente.observacoes };
+      }
+    }
+
+    // Adicionar nova preferência
+    preferencias[tipo] = valor;
+
+    // Salvar
+    await prisma.cliente.update({
+      where: { id: clienteId },
+      data: { observacoes: JSON.stringify(preferencias) },
+    });
+
+    console.log('[CHATBOT] Preferência salva:', tipo, '=', valor);
+    return true;
+  } catch (error: any) {
+    console.error('[CHATBOT] Erro ao salvar preferência:', error?.message);
+    return false;
+  }
+}
+
+// Atualizar status de ordem de serviço (para cancelamento)
+async function cancelarOrdemServico(ordemId: number): Promise<boolean> {
+  try {
+    await prisma.ordemServico.update({
+      where: { id: ordemId },
+      data: { status: 'CANCELADO' },
+    });
+    console.log('[CHATBOT] Ordem cancelada:', ordemId);
+    return true;
+  } catch (error: any) {
+    console.error('[CHATBOT] Erro ao cancelar ordem:', error?.message);
+    return false;
+  }
+}
+
+// Remarcar ordem de serviço
+async function remarcarOrdemServico(ordemId: number, novaData: Date): Promise<boolean> {
+  try {
+    await prisma.ordemServico.update({
+      where: { id: ordemId },
+      data: { dataAgendada: novaData },
+    });
+    console.log('[CHATBOT] Ordem remarcada:', ordemId, 'para', novaData);
+    return true;
+  } catch (error: any) {
+    console.error('[CHATBOT] Erro ao remarcar ordem:', error?.message);
+    return false;
+  }
+}
+
 // Criar ordem de serviço automaticamente
 async function criarOrdemServico(
   veiculoId: number,
@@ -681,6 +1090,7 @@ export async function generateChatResponse(
 
     // Gerenciar estado de agendamento
     let agendamento = agendamentoState.get(phoneNumber) || { ativo: false, etapa: 'inicio' as const };
+    let cadastro = cadastroState.get(phoneNumber) || { ativo: false, etapa: 'nome' as const };
     const msgLower = userMessage.toLowerCase().trim();
 
     // Verificar se o estado expirou (30 min)
@@ -688,6 +1098,13 @@ export async function generateChatResponse(
       console.log('[CHATBOT] Estado de agendamento expirado, resetando');
       agendamentoState.delete(phoneNumber);
       agendamento = { ativo: false, etapa: 'inicio' as const };
+    }
+
+    // Verificar se estado de cadastro expirou
+    if (cadastro.ativo && cadastro.timestamp && Date.now() - cadastro.timestamp > STATE_TIMEOUT_MS) {
+      console.log('[CHATBOT] Estado de cadastro expirado, resetando');
+      cadastroState.delete(phoneNumber);
+      cadastro = { ativo: false, etapa: 'nome' as const };
     }
 
     // Tratar áudio não transcrito
@@ -712,8 +1129,18 @@ export async function generateChatResponse(
       };
     }
 
+    // Cancelamento de cadastro
+    if (cadastro.ativo && querCancelar) {
+      cadastroState.delete(phoneNumber);
+      console.log('[CHATBOT] Cadastro cancelado pelo usuário');
+      return {
+        type: 'text',
+        message: `Tudo bem! Cancelei o cadastro. 😊\n\nQuando quiser se cadastrar, é só me chamar!`,
+      };
+    }
+
     // Detectar se é resposta de botão/lista (buttonOrListid)
-    const isButtonResponse = /^(veiculo_|horario_|confirmar_|cancelar)/.test(userMessage);
+    const isButtonResponse = /^(veiculo_|horario_|confirmar_|cancelar|remarcar_)/.test(userMessage);
 
     // Processar resposta de seleção de veículo via botão
     if (isButtonResponse && userMessage.startsWith('veiculo_')) {
@@ -890,6 +1317,180 @@ export async function generateChatResponse(
       };
     }
 
+    // Processar confirmação de cadastro via botão
+    if (isButtonResponse && userMessage === 'confirmar_cadastro') {
+      // Verificar se tem cadastro em andamento com dados completos
+      if (cadastro.ativo && cadastro.nome && cadastro.placa && cadastro.marca && cadastro.modelo) {
+        // Criar cliente e veículo
+        const resultado = await criarClienteEVeiculo(
+          empresaId,
+          phoneNumber,
+          cadastro.nome,
+          cadastro.placa,
+          cadastro.marca,
+          cadastro.modelo,
+          cadastro.ano,
+          cadastro.kmAtual
+        );
+
+        if (!resultado.success) {
+          console.error('[CHATBOT] Erro ao criar cadastro via botão:', resultado.error);
+
+          if (resultado.error === 'Placa já cadastrada') {
+            return {
+              type: 'text',
+              message: `Ops! Essa placa já está cadastrada aqui. 😅\n\nSe for seu carro, pode ser que você já tenha cadastro com outro telefone. Liga pra oficina que a gente resolve!`,
+            };
+          }
+
+          return {
+            type: 'text',
+            message: `Ops, tive um probleminha pra criar o cadastro. 😅\n\nPode ligar pra oficina que a gente resolve rapidinho!`,
+          };
+        }
+
+        // Limpar estado de cadastro
+        const primeiroNomeCadastro = cadastro.nome.split(' ')[0];
+        cadastroState.delete(phoneNumber);
+
+        console.log('[CHATBOT] Cadastro criado via botão! Cliente:', resultado.clienteId, 'Veículo:', resultado.veiculoId);
+
+        // Buscar dados atualizados do cliente para iniciar agendamento
+        const novoCustomerData = await getCustomerData(phoneNumber, empresaId);
+
+        if (novoCustomerData && novoCustomerData.veiculos.length > 0) {
+          // Iniciar agendamento automaticamente
+          agendamento.ativo = true;
+          agendamento.timestamp = Date.now();
+          agendamento.veiculoId = novoCustomerData.veiculos[0].id;
+          agendamento.veiculoNome = `${novoCustomerData.veiculos[0].marca} ${novoCustomerData.veiculos[0].modelo}`;
+          agendamento.etapa = 'escolher_data';
+          agendamento.horariosDisponiveis = await getHorariosDisponiveis(empresaId);
+          agendamentoState.set(phoneNumber, agendamento);
+
+          if (agendamento.horariosDisponiveis.length > 0) {
+            const choices = [
+              '[Horários Disponíveis]',
+              ...agendamento.horariosDisponiveis.map(slot => {
+                const diaNome = slot.label.split(' ')[0];
+                const horaInfo = slot.label.replace(diaNome + ' ', '');
+                return `${diaNome}|horario_${slot.data.toISOString()}|${horaInfo}`;
+              }),
+            ];
+
+            return {
+              type: 'list',
+              text: `Pronto, ${primeiroNomeCadastro}! ✅ Cadastro feito!\n\nAgora vamos agendar a troca de óleo do seu ${agendamento.veiculoNome}?\n\nEscolha um horário:`,
+              listButton: 'Ver Horários',
+              footerText: 'Escolha o melhor horário',
+              choices,
+            };
+          }
+        }
+
+        return {
+          type: 'text',
+          message: `Pronto, ${primeiroNomeCadastro}! ✅ Seu cadastro foi criado com sucesso!\n\nAgora você pode agendar quando quiser. É só me chamar aqui! 😊`,
+        };
+      }
+    }
+
+    // Processar cancelamento de cadastro via botão
+    if (isButtonResponse && userMessage === 'cancelar_cadastro') {
+      cadastroState.delete(phoneNumber);
+      return {
+        type: 'text',
+        message: `Tudo bem! Cancelei o cadastro. 😊\n\nQuando quiser se cadastrar, é só me chamar!`,
+      };
+    }
+
+    // Processar remarcação via botão
+    if (isButtonResponse && userMessage.startsWith('remarcar_')) {
+      const primeiroNome = customerData?.nome.split(' ')[0] || userName || 'Cliente';
+
+      // Verificar se é novo horário ou ID de agendamento
+      if (userMessage.includes('T')) {
+        // É uma data ISO - remarcar para esse horário
+        const dataISO = userMessage.replace('remarcar_', '');
+        const novaData = new Date(dataISO);
+
+        if (!isNaN(novaData.getTime()) && (agendamento as any).ordemIdRemarcar) {
+          const ordemId = (agendamento as any).ordemIdRemarcar;
+          const sucesso = await remarcarOrdemServico(ordemId, novaData);
+          agendamentoState.delete(phoneNumber);
+
+          if (sucesso) {
+            return {
+              type: 'text',
+              message: `Pronto, ${primeiroNome}! ✅\n\nRemarcado para ${formatDateBrazil(novaData)}.\n\nTe esperamos! 😊`,
+            };
+          }
+          return {
+            type: 'text',
+            message: `Ops, tive um probleminha pra remarcar. 😅\n\nPode ligar pra oficina?`,
+          };
+        }
+      } else {
+        // É ID do agendamento - iniciar processo de remarcação
+        const ordemId = parseInt(userMessage.replace('remarcar_', ''));
+        if (customerData?.agendamentosFuturos) {
+          const ag = customerData.agendamentosFuturos.find(a => a.id === ordemId);
+          if (ag) {
+            agendamento.ativo = true;
+            agendamento.timestamp = Date.now();
+            agendamento.veiculoNome = ag.veiculo;
+            agendamento.etapa = 'escolher_data';
+            agendamento.horariosDisponiveis = await getHorariosDisponiveis(empresaId);
+            (agendamento as any).ordemIdRemarcar = ordemId;
+            agendamentoState.set(phoneNumber, agendamento);
+
+            if (agendamento.horariosDisponiveis.length > 0) {
+              const choices = [
+                '[Novos Horários]',
+                ...agendamento.horariosDisponiveis.map(slot => {
+                  const diaNome = slot.label.split(' ')[0];
+                  const horaInfo = slot.label.replace(diaNome + ' ', '');
+                  return `${diaNome}|remarcar_${slot.data.toISOString()}|${horaInfo}`;
+                }),
+              ];
+
+              return {
+                type: 'list',
+                text: `${primeiroNome}, escolha o novo horário para seu ${ag.veiculo}:`,
+                listButton: 'Ver Horários',
+                footerText: 'Escolha o novo horário',
+                choices,
+              };
+            }
+          }
+        }
+      }
+    }
+
+    // Processar cancelamento de agendamento específico via botão
+    if (isButtonResponse && userMessage.startsWith('cancelar_') && userMessage !== 'cancelar_cadastro') {
+      const ordemId = parseInt(userMessage.replace('cancelar_', ''));
+      const primeiroNome = customerData?.nome.split(' ')[0] || userName || 'Cliente';
+
+      if (!isNaN(ordemId) && customerData?.agendamentosFuturos) {
+        const ag = customerData.agendamentosFuturos.find(a => a.id === ordemId);
+        if (ag) {
+          const cancelou = await cancelarOrdemServico(ordemId);
+          if (cancelou) {
+            return {
+              type: 'text',
+              message: `Pronto, ${primeiroNome}! ❌\n\nCancelei o agendamento do ${ag.veiculo} que estava marcado pra ${formatDateBrazil(ag.dataAgendada)}.\n\nQuando quiser reagendar, é só me chamar! 😊`,
+            };
+          }
+        }
+      }
+
+      return {
+        type: 'text',
+        message: `Ops, não consegui cancelar. 😅\n\nPode ligar pra oficina?`,
+      };
+    }
+
     // ==========================================
     // FUNCTION CALLING - Gemini decide a ação
     // ==========================================
@@ -931,41 +1532,122 @@ export async function generateChatResponse(
 
     let contextoCliente = '';
     if (customerData) {
-      contextoCliente = `\n\n[DADOS DO CLIENTE]`;
+      contextoCliente = `\n\n[DADOS DO CLIENTE - JÁ CADASTRADO]`;
       contextoCliente += `\n- Nome: ${customerData.nome}`;
       contextoCliente += `\n- Veículos: ${customerData.veiculos.map((v, i) => `${i}: ${v.marca} ${v.modelo} (${v.placa})`).join(', ')}`;
       if (customerData.ultimoServico) {
-        contextoCliente += `\n- Último serviço: ${customerData.ultimoServico.tipo}`;
+        const diasDesdeUltimo = Math.floor((Date.now() - customerData.ultimoServico.data.getTime()) / (1000 * 60 * 60 * 24));
+        contextoCliente += `\n- Último serviço: ${customerData.ultimoServico.tipo} (há ${diasDesdeUltimo} dias)`;
+        if (diasDesdeUltimo > 180) {
+          contextoCliente += ` ⚠️ ATENÇÃO: Já passou do tempo recomendado para revisão!`;
+        }
+      }
+      if (customerData.ordensEmAndamento && customerData.ordensEmAndamento.length > 0) {
+        contextoCliente += `\n- VEÍCULOS NA OFICINA AGORA: ${customerData.ordensEmAndamento.map(o => `${o.veiculo} (${o.status})`).join(', ')}`;
+      }
+      if (customerData.agendamentosFuturos && customerData.agendamentosFuturos.length > 0) {
+        const proxAg = customerData.agendamentosFuturos[0];
+        contextoCliente += `\n- Próximo agendamento: ${formatDateBrazil(proxAg.dataAgendada)} - ${proxAg.veiculo}`;
+      }
+      if (customerData.preferencias) {
+        const prefs: string[] = [];
+        if (customerData.preferencias.oleo) prefs.push(`óleo ${customerData.preferencias.oleo}`);
+        if (customerData.preferencias.horario) prefs.push(`horário: ${customerData.preferencias.horario}`);
+        if (customerData.preferencias.dia) prefs.push(`dia: ${customerData.preferencias.dia}`);
+        if (prefs.length > 0) {
+          contextoCliente += `\n- Preferências do cliente: ${prefs.join(', ')}`;
+        }
       }
     } else {
-      contextoCliente = `\n\n[CLIENTE NÃO CADASTRADO]`;
+      contextoCliente = `\n\n[CLIENTE NÃO CADASTRADO - Você pode cadastrar este cliente via chatbot!]`;
+    }
+
+    // Contexto de cadastro em andamento
+    let contextoCadastro = '';
+    if (cadastro.ativo) {
+      contextoCadastro = `\n\n[ESTADO ATUAL: Cadastro em andamento]`;
+      contextoCadastro += `\n- Etapa: ${cadastro.etapa}`;
+      if (cadastro.nome) contextoCadastro += `\n- Nome: ${cadastro.nome}`;
+      if (cadastro.placa) contextoCadastro += `\n- Placa: ${cadastro.placa}`;
+      if (cadastro.marca) contextoCadastro += `\n- Marca: ${cadastro.marca}`;
+      if (cadastro.modelo) contextoCadastro += `\n- Modelo: ${cadastro.modelo}`;
+      if (cadastro.ano) contextoCadastro += `\n- Ano: ${cadastro.ano}`;
+      if (cadastro.kmAtual) contextoCadastro += `\n- KM: ${cadastro.kmAtual}`;
+
+      // Mostrar dados faltantes
+      const faltantes: string[] = [];
+      if (!cadastro.nome) faltantes.push('nome');
+      if (!cadastro.placa) faltantes.push('placa');
+      if (!cadastro.marca) faltantes.push('marca');
+      if (!cadastro.modelo) faltantes.push('modelo');
+      if (faltantes.length > 0) {
+        contextoCadastro += `\n- DADOS FALTANTES: ${faltantes.join(', ')}`;
+      } else {
+        contextoCadastro += `\n- TODOS OS DADOS OBRIGATÓRIOS PREENCHIDOS - pronto para confirmar!`;
+      }
     }
 
     // Construir prompt para function calling
-    const systemPromptFC = `Você é a assistente virtual de uma oficina mecânica. Seu nome é ${config?.chatbotNome || 'LoopIA'}.
+    const systemPromptFC = `Você é a assistente virtual inteligente de uma oficina mecânica. Seu nome é ${config?.chatbotNome || 'LoopIA'}.
 Oficina: ${config?.nomeOficina || 'Oficina'}
 Horário: ${parseHorarioParaString(config?.chatbotHorario || null)}
 
 Serviços disponíveis:
 ${servicosFormatados}
 ${contextoCliente}
+${contextoCadastro}
 ${contextoAgendamento}
 ${historicoConversa}
 
-REGRAS IMPORTANTES:
-1. Chame o cliente pelo primeiro nome: "${primeiroNome}"
-2. Seja simpática e objetiva (máximo 2-3 frases)
-3. Use a função apropriada baseado na intenção do cliente
-4. IMPORTANTE: Leia o HISTÓRICO DA CONVERSA para entender o contexto
-5. Se a última mensagem do bot mencionou um veículo específico e o cliente confirma (sim, pode, ok), use iniciar_agendamento
-6. Para agendar: use iniciar_agendamento
-7. Para selecionar veículo: use selecionar_veiculo com o índice correto
-8. Para selecionar horário: use selecionar_horario
-9. Para confirmar: use confirmar_agendamento
-10. Para cancelar: use cancelar_agendamento
-11. Para responder normalmente: use responder_texto
+🧠 SUA PERSONALIDADE:
+- Você é simpática, prestativa e MUITO inteligente
+- Chame o cliente sempre pelo primeiro nome: "${primeiroNome}"
+- Seja objetiva (máximo 2-3 frases), mas com empatia
+- Use emojis moderadamente para dar personalidade
+- Lembre das preferências do cliente e use-as proativamente
 
-Mensagem atual do cliente: "${userMessage}"`;
+📋 REGRAS DE OURO:
+1. SEMPRE leia o HISTÓRICO DA CONVERSA para entender o contexto
+2. Se o cliente perguntou algo e você respondeu, e ele confirma (sim, pode, ok, isso, quero), EXECUTE a ação apropriada
+3. Se o cliente mencionar um veículo específico e confirmar, não pergunte de novo qual veículo
+4. Seja PROATIVA: se o cliente não faz serviço há muito tempo, sugira gentilmente uma revisão
+5. Se o cliente tem preferências cadastradas, mencione-as (ex: "Vai querer o óleo sintético de sempre?")
+
+🔧 FUNÇÕES INTELIGENTES:
+- consultar_status_veiculo: "meu carro já ficou?", "como está meu carro?", "já posso buscar?"
+- consultar_agendamentos: "quando é minha marcação?", "tenho agendamento?"
+- cancelar_ou_remarcar: "preciso remarcar", "cancelar agendamento", "mudar horário"
+- consultar_preco: "quanto custa?", "qual o valor?", "preço de..."
+- agendar_multiplos_servicos: quando pedir 2+ serviços juntos (ex: "troca de óleo e filtro")
+- registrar_preferencia: quando mencionar preferência (ex: "prefiro óleo sintético", "gosto de ir de manhã")
+- consultar_historico: "quando fiz a última troca?", "meu histórico"
+
+📅 FUNÇÕES DE AGENDAMENTO:
+- iniciar_agendamento: quando cliente quer agendar/marcar serviço
+- selecionar_veiculo: quando escolher veículo (índice 0, 1, 2... ou -1 para todos)
+- selecionar_horario: quando escolher dia/horário
+- confirmar_agendamento: quando confirmar
+- cancelar_agendamento: quando desistir
+
+📝 FUNÇÕES DE CADASTRO (cliente NÃO cadastrado):
+- iniciar_cadastro: cliente novo quer agendar
+- salvar_nome_cliente: informou nome completo
+- salvar_dados_veiculo: informou dados do carro (placa, marca, modelo)
+- confirmar_cadastro: TODOS os dados obrigatórios preenchidos
+
+💬 responder_texto: para saudações, dúvidas gerais, conversas normais
+
+EXEMPLOS DE INTERPRETAÇÃO:
+- "oi" → responder_texto (saudação)
+- "quero agendar" → iniciar_agendamento
+- "meu carro já tá pronto?" → consultar_status_veiculo
+- "quanto custa trocar o óleo?" → consultar_preco
+- "quero trocar óleo e filtro" → agendar_multiplos_servicos
+- "prefiro de manhã" → registrar_preferencia
+- "preciso remarcar" → cancelar_ou_remarcar
+- "sim", "pode", "ok" (após pergunta) → executar ação do contexto
+
+Mensagem atual: "${userMessage}"`;
 
     // Chamar Gemini com function calling
     const model = genAI.getGenerativeModel({
@@ -990,6 +1672,7 @@ Mensagem atual do cliente: "${userMessage}"`;
         empresaId,
         customerData,
         agendamento,
+        cadastro,
         primeiroNome,
         recentMessages
       );
@@ -1020,6 +1703,7 @@ async function executeFunctionCall(
   empresaId: number,
   customerData: CustomerData | null,
   agendamento: AgendamentoState,
+  cadastro: CadastroState,
   primeiroNome: string,
   recentMessages?: { role: 'user' | 'bot'; text: string }[]
 ): Promise<ChatResponse> {
@@ -1027,11 +1711,20 @@ async function executeFunctionCall(
 
   switch (functionName) {
     case 'iniciar_agendamento': {
+      // Se cliente não está cadastrado, redirecionar para cadastro
       if (!customerData || customerData.veiculos.length === 0) {
-        return {
-          type: 'text',
-          message: `Oi ${primeiroNome}! Para agendar, preciso que você tenha um veículo cadastrado. Pode ligar pra oficina que a gente te cadastra rapidinho! 😊`,
-        };
+        console.log('[CHATBOT] Cliente não cadastrado, redirecionando para cadastro');
+        return executeFunctionCall(
+          'iniciar_cadastro',
+          {},
+          phoneNumber,
+          empresaId,
+          customerData,
+          agendamento,
+          cadastro,
+          primeiroNome,
+          recentMessages
+        );
       }
 
       // Iniciar novo agendamento
@@ -1288,6 +1981,7 @@ async function executeFunctionCall(
           empresaId,
           customerData,
           agendamento,
+          cadastro,
           primeiroNome,
           recentMessages
         );
@@ -1324,9 +2018,578 @@ async function executeFunctionCall(
       };
     }
 
+    // ==========================================
+    // FUNÇÕES DE CADASTRO
+    // ==========================================
+
+    case 'iniciar_cadastro': {
+      // Iniciar cadastro de cliente novo
+      cadastro.ativo = true;
+      cadastro.etapa = 'nome';
+      cadastro.timestamp = Date.now();
+      cadastroState.set(phoneNumber, cadastro);
+
+      console.log('[CHATBOT] Iniciando cadastro para cliente novo');
+
+      return {
+        type: 'text',
+        message: `Oi${primeiroNome !== 'Cliente' ? ` ${primeiroNome}` : ''}! 😊\n\nVi que você ainda não está cadastrado(a) aqui. Vou te cadastrar rapidinho pra gente agendar!\n\nQual é o seu *nome completo*?`,
+      };
+    }
+
+    case 'salvar_nome_cliente': {
+      const nome = args.nome as string;
+      if (!nome || nome.length < 2) {
+        return {
+          type: 'text',
+          message: `Por favor, me diz seu nome completo pra eu te cadastrar! 😊`,
+        };
+      }
+
+      cadastro.ativo = true;
+      cadastro.nome = nome;
+      cadastro.etapa = 'veiculo';
+      cadastro.timestamp = Date.now();
+      cadastroState.set(phoneNumber, cadastro);
+
+      console.log('[CHATBOT] Nome salvo:', nome);
+
+      return {
+        type: 'text',
+        message: `Prazer, ${nome.split(' ')[0]}! 😊\n\nAgora preciso dos dados do seu veículo.\n\nQual a *placa*, *marca* e *modelo* do seu carro?\n\n_Exemplo: ABC1234, Volkswagen Gol_`,
+      };
+    }
+
+    case 'salvar_dados_veiculo': {
+      // Atualizar dados do veículo (pode ser parcial)
+      if (args.placa) {
+        const placa = (args.placa as string).toUpperCase().replace(/[^A-Z0-9]/g, '');
+        if (placa.length >= 7) {
+          cadastro.placa = placa;
+        }
+      }
+      if (args.marca) cadastro.marca = args.marca as string;
+      if (args.modelo) cadastro.modelo = args.modelo as string;
+      if (args.ano) cadastro.ano = args.ano as number;
+      if (args.kmAtual) cadastro.kmAtual = args.kmAtual as number;
+
+      cadastro.ativo = true;
+      cadastro.timestamp = Date.now();
+      cadastroState.set(phoneNumber, cadastro);
+
+      console.log('[CHATBOT] Dados veículo salvos:', { placa: cadastro.placa, marca: cadastro.marca, modelo: cadastro.modelo });
+
+      // Verificar se faltam dados obrigatórios
+      const faltantes: string[] = [];
+      if (!cadastro.nome) faltantes.push('nome');
+      if (!cadastro.placa) faltantes.push('placa');
+      if (!cadastro.marca) faltantes.push('marca');
+      if (!cadastro.modelo) faltantes.push('modelo');
+
+      if (faltantes.length > 0) {
+        const primeiroNomeCadastro = cadastro.nome?.split(' ')[0] || primeiroNome;
+        const dadosInformados: string[] = [];
+        if (cadastro.nome) dadosInformados.push(`Nome: ${cadastro.nome}`);
+        if (cadastro.placa) dadosInformados.push(`Placa: ${cadastro.placa}`);
+        if (cadastro.marca) dadosInformados.push(`Marca: ${cadastro.marca}`);
+        if (cadastro.modelo) dadosInformados.push(`Modelo: ${cadastro.modelo}`);
+
+        return {
+          type: 'text',
+          message: `${primeiroNomeCadastro}, ainda falta: *${faltantes.join(', ')}*\n\n${dadosInformados.length > 0 ? `✅ Já tenho:\n${dadosInformados.join('\n')}\n\n` : ''}Pode me informar o que falta?`,
+        };
+      }
+
+      // Todos os dados obrigatórios preenchidos - pedir confirmação
+      cadastro.etapa = 'confirmar';
+      cadastroState.set(phoneNumber, cadastro);
+
+      const primeiroNomeCadastro = cadastro.nome?.split(' ')[0] || primeiroNome;
+      return {
+        type: 'button',
+        text: `Perfeito, ${primeiroNomeCadastro}! 📋\n\n*Confirme seus dados:*\n\n👤 Nome: ${cadastro.nome}\n🚗 Veículo: ${cadastro.marca} ${cadastro.modelo}\n📋 Placa: ${cadastro.placa}${cadastro.ano ? `\n📅 Ano: ${cadastro.ano}` : ''}${cadastro.kmAtual ? `\n🔢 KM: ${cadastro.kmAtual.toLocaleString('pt-BR')}` : ''}`,
+        footerText: 'Tudo certo?',
+        choices: ['✅ Confirmar|confirmar_cadastro', '❌ Corrigir|cancelar_cadastro'],
+      };
+    }
+
+    case 'confirmar_cadastro': {
+      // Verificar se todos os dados obrigatórios estão presentes
+      if (!cadastro.nome || !cadastro.placa || !cadastro.marca || !cadastro.modelo) {
+        return {
+          type: 'text',
+          message: `Ainda faltam alguns dados pra eu completar o cadastro. Me conta: qual a placa, marca e modelo do seu carro?`,
+        };
+      }
+
+      // Criar cliente e veículo
+      const resultado = await criarClienteEVeiculo(
+        empresaId,
+        phoneNumber,
+        cadastro.nome,
+        cadastro.placa,
+        cadastro.marca,
+        cadastro.modelo,
+        cadastro.ano,
+        cadastro.kmAtual
+      );
+
+      if (!resultado.success) {
+        console.error('[CHATBOT] Erro ao criar cadastro:', resultado.error);
+
+        if (resultado.error === 'Placa já cadastrada') {
+          return {
+            type: 'text',
+            message: `Ops! Essa placa já está cadastrada aqui. 😅\n\nSe for seu carro, pode ser que você já tenha cadastro com outro telefone. Liga pra oficina que a gente resolve!`,
+          };
+        }
+
+        return {
+          type: 'text',
+          message: `Ops, tive um probleminha pra criar o cadastro. 😅\n\nPode ligar pra oficina que a gente resolve rapidinho!`,
+        };
+      }
+
+      // Limpar estado de cadastro
+      const primeiroNomeCadastro = cadastro.nome.split(' ')[0];
+      cadastroState.delete(phoneNumber);
+
+      console.log('[CHATBOT] Cadastro criado! Cliente:', resultado.clienteId, 'Veículo:', resultado.veiculoId);
+
+      // Buscar dados atualizados do cliente para iniciar agendamento
+      const novoCustomerData = await getCustomerData(phoneNumber, empresaId);
+
+      if (novoCustomerData && novoCustomerData.veiculos.length > 0) {
+        // Iniciar agendamento automaticamente
+        agendamento.ativo = true;
+        agendamento.timestamp = Date.now();
+        agendamento.veiculoId = novoCustomerData.veiculos[0].id;
+        agendamento.veiculoNome = `${novoCustomerData.veiculos[0].marca} ${novoCustomerData.veiculos[0].modelo}`;
+        agendamento.etapa = 'escolher_data';
+        agendamento.horariosDisponiveis = await getHorariosDisponiveis(empresaId);
+        agendamentoState.set(phoneNumber, agendamento);
+
+        if (agendamento.horariosDisponiveis.length > 0) {
+          const choices = [
+            '[Horários Disponíveis]',
+            ...agendamento.horariosDisponiveis.map(slot => {
+              const diaNome = slot.label.split(' ')[0];
+              const horaInfo = slot.label.replace(diaNome + ' ', '');
+              return `${diaNome}|horario_${slot.data.toISOString()}|${horaInfo}`;
+            }),
+          ];
+
+          return {
+            type: 'list',
+            text: `Pronto, ${primeiroNomeCadastro}! ✅ Cadastro feito!\n\nAgora vamos agendar a troca de óleo do seu ${agendamento.veiculoNome}?\n\nEscolha um horário:`,
+            listButton: 'Ver Horários',
+            footerText: 'Escolha o melhor horário',
+            choices,
+          };
+        }
+      }
+
+      return {
+        type: 'text',
+        message: `Pronto, ${primeiroNomeCadastro}! ✅ Seu cadastro foi criado com sucesso!\n\nAgora você pode agendar quando quiser. É só me chamar aqui! 😊`,
+      };
+    }
+
     case 'responder_texto': {
       const mensagem = args.mensagem as string;
       return { type: 'text', message: mensagem || `Olá ${primeiroNome}! Como posso ajudar?` };
+    }
+
+    // ==========================================
+    // FUNÇÕES INTELIGENTES
+    // ==========================================
+
+    case 'consultar_status_veiculo': {
+      if (!customerData) {
+        return {
+          type: 'text',
+          message: `Oi! Não encontrei seu cadastro aqui. 😅\n\nPode me passar seu telefone cadastrado ou ligar pra oficina?`,
+        };
+      }
+
+      // Verificar se tem ordens em andamento
+      if (!customerData.ordensEmAndamento || customerData.ordensEmAndamento.length === 0) {
+        // Verificar agendamentos futuros
+        if (customerData.agendamentosFuturos && customerData.agendamentosFuturos.length > 0) {
+          const proximo = customerData.agendamentosFuturos[0];
+          const dataFormatada = formatDateBrazil(proximo.dataAgendada);
+          return {
+            type: 'text',
+            message: `${primeiroNome}, você não tem nenhum veículo aqui no momento. 🔍\n\nMas você tem um agendamento:\n📅 ${dataFormatada}\n🚗 ${proximo.veiculo}\n🔧 ${proximo.servicos}\n\nTe esperamos! 😊`,
+          };
+        }
+
+        return {
+          type: 'text',
+          message: `${primeiroNome}, você não tem nenhum veículo aqui na oficina no momento. 🔍\n\nQuer agendar um serviço?`,
+        };
+      }
+
+      // Tem ordens em andamento
+      const statusMap: Record<string, string> = {
+        'AGENDADO': '📅 Agendado - aguardando chegada',
+        'EM_ANDAMENTO': '🔧 Em andamento - estamos trabalhando!',
+        'AGUARDANDO_PECAS': '⏳ Aguardando peças',
+        'CONCLUIDO': '✅ Pronto pra buscar!',
+      };
+
+      if (customerData.ordensEmAndamento.length === 1) {
+        const ordem = customerData.ordensEmAndamento[0];
+        const statusTexto = statusMap[ordem.status] || ordem.status;
+
+        let mensagem = `${primeiroNome}, aqui está o status do seu ${ordem.veiculo}:\n\n${statusTexto}`;
+
+        if (ordem.status === 'EM_ANDAMENTO') {
+          mensagem += `\n\nAssim que ficar pronto, te aviso aqui! 😊`;
+        } else if (ordem.status === 'CONCLUIDO') {
+          mensagem += `\n\nPode vir buscar quando quiser! Estamos te esperando. 🎉`;
+        } else if (ordem.dataAgendada) {
+          mensagem += `\n\n📅 Agendado para: ${formatDateBrazil(ordem.dataAgendada)}`;
+        }
+
+        return { type: 'text', message: mensagem };
+      }
+
+      // Múltiplos veículos
+      let mensagem = `${primeiroNome}, aqui está o status dos seus veículos:\n`;
+      for (const ordem of customerData.ordensEmAndamento) {
+        const statusTexto = statusMap[ordem.status] || ordem.status;
+        mensagem += `\n🚗 *${ordem.veiculo}*\n   ${statusTexto}\n`;
+      }
+
+      return { type: 'text', message: mensagem };
+    }
+
+    case 'consultar_agendamentos': {
+      if (!customerData) {
+        return {
+          type: 'text',
+          message: `Oi! Não encontrei seu cadastro aqui. 😅\n\nPode me passar seu telefone cadastrado?`,
+        };
+      }
+
+      if (!customerData.agendamentosFuturos || customerData.agendamentosFuturos.length === 0) {
+        return {
+          type: 'text',
+          message: `${primeiroNome}, você não tem nenhum agendamento futuro. 📅\n\nQuer agendar um serviço agora?`,
+        };
+      }
+
+      let mensagem = `${primeiroNome}, seus próximos agendamentos:\n`;
+      for (const ag of customerData.agendamentosFuturos) {
+        const dataFormatada = formatDateBrazil(ag.dataAgendada);
+        mensagem += `\n📅 *${dataFormatada}*\n   🚗 ${ag.veiculo}\n   🔧 ${ag.servicos}\n`;
+      }
+
+      return { type: 'text', message: mensagem };
+    }
+
+    case 'cancelar_ou_remarcar': {
+      if (!customerData) {
+        return {
+          type: 'text',
+          message: `Oi! Não encontrei seu cadastro aqui. 😅\n\nPode ligar pra oficina pra resolver?`,
+        };
+      }
+
+      const acao = (args.acao as string)?.toLowerCase() || 'cancelar';
+
+      if (!customerData.agendamentosFuturos || customerData.agendamentosFuturos.length === 0) {
+        return {
+          type: 'text',
+          message: `${primeiroNome}, você não tem nenhum agendamento pra ${acao === 'remarcar' ? 'remarcar' : 'cancelar'}. 📅`,
+        };
+      }
+
+      // Se tem apenas um agendamento, processar direto
+      if (customerData.agendamentosFuturos.length === 1) {
+        const ag = customerData.agendamentosFuturos[0];
+
+        if (acao === 'cancelar') {
+          const cancelou = await cancelarOrdemServico(ag.id);
+          if (cancelou) {
+            return {
+              type: 'text',
+              message: `Pronto, ${primeiroNome}! ❌\n\nCancelei seu agendamento do ${ag.veiculo} que estava marcado pra ${formatDateBrazil(ag.dataAgendada)}.\n\nQuando quiser reagendar, é só me chamar! 😊`,
+            };
+          }
+          return {
+            type: 'text',
+            message: `Ops, não consegui cancelar. 😅\n\nPode ligar pra oficina?`,
+          };
+        }
+
+        // Remarcar - mostrar novos horários
+        agendamento.ativo = true;
+        agendamento.timestamp = Date.now();
+        agendamento.veiculoId = customerData.veiculos.find(v => `${v.marca} ${v.modelo}` === ag.veiculo)?.id;
+        agendamento.veiculoNome = ag.veiculo;
+        agendamento.etapa = 'escolher_data';
+        agendamento.horariosDisponiveis = await getHorariosDisponiveis(empresaId);
+        (agendamento as any).ordemIdRemarcar = ag.id; // Guardar ID para remarcar
+        agendamentoState.set(phoneNumber, agendamento);
+
+        if (agendamento.horariosDisponiveis.length > 0) {
+          const choices = [
+            '[Novos Horários]',
+            ...agendamento.horariosDisponiveis.map(slot => {
+              const diaNome = slot.label.split(' ')[0];
+              const horaInfo = slot.label.replace(diaNome + ' ', '');
+              return `${diaNome}|remarcar_${slot.data.toISOString()}|${horaInfo}`;
+            }),
+          ];
+
+          return {
+            type: 'list',
+            text: `${primeiroNome}, vamos remarcar o agendamento do seu ${ag.veiculo}! 📅\n\nAtualmente está marcado pra ${formatDateBrazil(ag.dataAgendada)}.\n\nEscolha uma nova data:`,
+            listButton: 'Ver Horários',
+            footerText: 'Escolha o novo horário',
+            choices,
+          };
+        }
+      }
+
+      // Múltiplos agendamentos - perguntar qual
+      const choices = customerData.agendamentosFuturos.map(ag => {
+        const dataSimples = ag.dataAgendada.toLocaleDateString('pt-BR', { weekday: 'short', day: 'numeric', month: 'short' });
+        return `${ag.veiculo}|${acao}_${ag.id}|${dataSimples}`;
+      });
+
+      return {
+        type: 'list',
+        text: `${primeiroNome}, qual agendamento você quer ${acao === 'remarcar' ? 'remarcar' : 'cancelar'}?`,
+        listButton: 'Ver Agendamentos',
+        footerText: 'Selecione um',
+        choices: ['[Seus Agendamentos]', ...choices],
+      };
+    }
+
+    case 'consultar_preco': {
+      const servicoBuscado = (args.servico as string)?.toLowerCase() || '';
+      const servicos = await getServicos(empresaId);
+
+      if (servicos.length === 0) {
+        return {
+          type: 'text',
+          message: `${primeiroNome}, ainda não temos os preços cadastrados no sistema. 😅\n\nPode ligar pra oficina pra saber os valores?`,
+        };
+      }
+
+      // Buscar serviço específico
+      let servicosEncontrados = servicos;
+      if (servicoBuscado) {
+        servicosEncontrados = servicos.filter(s => {
+          const nomeLower = s.nome.toLowerCase();
+          const categoriaLower = s.categoria.toLowerCase().replace(/_/g, ' ');
+          return nomeLower.includes(servicoBuscado) ||
+                 categoriaLower.includes(servicoBuscado) ||
+                 servicoBuscado.includes(nomeLower.split(' ')[0]) ||
+                 (servicoBuscado.includes('óleo') && categoriaLower.includes('oleo')) ||
+                 (servicoBuscado.includes('oleo') && categoriaLower.includes('oleo')) ||
+                 (servicoBuscado.includes('filtro') && nomeLower.includes('filtro'));
+        });
+      }
+
+      if (servicosEncontrados.length === 0) {
+        // Mostrar todos os serviços
+        servicosEncontrados = servicos;
+      }
+
+      if (servicosEncontrados.length === 1) {
+        const s = servicosEncontrados[0];
+        return {
+          type: 'text',
+          message: `${primeiroNome}, o preço de *${s.nome}* é:\n\n💰 *R$ ${s.preco.toFixed(2).replace('.', ',')}*\n\nQuer agendar? 😊`,
+        };
+      }
+
+      // Múltiplos serviços - formatar por categoria
+      const porCategoria: Record<string, typeof servicosEncontrados> = {};
+      for (const s of servicosEncontrados) {
+        const cat = s.categoria.replace(/_/g, ' ');
+        if (!porCategoria[cat]) porCategoria[cat] = [];
+        porCategoria[cat].push(s);
+      }
+
+      let mensagem = `${primeiroNome}, aqui estão nossos preços:\n`;
+      for (const [categoria, items] of Object.entries(porCategoria)) {
+        mensagem += `\n*${categoria}*\n`;
+        for (const s of items) {
+          mensagem += `  • ${s.nome}: R$ ${s.preco.toFixed(2).replace('.', ',')}\n`;
+        }
+      }
+      mensagem += `\nQuer agendar algum serviço? 😊`;
+
+      return { type: 'text', message: mensagem };
+    }
+
+    case 'agendar_multiplos_servicos': {
+      const servicosPedidos = args.servicos as string[] || [];
+
+      if (!customerData || customerData.veiculos.length === 0) {
+        // Redirecionar para cadastro
+        return executeFunctionCall(
+          'iniciar_cadastro',
+          {},
+          phoneNumber,
+          empresaId,
+          customerData,
+          agendamento,
+          cadastro,
+          primeiroNome,
+          recentMessages
+        );
+      }
+
+      // Buscar serviços disponíveis
+      const servicosDisponiveis = await getServicos(empresaId);
+
+      // Encontrar serviços que correspondem aos pedidos
+      const servicosEncontrados: ServicoData[] = [];
+      for (const pedido of servicosPedidos) {
+        const pedidoLower = pedido.toLowerCase();
+        const encontrado = servicosDisponiveis.find(s => {
+          const nomeLower = s.nome.toLowerCase();
+          return nomeLower.includes(pedidoLower) || pedidoLower.includes(nomeLower.split(' ')[0]);
+        });
+        if (encontrado && !servicosEncontrados.some(e => e.id === encontrado.id)) {
+          servicosEncontrados.push(encontrado);
+        }
+      }
+
+      if (servicosEncontrados.length === 0) {
+        return {
+          type: 'text',
+          message: `${primeiroNome}, não encontrei esses serviços. 😅\n\nPode me dizer novamente o que você precisa?\n\nExemplo: troca de óleo, filtro de ar, alinhamento...`,
+        };
+      }
+
+      // Calcular total
+      const total = servicosEncontrados.reduce((acc, s) => acc + s.preco, 0);
+      const listaServicos = servicosEncontrados.map(s => `• ${s.nome}: R$ ${s.preco.toFixed(2).replace('.', ',')}`).join('\n');
+
+      // Guardar serviços no estado para usar quando confirmar
+      (agendamento as any).servicosMultiplos = servicosEncontrados;
+
+      // Iniciar agendamento
+      agendamento.ativo = true;
+      agendamento.timestamp = Date.now();
+      agendamento.servico = servicosEncontrados.map(s => s.nome).join(' + ');
+
+      if (customerData.veiculos.length === 1) {
+        const v = customerData.veiculos[0];
+        agendamento.veiculoId = v.id;
+        agendamento.veiculoNome = `${v.marca} ${v.modelo}`;
+        agendamento.etapa = 'escolher_data';
+        agendamento.horariosDisponiveis = await getHorariosDisponiveis(empresaId);
+        agendamentoState.set(phoneNumber, agendamento);
+
+        if (agendamento.horariosDisponiveis.length > 0) {
+          const choices = [
+            '[Horários Disponíveis]',
+            ...agendamento.horariosDisponiveis.map(slot => {
+              const diaNome = slot.label.split(' ')[0];
+              const horaInfo = slot.label.replace(diaNome + ' ', '');
+              return `${diaNome}|horario_${slot.data.toISOString()}|${horaInfo}`;
+            }),
+          ];
+
+          return {
+            type: 'list',
+            text: `${primeiroNome}, vou agendar esses serviços no seu ${agendamento.veiculoNome}:\n\n${listaServicos}\n\n💰 *Total: R$ ${total.toFixed(2).replace('.', ',')}*\n\nEscolha um horário:`,
+            listButton: 'Ver Horários',
+            footerText: 'Escolha o melhor horário',
+            choices,
+          };
+        }
+      }
+
+      // Múltiplos veículos
+      agendamento.etapa = 'escolher_veiculo';
+      agendamentoState.set(phoneNumber, agendamento);
+
+      const choices = [
+        '[Seus Veículos]',
+        ...customerData.veiculos.map(v => {
+          const descricao = v.kmAtual ? `${v.kmAtual.toLocaleString('pt-BR')} km` : v.placa;
+          return `${v.marca} ${v.modelo}|veiculo_${v.id}|${descricao}`;
+        }),
+      ];
+
+      return {
+        type: 'list',
+        text: `${primeiroNome}, vou agendar esses serviços:\n\n${listaServicos}\n\n💰 *Total: R$ ${total.toFixed(2).replace('.', ',')}*\n\nQual veículo você quer trazer?`,
+        listButton: 'Escolher Veículo',
+        footerText: 'Selecione um',
+        choices,
+      };
+    }
+
+    case 'registrar_preferencia': {
+      if (!customerData) {
+        return {
+          type: 'text',
+          message: `${primeiroNome}, vou lembrar disso! Mas você ainda não está cadastrado. Quer se cadastrar primeiro?`,
+        };
+      }
+
+      const tipo = args.tipo as string;
+      const valor = args.valor as string;
+
+      const salvou = await salvarPreferenciaCliente(customerData.id, tipo, valor);
+
+      if (salvou) {
+        const tipoNome: Record<string, string> = {
+          oleo: 'tipo de óleo',
+          horario: 'horário preferido',
+          dia: 'dia preferido',
+          observacao: 'observação',
+        };
+        return {
+          type: 'text',
+          message: `Anotado, ${primeiroNome}! ✍️\n\nVou lembrar que você prefere ${tipoNome[tipo] || tipo}: *${valor}*\n\nPosso te ajudar com mais alguma coisa?`,
+        };
+      }
+
+      return {
+        type: 'text',
+        message: `Opa, tive um probleminha pra anotar. 😅\n\nMas pode me lembrar quando vier, ok?`,
+      };
+    }
+
+    case 'consultar_historico': {
+      if (!customerData) {
+        return {
+          type: 'text',
+          message: `Oi! Não encontrei seu cadastro aqui. 😅\n\nPode me passar seu telefone cadastrado?`,
+        };
+      }
+
+      if (customerData.historicoServicos.length === 0) {
+        return {
+          type: 'text',
+          message: `${primeiroNome}, você ainda não fez nenhum serviço aqui. 📋\n\nQuer agendar o primeiro? 😊`,
+        };
+      }
+
+      let mensagem = `${primeiroNome}, aqui está seu histórico de serviços:\n`;
+      for (const servico of customerData.historicoServicos) {
+        mensagem += `\n📅 ${servico}`;
+      }
+
+      if (customerData.ultimoServico) {
+        const diasDesdeUltimo = Math.floor((Date.now() - customerData.ultimoServico.data.getTime()) / (1000 * 60 * 60 * 24));
+        if (diasDesdeUltimo > 180) {
+          mensagem += `\n\n⚠️ Já faz ${diasDesdeUltimo} dias desde o último serviço. Hora de uma revisão?`;
+        }
+      }
+
+      return { type: 'text', message: mensagem };
     }
 
     default: {
@@ -1348,10 +2611,12 @@ async function executeFunctionCall(
 export function clearHistory(phoneNumber: string) {
   conversationHistory.delete(phoneNumber);
   agendamentoState.delete(phoneNumber);
+  cadastroState.delete(phoneNumber);
 }
 
 // Limpar todo o histórico
 export function clearAllHistory() {
   conversationHistory.clear();
   agendamentoState.clear();
+  cadastroState.clear();
 }

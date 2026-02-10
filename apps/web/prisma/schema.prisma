@@ -63,15 +63,16 @@ model Usuario {
 
 // Cliente da oficina
 model Cliente {
-  id        Int       @id @default(autoincrement())
-  empresaId Int
-  nome      String
-  telefone  String
-  email     String?
-  cpf       String?
-  endereco  String?
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
+  id          Int       @id @default(autoincrement())
+  empresaId   Int
+  nome        String
+  telefone    String
+  email       String?
+  cpf         String?
+  endereco    String?
+  observacoes String?   // Preferências e observações do cliente (JSON)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
 
   empresa   Empresa    @relation(fields: [empresaId], references: [id], onDelete: Cascade)
   veiculos  Veiculo[]
