@@ -11,6 +11,7 @@ const COOKIE_NAME = 'lubia-session';
 const publicPaths = [
   '/login',
   '/cadastro',
+  '/consulta',
   '/api/auth/login',
   '/api/auth/register',
 ];
@@ -19,6 +20,7 @@ const publicPaths = [
 const publicApiPaths = [
   '/api/whatsapp/webhook',
   '/api/cron/',
+  '/api/public/',
 ];
 
 export async function middleware(request: NextRequest) {
