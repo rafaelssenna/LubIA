@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { LogIn, Loader2, AlertCircle, UserPlus } from 'lucide-react';
+import { LogIn, Loader2, AlertCircle, UserPlus, Car } from 'lucide-react';
 
 export default function LoginPage() {
   const router = useRouter();
@@ -120,6 +120,22 @@ export default function LoginPage() {
             </Link>
           </div>
         </div>
+
+        {/* Link para clientes */}
+        <Link
+          href="/consulta"
+          className="mt-6 block bg-[#1E1E1E] border border-[#333333] rounded-2xl p-4 hover:border-[#43A047]/50 transition-all group"
+        >
+          <div className="flex items-center gap-4">
+            <div className="p-3 bg-blue-500/10 rounded-xl group-hover:bg-blue-500/20 transition-colors">
+              <Car size={24} className="text-blue-400" />
+            </div>
+            <div>
+              <p className="text-[#E8E8E8] font-medium">Sou cliente</p>
+              <p className="text-sm text-[#9E9E9E]">Ver status do meu veiculo</p>
+            </div>
+          </div>
+        </Link>
 
         <p className="text-center text-[#666666] text-sm mt-6">
           Powered by LoopIA
