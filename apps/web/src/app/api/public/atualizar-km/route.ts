@@ -70,44 +70,58 @@ export async function POST(request: NextRequest) {
 
     console.log('[ATUALIZAR-KM] Veículo atualizado:', veiculoAtualizado);
 
-    // Buscar última troca de óleo para recalcular manutenção
+    // Intervalos de manutenção
     const INTERVALO_TROCA_OLEO = 5000;
+    const INTERVALO_ALINHAMENTO = 10000;
+    const INTERVALO_FILTROS = 10000;
 
-    const ultimaTrocaOleo = await prisma.ordemServico.findFirst({
-      where: {
-        veiculoId: veiculo.id,
-        status: { in: ['CONCLUIDO', 'ENTREGUE'] },
-        itens: {
-          some: {
-            servico: {
-              categoria: 'TROCA_OLEO',
+    // Função auxiliar para buscar último serviço por categoria
+    const buscarUltimoServico = async (categoria: 'TROCA_OLEO' | 'PNEUS' | 'FILTROS') => {
+      return prisma.ordemServico.findFirst({
+        where: {
+          veiculoId: veiculo.id,
+          status: { in: ['CONCLUIDO', 'ENTREGUE'] },
+          itens: {
+            some: {
+              servico: { categoria },
             },
           },
         },
-      },
-      select: {
-        dataConclusao: true,
-        kmEntrada: true,
-      },
-      orderBy: { dataConclusao: 'desc' },
-    });
+        select: {
+          dataConclusao: true,
+          kmEntrada: true,
+        },
+        orderBy: { dataConclusao: 'desc' },
+      });
+    };
 
-    // Calcular próxima troca
-    let proximaTrocaKm: number;
-    let kmFaltando: number;
+    // Função auxiliar para calcular próxima manutenção
+    const calcularProximaManutencao = (ultimoKm: number | null, intervalo: number, kmAtual: number) => {
+      let proximaKm: number;
+      if (ultimoKm) {
+        proximaKm = ultimoKm + intervalo;
+      } else {
+        proximaKm = Math.ceil((kmAtual + 1) / intervalo) * intervalo;
+      }
+      let faltando = proximaKm - kmAtual;
+      if (faltando <= 0) {
+        proximaKm = Math.ceil((kmAtual + 1) / intervalo) * intervalo;
+        faltando = proximaKm - kmAtual;
+      }
+      return { km: proximaKm, kmFaltando: faltando };
+    };
 
-    if (ultimaTrocaOleo?.kmEntrada) {
-      proximaTrocaKm = ultimaTrocaOleo.kmEntrada + INTERVALO_TROCA_OLEO;
-    } else {
-      proximaTrocaKm = Math.ceil((km + 1) / INTERVALO_TROCA_OLEO) * INTERVALO_TROCA_OLEO;
-    }
+    // Buscar últimos serviços de cada categoria
+    const [ultimaTrocaOleo, ultimoAlinhamento, ultimaTrocaFiltros] = await Promise.all([
+      buscarUltimoServico('TROCA_OLEO'),
+      buscarUltimoServico('PNEUS'),
+      buscarUltimoServico('FILTROS'),
+    ]);
 
-    kmFaltando = proximaTrocaKm - km;
-
-    if (kmFaltando <= 0) {
-      proximaTrocaKm = Math.ceil((km + 1) / INTERVALO_TROCA_OLEO) * INTERVALO_TROCA_OLEO;
-      kmFaltando = proximaTrocaKm - km;
-    }
+    // Calcular próximas manutenções
+    const proximaTrocaOleo = calcularProximaManutencao(ultimaTrocaOleo?.kmEntrada || null, INTERVALO_TROCA_OLEO, km);
+    const proximoAlinhamento = calcularProximaManutencao(ultimoAlinhamento?.kmEntrada || null, INTERVALO_ALINHAMENTO, km);
+    const proximaTrocaFiltros = calcularProximaManutencao(ultimaTrocaFiltros?.kmEntrada || null, INTERVALO_FILTROS, km);
 
     return NextResponse.json({
       success: true,
@@ -123,10 +137,17 @@ export async function POST(request: NextRequest) {
           data: ultimaTrocaOleo.dataConclusao,
           km: ultimaTrocaOleo.kmEntrada,
         } : null,
-        proximaTrocaOleo: {
-          km: proximaTrocaKm,
-          kmFaltando: kmFaltando,
-        },
+        proximaTrocaOleo: proximaTrocaOleo,
+        ultimoAlinhamento: ultimoAlinhamento ? {
+          data: ultimoAlinhamento.dataConclusao,
+          km: ultimoAlinhamento.kmEntrada,
+        } : null,
+        proximoAlinhamento: proximoAlinhamento,
+        ultimaTrocaFiltros: ultimaTrocaFiltros ? {
+          data: ultimaTrocaFiltros.dataConclusao,
+          km: ultimaTrocaFiltros.kmEntrada,
+        } : null,
+        proximaTrocaFiltros: proximaTrocaFiltros,
       },
     });
   } catch (error: any) {

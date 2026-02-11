@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Search, Car, Calendar, Clock, CheckCircle, Play, Pause, XCircle, Truck, Loader2, AlertCircle, Wrench, Gauge, Droplets } from 'lucide-react';
+import { Search, Car, Calendar, Clock, CheckCircle, Play, Pause, XCircle, Truck, Loader2, AlertCircle, Wrench, Gauge, Droplets, CircleDot, Filter } from 'lucide-react';
 
 interface Veiculo {
   placa: string;
@@ -21,15 +21,23 @@ interface Ordem {
   servicos: string[];
 }
 
+interface ServicoManutencao {
+  data: string | null;
+  km: number | null;
+}
+
+interface ProximaManutencao {
+  km: number;
+  kmFaltando: number;
+}
+
 interface Manutencao {
-  ultimaTrocaOleo: {
-    data: string | null;
-    km: number | null;
-  } | null;
-  proximaTrocaOleo: {
-    km: number;
-    kmFaltando: number;
-  };
+  ultimaTrocaOleo: ServicoManutencao | null;
+  proximaTrocaOleo: ProximaManutencao;
+  ultimoAlinhamento: ServicoManutencao | null;
+  proximoAlinhamento: ProximaManutencao;
+  ultimaTrocaFiltros: ServicoManutencao | null;
+  proximaTrocaFiltros: ProximaManutencao;
 }
 
 interface ConsultaResult {
@@ -246,87 +254,131 @@ export default function ConsultaPage() {
             </div>
           </div>
 
-          {/* Manutencao - Troca de Oleo */}
+          {/* Manutenções */}
           {result.manutencao && (
-            <div className="bg-[#1E1E1E] border border-[#333333] rounded-2xl p-6">
-              <div className="flex items-center gap-3 mb-4">
-                <div className="p-3 bg-amber-500/10 rounded-xl">
-                  <Droplets size={24} className="text-amber-400" />
-                </div>
-                <h3 className="text-lg font-semibold text-[#E8E8E8]">Troca de Óleo</h3>
-              </div>
+            <div className="space-y-4">
+              {/* Header com título */}
+              <h3 className="text-lg font-semibold text-[#E8E8E8] flex items-center gap-2">
+                <Wrench size={20} className="text-[#43A047]" />
+                Manutenções Preventivas
+              </h3>
 
-              {/* Info de troca */}
-              <div className="grid grid-cols-2 gap-4 mb-6">
-                <div className="bg-[#121212] rounded-xl p-4">
-                  <p className="text-xs text-[#9E9E9E] mb-1">Última troca</p>
-                  {result.manutencao.ultimaTrocaOleo ? (
-                    <>
-                      <p className="text-[#E8E8E8] font-medium">
-                        {result.manutencao.ultimaTrocaOleo.km?.toLocaleString('pt-BR')} km
+              {/* Grid de cards de manutenção */}
+              <div className="grid gap-4">
+                {/* Troca de Óleo */}
+                <div className="bg-[#1E1E1E] border border-[#333333] rounded-2xl p-5">
+                  <div className="flex items-center justify-between mb-4">
+                    <div className="flex items-center gap-3">
+                      <div className="p-2.5 bg-amber-500/10 rounded-xl">
+                        <Droplets size={20} className="text-amber-400" />
+                      </div>
+                      <div>
+                        <h4 className="font-semibold text-[#E8E8E8]">Troca de Óleo</h4>
+                        <p className="text-xs text-[#9E9E9E]">A cada 5.000 km</p>
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <p className="text-[#43A047] font-medium">
+                        {result.manutencao.proximaTrocaOleo.km.toLocaleString('pt-BR')} km
                       </p>
-                      <p className="text-xs text-[#9E9E9E]">
-                        {formatDate(result.manutencao.ultimaTrocaOleo.data)}
+                      <p className={`text-xs ${result.manutencao.proximaTrocaOleo.kmFaltando <= 500 ? 'text-red-400' : result.manutencao.proximaTrocaOleo.kmFaltando <= 1000 ? 'text-amber-400' : 'text-[#9E9E9E]'}`}>
+                        Faltam {result.manutencao.proximaTrocaOleo.kmFaltando.toLocaleString('pt-BR')} km
                       </p>
-                    </>
-                  ) : (
-                    <p className="text-[#9E9E9E] text-sm">Sem registro</p>
-                  )}
-                </div>
-                <div className="bg-[#121212] rounded-xl p-4">
-                  <p className="text-xs text-[#9E9E9E] mb-1">Próxima troca</p>
-                  <p className="text-[#43A047] font-medium">
-                    {result.manutencao.proximaTrocaOleo.km.toLocaleString('pt-BR')} km
-                  </p>
-                  <p className="text-xs text-amber-400">
-                    Faltam {result.manutencao.proximaTrocaOleo.kmFaltando.toLocaleString('pt-BR')} km
-                  </p>
-                </div>
-              </div>
-
-              {/* Barra de progresso */}
-              <div className="mb-6">
-                <div className="flex justify-between text-xs text-[#9E9E9E] mb-2">
-                  <span>{result.manutencao.ultimaTrocaOleo?.km?.toLocaleString('pt-BR') || '0'} km</span>
-                  <span>{result.manutencao.proximaTrocaOleo.km.toLocaleString('pt-BR')} km</span>
-                </div>
-                <div className="h-3 bg-[#333333] rounded-full overflow-hidden">
-                  <div
-                    className={`h-full rounded-full transition-all duration-500 ${
-                      result.manutencao.proximaTrocaOleo.kmFaltando <= 500
-                        ? 'bg-red-500'
-                        : result.manutencao.proximaTrocaOleo.kmFaltando <= 1000
-                        ? 'bg-amber-500'
-                        : 'bg-gradient-to-r from-[#43A047] to-[#1B5E20]'
-                    }`}
-                    style={{
-                      width: `${Math.min(
-                        100,
-                        Math.max(
-                          0,
-                          ((5000 - result.manutencao.proximaTrocaOleo.kmFaltando) / 5000) * 100
-                        )
-                      )}%`,
-                    }}
-                  />
-                </div>
-                {result.manutencao.proximaTrocaOleo.kmFaltando <= 500 && (
-                  <p className="text-red-400 text-xs mt-2 flex items-center gap-1">
-                    <AlertCircle size={14} />
-                    Troca de óleo urgente!
-                  </p>
-                )}
-                {result.manutencao.proximaTrocaOleo.kmFaltando > 500 &&
-                  result.manutencao.proximaTrocaOleo.kmFaltando <= 1000 && (
-                    <p className="text-amber-400 text-xs mt-2 flex items-center gap-1">
-                      <AlertCircle size={14} />
-                      Troca de óleo em breve
+                    </div>
+                  </div>
+                  {/* Barra de progresso */}
+                  <div className="h-2 bg-[#333333] rounded-full overflow-hidden">
+                    <div
+                      className={`h-full rounded-full transition-all duration-500 ${
+                        result.manutencao.proximaTrocaOleo.kmFaltando <= 500 ? 'bg-red-500' : result.manutencao.proximaTrocaOleo.kmFaltando <= 1000 ? 'bg-amber-500' : 'bg-gradient-to-r from-[#43A047] to-[#1B5E20]'
+                      }`}
+                      style={{ width: `${Math.min(100, Math.max(0, ((5000 - result.manutencao.proximaTrocaOleo.kmFaltando) / 5000) * 100))}%` }}
+                    />
+                  </div>
+                  {result.manutencao.ultimaTrocaOleo && (
+                    <p className="text-xs text-[#9E9E9E] mt-2">
+                      Última: {result.manutencao.ultimaTrocaOleo.km?.toLocaleString('pt-BR')} km ({formatDate(result.manutencao.ultimaTrocaOleo.data)})
                     </p>
                   )}
+                </div>
+
+                {/* Alinhamento e Balanceamento */}
+                <div className="bg-[#1E1E1E] border border-[#333333] rounded-2xl p-5">
+                  <div className="flex items-center justify-between mb-4">
+                    <div className="flex items-center gap-3">
+                      <div className="p-2.5 bg-blue-500/10 rounded-xl">
+                        <CircleDot size={20} className="text-blue-400" />
+                      </div>
+                      <div>
+                        <h4 className="font-semibold text-[#E8E8E8]">Alinhamento e Balanceamento</h4>
+                        <p className="text-xs text-[#9E9E9E]">A cada 10.000 km</p>
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <p className="text-[#43A047] font-medium">
+                        {result.manutencao.proximoAlinhamento.km.toLocaleString('pt-BR')} km
+                      </p>
+                      <p className={`text-xs ${result.manutencao.proximoAlinhamento.kmFaltando <= 1000 ? 'text-red-400' : result.manutencao.proximoAlinhamento.kmFaltando <= 2000 ? 'text-amber-400' : 'text-[#9E9E9E]'}`}>
+                        Faltam {result.manutencao.proximoAlinhamento.kmFaltando.toLocaleString('pt-BR')} km
+                      </p>
+                    </div>
+                  </div>
+                  {/* Barra de progresso */}
+                  <div className="h-2 bg-[#333333] rounded-full overflow-hidden">
+                    <div
+                      className={`h-full rounded-full transition-all duration-500 ${
+                        result.manutencao.proximoAlinhamento.kmFaltando <= 1000 ? 'bg-red-500' : result.manutencao.proximoAlinhamento.kmFaltando <= 2000 ? 'bg-amber-500' : 'bg-gradient-to-r from-blue-500 to-blue-600'
+                      }`}
+                      style={{ width: `${Math.min(100, Math.max(0, ((10000 - result.manutencao.proximoAlinhamento.kmFaltando) / 10000) * 100))}%` }}
+                    />
+                  </div>
+                  {result.manutencao.ultimoAlinhamento && (
+                    <p className="text-xs text-[#9E9E9E] mt-2">
+                      Último: {result.manutencao.ultimoAlinhamento.km?.toLocaleString('pt-BR')} km ({formatDate(result.manutencao.ultimoAlinhamento.data)})
+                    </p>
+                  )}
+                </div>
+
+                {/* Troca de Filtros */}
+                <div className="bg-[#1E1E1E] border border-[#333333] rounded-2xl p-5">
+                  <div className="flex items-center justify-between mb-4">
+                    <div className="flex items-center gap-3">
+                      <div className="p-2.5 bg-purple-500/10 rounded-xl">
+                        <Filter size={20} className="text-purple-400" />
+                      </div>
+                      <div>
+                        <h4 className="font-semibold text-[#E8E8E8]">Troca de Filtros</h4>
+                        <p className="text-xs text-[#9E9E9E]">A cada 10.000 km</p>
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <p className="text-[#43A047] font-medium">
+                        {result.manutencao.proximaTrocaFiltros.km.toLocaleString('pt-BR')} km
+                      </p>
+                      <p className={`text-xs ${result.manutencao.proximaTrocaFiltros.kmFaltando <= 1000 ? 'text-red-400' : result.manutencao.proximaTrocaFiltros.kmFaltando <= 2000 ? 'text-amber-400' : 'text-[#9E9E9E]'}`}>
+                        Faltam {result.manutencao.proximaTrocaFiltros.kmFaltando.toLocaleString('pt-BR')} km
+                      </p>
+                    </div>
+                  </div>
+                  {/* Barra de progresso */}
+                  <div className="h-2 bg-[#333333] rounded-full overflow-hidden">
+                    <div
+                      className={`h-full rounded-full transition-all duration-500 ${
+                        result.manutencao.proximaTrocaFiltros.kmFaltando <= 1000 ? 'bg-red-500' : result.manutencao.proximaTrocaFiltros.kmFaltando <= 2000 ? 'bg-amber-500' : 'bg-gradient-to-r from-purple-500 to-purple-600'
+                      }`}
+                      style={{ width: `${Math.min(100, Math.max(0, ((10000 - result.manutencao.proximaTrocaFiltros.kmFaltando) / 10000) * 100))}%` }}
+                    />
+                  </div>
+                  {result.manutencao.ultimaTrocaFiltros && (
+                    <p className="text-xs text-[#9E9E9E] mt-2">
+                      Última: {result.manutencao.ultimaTrocaFiltros.km?.toLocaleString('pt-BR')} km ({formatDate(result.manutencao.ultimaTrocaFiltros.data)})
+                    </p>
+                  )}
+                </div>
               </div>
 
               {/* Atualizar KM */}
-              <div className="border-t border-[#333333] pt-4">
+              <div className="bg-[#1E1E1E] border border-[#333333] rounded-2xl p-5">
                 <p className="text-sm text-[#9E9E9E] mb-3 flex items-center gap-2">
                   <Gauge size={16} />
                   Atualize a quilometragem do veículo
