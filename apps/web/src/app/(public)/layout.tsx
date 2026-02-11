@@ -12,7 +12,7 @@ export default function PublicLayout({
             <span className="text-xl font-bold text-white">L</span>
           </div>
           <span className="text-xl font-bold text-[#E8E8E8]">
-            Lub<span className="text-[#43A047]">IA</span>
+            Loop<span className="text-[#43A047]">IA</span>
           </span>
         </div>
       </header>
