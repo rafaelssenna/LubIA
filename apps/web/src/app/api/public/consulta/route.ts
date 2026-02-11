@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 
+const INTERVALO_TROCA_OLEO = 5000; // km entre trocas de óleo
+
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
@@ -55,11 +57,12 @@ export async function POST(request: NextRequest) {
         dataAgendada: true,
         dataInicio: true,
         dataConclusao: true,
+        kmEntrada: true,
         createdAt: true,
         itens: {
           select: {
             servico: {
-              select: { nome: true },
+              select: { nome: true, categoria: true },
             },
           },
         },
@@ -70,7 +73,48 @@ export async function POST(request: NextRequest) {
 
     console.log('[CONSULTA] Ordens encontradas:', ordens.length);
 
-    // Formatar resposta com tratamento seguro para itens
+    // Buscar última troca de óleo (ordem concluída/entregue com serviço TROCA_OLEO)
+    const ultimaTrocaOleo = await prisma.ordemServico.findFirst({
+      where: {
+        veiculoId: veiculo.id,
+        status: { in: ['CONCLUIDO', 'ENTREGUE'] },
+        itens: {
+          some: {
+            servico: {
+              categoria: 'TROCA_OLEO',
+            },
+          },
+        },
+      },
+      select: {
+        dataConclusao: true,
+        kmEntrada: true,
+      },
+      orderBy: { dataConclusao: 'desc' },
+    });
+
+    // Calcular próxima troca de óleo
+    let proximaTrocaKm: number;
+    let kmFaltando: number;
+    const kmAtual = veiculo.kmAtual || 0;
+
+    if (ultimaTrocaOleo?.kmEntrada) {
+      // Se tem histórico: próxima = última + 5000
+      proximaTrocaKm = ultimaTrocaOleo.kmEntrada + INTERVALO_TROCA_OLEO;
+    } else {
+      // Se não tem histórico: arredondar para próximo múltiplo de 5000
+      proximaTrocaKm = Math.ceil((kmAtual + 1) / INTERVALO_TROCA_OLEO) * INTERVALO_TROCA_OLEO;
+    }
+
+    kmFaltando = proximaTrocaKm - kmAtual;
+
+    // Se km faltando for negativo, calcular próxima troca a partir do km atual
+    if (kmFaltando <= 0) {
+      proximaTrocaKm = Math.ceil((kmAtual + 1) / INTERVALO_TROCA_OLEO) * INTERVALO_TROCA_OLEO;
+      kmFaltando = proximaTrocaKm - kmAtual;
+    }
+
+    // Formatar resposta
     return NextResponse.json({
       veiculo: {
         placa: veiculo.placa,
@@ -90,6 +134,16 @@ export async function POST(request: NextRequest) {
           ?.filter((i) => i.servico?.nome)
           .map((i) => i.servico.nome) || [],
       })),
+      manutencao: {
+        ultimaTrocaOleo: ultimaTrocaOleo ? {
+          data: ultimaTrocaOleo.dataConclusao,
+          km: ultimaTrocaOleo.kmEntrada,
+        } : null,
+        proximaTrocaOleo: {
+          km: proximaTrocaKm,
+          kmFaltando: kmFaltando,
+        },
+      },
     });
   } catch (error: any) {
     console.error('[CONSULTA] Erro:', error?.message);

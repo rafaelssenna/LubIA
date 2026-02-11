@@ -1,7 +1,7 @@
 'use client';
 
-import { useState } from 'react';
-import { Search, Car, Calendar, Clock, CheckCircle, Play, Pause, XCircle, Truck, Loader2, AlertCircle, Wrench } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { Search, Car, Calendar, Clock, CheckCircle, Play, Pause, XCircle, Truck, Loader2, AlertCircle, Wrench, Gauge, Droplets } from 'lucide-react';
 
 interface Veiculo {
   placa: string;
@@ -21,9 +21,21 @@ interface Ordem {
   servicos: string[];
 }
 
+interface Manutencao {
+  ultimaTrocaOleo: {
+    data: string | null;
+    km: number | null;
+  } | null;
+  proximaTrocaOleo: {
+    km: number;
+    kmFaltando: number;
+  };
+}
+
 interface ConsultaResult {
   veiculo: Veiculo;
   ordens: Ordem[];
+  manutencao: Manutencao;
 }
 
 const statusConfig: Record<string, { label: string; color: string; icon: any; bg: string; step: number }> = {
@@ -48,6 +60,10 @@ export default function ConsultaPage() {
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<ConsultaResult | null>(null);
   const [error, setError] = useState('');
+  const [kmInput, setKmInput] = useState('');
+  const [kmLoading, setKmLoading] = useState(false);
+  const [kmError, setKmError] = useState('');
+  const [kmSuccess, setKmSuccess] = useState('');
 
   const formatPlaca = (value: string) => {
     const clean = value.replace(/[^A-Za-z0-9]/g, '').toUpperCase();
@@ -89,6 +105,64 @@ export default function ConsultaPage() {
   const formatDate = (date: string | null) => {
     if (!date) return null;
     return new Date(date).toLocaleDateString('pt-BR');
+  };
+
+  // Update kmInput when result changes
+  useEffect(() => {
+    if (result?.veiculo?.kmAtual) {
+      setKmInput(result.veiculo.kmAtual.toString());
+    }
+  }, [result?.veiculo?.kmAtual]);
+
+  const formatKmInput = (value: string) => {
+    // Remove non-digits
+    const digits = value.replace(/\D/g, '');
+    // Limit to 6 digits
+    return digits.slice(0, 6);
+  };
+
+  const handleUpdateKm = async () => {
+    if (!result?.veiculo?.placa || !kmInput) return;
+
+    const km = parseInt(kmInput, 10);
+    if (isNaN(km) || km <= 0) {
+      setKmError('KM inválido');
+      return;
+    }
+
+    setKmLoading(true);
+    setKmError('');
+    setKmSuccess('');
+
+    try {
+      const res = await fetch('/api/public/atualizar-km', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ placa: result.veiculo.placa, km }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        setKmError(data.error || 'Erro ao atualizar KM');
+        return;
+      }
+
+      // Update local state with new data
+      setResult((prev) => prev ? {
+        ...prev,
+        veiculo: { ...prev.veiculo, kmAtual: km },
+        manutencao: data.manutencao,
+      } : prev);
+      setKmSuccess('KM atualizado com sucesso!');
+
+      // Clear success message after 3 seconds
+      setTimeout(() => setKmSuccess(''), 3000);
+    } catch {
+      setKmError('Erro de conexão. Tente novamente.');
+    } finally {
+      setKmLoading(false);
+    }
   };
 
   // Encontrar ordem ativa (não entregue/cancelada)
@@ -171,6 +245,133 @@ export default function ConsultaPage() {
               </div>
             </div>
           </div>
+
+          {/* Manutencao - Troca de Oleo */}
+          {result.manutencao && (
+            <div className="bg-[#1E1E1E] border border-[#333333] rounded-2xl p-6">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="p-3 bg-amber-500/10 rounded-xl">
+                  <Droplets size={24} className="text-amber-400" />
+                </div>
+                <h3 className="text-lg font-semibold text-[#E8E8E8]">Troca de Óleo</h3>
+              </div>
+
+              {/* Info de troca */}
+              <div className="grid grid-cols-2 gap-4 mb-6">
+                <div className="bg-[#121212] rounded-xl p-4">
+                  <p className="text-xs text-[#9E9E9E] mb-1">Última troca</p>
+                  {result.manutencao.ultimaTrocaOleo ? (
+                    <>
+                      <p className="text-[#E8E8E8] font-medium">
+                        {result.manutencao.ultimaTrocaOleo.km?.toLocaleString('pt-BR')} km
+                      </p>
+                      <p className="text-xs text-[#9E9E9E]">
+                        {formatDate(result.manutencao.ultimaTrocaOleo.data)}
+                      </p>
+                    </>
+                  ) : (
+                    <p className="text-[#9E9E9E] text-sm">Sem registro</p>
+                  )}
+                </div>
+                <div className="bg-[#121212] rounded-xl p-4">
+                  <p className="text-xs text-[#9E9E9E] mb-1">Próxima troca</p>
+                  <p className="text-[#43A047] font-medium">
+                    {result.manutencao.proximaTrocaOleo.km.toLocaleString('pt-BR')} km
+                  </p>
+                  <p className="text-xs text-amber-400">
+                    Faltam {result.manutencao.proximaTrocaOleo.kmFaltando.toLocaleString('pt-BR')} km
+                  </p>
+                </div>
+              </div>
+
+              {/* Barra de progresso */}
+              <div className="mb-6">
+                <div className="flex justify-between text-xs text-[#9E9E9E] mb-2">
+                  <span>{result.manutencao.ultimaTrocaOleo?.km?.toLocaleString('pt-BR') || '0'} km</span>
+                  <span>{result.manutencao.proximaTrocaOleo.km.toLocaleString('pt-BR')} km</span>
+                </div>
+                <div className="h-3 bg-[#333333] rounded-full overflow-hidden">
+                  <div
+                    className={`h-full rounded-full transition-all duration-500 ${
+                      result.manutencao.proximaTrocaOleo.kmFaltando <= 500
+                        ? 'bg-red-500'
+                        : result.manutencao.proximaTrocaOleo.kmFaltando <= 1000
+                        ? 'bg-amber-500'
+                        : 'bg-gradient-to-r from-[#43A047] to-[#1B5E20]'
+                    }`}
+                    style={{
+                      width: `${Math.min(
+                        100,
+                        Math.max(
+                          0,
+                          ((5000 - result.manutencao.proximaTrocaOleo.kmFaltando) / 5000) * 100
+                        )
+                      )}%`,
+                    }}
+                  />
+                </div>
+                {result.manutencao.proximaTrocaOleo.kmFaltando <= 500 && (
+                  <p className="text-red-400 text-xs mt-2 flex items-center gap-1">
+                    <AlertCircle size={14} />
+                    Troca de óleo urgente!
+                  </p>
+                )}
+                {result.manutencao.proximaTrocaOleo.kmFaltando > 500 &&
+                  result.manutencao.proximaTrocaOleo.kmFaltando <= 1000 && (
+                    <p className="text-amber-400 text-xs mt-2 flex items-center gap-1">
+                      <AlertCircle size={14} />
+                      Troca de óleo em breve
+                    </p>
+                  )}
+              </div>
+
+              {/* Atualizar KM */}
+              <div className="border-t border-[#333333] pt-4">
+                <p className="text-sm text-[#9E9E9E] mb-3 flex items-center gap-2">
+                  <Gauge size={16} />
+                  Atualize a quilometragem do veículo
+                </p>
+                <div className="flex gap-3">
+                  <div className="relative flex-1">
+                    <input
+                      type="text"
+                      inputMode="numeric"
+                      value={kmInput}
+                      onChange={(e) => setKmInput(formatKmInput(e.target.value))}
+                      placeholder="Ex: 42000"
+                      className="w-full bg-[#121212] border border-[#333333] rounded-xl px-4 py-3 text-[#E8E8E8] placeholder-gray-500 focus:outline-none focus:border-[#43A047] focus:ring-2 focus:ring-[#43A047]/20 transition-all font-mono"
+                    />
+                    <span className="absolute right-4 top-1/2 -translate-y-1/2 text-[#9E9E9E] text-sm">
+                      km
+                    </span>
+                  </div>
+                  <button
+                    onClick={handleUpdateKm}
+                    disabled={kmLoading || !kmInput || parseInt(kmInput, 10) <= (result.veiculo.kmAtual || 0)}
+                    className="px-5 py-3 bg-gradient-to-r from-[#43A047] to-[#1B5E20] rounded-xl text-white font-medium shadow-lg shadow-green-500/20 hover:shadow-xl hover:shadow-green-500/20 hover:scale-[1.02] active:scale-[0.98] transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
+                  >
+                    {kmLoading ? (
+                      <Loader2 className="animate-spin" size={20} />
+                    ) : (
+                      'Atualizar'
+                    )}
+                  </button>
+                </div>
+                {kmError && (
+                  <p className="text-red-400 text-sm mt-2 flex items-center gap-1">
+                    <AlertCircle size={14} />
+                    {kmError}
+                  </p>
+                )}
+                {kmSuccess && (
+                  <p className="text-[#43A047] text-sm mt-2 flex items-center gap-1">
+                    <CheckCircle size={14} />
+                    {kmSuccess}
+                  </p>
+                )}
+              </div>
+            </div>
+          )}
 
           {/* Status Tracker - apenas se tem ordem ativa */}
           {ordemAtiva && (
