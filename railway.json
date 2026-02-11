@@ -5,15 +5,15 @@
     "nixpacksPlan": {
       "phases": {
         "setup": {
-          "nixPkgs": ["nodejs_22"]
+          "nixPkgs": ["nodejs_20"]
         },
         "install": {
           "dependsOn": ["setup"],
-          "cmds": ["corepack enable", "corepack prepare pnpm@9.0.0 --activate", "pnpm install --force"]
+          "cmds": ["corepack enable", "corepack prepare pnpm@9.0.0 --activate", "pnpm install"]
         },
         "build": {
           "dependsOn": ["install"],
-          "cmds": ["cd apps/web && npx prisma generate && cd ../.. && pnpm turbo build --filter=@lubia/web"]
+          "cmds": ["pnpm --filter @lubia/web build"]
         }
       }
     }
