@@ -1359,14 +1359,31 @@ export async function generateChatResponse(
         const novoCustomerData = await getCustomerData(phoneNumber, empresaId);
 
         if (novoCustomerData && novoCustomerData.veiculos.length > 0) {
-          // Iniciar agendamento automaticamente
+          // IMPORTANTE: Encontrar o veículo que ACABOU de ser cadastrado (pelo ID ou placa)
+          let veiculoRecemCadastrado = novoCustomerData.veiculos.find(v => v.id === resultado.veiculoId);
+
+          // Fallback: buscar pela placa que foi cadastrada
+          if (!veiculoRecemCadastrado && cadastro.placa) {
+            veiculoRecemCadastrado = novoCustomerData.veiculos.find(v =>
+              v.placa.toUpperCase().replace(/[^A-Z0-9]/g, '') === cadastro.placa?.toUpperCase().replace(/[^A-Z0-9]/g, '')
+            );
+          }
+
+          // Se ainda não encontrou, usar o mais recente (último da lista)
+          if (!veiculoRecemCadastrado) {
+            veiculoRecemCadastrado = novoCustomerData.veiculos[novoCustomerData.veiculos.length - 1];
+          }
+
+          // Iniciar agendamento automaticamente COM O VEÍCULO CORRETO
           agendamento.ativo = true;
           agendamento.timestamp = Date.now();
-          agendamento.veiculoId = novoCustomerData.veiculos[0].id;
-          agendamento.veiculoNome = `${novoCustomerData.veiculos[0].marca} ${novoCustomerData.veiculos[0].modelo}`;
+          agendamento.veiculoId = veiculoRecemCadastrado.id;
+          agendamento.veiculoNome = `${veiculoRecemCadastrado.marca} ${veiculoRecemCadastrado.modelo}`;
           agendamento.etapa = 'escolher_data';
           agendamento.horariosDisponiveis = await getHorariosDisponiveis(empresaId);
           agendamentoState.set(phoneNumber, agendamento);
+
+          console.log('[CHATBOT] Veículo selecionado para agendamento (botão):', agendamento.veiculoNome, agendamento.veiculoId);
 
           if (agendamento.horariosDisponiveis.length > 0) {
             const choices = [
@@ -1613,6 +1630,12 @@ ${historicoConversa}
 4. Seja PROATIVA: se o cliente não faz serviço há muito tempo, sugira gentilmente uma revisão
 5. Se o cliente tem preferências cadastradas, mencione-as (ex: "Vai querer o óleo sintético de sempre?")
 
+⚠️ REGRAS CRÍTICAS DE CADASTRO:
+6. Se o cliente INFORMA DADOS (placa, marca, modelo, ano, km), SEMPRE chame salvar_dados_veiculo COM TODOS os dados que ele informou!
+   Exemplo: "Ford F150 placa HHW3243" → salvar_dados_veiculo(placa="HHW3243", marca="Ford", modelo="F150")
+7. NUNCA peça um dado que o cliente JÁ INFORMOU - olhe os dados já salvos no cadastro!
+8. Se o cliente já está cadastrado mas quer agendar um veículo que não tem, use iniciar_cadastro (vai pular o nome automaticamente)
+
 🔧 FUNÇÕES INTELIGENTES:
 - consultar_status_veiculo: "meu carro já ficou?", "como está meu carro?", "já posso buscar?"
 - consultar_agendamentos: "quando é minha marcação?", "tenho agendamento?"
@@ -1629,11 +1652,11 @@ ${historicoConversa}
 - confirmar_agendamento: quando confirmar
 - cancelar_agendamento: quando desistir
 
-📝 FUNÇÕES DE CADASTRO (cliente NÃO cadastrado):
-- iniciar_cadastro: cliente novo quer agendar
-- salvar_nome_cliente: informou nome completo
-- salvar_dados_veiculo: informou dados do carro (placa, marca, modelo)
-- confirmar_cadastro: TODOS os dados obrigatórios preenchidos
+📝 FUNÇÕES DE CADASTRO (veículo novo):
+- iniciar_cadastro: quando cliente quer agendar um veículo que NÃO TEM cadastrado (funciona para cliente novo OU existente adicionando veículo)
+- salvar_nome_cliente: informou nome completo (SÓ se cliente novo)
+- salvar_dados_veiculo: EXTRAIA TODOS os dados que o cliente informou! Se ele disse "Ford F150 placa ABC1234 2024 50000km", chame com TODOS os parâmetros!
+- confirmar_cadastro: quando TODOS os dados obrigatórios estão preenchidos (nome se novo, placa, marca, modelo)
 
 💬 responder_texto: para saudações, dúvidas gerais, conversas normais
 
@@ -2023,10 +2046,25 @@ async function executeFunctionCall(
     // ==========================================
 
     case 'iniciar_cadastro': {
-      // Iniciar cadastro de cliente novo
       cadastro.ativo = true;
-      cadastro.etapa = 'nome';
       cadastro.timestamp = Date.now();
+
+      // Se o cliente JÁ EXISTE (tem customerData), só precisa cadastrar o veículo
+      if (customerData && customerData.nome) {
+        cadastro.nome = customerData.nome; // Usar nome existente
+        cadastro.etapa = 'veiculo';
+        cadastroState.set(phoneNumber, cadastro);
+
+        console.log('[CHATBOT] Cliente existente, adicionando veículo novo');
+
+        return {
+          type: 'text',
+          message: `${primeiroNome}, vou cadastrar seu novo veículo! 🚗\n\nQual a *placa*, *marca* e *modelo* do carro?\n\n_Exemplo: ABC1234, Ford F-150_`,
+        };
+      }
+
+      // Cliente realmente novo - pedir nome
+      cadastro.etapa = 'nome';
       cadastroState.set(phoneNumber, cadastro);
 
       console.log('[CHATBOT] Iniciando cadastro para cliente novo');
@@ -2061,6 +2099,11 @@ async function executeFunctionCall(
     }
 
     case 'salvar_dados_veiculo': {
+      // Se cliente já existe, usar o nome dele
+      if (!cadastro.nome && customerData?.nome) {
+        cadastro.nome = customerData.nome;
+      }
+
       // Atualizar dados do veículo (pode ser parcial)
       if (args.placa) {
         const placa = (args.placa as string).toUpperCase().replace(/[^A-Z0-9]/g, '');
@@ -2077,11 +2120,12 @@ async function executeFunctionCall(
       cadastro.timestamp = Date.now();
       cadastroState.set(phoneNumber, cadastro);
 
-      console.log('[CHATBOT] Dados veículo salvos:', { placa: cadastro.placa, marca: cadastro.marca, modelo: cadastro.modelo });
+      console.log('[CHATBOT] Dados veículo salvos:', { placa: cadastro.placa, marca: cadastro.marca, modelo: cadastro.modelo, nome: cadastro.nome });
 
       // Verificar se faltam dados obrigatórios
       const faltantes: string[] = [];
-      if (!cadastro.nome) faltantes.push('nome');
+      // Nome só é obrigatório se cliente não existe ainda
+      if (!cadastro.nome && !customerData?.nome) faltantes.push('nome');
       if (!cadastro.placa) faltantes.push('placa');
       if (!cadastro.marca) faltantes.push('marca');
       if (!cadastro.modelo) faltantes.push('modelo');
@@ -2160,14 +2204,31 @@ async function executeFunctionCall(
       const novoCustomerData = await getCustomerData(phoneNumber, empresaId);
 
       if (novoCustomerData && novoCustomerData.veiculos.length > 0) {
-        // Iniciar agendamento automaticamente
+        // IMPORTANTE: Encontrar o veículo que ACABOU de ser cadastrado (pelo ID ou placa)
+        let veiculoRecemCadastrado = novoCustomerData.veiculos.find(v => v.id === resultado.veiculoId);
+
+        // Fallback: buscar pela placa que foi cadastrada
+        if (!veiculoRecemCadastrado && cadastro.placa) {
+          veiculoRecemCadastrado = novoCustomerData.veiculos.find(v =>
+            v.placa.toUpperCase().replace(/[^A-Z0-9]/g, '') === cadastro.placa?.toUpperCase().replace(/[^A-Z0-9]/g, '')
+          );
+        }
+
+        // Se ainda não encontrou, usar o mais recente (último da lista)
+        if (!veiculoRecemCadastrado) {
+          veiculoRecemCadastrado = novoCustomerData.veiculos[novoCustomerData.veiculos.length - 1];
+        }
+
+        // Iniciar agendamento automaticamente COM O VEÍCULO CORRETO
         agendamento.ativo = true;
         agendamento.timestamp = Date.now();
-        agendamento.veiculoId = novoCustomerData.veiculos[0].id;
-        agendamento.veiculoNome = `${novoCustomerData.veiculos[0].marca} ${novoCustomerData.veiculos[0].modelo}`;
+        agendamento.veiculoId = veiculoRecemCadastrado.id;
+        agendamento.veiculoNome = `${veiculoRecemCadastrado.marca} ${veiculoRecemCadastrado.modelo}`;
         agendamento.etapa = 'escolher_data';
         agendamento.horariosDisponiveis = await getHorariosDisponiveis(empresaId);
         agendamentoState.set(phoneNumber, agendamento);
+
+        console.log('[CHATBOT] Veículo selecionado para agendamento:', agendamento.veiculoNome, agendamento.veiculoId);
 
         if (agendamento.horariosDisponiveis.length > 0) {
           const choices = [
