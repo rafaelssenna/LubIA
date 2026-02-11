@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Search, Car, Calendar, Clock, CheckCircle, Play, Pause, XCircle, Truck, Loader2, AlertCircle } from 'lucide-react';
+import { Search, Car, Calendar, Clock, CheckCircle, Play, Pause, XCircle, Truck, Loader2, AlertCircle, Wrench } from 'lucide-react';
 
 interface Veiculo {
   placa: string;
@@ -26,14 +26,22 @@ interface ConsultaResult {
   ordens: Ordem[];
 }
 
-const statusConfig: Record<string, { label: string; color: string; icon: any; bg: string }> = {
-  AGENDADO: { label: 'Agendado', color: 'text-blue-400', icon: Calendar, bg: 'bg-blue-500/10' },
-  AGUARDANDO_PECAS: { label: 'Aguardando Pecas', color: 'text-amber-400', icon: Pause, bg: 'bg-amber-500/10' },
-  EM_ANDAMENTO: { label: 'Em Andamento', color: 'text-purple-400', icon: Play, bg: 'bg-purple-500/10' },
-  CONCLUIDO: { label: 'Concluido', color: 'text-[#43A047]', icon: CheckCircle, bg: 'bg-green-500/10' },
-  CANCELADO: { label: 'Cancelado', color: 'text-red-500', icon: XCircle, bg: 'bg-red-500/10' },
-  ENTREGUE: { label: 'Entregue', color: 'text-cyan-400', icon: Truck, bg: 'bg-cyan-500/10' },
+const statusConfig: Record<string, { label: string; color: string; icon: any; bg: string; step: number }> = {
+  AGENDADO: { label: 'Agendado', color: 'text-blue-400', icon: Calendar, bg: 'bg-blue-500/10', step: 1 },
+  AGUARDANDO_PECAS: { label: 'Aguardando Pecas', color: 'text-amber-400', icon: Pause, bg: 'bg-amber-500/10', step: 2 },
+  EM_ANDAMENTO: { label: 'Em Andamento', color: 'text-purple-400', icon: Play, bg: 'bg-purple-500/10', step: 2 },
+  CONCLUIDO: { label: 'Concluido', color: 'text-[#43A047]', icon: CheckCircle, bg: 'bg-green-500/10', step: 3 },
+  CANCELADO: { label: 'Cancelado', color: 'text-red-500', icon: XCircle, bg: 'bg-red-500/10', step: 0 },
+  ENTREGUE: { label: 'Entregue', color: 'text-cyan-400', icon: Truck, bg: 'bg-cyan-500/10', step: 4 },
 };
+
+// Etapas do progresso
+const progressSteps = [
+  { step: 1, label: 'Agendado', icon: Calendar, color: 'blue' },
+  { step: 2, label: 'Em Andamento', icon: Wrench, color: 'purple' },
+  { step: 3, label: 'Concluido', icon: CheckCircle, color: 'green' },
+  { step: 4, label: 'Entregue', icon: Truck, color: 'cyan' },
+];
 
 export default function ConsultaPage() {
   const [placa, setPlaca] = useState('');
@@ -42,9 +50,7 @@ export default function ConsultaPage() {
   const [error, setError] = useState('');
 
   const formatPlaca = (value: string) => {
-    // Remove caracteres especiais e converte para uppercase
     const clean = value.replace(/[^A-Za-z0-9]/g, '').toUpperCase();
-    // Formata como ABC-1234 ou ABC1D23 (Mercosul)
     if (clean.length <= 3) return clean;
     if (clean.length <= 7) return clean.slice(0, 3) + '-' + clean.slice(3);
     return clean.slice(0, 3) + '-' + clean.slice(3, 7);
@@ -85,10 +91,12 @@ export default function ConsultaPage() {
     return new Date(date).toLocaleDateString('pt-BR');
   };
 
-  const formatDateTime = (date: string | null) => {
-    if (!date) return null;
-    return new Date(date).toLocaleString('pt-BR');
-  };
+  // Encontrar ordem ativa (não entregue/cancelada)
+  const ordemAtiva = result?.ordens.find(o =>
+    !['ENTREGUE', 'CANCELADO'].includes(o.status)
+  );
+
+  const currentStep = ordemAtiva ? (statusConfig[ordemAtiva.status]?.step || 1) : 0;
 
   return (
     <div className="max-w-2xl mx-auto p-6">
@@ -164,6 +172,78 @@ export default function ConsultaPage() {
             </div>
           </div>
 
+          {/* Status Tracker - apenas se tem ordem ativa */}
+          {ordemAtiva && (
+            <div className="bg-[#1E1E1E] border border-[#333333] rounded-2xl p-6">
+              <h3 className="text-lg font-semibold text-[#E8E8E8] mb-2">Status Atual</h3>
+              <p className="text-sm text-[#9E9E9E] mb-6">
+                {ordemAtiva.servicos.join(', ')} - #{ordemAtiva.numero}
+              </p>
+
+              {/* Progress Steps */}
+              <div className="relative">
+                {/* Linha de conexao */}
+                <div className="absolute top-6 left-0 right-0 h-1 bg-[#333333] mx-8" />
+                <div
+                  className="absolute top-6 left-0 h-1 bg-gradient-to-r from-[#43A047] to-[#43A047] mx-8 transition-all duration-500"
+                  style={{ width: `calc(${((currentStep - 1) / 3) * 100}% - 64px)` }}
+                />
+
+                {/* Steps */}
+                <div className="relative flex justify-between">
+                  {progressSteps.map((stepInfo) => {
+                    const StepIcon = stepInfo.icon;
+                    const isCompleted = currentStep >= stepInfo.step;
+                    const isCurrent = currentStep === stepInfo.step;
+
+                    const colorMap: Record<string, { bg: string; ring: string; text: string }> = {
+                      blue: { bg: 'bg-blue-500', ring: 'ring-blue-500/30', text: 'text-blue-400' },
+                      purple: { bg: 'bg-purple-500', ring: 'ring-purple-500/30', text: 'text-purple-400' },
+                      green: { bg: 'bg-[#43A047]', ring: 'ring-green-500/30', text: 'text-[#43A047]' },
+                      cyan: { bg: 'bg-cyan-500', ring: 'ring-cyan-500/30', text: 'text-cyan-400' },
+                    };
+                    const colorClasses = colorMap[stepInfo.color];
+
+                    return (
+                      <div key={stepInfo.step} className="flex flex-col items-center">
+                        <div
+                          className={`w-12 h-12 rounded-full flex items-center justify-center transition-all duration-300 ${
+                            isCompleted
+                              ? `${colorClasses.bg} text-white shadow-lg ${isCurrent ? `ring-4 ${colorClasses.ring} scale-110` : ''}`
+                              : 'bg-[#333333] text-[#666666]'
+                          }`}
+                        >
+                          <StepIcon size={20} />
+                        </div>
+                        <span className={`mt-3 text-xs font-medium text-center ${
+                          isCompleted ? colorClasses.text : 'text-[#666666]'
+                        }`}>
+                          {stepInfo.label}
+                        </span>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* Info adicional */}
+              <div className="mt-6 pt-4 border-t border-[#333333] text-sm text-[#9E9E9E]">
+                {ordemAtiva.status === 'AGENDADO' && ordemAtiva.dataAgendada && (
+                  <p>Agendado para: <span className="text-blue-400">{formatDate(ordemAtiva.dataAgendada)}</span></p>
+                )}
+                {ordemAtiva.status === 'AGUARDANDO_PECAS' && (
+                  <p className="text-amber-400">Aguardando chegada de pecas</p>
+                )}
+                {ordemAtiva.status === 'EM_ANDAMENTO' && (
+                  <p className="text-purple-400">Seu veiculo esta sendo atendido</p>
+                )}
+                {ordemAtiva.status === 'CONCLUIDO' && (
+                  <p className="text-[#43A047]">Servico concluido! Aguardando retirada</p>
+                )}
+              </div>
+            </div>
+          )}
+
           {/* Historico de Servicos */}
           <div>
             <h3 className="text-lg font-semibold text-[#E8E8E8] mb-4 flex items-center gap-2">
@@ -180,11 +260,14 @@ export default function ConsultaPage() {
                 {result.ordens.map((ordem, index) => {
                   const status = statusConfig[ordem.status] || statusConfig.AGENDADO;
                   const StatusIcon = status.icon;
+                  const isActive = ordemAtiva?.numero === ordem.numero;
 
                   return (
                     <div
                       key={index}
-                      className="bg-[#1E1E1E] border border-[#333333] rounded-xl p-4 hover:border-[#43A047]/30 transition-colors"
+                      className={`bg-[#1E1E1E] border rounded-xl p-4 transition-colors ${
+                        isActive ? 'border-[#43A047]/50 ring-1 ring-[#43A047]/20' : 'border-[#333333] hover:border-[#43A047]/30'
+                      }`}
                     >
                       <div className="flex items-start justify-between gap-4">
                         <div className="flex items-start gap-3">
@@ -197,6 +280,11 @@ export default function ConsultaPage() {
                                 {status.label}
                               </span>
                               <span className="text-[#9E9E9E] text-xs">#{ordem.numero}</span>
+                              {isActive && (
+                                <span className="px-2 py-0.5 bg-[#43A047]/20 rounded-full text-xs font-medium text-[#43A047]">
+                                  Atual
+                                </span>
+                              )}
                             </div>
                             <div className="flex flex-wrap gap-1.5">
                               {ordem.servicos.map((servico, i) => (
