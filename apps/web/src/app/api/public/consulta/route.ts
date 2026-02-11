@@ -3,7 +3,10 @@ import { prisma } from '@/lib/prisma';
 
 export async function POST(request: NextRequest) {
   try {
-    const { placa } = await request.json();
+    const body = await request.json();
+    const { placa } = body;
+
+    console.log('[CONSULTA] Recebido:', { placa });
 
     if (!placa) {
       return NextResponse.json({ error: 'Placa é obrigatória' }, { status: 400 });
@@ -11,6 +14,7 @@ export async function POST(request: NextRequest) {
 
     // Normalizar placa (uppercase, sem caracteres especiais)
     const placaNormalizada = placa.replace(/[^A-Za-z0-9]/g, '').toUpperCase();
+    console.log('[CONSULTA] Placa normalizada:', placaNormalizada);
 
     if (placaNormalizada.length < 6) {
       return NextResponse.json({ error: 'Placa inválida' }, { status: 400 });
@@ -28,6 +32,8 @@ export async function POST(request: NextRequest) {
         kmAtual: true,
       },
     });
+
+    console.log('[CONSULTA] Veículo encontrado:', veiculo);
 
     if (!veiculo) {
       return NextResponse.json({ error: 'Veículo não encontrado' }, { status: 404 });
@@ -62,7 +68,9 @@ export async function POST(request: NextRequest) {
       take: 20,
     });
 
-    // Formatar resposta
+    console.log('[CONSULTA] Ordens encontradas:', ordens.length);
+
+    // Formatar resposta com tratamento seguro para itens
     return NextResponse.json({
       veiculo: {
         placa: veiculo.placa,
@@ -72,17 +80,23 @@ export async function POST(request: NextRequest) {
         kmAtual: veiculo.kmAtual,
       },
       ordens: ordens.map((o) => ({
-        numero: o.numero.slice(-8).toUpperCase(),
+        numero: o.numero?.slice(-8).toUpperCase() || 'N/A',
         status: o.status,
         dataAgendada: o.dataAgendada,
         dataInicio: o.dataInicio,
         dataConclusao: o.dataConclusao,
         createdAt: o.createdAt,
-        servicos: o.itens.map((i) => i.servico.nome),
+        servicos: o.itens
+          ?.filter((i) => i.servico?.nome)
+          .map((i) => i.servico.nome) || [],
       })),
     });
-  } catch (error) {
-    console.error('[API] Erro ao consultar veículo:', error);
-    return NextResponse.json({ error: 'Erro interno do servidor' }, { status: 500 });
+  } catch (error: any) {
+    console.error('[CONSULTA] Erro:', error?.message);
+    console.error('[CONSULTA] Stack:', error?.stack);
+    return NextResponse.json({
+      error: 'Erro interno do servidor',
+      details: process.env.NODE_ENV === 'development' ? error?.message : undefined
+    }, { status: 500 });
   }
 }
