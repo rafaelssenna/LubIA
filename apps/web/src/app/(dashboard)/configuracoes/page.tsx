@@ -578,6 +578,22 @@ export default function ConfiguracoesPage() {
                 className="w-full bg-[#121212] border border-[#333333] rounded-xl px-4 py-3 text-[#E8E8E8] placeholder-gray-500 focus:outline-none focus:border-[#43A047]"
               />
             </div>
+
+            {/* Botão Salvar */}
+            <div className="md:col-span-2 flex justify-end pt-2">
+              <button
+                onClick={handleSaveConfig}
+                disabled={saving}
+                className="flex items-center gap-2 px-6 py-2.5 bg-[#43A047] hover:bg-[#388E3C] disabled:opacity-50 rounded-xl text-white font-medium transition-colors"
+              >
+                {saving ? (
+                  <Loader2 size={18} className="animate-spin" />
+                ) : (
+                  <Save size={18} />
+                )}
+                {saving ? 'Salvando...' : 'Salvar'}
+              </button>
+            </div>
           </div>
         </div>
 
