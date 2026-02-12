@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname } from 'next/navigation';
+import { useState, useEffect } from 'react';
 import {
   LayoutDashboard,
   Users,
@@ -15,6 +16,7 @@ import {
   MessageCircle,
   Package,
   ClipboardList,
+  AlertCircle,
 } from 'lucide-react';
 import { useSidebar } from '@/contexts/SidebarContext';
 import { useAuth } from '@/contexts/AuthContext';
@@ -33,6 +35,30 @@ export default function Sidebar() {
   const pathname = usePathname();
   const { collapsed, toggleCollapsed } = useSidebar();
   const { logout } = useAuth();
+  const [configIncomplete, setConfigIncomplete] = useState(false);
+
+  // Verificar se a configuração está completa
+  useEffect(() => {
+    const checkConfig = async () => {
+      try {
+        const res = await fetch('/api/configuracoes');
+        const data = await res.json();
+        if (data.data) {
+          const { cnpj, telefone } = data.data;
+          // Se CNPJ ou telefone estiver vazio, config está incompleta
+          setConfigIncomplete(!cnpj || !telefone);
+        } else {
+          // Sem config = incompleta
+          setConfigIncomplete(true);
+        }
+      } catch {
+        // Em caso de erro, não mostrar alerta
+        setConfigIncomplete(false);
+      }
+    };
+
+    checkConfig();
+  }, [pathname]); // Re-verificar quando mudar de página
 
   return (
     <aside
@@ -102,13 +128,32 @@ export default function Sidebar() {
       <div className="p-4 border-t border-white/15 space-y-1.5">
         <Link
           href="/configuracoes"
-          className={`flex items-center gap-3 px-4 py-3 rounded-xl text-white/70 hover:bg-white/10 hover:text-white transition-all duration-300 group ${
-            collapsed ? 'justify-center px-3' : ''
-          }`}
-          title={collapsed ? 'Configurações' : undefined}
+          className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-300 group relative ${
+            configIncomplete
+              ? 'bg-orange-500/10 text-orange-400 ring-1 ring-orange-500/30'
+              : 'text-white/70 hover:bg-white/10 hover:text-white'
+          } ${collapsed ? 'justify-center px-3' : ''}`}
+          title={collapsed ? (configIncomplete ? 'Configurações - Preencha os dados!' : 'Configurações') : undefined}
         >
-          <Settings size={20} className="group-hover:rotate-90 transition-transform duration-500" />
-          {!collapsed && <span className="font-medium">Configurações</span>}
+          {configIncomplete ? (
+            <div className="relative">
+              <Settings size={20} className="animate-pulse" />
+              <span className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-orange-500 rounded-full animate-ping"></span>
+              <span className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-orange-500 rounded-full"></span>
+            </div>
+          ) : (
+            <Settings size={20} className="group-hover:rotate-90 transition-transform duration-500" />
+          )}
+          {!collapsed && (
+            <span className="font-medium flex items-center gap-2">
+              Configurações
+              {configIncomplete && (
+                <span className="text-xs bg-orange-500/20 px-2 py-0.5 rounded-full animate-pulse">
+                  Pendente
+                </span>
+              )}
+            </span>
+          )}
         </Link>
         <button
           onClick={logout}
