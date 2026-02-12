@@ -49,6 +49,7 @@ export async function GET(
             produto: true,
           },
         },
+        servicosExtras: true,
       },
     });
 
@@ -102,6 +103,11 @@ export async function GET(
           desconto: Number(i.desconto),
           subtotal: Number(i.subtotal),
         })),
+        servicosExtras: ordem.servicosExtras.map(s => ({
+          id: s.id,
+          descricao: s.descricao,
+          valor: Number(s.valor),
+        })),
       },
     });
   } catch (error: any) {
@@ -129,7 +135,7 @@ export async function PUT(
     }
 
     const body = await request.json();
-    const { status, veiculoId, dataAgendada, dataInicio, dataConclusao, kmEntrada, observacoes, itens, itensProduto } = body;
+    const { status, veiculoId, dataAgendada, dataInicio, dataConclusao, kmEntrada, observacoes, itens, itensProduto, servicosExtras } = body;
 
     // Verify order exists and belongs to this empresa
     const existing = await prisma.ordemServico.findFirst({
@@ -173,7 +179,7 @@ export async function PUT(
     if (observacoes !== undefined) updateData.observacoes = observacoes;
 
     // If items are being updated, recalculate total and handle stock
-    if (itens !== undefined || itensProduto !== undefined) {
+    if (itens !== undefined || itensProduto !== undefined || servicosExtras !== undefined) {
       // Fetch old product items BEFORE deleting
       const oldProdutoItems = await prisma.itemOrdemProduto.findMany({
         where: { ordemId },
@@ -182,8 +188,10 @@ export async function PUT(
       // Prepare new items data
       let totalServicos = 0;
       let totalProdutos = 0;
+      let totalExtras = 0;
       const newItensData: any[] = [];
       const newItensProdutoData: any[] = [];
+      const newServicosExtrasData: { descricao: string; valor: number }[] = [];
 
       // Process service items
       if (itens && itens.length > 0) {
@@ -226,6 +234,19 @@ export async function PUT(
               precoUnitario: precoUnit,
               desconto: desc,
               subtotal,
+            });
+          }
+        }
+      }
+
+      // Process serviços extras
+      if (servicosExtras && servicosExtras.length > 0) {
+        for (const extra of servicosExtras) {
+          if (extra.descricao && extra.valor > 0) {
+            totalExtras += extra.valor;
+            newServicosExtrasData.push({
+              descricao: extra.descricao,
+              valor: extra.valor,
             });
           }
         }
@@ -279,12 +300,13 @@ export async function PUT(
       }
 
       // Execute everything in a transaction
-      updateData.total = totalServicos + totalProdutos;
+      updateData.total = totalServicos + totalProdutos + totalExtras;
 
       const ordem = await prisma.$transaction(async (tx) => {
         // Delete old items
         if (itens !== undefined) await tx.itemOrdem.deleteMany({ where: { ordemId } });
         if (itensProduto !== undefined) await tx.itemOrdemProduto.deleteMany({ where: { ordemId } });
+        if (servicosExtras !== undefined) await tx.servicoExtra.deleteMany({ where: { ordemId } });
 
         // Recreate service items
         for (const item of newItensData) {
@@ -294,6 +316,11 @@ export async function PUT(
         // Recreate product items
         for (const item of newItensProdutoData) {
           await tx.itemOrdemProduto.create({ data: { ordemId, ...item } });
+        }
+
+        // Recreate serviços extras
+        for (const extra of newServicosExtrasData) {
+          await tx.servicoExtra.create({ data: { ordemId, ...extra } });
         }
 
         // Execute stock operations

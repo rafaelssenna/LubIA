@@ -163,28 +163,41 @@ enum StatusOS {
 
 // Ordem de serviço
 model OrdemServico {
-  id            Int         @id @default(autoincrement())
-  empresaId     Int
-  numero        String      @default(cuid())
-  veiculoId     Int
-  status        StatusOS    @default(AGENDADO)
-  dataAgendada  DateTime?
-  dataInicio    DateTime?
-  dataConclusao DateTime?
-  kmEntrada     Int?
-  observacoes   String?
-  total         Decimal     @db.Decimal(10, 2) @default(0)
-  createdAt     DateTime    @default(now())
-  updatedAt     DateTime    @updatedAt
+  id             Int         @id @default(autoincrement())
+  empresaId      Int
+  numero         String      @default(cuid())
+  veiculoId      Int
+  status         StatusOS    @default(AGENDADO)
+  dataAgendada   DateTime?
+  dataInicio     DateTime?
+  dataConclusao  DateTime?
+  kmEntrada      Int?
+  observacoes    String?
+  total          Decimal     @db.Decimal(10, 2) @default(0)
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
 
-  empresa       Empresa            @relation(fields: [empresaId], references: [id], onDelete: Cascade)
-  veiculo       Veiculo            @relation(fields: [veiculoId], references: [id], onDelete: Cascade)
-  itens         ItemOrdem[]
-  itensProduto  ItemOrdemProduto[]
+  empresa        Empresa            @relation(fields: [empresaId], references: [id], onDelete: Cascade)
+  veiculo        Veiculo            @relation(fields: [veiculoId], references: [id], onDelete: Cascade)
+  itens          ItemOrdem[]
+  itensProduto   ItemOrdemProduto[]
+  servicosExtras ServicoExtra[]
 
   @@unique([numero, empresaId])
   @@index([empresaId])
   @@map("ordens_servico")
+}
+
+// Serviços extras (mão de obra, etc)
+model ServicoExtra {
+  id        Int          @id @default(autoincrement())
+  ordemId   Int
+  descricao String
+  valor     Decimal      @db.Decimal(10, 2)
+
+  ordem     OrdemServico @relation(fields: [ordemId], references: [id], onDelete: Cascade)
+
+  @@map("servicos_extras")
 }
 
 // Itens da ordem de serviço (serviços)

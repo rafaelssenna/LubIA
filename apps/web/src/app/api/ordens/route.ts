@@ -63,6 +63,7 @@ export async function GET(request: NextRequest) {
             produto: true,
           },
         },
+        servicosExtras: true,
       },
       orderBy: { createdAt: 'desc' },
       skip: (page - 1) * limit,
@@ -135,6 +136,11 @@ export async function GET(request: NextRequest) {
           desconto: Number(i.desconto),
           subtotal: Number(i.subtotal),
         })),
+        servicosExtras: o.servicosExtras.map(s => ({
+          id: s.id,
+          descricao: s.descricao,
+          valor: Number(s.valor),
+        })),
       })),
       stats,
       pagination: {
@@ -159,7 +165,7 @@ export async function POST(request: NextRequest) {
 
   try {
     const body = await request.json();
-    const { veiculoId, dataAgendada, kmEntrada, observacoes, itens, itensProduto } = body;
+    const { veiculoId, dataAgendada, kmEntrada, observacoes, itens, itensProduto, servicosExtras } = body;
 
     if (!veiculoId) {
       return NextResponse.json({ error: 'Veículo é obrigatório' }, { status: 400 });
@@ -224,7 +230,22 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    const total = totalServicos + totalProdutos;
+    // Calculate total from serviços extras
+    let totalExtras = 0;
+    const servicosExtrasData: { descricao: string; valor: number }[] = [];
+    if (servicosExtras && servicosExtras.length > 0) {
+      for (const extra of servicosExtras) {
+        if (extra.descricao && extra.valor > 0) {
+          totalExtras += extra.valor;
+          servicosExtrasData.push({
+            descricao: extra.descricao,
+            valor: extra.valor,
+          });
+        }
+      }
+    }
+
+    const total = totalServicos + totalProdutos + totalExtras;
 
     // Validar estoque antes de criar
     if (itensProdutoData.length > 0) {
@@ -259,6 +280,9 @@ export async function POST(request: NextRequest) {
           itensProduto: {
             create: itensProdutoData,
           },
+          servicosExtras: {
+            create: servicosExtrasData,
+          },
         },
         include: {
           veiculo: {
@@ -276,6 +300,7 @@ export async function POST(request: NextRequest) {
               produto: true,
             },
           },
+          servicosExtras: true,
         },
       });
 

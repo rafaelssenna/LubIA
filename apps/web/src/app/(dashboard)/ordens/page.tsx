@@ -28,14 +28,10 @@ interface Veiculo {
   cliente: Cliente;
 }
 
-interface ItemServico {
-  id: number;
-  servicoId: number;
-  servicoNome: string;
-  quantidade: number;
-  precoUnitario: number;
-  desconto: number;
-  subtotal: number;
+interface ServicoExtra {
+  id?: number;
+  descricao: string;
+  valor: number;
 }
 
 interface ItemProduto {
@@ -60,15 +56,8 @@ interface OrdemServico {
   total: number;
   createdAt: string;
   veiculo: Veiculo;
-  itens: ItemServico[];
+  servicosExtras: ServicoExtra[];
   itensProduto: ItemProduto[];
-}
-
-interface Servico {
-  id: number;
-  nome: string;
-  precoBase: number;
-  categoria: string;
 }
 
 interface Produto {
@@ -112,17 +101,18 @@ function OrdensPageContent() {
 
   // Form states for new O.S.
   const [veiculos, setVeiculos] = useState<Veiculo[]>([]);
-  const [servicos, setServicos] = useState<Servico[]>([]);
   const [produtos, setProdutos] = useState<Produto[]>([]);
   const [selectedVeiculoId, setSelectedVeiculoId] = useState<number | null>(null);
   const [kmEntrada, setKmEntrada] = useState('');
   const [observacoes, setObservacoes] = useState('');
-  const [selectedServicos, setSelectedServicos] = useState<{ servicoId: number; quantidade: number; precoUnitario: number }[]>([]);
+  const [servicosExtras, setServicosExtras] = useState<{ descricao: string; valor: number }[]>([]);
   const [selectedProdutos, setSelectedProdutos] = useState<{ produtoId: number; quantidade: number; precoUnitario: number }[]>([]);
   const [searchVeiculo, setSearchVeiculo] = useState('');
+  const [searchProduto, setSearchProduto] = useState('');
   const [step, setStep] = useState(1);
   const [dataAgendada, setDataAgendada] = useState('');
   const [editingOrdem, setEditingOrdem] = useState<OrdemServico | null>(null);
+  const [novoServicoExtra, setNovoServicoExtra] = useState({ descricao: '', valor: '' });
 
   // Pagination
   const [currentPage, setCurrentPage] = useState(1);
@@ -163,16 +153,6 @@ function OrdensPageContent() {
     }
   };
 
-  const fetchServicos = async () => {
-    try {
-      const res = await fetch('/api/servicos?ativo=true');
-      const data = await res.json();
-      setServicos(data.data || []);
-    } catch (error) {
-      console.error('Erro ao buscar serviços:', error);
-    }
-  };
-
   const fetchProdutos = async () => {
     try {
       const res = await fetch('/api/produtos?ativo=true');
@@ -201,19 +181,18 @@ function OrdensPageContent() {
         // Fetch data and open modal with pre-selected vehicle, skip to step 2
         Promise.all([
           fetch('/api/veiculos').then(r => r.json()),
-          fetch('/api/servicos?ativo=true').then(r => r.json()),
           fetch('/api/produtos?ativo=true').then(r => r.json()),
-        ]).then(([veiculosData, servicosData, produtosData]) => {
+        ]).then(([veiculosData, produtosData]) => {
           setVeiculos(veiculosData.data || []);
-          setServicos(servicosData.data || []);
           setProdutos(produtosData.data || []);
           setSelectedVeiculoId(veiculoId);
           setKmEntrada('');
           setObservacoes('');
-          setSelectedServicos([]);
+          setServicosExtras([]);
           setSelectedProdutos([]);
           setSearchVeiculo('');
-          setStep(2); // Skip to services selection since vehicle is pre-selected
+          setSearchProduto('');
+          setStep(2); // Skip to products selection since vehicle is pre-selected
           setShowModal(true);
           // Clean URL
           router.replace('/ordens');
@@ -224,16 +203,17 @@ function OrdensPageContent() {
 
   const openNewModal = (presetDate?: string) => {
     fetchVeiculos();
-    fetchServicos();
     fetchProdutos();
     setEditingOrdem(null);
     setSelectedVeiculoId(null);
     setKmEntrada('');
     setObservacoes('');
     setDataAgendada(presetDate || '');
-    setSelectedServicos([]);
+    setServicosExtras([]);
     setSelectedProdutos([]);
     setSearchVeiculo('');
+    setSearchProduto('');
+    setNovoServicoExtra({ descricao: '', valor: '' });
     setStep(1);
     setShowModal(true);
   };
@@ -259,7 +239,6 @@ function OrdensPageContent() {
     }
 
     fetchVeiculos();
-    fetchServicos();
     fetchProdutos();
 
     setEditingOrdem(ordem);
@@ -269,17 +248,18 @@ function OrdensPageContent() {
     setDataAgendada(ordem.dataAgendada
       ? new Date(ordem.dataAgendada).toISOString().slice(0, 16)
       : '');
-    setSelectedServicos(ordem.itens.map(i => ({
-      servicoId: i.servicoId,
-      quantidade: i.quantidade,
-      precoUnitario: i.precoUnitario,
-    })));
+    setServicosExtras(ordem.servicosExtras?.map(s => ({
+      descricao: s.descricao,
+      valor: s.valor,
+    })) || []);
     setSelectedProdutos(ordem.itensProduto.map(i => ({
       produtoId: i.produtoId,
       quantidade: i.quantidade,
       precoUnitario: i.precoUnitario,
     })));
     setSearchVeiculo('');
+    setSearchProduto('');
+    setNovoServicoExtra({ descricao: '', valor: '' });
     setStep(1);
     setShowModal(true);
   };
@@ -290,8 +270,8 @@ function OrdensPageContent() {
       return;
     }
 
-    if (selectedServicos.length === 0 && selectedProdutos.length === 0) {
-      toast.warning('Adicione pelo menos um serviço ou produto');
+    if (servicosExtras.length === 0 && selectedProdutos.length === 0) {
+      toast.warning('Adicione pelo menos um produto ou serviço extra');
       return;
     }
 
@@ -303,7 +283,7 @@ function OrdensPageContent() {
         kmEntrada: kmEntrada ? parseInt(kmEntrada) : null,
         observacoes: observacoes || null,
         dataAgendada: dataAgendada || null,
-        itens: selectedServicos,
+        servicosExtras: servicosExtras,
         itensProduto: selectedProdutos,
       };
 
@@ -383,20 +363,20 @@ function OrdensPageContent() {
     }
   };
 
-  const addServico = (servico: Servico) => {
-    if (selectedServicos.find(s => s.servicoId === servico.id)) {
-      toast.warning('Serviço já adicionado');
+  const addServicoExtra = () => {
+    if (!novoServicoExtra.descricao.trim() || !novoServicoExtra.valor) {
+      toast.warning('Preencha a descrição e o valor do serviço');
       return;
     }
-    setSelectedServicos([...selectedServicos, {
-      servicoId: servico.id,
-      quantidade: 1,
-      precoUnitario: servico.precoBase,
+    setServicosExtras([...servicosExtras, {
+      descricao: novoServicoExtra.descricao,
+      valor: parseFloat(novoServicoExtra.valor),
     }]);
+    setNovoServicoExtra({ descricao: '', valor: '' });
   };
 
-  const removeServico = (servicoId: number) => {
-    setSelectedServicos(selectedServicos.filter(s => s.servicoId !== servicoId));
+  const removeServicoExtra = (index: number) => {
+    setServicosExtras(servicosExtras.filter((_, i) => i !== index));
   };
 
   const addProduto = (produto: Produto) => {
@@ -416,9 +396,9 @@ function OrdensPageContent() {
   };
 
   const calcularTotal = () => {
-    const totalServicos = selectedServicos.reduce((acc, s) => acc + (s.precoUnitario * s.quantidade), 0);
+    const totalExtras = servicosExtras.reduce((acc, s) => acc + s.valor, 0);
     const totalProdutos = selectedProdutos.reduce((acc, p) => acc + (p.precoUnitario * p.quantidade), 0);
-    return totalServicos + totalProdutos;
+    return totalExtras + totalProdutos;
   };
 
   const formatDate = (date: string | null) => {
@@ -685,7 +665,7 @@ function OrdensPageContent() {
                             >
                               <p className="font-semibold truncate">{capitalize(ordem.veiculo.cliente.nome)}</p>
                               <p className="truncate opacity-90">{formatPlate(ordem.veiculo.placa)}</p>
-                              <p className="truncate opacity-75">{ordem.itens[0]?.servicoNome || 'Servico'}</p>
+                              <p className="truncate opacity-75">{ordem.itensProduto[0]?.produtoNome || ordem.servicosExtras?.[0]?.descricao || 'O.S.'}</p>
                             </div>
                           );
                         })}
@@ -951,58 +931,24 @@ function OrdensPageContent() {
                 </div>
               )}
 
-              {/* Step 2: Select Services */}
+              {/* Step 2: Select Products and Extras */}
               {step === 2 && (
                 <div className="space-y-4">
-                  <h3 className="text-sm font-medium text-[#9E9E9E]">Servicos Disponiveis</h3>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-2 max-h-[200px] overflow-y-auto">
-                    {servicos.map((servico) => (
-                      <button
-                        key={servico.id}
-                        onClick={() => addServico(servico)}
-                        disabled={selectedServicos.some(s => s.servicoId === servico.id)}
-                        className="p-3 bg-[#121212] border border-[#333333] rounded-xl text-left hover:border-[#43A047] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                      >
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center gap-2">
-                            <Wrench size={16} className="text-[#43A047]" />
-                            <span className="text-[#E8E8E8] text-sm">{servico.nome}</span>
-                          </div>
-                          <span className="text-[#43A047] text-sm font-medium">{formatCurrency(servico.precoBase)}</span>
-                        </div>
-                      </button>
-                    ))}
-                  </div>
-
-                  {selectedServicos.length > 0 && (
-                    <div className="pt-4 border-t border-[#333333]">
-                      <h3 className="text-sm font-medium text-[#9E9E9E] mb-2">Servicos Selecionados</h3>
-                      <div className="space-y-2">
-                        {selectedServicos.map((item) => {
-                          const servico = servicos.find(s => s.id === item.servicoId);
-                          return (
-                            <div key={item.servicoId} className="flex items-center justify-between p-3 bg-green-500/10 border border-green-500/20 rounded-xl">
-                              <span className="text-[#E8E8E8]">{servico?.nome}</span>
-                              <div className="flex items-center gap-3">
-                                <span className="text-[#43A047]">{formatCurrency(item.precoUnitario)}</span>
-                                <button
-                                  onClick={() => removeServico(item.servicoId)}
-                                  className="p-1 hover:bg-red-500/10 rounded text-red-500"
-                                >
-                                  <X size={16} />
-                                </button>
-                              </div>
-                            </div>
-                          );
-                        })}
-                      </div>
-                    </div>
-                  )}
-
-                  <div className="pt-4 border-t border-[#333333]">
-                    <h3 className="text-sm font-medium text-[#9E9E9E] mb-2">Produtos (opcional)</h3>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-2 max-h-[200px] overflow-y-auto">
-                      {produtos.slice(0, 10).map((produto) => (
+                  {/* Produtos do Estoque */}
+                  <div>
+                    <h3 className="text-sm font-medium text-[#9E9E9E] mb-2">Produtos do Estoque</h3>
+                    <input
+                      type="text"
+                      placeholder="Buscar produto..."
+                      value={searchProduto}
+                      onChange={(e) => setSearchProduto(e.target.value)}
+                      className="w-full bg-[#121212] border border-[#333333] rounded-xl px-4 py-2 text-[#E8E8E8] placeholder-gray-500 focus:outline-none focus:border-[#43A047] mb-2"
+                    />
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-2 max-h-[150px] overflow-y-auto">
+                      {produtos
+                        .filter(p => p.nome.toLowerCase().includes(searchProduto.toLowerCase()) || p.codigo.toLowerCase().includes(searchProduto.toLowerCase()))
+                        .slice(0, 20)
+                        .map((produto) => (
                         <button
                           key={produto.id}
                           onClick={() => addProduto(produto)}
@@ -1012,26 +958,30 @@ function OrdensPageContent() {
                           <div className="flex items-center justify-between">
                             <div className="flex items-center gap-2">
                               <Package size={16} className="text-blue-400" />
-                              <span className="text-[#E8E8E8] text-sm truncate">{produto.nome}</span>
+                              <span className="text-[#E8E8E8] text-sm truncate">{capitalize(produto.nome)}</span>
                             </div>
                             <span className="text-blue-400 text-sm font-medium">{formatCurrency(produto.precoVenda)}</span>
                           </div>
                         </button>
                       ))}
                     </div>
+                  </div>
 
-                    {selectedProdutos.length > 0 && (
-                      <div className="mt-4 space-y-2">
-                        <h4 className="text-xs text-[#9E9E9E]">Produtos Selecionados</h4>
+                  {/* Produtos Selecionados */}
+                  {selectedProdutos.length > 0 && (
+                    <div className="pt-4 border-t border-[#333333]">
+                      <h4 className="text-xs text-[#9E9E9E] mb-2">Produtos Selecionados</h4>
+                      <div className="space-y-2">
                         {selectedProdutos.map((item) => {
                           const produto = produtos.find(p => p.id === item.produtoId);
                           return (
                             <div key={item.produtoId} className="flex items-center justify-between p-3 bg-blue-500/10 border border-blue-500/20 rounded-xl">
-                              <span className="text-[#E8E8E8] text-sm">{produto?.nome}</span>
+                              <span className="text-[#E8E8E8] text-sm">{capitalize(produto?.nome || '')}</span>
                               <div className="flex items-center gap-3">
                                 <input
                                   type="number"
                                   min="1"
+                                  step="0.5"
                                   value={item.quantidade}
                                   onChange={(e) => {
                                     const qtd = parseFloat(e.target.value) || 1;
@@ -1041,7 +991,7 @@ function OrdensPageContent() {
                                   }}
                                   className="w-16 bg-[#121212] border border-[#333333] rounded px-2 py-1 text-[#E8E8E8] text-sm text-center"
                                 />
-                                <span className="text-blue-400">{formatCurrency(item.precoUnitario * item.quantidade)}</span>
+                                <span className="text-blue-400 w-20 text-right">{formatCurrency(item.precoUnitario * item.quantidade)}</span>
                                 <button
                                   onClick={() => removeProduto(item.produtoId)}
                                   className="p-1 hover:bg-red-500/10 rounded text-red-500"
@@ -1052,6 +1002,54 @@ function OrdensPageContent() {
                             </div>
                           );
                         })}
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Serviços Extras */}
+                  <div className="pt-4 border-t border-[#333333]">
+                    <h3 className="text-sm font-medium text-[#9E9E9E] mb-2">Serviços Extras (mão de obra, etc)</h3>
+                    <div className="flex gap-2 mb-2">
+                      <input
+                        type="text"
+                        placeholder="Descrição do serviço"
+                        value={novoServicoExtra.descricao}
+                        onChange={(e) => setNovoServicoExtra({ ...novoServicoExtra, descricao: e.target.value })}
+                        className="flex-1 bg-[#121212] border border-[#333333] rounded-xl px-4 py-2 text-[#E8E8E8] placeholder-gray-500 focus:outline-none focus:border-[#43A047]"
+                        maxLength={100}
+                      />
+                      <input
+                        type="number"
+                        placeholder="Valor"
+                        value={novoServicoExtra.valor}
+                        onChange={(e) => setNovoServicoExtra({ ...novoServicoExtra, valor: e.target.value })}
+                        className="w-28 bg-[#121212] border border-[#333333] rounded-xl px-4 py-2 text-[#E8E8E8] placeholder-gray-500 focus:outline-none focus:border-[#43A047]"
+                        min="0"
+                        step="0.01"
+                      />
+                      <button
+                        onClick={addServicoExtra}
+                        className="px-4 py-2 bg-gradient-to-r from-[#43A047] to-[#1B5E20] rounded-xl text-white hover:shadow-lg transition-all"
+                      >
+                        <Plus size={20} />
+                      </button>
+                    </div>
+                    {servicosExtras.length > 0 && (
+                      <div className="space-y-2">
+                        {servicosExtras.map((extra, index) => (
+                          <div key={index} className="flex items-center justify-between p-3 bg-green-500/10 border border-green-500/20 rounded-xl">
+                            <span className="text-[#E8E8E8]">{extra.descricao}</span>
+                            <div className="flex items-center gap-3">
+                              <span className="text-[#43A047]">{formatCurrency(extra.valor)}</span>
+                              <button
+                                onClick={() => removeServicoExtra(index)}
+                                className="p-1 hover:bg-red-500/10 rounded text-red-500"
+                              >
+                                <X size={16} />
+                              </button>
+                            </div>
+                          </div>
+                        ))}
                       </div>
                     )}
                   </div>
@@ -1076,21 +1074,6 @@ function OrdensPageContent() {
                     })()}
                   </div>
 
-                  {selectedServicos.length > 0 && (
-                    <div className="p-4 bg-[#121212] rounded-xl">
-                      <h3 className="text-sm font-medium text-[#9E9E9E] mb-2">Servicos</h3>
-                      {selectedServicos.map((item) => {
-                        const servico = servicos.find(s => s.id === item.servicoId);
-                        return (
-                          <div key={item.servicoId} className="flex justify-between py-1">
-                            <span className="text-[#E8E8E8]">{servico?.nome}</span>
-                            <span className="text-[#43A047]">{formatCurrency(item.precoUnitario)}</span>
-                          </div>
-                        );
-                      })}
-                    </div>
-                  )}
-
                   {selectedProdutos.length > 0 && (
                     <div className="p-4 bg-[#121212] rounded-xl">
                       <h3 className="text-sm font-medium text-[#9E9E9E] mb-2">Produtos</h3>
@@ -1098,11 +1081,23 @@ function OrdensPageContent() {
                         const produto = produtos.find(p => p.id === item.produtoId);
                         return (
                           <div key={item.produtoId} className="flex justify-between py-1">
-                            <span className="text-[#E8E8E8]">{produto?.nome} x{item.quantidade}</span>
+                            <span className="text-[#E8E8E8]">{capitalize(produto?.nome || '')} x{item.quantidade}</span>
                             <span className="text-blue-400">{formatCurrency(item.precoUnitario * item.quantidade)}</span>
                           </div>
                         );
                       })}
+                    </div>
+                  )}
+
+                  {servicosExtras.length > 0 && (
+                    <div className="p-4 bg-[#121212] rounded-xl">
+                      <h3 className="text-sm font-medium text-[#9E9E9E] mb-2">Servicos Extras</h3>
+                      {servicosExtras.map((extra, index) => (
+                        <div key={index} className="flex justify-between py-1">
+                          <span className="text-[#E8E8E8]">{extra.descricao}</span>
+                          <span className="text-[#43A047]">{formatCurrency(extra.valor)}</span>
+                        </div>
+                      ))}
                     </div>
                   )}
 
