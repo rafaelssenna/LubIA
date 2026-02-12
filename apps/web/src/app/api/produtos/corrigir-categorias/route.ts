@@ -1,6 +1,5 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import { getSession } from '@/lib/auth';
 
 // Função para detectar categoria automaticamente
 function detectCategoria(nome: string, codigo: string): string {
@@ -132,25 +131,22 @@ function detectCategoria(nome: string, codigo: string): string {
 
 export async function POST() {
   try {
-    const session = await getSession();
-    if (!session) {
-      return NextResponse.json({ error: 'Não autorizado' }, { status: 401 });
-    }
-
-    // Buscar todos os produtos da empresa
+    // Buscar TODOS os produtos de TODAS as empresas com categoria "OUTRO"
     const produtos = await prisma.produto.findMany({
-      where: { empresaId: session.empresaId },
-      select: { id: true, codigo: true, nome: true, categoria: true }
+      where: { categoria: 'OUTRO' },
+      select: { id: true, codigo: true, nome: true, categoria: true, empresaId: true }
     });
 
-    const correcoes: Array<{ id: number; nome: string; de: string; para: string }> = [];
+    console.log(`[CORRIGIR CATEGORIAS] Encontrados ${produtos.length} produtos com categoria OUTRO`);
+
+    const correcoes: Array<{ id: number; nome: string; de: string; para: string; empresaId: number }> = [];
 
     // Analisar cada produto
     for (const produto of produtos) {
       const categoriaDetectada = detectCategoria(produto.nome, produto.codigo);
 
-      // Se a categoria atual for "OUTRO" e detectamos uma categoria diferente, corrigir
-      if (produto.categoria === 'OUTRO' && categoriaDetectada !== 'OUTRO') {
+      // Se detectamos uma categoria diferente de OUTRO, corrigir
+      if (categoriaDetectada !== 'OUTRO') {
         await prisma.produto.update({
           where: { id: produto.id },
           data: { categoria: categoriaDetectada as any }
@@ -160,14 +156,19 @@ export async function POST() {
           id: produto.id,
           nome: produto.nome,
           de: produto.categoria,
-          para: categoriaDetectada
+          para: categoriaDetectada,
+          empresaId: produto.empresaId
         });
+
+        console.log(`[CORRIGIR CATEGORIAS] ✅ ${produto.nome}: OUTRO → ${categoriaDetectada}`);
       }
     }
 
+    console.log(`[CORRIGIR CATEGORIAS] Total corrigido: ${correcoes.length} produtos`);
+
     return NextResponse.json({
       success: true,
-      message: `${correcoes.length} produto(s) corrigido(s)`,
+      message: `${correcoes.length} produto(s) corrigido(s) em todas as contas`,
       correcoes
     });
 
@@ -177,38 +178,36 @@ export async function POST() {
   }
 }
 
-// GET para visualizar o que seria corrigido (preview)
+// GET para visualizar o que seria corrigido (preview) - todas as contas
 export async function GET() {
   try {
-    const session = await getSession();
-    if (!session) {
-      return NextResponse.json({ error: 'Não autorizado' }, { status: 401 });
-    }
-
+    // Buscar TODOS os produtos com categoria "OUTRO" de todas as empresas
     const produtos = await prisma.produto.findMany({
-      where: { empresaId: session.empresaId },
-      select: { id: true, codigo: true, nome: true, categoria: true }
+      where: { categoria: 'OUTRO' },
+      select: { id: true, codigo: true, nome: true, categoria: true, empresaId: true },
+      include: { empresa: { select: { nome: true } } }
     });
 
-    const sugestoes: Array<{ id: number; codigo: string; nome: string; categoriaAtual: string; categoriaSugerida: string }> = [];
+    const sugestoes: Array<{ id: number; codigo: string; nome: string; categoriaAtual: string; categoriaSugerida: string; empresa: string }> = [];
 
     for (const produto of produtos) {
       const categoriaDetectada = detectCategoria(produto.nome, produto.codigo);
 
-      if (produto.categoria === 'OUTRO' && categoriaDetectada !== 'OUTRO') {
+      if (categoriaDetectada !== 'OUTRO') {
         sugestoes.push({
           id: produto.id,
           codigo: produto.codigo,
           nome: produto.nome,
           categoriaAtual: produto.categoria,
-          categoriaSugerida: categoriaDetectada
+          categoriaSugerida: categoriaDetectada,
+          empresa: (produto as any).empresa?.nome || 'Desconhecida'
         });
       }
     }
 
     return NextResponse.json({
-      total: produtos.length,
-      comCategoriaOutro: produtos.filter(p => p.categoria === 'OUTRO').length,
+      totalComCategoriaOutro: produtos.length,
+      podeCorrigir: sugestoes.length,
       sugestoes
     });
 
