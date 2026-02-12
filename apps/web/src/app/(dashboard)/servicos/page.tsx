@@ -22,6 +22,8 @@ interface Servico {
   categoria: string;
   precoBase: number;
   duracaoMin: number | null;
+  intervaloKm: number | null;
+  intervaloDias: number | null;
   ativo: boolean;
 }
 
@@ -95,6 +97,8 @@ export default function ServicosPage() {
     categoria: 'OUTROS',
     precoBase: '',
     duracaoMin: '',
+    intervaloKm: '',
+    intervaloDias: '',
   });
 
   const fetchServicos = async () => {
@@ -128,6 +132,8 @@ export default function ServicosPage() {
       categoria: 'OUTROS',
       precoBase: '',
       duracaoMin: '',
+      intervaloKm: '',
+      intervaloDias: '',
     });
   };
 
@@ -152,6 +158,8 @@ export default function ServicosPage() {
           categoria: form.categoria,
           precoBase: parseFloat(form.precoBase),
           duracaoMin: form.duracaoMin ? parseInt(form.duracaoMin) : null,
+          intervaloKm: form.intervaloKm ? parseInt(form.intervaloKm) : null,
+          intervaloDias: form.intervaloDias ? parseInt(form.intervaloDias) : null,
         }),
       });
 
@@ -180,6 +188,8 @@ export default function ServicosPage() {
       categoria: servico.categoria,
       precoBase: servico.precoBase.toString(),
       duracaoMin: servico.duracaoMin?.toString() || '',
+      intervaloKm: servico.intervaloKm?.toString() || '',
+      intervaloDias: servico.intervaloDias?.toString() || '',
     });
     setShowEditModal(true);
   };
@@ -207,6 +217,8 @@ export default function ServicosPage() {
           categoria: form.categoria,
           precoBase: parseFloat(form.precoBase),
           duracaoMin: form.duracaoMin ? parseInt(form.duracaoMin) : null,
+          intervaloKm: form.intervaloKm ? parseInt(form.intervaloKm) : null,
+          intervaloDias: form.intervaloDias ? parseInt(form.intervaloDias) : null,
         }),
       });
 
@@ -488,6 +500,31 @@ export default function ServicosPage() {
                   />
                 </div>
               </div>
+              <div>
+                <label className="block text-sm font-medium text-[#9E9E9E] mb-2">Tempo para a próxima</label>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <input
+                      type="number"
+                      value={form.intervaloKm}
+                      onChange={(e) => setForm({ ...form, intervaloKm: e.target.value })}
+                      placeholder="Ex: 5000"
+                      className="w-full bg-[#121212] border border-[#333333] rounded-xl px-4 py-3 text-[#E8E8E8] placeholder-[#616161] focus:outline-none focus:border-[#43A047]/50 focus:ring-1 focus:ring-[#43A047]/20 transition-all duration-200"
+                    />
+                    <span className="text-xs text-[#6B7280] mt-1 block">KM</span>
+                  </div>
+                  <div>
+                    <input
+                      type="number"
+                      value={form.intervaloDias}
+                      onChange={(e) => setForm({ ...form, intervaloDias: e.target.value })}
+                      placeholder="Ex: 180"
+                      className="w-full bg-[#121212] border border-[#333333] rounded-xl px-4 py-3 text-[#E8E8E8] placeholder-[#616161] focus:outline-none focus:border-[#43A047]/50 focus:ring-1 focus:ring-[#43A047]/20 transition-all duration-200"
+                    />
+                    <span className="text-xs text-[#6B7280] mt-1 block">Dias</span>
+                  </div>
+                </div>
+              </div>
             </div>
             <div className="p-6 border-t border-[#333333] flex gap-3 justify-end">
               <button
@@ -577,6 +614,31 @@ export default function ServicosPage() {
                     onChange={(e) => setForm({ ...form, duracaoMin: e.target.value })}
                     className="w-full bg-[#121212] border border-[#333333] rounded-xl px-4 py-3 text-[#E8E8E8] placeholder-[#616161] focus:outline-none focus:border-[#43A047]/50 focus:ring-1 focus:ring-[#43A047]/20 transition-all duration-200"
                   />
+                </div>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-[#9E9E9E] mb-2">Tempo para a próxima</label>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <input
+                      type="number"
+                      value={form.intervaloKm}
+                      onChange={(e) => setForm({ ...form, intervaloKm: e.target.value })}
+                      placeholder="Ex: 5000"
+                      className="w-full bg-[#121212] border border-[#333333] rounded-xl px-4 py-3 text-[#E8E8E8] placeholder-[#616161] focus:outline-none focus:border-[#43A047]/50 focus:ring-1 focus:ring-[#43A047]/20 transition-all duration-200"
+                    />
+                    <span className="text-xs text-[#6B7280] mt-1 block">KM</span>
+                  </div>
+                  <div>
+                    <input
+                      type="number"
+                      value={form.intervaloDias}
+                      onChange={(e) => setForm({ ...form, intervaloDias: e.target.value })}
+                      placeholder="Ex: 180"
+                      className="w-full bg-[#121212] border border-[#333333] rounded-xl px-4 py-3 text-[#E8E8E8] placeholder-[#616161] focus:outline-none focus:border-[#43A047]/50 focus:ring-1 focus:ring-[#43A047]/20 transition-all duration-200"
+                    />
+                    <span className="text-xs text-[#6B7280] mt-1 block">Dias</span>
+                  </div>
                 </div>
               </div>
             </div>

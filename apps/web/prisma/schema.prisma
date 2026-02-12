@@ -126,16 +126,18 @@ enum CategoriaServico {
 
 // Tipos de serviço oferecidos
 model Servico {
-  id          Int              @id @default(autoincrement())
-  empresaId   Int
-  nome        String
-  descricao   String?
-  categoria   CategoriaServico @default(OUTROS)
-  precoBase   Decimal          @db.Decimal(10, 2)
-  duracaoMin  Int?
-  ativo       Boolean          @default(true)
-  createdAt   DateTime         @default(now())
-  updatedAt   DateTime         @updatedAt
+  id            Int              @id @default(autoincrement())
+  empresaId     Int
+  nome          String
+  descricao     String?
+  categoria     CategoriaServico @default(OUTROS)
+  precoBase     Decimal          @db.Decimal(10, 2)
+  duracaoMin    Int?
+  intervaloKm   Int?             // Intervalo em KM para próxima manutenção
+  intervaloDias Int?             // Intervalo em dias para próxima manutenção
+  ativo         Boolean          @default(true)
+  createdAt     DateTime         @default(now())
+  updatedAt     DateTime         @updatedAt
 
   empresa     Empresa     @relation(fields: [empresaId], references: [id], onDelete: Cascade)
   itensOrdem  ItemOrdem[]

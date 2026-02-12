@@ -65,6 +65,8 @@ export async function GET(request: NextRequest) {
         categoria: s.categoria,
         precoBase: Number(s.precoBase),
         duracaoMin: s.duracaoMin,
+        intervaloKm: s.intervaloKm,
+        intervaloDias: s.intervaloDias,
         ativo: s.ativo,
         createdAt: s.createdAt,
         updatedAt: s.updatedAt,
@@ -92,7 +94,7 @@ export async function POST(request: NextRequest) {
 
   try {
     const body = await request.json();
-    const { nome, descricao, categoria, precoBase, duracaoMin, ativo } = body;
+    const { nome, descricao, categoria, precoBase, duracaoMin, intervaloKm, intervaloDias, ativo } = body;
 
     if (!nome) {
       return NextResponse.json({ error: 'Nome é obrigatório' }, { status: 400 });
@@ -109,6 +111,8 @@ export async function POST(request: NextRequest) {
         categoria: categoria || 'OUTROS',
         precoBase,
         duracaoMin: duracaoMin || null,
+        intervaloKm: intervaloKm || null,
+        intervaloDias: intervaloDias || null,
         ativo: ativo !== false,
         empresaId: session.empresaId,
       },
@@ -122,6 +126,8 @@ export async function POST(request: NextRequest) {
         categoria: servico.categoria,
         precoBase: Number(servico.precoBase),
         duracaoMin: servico.duracaoMin,
+        intervaloKm: servico.intervaloKm,
+        intervaloDias: servico.intervaloDias,
         ativo: servico.ativo,
       },
     }, { status: 201 });

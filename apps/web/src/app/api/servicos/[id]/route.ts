@@ -36,6 +36,8 @@ export async function GET(
         categoria: servico.categoria,
         precoBase: Number(servico.precoBase),
         duracaoMin: servico.duracaoMin,
+        intervaloKm: servico.intervaloKm,
+        intervaloDias: servico.intervaloDias,
         ativo: servico.ativo,
         createdAt: servico.createdAt,
         updatedAt: servico.updatedAt,
@@ -66,7 +68,7 @@ export async function PUT(
     }
 
     const body = await request.json();
-    const { nome, descricao, categoria, precoBase, duracaoMin, ativo } = body;
+    const { nome, descricao, categoria, precoBase, duracaoMin, intervaloKm, intervaloDias, ativo } = body;
 
     // Verify service exists and belongs to this empresa
     const existing = await prisma.servico.findFirst({
@@ -85,6 +87,8 @@ export async function PUT(
         categoria: categoria !== undefined ? categoria : existing.categoria,
         precoBase: precoBase !== undefined ? precoBase : existing.precoBase,
         duracaoMin: duracaoMin !== undefined ? duracaoMin : existing.duracaoMin,
+        intervaloKm: intervaloKm !== undefined ? intervaloKm : existing.intervaloKm,
+        intervaloDias: intervaloDias !== undefined ? intervaloDias : existing.intervaloDias,
         ativo: ativo !== undefined ? ativo : existing.ativo,
       },
     });
@@ -97,6 +101,8 @@ export async function PUT(
         categoria: servico.categoria,
         precoBase: Number(servico.precoBase),
         duracaoMin: servico.duracaoMin,
+        intervaloKm: servico.intervaloKm,
+        intervaloDias: servico.intervaloDias,
         ativo: servico.ativo,
       },
     });
