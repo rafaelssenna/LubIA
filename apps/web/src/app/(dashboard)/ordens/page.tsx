@@ -25,6 +25,7 @@ interface Veiculo {
   marca: string;
   modelo: string;
   ano: number | null;
+  kmAtual: number | null;
   cliente: Cliente;
 }
 
@@ -207,7 +208,9 @@ function OrdensPageContent() {
           setVeiculos(veiculosData.data || []);
           setProdutos(produtosData.data || []);
           setSelectedVeiculoId(veiculoId);
-          setKmEntrada('');
+          // Auto-fill KM from vehicle's current KM
+          const selectedVeiculo = (veiculosData.data || []).find((v: Veiculo) => v.id === veiculoId);
+          setKmEntrada(selectedVeiculo?.kmAtual?.toString() || '');
           setObservacoes('');
           setServicosExtras([]);
           setSelectedProdutos([]);
@@ -901,7 +904,13 @@ function OrdensPageContent() {
                       filteredVeiculos.map((veiculo) => (
                         <button
                           key={veiculo.id}
-                          onClick={() => setSelectedVeiculoId(veiculo.id)}
+                          onClick={() => {
+                            setSelectedVeiculoId(veiculo.id);
+                            // Preencher KM de entrada com o KM atual do veículo
+                            if (veiculo.kmAtual && !kmEntrada) {
+                              setKmEntrada(veiculo.kmAtual.toString());
+                            }
+                          }}
                           className={`w-full p-4 rounded-xl text-left transition-colors ${
                             selectedVeiculoId === veiculo.id
                               ? 'bg-green-500/10 border-2 border-[#43A047]'
