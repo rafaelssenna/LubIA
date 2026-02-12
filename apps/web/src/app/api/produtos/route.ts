@@ -18,14 +18,18 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url);
     const busca = searchParams.get('busca') || '';
     const categoria = searchParams.get('categoria') || '';
+    const ativoParam = searchParams.get('ativo');
 
-    console.log('[PRODUTOS API] Params - busca:', busca, 'categoria:', categoria);
+    console.log('[PRODUTOS API] Params - busca:', busca, 'categoria:', categoria, 'ativo:', ativoParam);
     console.log('[PRODUTOS API] Tentando conectar ao banco...');
+
+    // Filtro de ativo: 'todos' = não filtra, 'true' = apenas ativos, 'false' = apenas inativos
+    const ativoFilter = ativoParam === 'todos' ? {} : ativoParam === 'false' ? { ativo: false } : { ativo: true };
 
     const produtos = await prisma.produto.findMany({
       where: {
         empresaId: session.empresaId,
-        ativo: true,
+        ...ativoFilter,
         ...(busca && {
           OR: [
             { nome: { contains: busca, mode: 'insensitive' } },
@@ -55,6 +59,7 @@ export async function GET(request: NextRequest) {
       precoVenda: Number(p.precoVenda),
       precoGranel: p.precoGranel ? Number(p.precoGranel) : null,
       localizacao: p.localizacao,
+      ativo: p.ativo,
       estoqueBaixo: Number(p.quantidade) <= Number(p.estoqueMinimo),
     }));
 

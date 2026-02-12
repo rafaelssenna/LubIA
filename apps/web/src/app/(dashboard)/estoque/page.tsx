@@ -21,6 +21,8 @@ import {
   ChevronRight,
   History,
   X,
+  Eye,
+  EyeOff,
 } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import OCRScanner from '@/components/OCRScanner';
@@ -40,6 +42,7 @@ interface Produto {
   precoVenda: number;
   precoGranel: number | null;
   localizacao: string | null;
+  ativo: boolean;
   estoqueBaixo: boolean;
 }
 
@@ -189,6 +192,9 @@ export default function EstoquePage() {
   // Low stock filter
   const [showOnlyLowStock, setShowOnlyLowStock] = useState(false);
 
+  // Active filter: 'todos' | 'ativos' | 'inativos'
+  const [ativoFilter, setAtivoFilter] = useState<'todos' | 'ativos' | 'inativos'>('ativos');
+
   // History modal
   const [showHistoryModal, setShowHistoryModal] = useState(false);
   const [historyProduto, setHistoryProduto] = useState<Produto | null>(null);
@@ -215,6 +221,9 @@ export default function EstoquePage() {
       const params = new URLSearchParams();
       if (searchTerm) params.append('busca', searchTerm);
       if (categoriaFilter) params.append('categoria', categoriaFilter);
+      // Map filter to API param
+      const ativoParam = ativoFilter === 'todos' ? 'todos' : ativoFilter === 'inativos' ? 'false' : 'true';
+      params.append('ativo', ativoParam);
 
       const res = await fetch(`/api/produtos?${params}`);
       const data = await res.json();
@@ -228,12 +237,12 @@ export default function EstoquePage() {
 
   useEffect(() => {
     fetchProdutos();
-  }, [searchTerm, categoriaFilter]);
+  }, [searchTerm, categoriaFilter, ativoFilter]);
 
   // Reset to page 1 when filters change
   useEffect(() => {
     setCurrentPage(1);
-  }, [searchTerm, categoriaFilter, showOnlyLowStock, sortBy, sortOrder]);
+  }, [searchTerm, categoriaFilter, showOnlyLowStock, sortBy, sortOrder, ativoFilter]);
 
   // Fetch movimentações for history
   const fetchMovimentacoes = async (produtoId: number) => {
@@ -686,6 +695,22 @@ export default function EstoquePage() {
                 <X size={14} className="ml-1" />
               )}
             </button>
+            <select
+              value={ativoFilter}
+              onChange={(e) => setAtivoFilter(e.target.value as 'todos' | 'ativos' | 'inativos')}
+              className={`bg-[#121212] border rounded-xl px-4 py-3 focus:outline-none focus:border-[#43A047]/50 focus:ring-1 focus:ring-[#43A047]/20 transition-all duration-200 ${
+                ativoFilter === 'inativos'
+                  ? 'border-red-500/50 text-red-400'
+                  : ativoFilter === 'todos'
+                    ? 'border-blue-500/50 text-blue-400'
+                    : 'border-[#333333] text-[#9E9E9E]'
+              }`}
+              title="Filtrar por status"
+            >
+              <option value="ativos">Ativos</option>
+              <option value="inativos">Inativos</option>
+              <option value="todos">Todos</option>
+            </select>
           </div>
           <div className="flex gap-3">
             <button
@@ -782,14 +807,22 @@ export default function EstoquePage() {
                   </tr>
                 ) : (
                   paginatedProducts.map((produto) => (
-                    <tr key={produto.id} className="border-b border-[#333333]/50 hover:bg-[#121212] transition-all duration-200">
+                    <tr key={produto.id} className={`border-b border-[#333333]/50 hover:bg-[#121212] transition-all duration-200 ${!produto.ativo ? 'opacity-60' : ''}`}>
                       <td className="px-6 py-4">
                         <span className="text-sm font-mono text-[#9E9E9E]">{produto.codigo}</span>
                       </td>
                       <td className="px-6 py-4">
-                        <div>
-                          <p className="text-[#E8E8E8] font-medium">{produto.nome}</p>
-                          <p className="text-xs text-[#6B7280]">{produto.marca}</p>
+                        <div className="flex items-center gap-2">
+                          <div>
+                            <p className="text-[#E8E8E8] font-medium">{produto.nome}</p>
+                            <p className="text-xs text-[#6B7280]">{produto.marca}</p>
+                          </div>
+                          {!produto.ativo && (
+                            <span className="px-2 py-0.5 bg-red-500/10 text-red-400 text-xs rounded-full flex items-center gap-1">
+                              <EyeOff size={10} />
+                              Inativo
+                            </span>
+                          )}
                         </div>
                       </td>
                       <td className="px-6 py-4">
