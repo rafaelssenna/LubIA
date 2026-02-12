@@ -433,7 +433,7 @@ export default function ClientesPage() {
                         </div>
                       </td>
                       <td className="px-6 py-4">
-                        <div className="flex items-center justify-end gap-1 p-1 bg-[#1E1E1E] rounded-lg ring-1 ring-[#333333] opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                        <div className="flex items-center justify-end gap-1 p-1 bg-[#1E1E1E] rounded-lg ring-1 ring-[#333333]">
                           <button
                             onClick={() => {
                               window.open(`https://wa.me/55${cliente.telefone.replace(/\D/g, '')}`, '_blank');
