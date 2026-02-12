@@ -99,7 +99,7 @@ function OrdensPageContent() {
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
   const [stats, setStats] = useState({ total: 0, abertas: 0, concluidas: 0, hoje: 0 });
-  const [viewMode, setViewMode] = useState<'lista' | 'calendario'>('lista');
+  const [viewMode, setViewMode] = useState<'lista' | 'calendario'>('calendario');
   const [currentDate, setCurrentDate] = useState(new Date());
 
   // Modal states
