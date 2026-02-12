@@ -12,6 +12,7 @@ export default function CadastroPage() {
   const [senha, setSenha] = useState('');
   const [confirmarSenha, setConfirmarSenha] = useState('');
   const [nomeEmpresa, setNomeEmpresa] = useState('');
+  const [telefoneEmpresa, setTelefoneEmpresa] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
@@ -33,11 +34,17 @@ export default function CadastroPage() {
       return;
     }
 
+    if (!telefoneEmpresa || telefoneEmpresa.replace(/\D/g, '').length < 10) {
+      setError('Telefone da empresa é obrigatório (mínimo 10 dígitos)');
+      setLoading(false);
+      return;
+    }
+
     try {
       const res = await fetch('/api/auth/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ nome, email, senha, nomeEmpresa }),
+        body: JSON.stringify({ nome, email, senha, nomeEmpresa, telefoneEmpresa }),
       });
 
       const data = await res.json();
@@ -94,6 +101,20 @@ export default function CadastroPage() {
                 required
                 className="w-full bg-[#121212] border border-[#333333] rounded-xl px-4 py-3 text-[#E8E8E8] focus:outline-none focus:border-[#43A047] transition-colors"
                 placeholder="Ex: Auto Center Silva"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-[#9E9E9E] mb-2">
+                Telefone da Empresa (WhatsApp)
+              </label>
+              <input
+                type="tel"
+                value={telefoneEmpresa}
+                onChange={(e) => setTelefoneEmpresa(e.target.value)}
+                required
+                className="w-full bg-[#121212] border border-[#333333] rounded-xl px-4 py-3 text-[#E8E8E8] focus:outline-none focus:border-[#43A047] transition-colors"
+                placeholder="(31) 99999-9999"
               />
             </div>
 
