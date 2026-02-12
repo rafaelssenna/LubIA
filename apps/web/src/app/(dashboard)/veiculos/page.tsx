@@ -203,18 +203,20 @@ export default function VeiculosPage() {
 
   const formatPlate = (placa: string) => {
     const cleaned = placa.replace(/[^A-Za-z0-9]/g, '').toUpperCase();
-    if (cleaned.length === 7) {
+    if (cleaned.length <= 3) return cleaned;
+    if (cleaned.length <= 7) {
       // Detecta se é Mercosul (5º caractere é letra) ou antiga (5º é número)
-      const isMercosul = /[A-Z]/.test(cleaned[4]);
+      const isMercosul = cleaned.length >= 5 && /[A-Z]/.test(cleaned[4]);
       if (isMercosul) {
-        // Mercosul: ABC1D23
-        return cleaned;
-      } else {
-        // Antiga: ABC-1234
-        return `${cleaned.slice(0, 3)}-${cleaned.slice(3)}`;
+        return cleaned; // Mercosul: ABC1D23 (sem hífen)
       }
+      return cleaned.slice(0, 3) + '-' + cleaned.slice(3); // Antiga: ABC-1234
     }
-    return placa;
+    // Se passou de 7, limita
+    const limited = cleaned.slice(0, 7);
+    const isMercosul = /[A-Z]/.test(limited[4]);
+    if (isMercosul) return limited;
+    return limited.slice(0, 3) + '-' + limited.slice(3);
   };
 
   return (
@@ -409,7 +411,7 @@ export default function VeiculosPage() {
                     type="text"
                     placeholder="ABC1D23 ou ABC1234"
                     value={form.placa}
-                    onChange={(e) => setForm({ ...form, placa: e.target.value.toUpperCase() })}
+                    onChange={(e) => setForm({ ...form, placa: formatPlate(e.target.value) })}
                     className="flex-1 bg-[#121212] border border-[#333333] rounded-xl px-4 py-3 text-[#E8E8E8] placeholder-[#616161] focus:outline-none focus:border-[#43A047]/50 focus:ring-1 focus:ring-[#43A047]/20 uppercase font-mono transition-all duration-200"
                   />
                   <button
@@ -529,7 +531,7 @@ export default function VeiculosPage() {
                   type="text"
                   placeholder="ABC1D23 ou ABC1234"
                   value={form.placa}
-                  onChange={(e) => setForm({ ...form, placa: e.target.value.toUpperCase() })}
+                  onChange={(e) => setForm({ ...form, placa: formatPlate(e.target.value) })}
                   className="w-full bg-[#121212] border border-[#333333] rounded-xl px-4 py-3 text-[#E8E8E8] placeholder-[#616161] focus:outline-none focus:border-[#43A047]/50 focus:ring-1 focus:ring-[#43A047]/20 uppercase font-mono transition-all duration-200"
                 />
               </div>
