@@ -933,6 +933,7 @@ function OrdensPageContent() {
                           value={kmEntrada}
                           onChange={(e) => setKmEntrada(e.target.value)}
                           placeholder="Ex: 45000"
+                          max={9999999}
                           className="w-full bg-[#121212] border border-[#333333] rounded-xl px-4 py-3 text-[#E8E8E8] placeholder-gray-400 focus:outline-none focus:border-[#43A047]"
                         />
                       </div>

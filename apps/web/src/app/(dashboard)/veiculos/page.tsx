@@ -430,6 +430,7 @@ export default function VeiculosPage() {
                     placeholder="Ex: Honda"
                     value={form.marca}
                     onChange={(e) => setForm({ ...form, marca: e.target.value })}
+                    maxLength={50}
                     className="w-full bg-[#121212] border border-[#333333] rounded-xl px-4 py-3 text-[#E8E8E8] placeholder-[#616161] focus:outline-none focus:border-[#43A047]/50 focus:ring-1 focus:ring-[#43A047]/20 transition-all duration-200"
                   />
                 </div>
@@ -440,6 +441,7 @@ export default function VeiculosPage() {
                     placeholder="2020"
                     value={form.ano}
                     onChange={(e) => setForm({ ...form, ano: e.target.value })}
+                    maxLength={4}
                     className="w-full bg-[#121212] border border-[#333333] rounded-xl px-4 py-3 text-[#E8E8E8] placeholder-[#616161] focus:outline-none focus:border-[#43A047]/50 focus:ring-1 focus:ring-[#43A047]/20 transition-all duration-200"
                   />
                 </div>
@@ -451,6 +453,7 @@ export default function VeiculosPage() {
                   placeholder="Ex: Civic EXL"
                   value={form.modelo}
                   onChange={(e) => setForm({ ...form, modelo: e.target.value })}
+                  maxLength={50}
                   className="w-full bg-[#121212] border border-[#333333] rounded-xl px-4 py-3 text-[#E8E8E8] placeholder-[#616161] focus:outline-none focus:border-[#43A047]/50 focus:ring-1 focus:ring-[#43A047]/20 transition-all duration-200"
                 />
               </div>
@@ -462,6 +465,7 @@ export default function VeiculosPage() {
                     placeholder="Ex: Prata"
                     value={form.cor}
                     onChange={(e) => setForm({ ...form, cor: e.target.value })}
+                    maxLength={30}
                     className="w-full bg-[#121212] border border-[#333333] rounded-xl px-4 py-3 text-[#E8E8E8] placeholder-[#616161] focus:outline-none focus:border-[#43A047]/50 focus:ring-1 focus:ring-[#43A047]/20 transition-all duration-200"
                   />
                 </div>
@@ -472,6 +476,7 @@ export default function VeiculosPage() {
                     placeholder="45000"
                     value={form.kmAtual}
                     onChange={(e) => setForm({ ...form, kmAtual: e.target.value })}
+                    maxLength={10}
                     className="w-full bg-[#121212] border border-[#333333] rounded-xl px-4 py-3 text-[#E8E8E8] placeholder-[#616161] focus:outline-none focus:border-[#43A047]/50 focus:ring-1 focus:ring-[#43A047]/20 transition-all duration-200"
                   />
                 </div>

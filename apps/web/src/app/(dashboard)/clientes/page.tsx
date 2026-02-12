@@ -484,6 +484,7 @@ export default function ClientesPage() {
                   value={form.nome}
                   onChange={(e) => setForm({ ...form, nome: e.target.value })}
                   placeholder="Nome completo"
+                  maxLength={100}
                   className="w-full bg-[#121212] border border-[#333333] rounded-xl px-4 py-3 text-[#E8E8E8] placeholder-[#616161] focus:outline-none focus:border-[#43A047]/50 focus:ring-1 focus:ring-[#43A047]/20 transition-all duration-200"
                 />
               </div>
@@ -494,6 +495,7 @@ export default function ClientesPage() {
                   value={form.telefone}
                   onChange={(e) => setForm({ ...form, telefone: e.target.value })}
                   placeholder="(11) 99999-9999"
+                  maxLength={15}
                   className="w-full bg-[#121212] border border-[#333333] rounded-xl px-4 py-3 text-[#E8E8E8] placeholder-[#616161] focus:outline-none focus:border-[#43A047]/50 focus:ring-1 focus:ring-[#43A047]/20 transition-all duration-200"
                 />
               </div>
@@ -504,6 +506,7 @@ export default function ClientesPage() {
                   value={form.email}
                   onChange={(e) => setForm({ ...form, email: e.target.value })}
                   placeholder="email@exemplo.com"
+                  maxLength={100}
                   className="w-full bg-[#121212] border border-[#333333] rounded-xl px-4 py-3 text-[#E8E8E8] placeholder-[#616161] focus:outline-none focus:border-[#43A047]/50 focus:ring-1 focus:ring-[#43A047]/20 transition-all duration-200"
                 />
               </div>
@@ -514,6 +517,7 @@ export default function ClientesPage() {
                   value={form.cpf}
                   onChange={(e) => setForm({ ...form, cpf: e.target.value })}
                   placeholder="CPF ou CNPJ"
+                  maxLength={18}
                   className="w-full bg-[#121212] border border-[#333333] rounded-xl px-4 py-3 text-[#E8E8E8] placeholder-[#616161] focus:outline-none focus:border-[#43A047]/50 focus:ring-1 focus:ring-[#43A047]/20 transition-all duration-200"
                 />
               </div>
@@ -543,6 +547,7 @@ export default function ClientesPage() {
                         onChange={(e) => setEnderecoForm({ ...enderecoForm, rua: e.target.value })}
                         placeholder={buscandoCep ? 'Buscando...' : 'Rua'}
                         disabled={buscandoCep}
+                        maxLength={100}
                         className="w-full bg-[#121212] border border-[#333333] rounded-xl px-4 py-3 text-[#E8E8E8] placeholder-[#616161] focus:outline-none focus:border-[#43A047]/50 text-sm disabled:opacity-50"
                       />
                     </div>
@@ -554,6 +559,7 @@ export default function ClientesPage() {
                         value={enderecoForm.numero}
                         onChange={(e) => setEnderecoForm({ ...enderecoForm, numero: e.target.value })}
                         placeholder="No"
+                        maxLength={10}
                         className="w-full bg-[#121212] border border-[#333333] rounded-xl px-4 py-3 text-[#E8E8E8] placeholder-[#616161] focus:outline-none focus:border-[#43A047]/50 text-sm"
                       />
                     </div>
@@ -563,6 +569,7 @@ export default function ClientesPage() {
                         value={enderecoForm.complemento}
                         onChange={(e) => setEnderecoForm({ ...enderecoForm, complemento: e.target.value })}
                         placeholder="Complemento"
+                        maxLength={50}
                         className="w-full bg-[#121212] border border-[#333333] rounded-xl px-4 py-3 text-[#E8E8E8] placeholder-[#616161] focus:outline-none focus:border-[#43A047]/50 text-sm"
                       />
                     </div>
@@ -575,6 +582,7 @@ export default function ClientesPage() {
                         onChange={(e) => setEnderecoForm({ ...enderecoForm, bairro: e.target.value })}
                         placeholder="Bairro"
                         disabled={buscandoCep}
+                        maxLength={50}
                         className="w-full bg-[#121212] border border-[#333333] rounded-xl px-4 py-3 text-[#E8E8E8] placeholder-[#616161] focus:outline-none focus:border-[#43A047]/50 text-sm disabled:opacity-50"
                       />
                     </div>
@@ -585,6 +593,7 @@ export default function ClientesPage() {
                         onChange={(e) => setEnderecoForm({ ...enderecoForm, cidade: e.target.value })}
                         placeholder="Cidade"
                         disabled={buscandoCep}
+                        maxLength={50}
                         className="w-full bg-[#121212] border border-[#333333] rounded-xl px-4 py-3 text-[#E8E8E8] placeholder-[#616161] focus:outline-none focus:border-[#43A047]/50 text-sm disabled:opacity-50"
                       />
                     </div>
@@ -642,6 +651,7 @@ export default function ClientesPage() {
                   type="text"
                   value={form.nome}
                   onChange={(e) => setForm({ ...form, nome: e.target.value })}
+                  maxLength={100}
                   className="w-full bg-[#121212] border border-[#333333] rounded-xl px-4 py-3 text-[#E8E8E8] placeholder-[#616161] focus:outline-none focus:border-[#43A047]/50 focus:ring-1 focus:ring-[#43A047]/20 transition-all duration-200"
                 />
               </div>
@@ -651,6 +661,7 @@ export default function ClientesPage() {
                   type="text"
                   value={form.telefone}
                   onChange={(e) => setForm({ ...form, telefone: e.target.value })}
+                  maxLength={15}
                   className="w-full bg-[#121212] border border-[#333333] rounded-xl px-4 py-3 text-[#E8E8E8] placeholder-[#616161] focus:outline-none focus:border-[#43A047]/50 focus:ring-1 focus:ring-[#43A047]/20 transition-all duration-200"
                 />
               </div>
@@ -660,6 +671,7 @@ export default function ClientesPage() {
                   type="email"
                   value={form.email}
                   onChange={(e) => setForm({ ...form, email: e.target.value })}
+                  maxLength={100}
                   className="w-full bg-[#121212] border border-[#333333] rounded-xl px-4 py-3 text-[#E8E8E8] placeholder-[#616161] focus:outline-none focus:border-[#43A047]/50 focus:ring-1 focus:ring-[#43A047]/20 transition-all duration-200"
                 />
               </div>
@@ -670,6 +682,7 @@ export default function ClientesPage() {
                   value={form.cpf}
                   onChange={(e) => setForm({ ...form, cpf: e.target.value })}
                   placeholder="CPF ou CNPJ"
+                  maxLength={18}
                   className="w-full bg-[#121212] border border-[#333333] rounded-xl px-4 py-3 text-[#E8E8E8] placeholder-[#616161] focus:outline-none focus:border-[#43A047]/50 focus:ring-1 focus:ring-[#43A047]/20 transition-all duration-200"
                 />
               </div>
@@ -699,6 +712,7 @@ export default function ClientesPage() {
                         onChange={(e) => setEnderecoForm({ ...enderecoForm, rua: e.target.value })}
                         placeholder={buscandoCep ? 'Buscando...' : 'Rua'}
                         disabled={buscandoCep}
+                        maxLength={100}
                         className="w-full bg-[#121212] border border-[#333333] rounded-xl px-4 py-3 text-[#E8E8E8] placeholder-[#616161] focus:outline-none focus:border-[#43A047]/50 text-sm disabled:opacity-50"
                       />
                     </div>
@@ -710,6 +724,7 @@ export default function ClientesPage() {
                         value={enderecoForm.numero}
                         onChange={(e) => setEnderecoForm({ ...enderecoForm, numero: e.target.value })}
                         placeholder="No"
+                        maxLength={10}
                         className="w-full bg-[#121212] border border-[#333333] rounded-xl px-4 py-3 text-[#E8E8E8] placeholder-[#616161] focus:outline-none focus:border-[#43A047]/50 text-sm"
                       />
                     </div>
@@ -719,6 +734,7 @@ export default function ClientesPage() {
                         value={enderecoForm.complemento}
                         onChange={(e) => setEnderecoForm({ ...enderecoForm, complemento: e.target.value })}
                         placeholder="Complemento"
+                        maxLength={50}
                         className="w-full bg-[#121212] border border-[#333333] rounded-xl px-4 py-3 text-[#E8E8E8] placeholder-[#616161] focus:outline-none focus:border-[#43A047]/50 text-sm"
                       />
                     </div>
@@ -731,6 +747,7 @@ export default function ClientesPage() {
                         onChange={(e) => setEnderecoForm({ ...enderecoForm, bairro: e.target.value })}
                         placeholder="Bairro"
                         disabled={buscandoCep}
+                        maxLength={50}
                         className="w-full bg-[#121212] border border-[#333333] rounded-xl px-4 py-3 text-[#E8E8E8] placeholder-[#616161] focus:outline-none focus:border-[#43A047]/50 text-sm disabled:opacity-50"
                       />
                     </div>
@@ -741,6 +758,7 @@ export default function ClientesPage() {
                         onChange={(e) => setEnderecoForm({ ...enderecoForm, cidade: e.target.value })}
                         placeholder="Cidade"
                         disabled={buscandoCep}
+                        maxLength={50}
                         className="w-full bg-[#121212] border border-[#333333] rounded-xl px-4 py-3 text-[#E8E8E8] placeholder-[#616161] focus:outline-none focus:border-[#43A047]/50 text-sm disabled:opacity-50"
                       />
                     </div>
