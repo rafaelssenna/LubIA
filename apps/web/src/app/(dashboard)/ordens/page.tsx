@@ -10,7 +10,7 @@ import {
 import { useState, useEffect, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { useToast } from '@/components/Toast';
-import { downloadOrdemPDF } from '@/lib/pdfGenerator';
+import { downloadOrdemPDF, EmpresaConfig } from '@/lib/pdfGenerator';
 import { capitalize, formatPlate } from '@/utils/format';
 
 interface Cliente {
@@ -120,6 +120,9 @@ function OrdensPageContent() {
   const [totalItems, setTotalItems] = useState(0);
   const itemsPerPage = 20;
 
+  // Empresa config for PDF
+  const [empresaConfig, setEmpresaConfig] = useState<EmpresaConfig | null>(null);
+
   const fetchOrdens = async () => {
     try {
       const params = new URLSearchParams();
@@ -163,8 +166,26 @@ function OrdensPageContent() {
     }
   };
 
+  const fetchEmpresaConfig = async () => {
+    try {
+      const res = await fetch('/api/configuracoes');
+      const data = await res.json();
+      if (data.data) {
+        setEmpresaConfig({
+          nomeOficina: data.data.nomeOficina,
+          cnpj: data.data.cnpj,
+          telefone: data.data.telefone,
+          endereco: data.data.endereco,
+        });
+      }
+    } catch (error) {
+      console.error('Erro ao buscar config da empresa:', error);
+    }
+  };
+
   useEffect(() => {
     fetchOrdens();
+    fetchEmpresaConfig();
   }, [searchTerm, statusFilter, currentPage]);
 
   // Reset para página 1 ao mudar filtros
@@ -768,7 +789,7 @@ function OrdensPageContent() {
                       )}
                       <div className="flex items-center gap-1 ml-2 p-1 bg-[#121212] rounded-lg ring-1 ring-[#333333]">
                         <button
-                          onClick={() => downloadOrdemPDF(ordem)}
+                          onClick={() => downloadOrdemPDF(ordem, empresaConfig || undefined)}
                           className="p-2 hover:bg-green-500/10 rounded-md text-[#9E9E9E] hover:text-[#43A047] transition-all duration-200"
                           title="Baixar PDF"
                         >
@@ -1294,7 +1315,7 @@ function OrdensPageContent() {
                 </button>
               )}
               <button
-                onClick={() => downloadOrdemPDF(selectedOrdem)}
+                onClick={() => downloadOrdemPDF(selectedOrdem, empresaConfig || undefined)}
                 className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-[#43A047] to-[#1B5E20] rounded-xl text-white font-medium hover:opacity-90 transition-opacity"
               >
                 <FileDown size={18} />

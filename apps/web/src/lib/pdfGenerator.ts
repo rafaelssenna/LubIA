@@ -1,6 +1,13 @@
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 
+export interface EmpresaConfig {
+  nomeOficina?: string | null;
+  cnpj?: string | null;
+  telefone?: string | null;
+  endereco?: string | null;
+}
+
 interface OrdemPDF {
   id: number;
   numero: string;
@@ -35,14 +42,13 @@ interface OrdemPDF {
   }[];
 }
 
-// Configuração da oficina (pode ser movido para config futuramente)
-const OFICINA_CONFIG = {
-  nome: 'LoopIA',
+// Configuração padrão (fallback)
+const DEFAULT_CONFIG = {
+  nome: 'Oficina',
   subtitulo: 'Centro Automotivo',
-  cnpj: '00.000.000/0001-00',
-  telefone: '(31) 0000-0000',
-  endereco: 'Rua Exemplo, 123 - Belo Horizonte/MG',
-  email: 'contato@loopia.com.br',
+  cnpj: '',
+  telefone: '',
+  endereco: '',
 };
 
 const statusLabels: Record<string, string> = {
@@ -63,11 +69,20 @@ const formatCurrency = (value: number) => {
   return value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
 };
 
-export function generateOrdemPDF(ordem: OrdemPDF) {
+export function generateOrdemPDF(ordem: OrdemPDF, empresaConfig?: EmpresaConfig) {
   const doc = new jsPDF();
   const pageWidth = doc.internal.pageSize.getWidth();
   const pageHeight = doc.internal.pageSize.getHeight();
   const margin = 14;
+
+  // Usar dados da empresa ou fallback
+  const config = {
+    nome: empresaConfig?.nomeOficina || DEFAULT_CONFIG.nome,
+    subtitulo: DEFAULT_CONFIG.subtitulo,
+    cnpj: empresaConfig?.cnpj || DEFAULT_CONFIG.cnpj,
+    telefone: empresaConfig?.telefone || DEFAULT_CONFIG.telefone,
+    endereco: empresaConfig?.endereco || DEFAULT_CONFIG.endereco,
+  };
 
   // ============ HEADER ============
   doc.setFillColor(34, 197, 94);
@@ -77,16 +92,16 @@ export function generateOrdemPDF(ordem: OrdemPDF) {
   doc.setTextColor(255, 255, 255);
   doc.setFontSize(28);
   doc.setFont('helvetica', 'bold');
-  doc.text(OFICINA_CONFIG.nome, margin, 18);
+  doc.text(config.nome, margin, 18);
 
   doc.setFontSize(11);
   doc.setFont('helvetica', 'normal');
-  doc.text(OFICINA_CONFIG.subtitulo, margin, 26);
+  doc.text(config.subtitulo, margin, 26);
 
   // Dados da oficina no header
   doc.setFontSize(8);
-  doc.text(`CNPJ: ${OFICINA_CONFIG.cnpj}`, margin, 34);
-  doc.text(`Tel: ${OFICINA_CONFIG.telefone}`, margin, 40);
+  doc.text(`CNPJ: ${config.cnpj}`, margin, 34);
+  doc.text(`Tel: ${config.telefone}`, margin, 40);
 
   // O.S. Number (lado direito)
   doc.setFontSize(11);
@@ -359,18 +374,21 @@ export function generateOrdemPDF(ordem: OrdemPDF) {
 
   doc.setTextColor(150, 150, 150);
   doc.setFontSize(7);
-  doc.text(`${OFICINA_CONFIG.endereco} | ${OFICINA_CONFIG.email} | ${OFICINA_CONFIG.telefone}`, pageWidth / 2, pageHeight - 10, { align: 'center' });
+  const footerParts = [config.endereco, config.telefone].filter(Boolean);
+  if (footerParts.length > 0) {
+    doc.text(footerParts.join(' | '), pageWidth / 2, pageHeight - 10, { align: 'center' });
+  }
   doc.text(`Gerado em ${new Date().toLocaleString('pt-BR')}`, pageWidth / 2, pageHeight - 6, { align: 'center' });
 
   return doc;
 }
 
-export function downloadOrdemPDF(ordem: OrdemPDF) {
-  const doc = generateOrdemPDF(ordem);
+export function downloadOrdemPDF(ordem: OrdemPDF, empresaConfig?: EmpresaConfig) {
+  const doc = generateOrdemPDF(ordem, empresaConfig);
   doc.save(`OS_${ordem.numero.slice(-8).toUpperCase()}.pdf`);
 }
 
-export function openOrdemPDF(ordem: OrdemPDF) {
-  const doc = generateOrdemPDF(ordem);
+export function openOrdemPDF(ordem: OrdemPDF, empresaConfig?: EmpresaConfig) {
+  const doc = generateOrdemPDF(ordem, empresaConfig);
   window.open(doc.output('bloburl'), '_blank');
 }
