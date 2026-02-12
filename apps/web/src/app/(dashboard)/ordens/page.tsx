@@ -1228,18 +1228,18 @@ function OrdensPageContent() {
                 )}
               </div>
 
-              {/* Services */}
-              {selectedOrdem.itens.length > 0 && (
+              {/* Serviços Extras */}
+              {selectedOrdem.servicosExtras.length > 0 && (
                 <div className="p-4 bg-[#121212] rounded-xl">
                   <h3 className="text-sm font-medium text-[#9E9E9E] mb-3 flex items-center gap-2">
                     <Wrench size={16} className="text-[#43A047]" />
-                    Servicos
+                    Serviços Extras
                   </h3>
                   <div className="space-y-2">
-                    {selectedOrdem.itens.map((item) => (
-                      <div key={item.id} className="flex justify-between text-sm">
-                        <span className="text-[#E8E8E8]">{item.servicoNome}</span>
-                        <span className="text-[#43A047]">{formatCurrency(item.subtotal)}</span>
+                    {selectedOrdem.servicosExtras.map((item, index) => (
+                      <div key={item.id || index} className="flex justify-between text-sm">
+                        <span className="text-[#E8E8E8]">{item.descricao}</span>
+                        <span className="text-[#43A047]">{formatCurrency(item.valor)}</span>
                       </div>
                     ))}
                   </div>
