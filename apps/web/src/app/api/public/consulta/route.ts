@@ -103,11 +103,8 @@ export async function POST(request: NextRequest) {
       } else {
         proximaKm = Math.ceil((kmAtual + 1) / intervalo) * intervalo;
       }
-      let faltando = proximaKm - kmAtual;
-      if (faltando <= 0) {
-        proximaKm = Math.ceil((kmAtual + 1) / intervalo) * intervalo;
-        faltando = proximaKm - kmAtual;
-      }
+      const faltando = proximaKm - kmAtual;
+      // Retorna valor negativo se estiver atrasado (não reseta para próximo intervalo)
       return { km: proximaKm, kmFaltando: faltando };
     };
 
