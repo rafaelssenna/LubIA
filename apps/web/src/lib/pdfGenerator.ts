@@ -23,11 +23,9 @@ interface OrdemPDF {
       email?: string | null;
     };
   };
-  itens: {
-    servicoNome: string;
-    quantidade: number;
-    precoUnitario: number;
-    subtotal: number;
+  servicosExtras: {
+    descricao: string;
+    valor: number;
   }[];
   itensProduto: {
     produtoNome: string;
@@ -202,23 +200,21 @@ export function generateOrdemPDF(ordem: OrdemPDF) {
     yPos += 22;
   }
 
-  // ============ SERVIÇOS ============
-  if (ordem.itens && ordem.itens.length > 0) {
+  // ============ SERVIÇOS EXTRAS ============
+  if (ordem.servicosExtras && ordem.servicosExtras.length > 0) {
     doc.setTextColor(34, 197, 94);
     doc.setFontSize(11);
     doc.setFont('helvetica', 'bold');
-    doc.text('SERVIÇOS', margin, yPos);
+    doc.text('SERVIÇOS EXTRAS (MÃO DE OBRA)', margin, yPos);
 
     yPos += 5;
 
     autoTable(doc, {
       startY: yPos,
-      head: [['Descrição do Serviço', 'Qtd', 'Valor Unit.', 'Subtotal']],
-      body: ordem.itens.map(item => [
-        item.servicoNome,
-        item.quantidade.toString(),
-        formatCurrency(item.precoUnitario),
-        formatCurrency(item.subtotal),
+      head: [['Descrição do Serviço', 'Valor']],
+      body: ordem.servicosExtras.map(item => [
+        item.descricao,
+        formatCurrency(item.valor),
       ]),
       theme: 'striped',
       headStyles: {
@@ -233,9 +229,7 @@ export function generateOrdemPDF(ordem: OrdemPDF) {
       },
       columnStyles: {
         0: { cellWidth: 'auto' },
-        1: { cellWidth: 18, halign: 'center' },
-        2: { cellWidth: 32, halign: 'right' },
-        3: { cellWidth: 32, halign: 'right', fontStyle: 'bold' },
+        1: { cellWidth: 40, halign: 'right', fontStyle: 'bold' },
       },
       alternateRowStyles: {
         fillColor: [248, 250, 252],
