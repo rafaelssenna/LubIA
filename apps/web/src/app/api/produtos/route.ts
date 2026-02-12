@@ -59,6 +59,7 @@ export async function GET(request: NextRequest) {
       precoVenda: Number(p.precoVenda),
       precoGranel: p.precoGranel ? Number(p.precoGranel) : null,
       localizacao: p.localizacao,
+      cnpjFornecedor: p.cnpjFornecedor,
       ativo: p.ativo,
       estoqueBaixo: Number(p.quantidade) <= Number(p.estoqueMinimo),
     }));
@@ -128,6 +129,7 @@ export async function POST(request: NextRequest) {
         precoVenda: body.precoVenda || 0,
         precoGranel: body.precoGranel || null,
         localizacao: body.localizacao || null,
+        cnpjFornecedor: body.cnpjFornecedor || null,
         empresaId: session.empresaId,
       },
     });

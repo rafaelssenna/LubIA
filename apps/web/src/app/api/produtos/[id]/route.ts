@@ -96,6 +96,7 @@ export async function PUT(
         precoVenda: body.precoVenda,
         precoGranel: body.precoGranel || null,
         localizacao: body.localizacao || null,
+        cnpjFornecedor: body.cnpjFornecedor !== undefined ? body.cnpjFornecedor : existingProduto.cnpjFornecedor,
       },
     });
 

@@ -42,6 +42,7 @@ interface Produto {
   precoVenda: number;
   precoGranel: number | null;
   localizacao: string | null;
+  cnpjFornecedor: string | null;
   ativo: boolean;
   estoqueBaixo: boolean;
 }
@@ -179,6 +180,7 @@ export default function EstoquePage() {
     precoCompra: '',
     precoVenda: '',
     precoGranel: '',
+    cnpjFornecedor: '',
   });
 
   // Sorting state
@@ -214,6 +216,7 @@ export default function EstoquePage() {
     precoCompra: '',
     precoVenda: '',
     precoGranel: '',
+    cnpjFornecedor: '',
   });
 
   const fetchProdutos = async () => {
@@ -323,6 +326,7 @@ export default function EstoquePage() {
           precoCompraAtual: parseFloat(form.precoCompra) || 0,
           precoVenda: parseFloat(form.precoVenda) || 0,
           precoGranel: form.precoGranel ? parseFloat(form.precoGranel) : null,
+          cnpjFornecedor: form.cnpjFornecedor || null,
         }),
       });
 
@@ -340,6 +344,7 @@ export default function EstoquePage() {
           precoCompra: '',
           precoVenda: '',
           precoGranel: '',
+          cnpjFornecedor: '',
         });
         fetchProdutos();
       }
@@ -390,6 +395,7 @@ export default function EstoquePage() {
       precoCompra: produto.precoCompraAtual.toString(),
       precoVenda: produto.precoVenda.toString(),
       precoGranel: produto.precoGranel?.toString() || '',
+      cnpjFornecedor: produto.cnpjFornecedor || '',
     });
     setShowEditModal(true);
   };
@@ -764,6 +770,7 @@ export default function EstoquePage() {
                     </div>
                   </th>
                   <th className="text-left px-6 py-4 text-sm font-medium text-[#6B7280]">Categoria</th>
+                  <th className="text-left px-6 py-4 text-sm font-medium text-[#6B7280]">CNPJ Fornecedor</th>
                   <th
                     className="text-right px-6 py-4 text-sm font-medium text-[#6B7280] cursor-pointer hover:text-[#E8E8E8] transition-all duration-200 select-none"
                     onClick={() => handleSort('quantidade')}
@@ -829,6 +836,9 @@ export default function EstoquePage() {
                         <span className={`inline-block px-3 py-1 rounded-full text-xs ${getCategoriaColor(produto.categoria)}`}>
                           {getCategoriaLabel(produto.categoria)}
                         </span>
+                      </td>
+                      <td className="px-6 py-4 text-[#9E9E9E] text-sm font-mono">
+                        {produto.cnpjFornecedor || '-'}
                       </td>
                       <td className="px-6 py-4 text-right">
                         <div className="flex items-center justify-end gap-2">
@@ -1082,6 +1092,16 @@ export default function EstoquePage() {
                     className="w-full bg-[#121212] border border-[#333333] rounded-xl px-4 py-3 text-[#E8E8E8] placeholder-[#616161] focus:outline-none focus:border-[#43A047]/50 focus:ring-1 focus:ring-[#43A047]/20 transition-all duration-200"
                   />
                 </div>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-[#9E9E9E] mb-2">CNPJ Fornecedor</label>
+                <input
+                  type="text"
+                  value={form.cnpjFornecedor}
+                  onChange={(e) => setForm({ ...form, cnpjFornecedor: e.target.value })}
+                  placeholder="00.000.000/0000-00"
+                  className="w-full bg-[#121212] border border-[#333333] rounded-xl px-4 py-3 text-[#E8E8E8] placeholder-[#616161] focus:outline-none focus:border-[#43A047]/50 focus:ring-1 focus:ring-[#43A047]/20 transition-all duration-200"
+                />
               </div>
             </div>
             <div className="p-6 border-t border-[#333333] flex gap-3 justify-end">
@@ -1634,6 +1654,16 @@ export default function EstoquePage() {
                     className="w-full bg-[#121212] border border-[#333333] rounded-xl px-4 py-3 text-[#E8E8E8] placeholder-[#616161] focus:outline-none focus:border-[#43A047]/50 focus:ring-1 focus:ring-[#43A047]/20 transition-all duration-200"
                   />
                 </div>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-[#9E9E9E] mb-2">CNPJ Fornecedor</label>
+                <input
+                  type="text"
+                  value={editingForm.cnpjFornecedor}
+                  onChange={(e) => setEditingForm({ ...editingForm, cnpjFornecedor: e.target.value })}
+                  placeholder="00.000.000/0000-00"
+                  className="w-full bg-[#121212] border border-[#333333] rounded-xl px-4 py-3 text-[#E8E8E8] placeholder-[#616161] focus:outline-none focus:border-[#43A047]/50 focus:ring-1 focus:ring-[#43A047]/20 transition-all duration-200"
+                />
               </div>
             </div>
             <div className="p-6 border-t border-[#333333] flex gap-3 justify-end">

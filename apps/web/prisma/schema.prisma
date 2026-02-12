@@ -277,6 +277,7 @@ model Produto {
   precoVenda        Decimal          @db.Decimal(10, 2) @default(0)
   precoGranel       Decimal?         @db.Decimal(10, 2)
   localizacao       String?
+  cnpjFornecedor    String?          // CNPJ do fornecedor da última compra
   ativo             Boolean          @default(true)
   createdAt         DateTime         @default(now())
   updatedAt         DateTime         @updatedAt
