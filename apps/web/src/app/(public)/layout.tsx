@@ -15,7 +15,7 @@ export default function PublicLayout({
             alt="LoopIA"
             width={320}
             height={100}
-            className="h-24 w-auto"
+            className="h-24 w-auto brightness-0 invert"
           />
         </div>
       </header>

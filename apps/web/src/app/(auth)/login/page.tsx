@@ -52,7 +52,7 @@ export default function LoginPage() {
               alt="LoopIA"
               width={500}
               height={160}
-              className="h-40 w-auto"
+              className="h-40 w-auto brightness-0 invert"
             />
           </div>
           <p className="text-[#9E9E9E] text-xl">Sistema de Gestão de Oficinas</p>
