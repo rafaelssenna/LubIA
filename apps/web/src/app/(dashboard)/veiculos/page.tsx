@@ -6,6 +6,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import OCRScanner from '@/components/OCRScanner';
 import { useToast } from '@/components/Toast';
+import { capitalize, formatPlate } from '@/utils/format';
 
 interface Cliente {
   id: number;
@@ -201,18 +202,15 @@ export default function VeiculosPage() {
     setShowOCR(false);
   };
 
-  const formatPlate = (placa: string) => {
+  // Formatação de placa durante digitação (limita caracteres)
+  const formatPlateInput = (placa: string) => {
     const cleaned = placa.replace(/[^A-Za-z0-9]/g, '').toUpperCase();
     if (cleaned.length <= 3) return cleaned;
     if (cleaned.length <= 7) {
-      // Detecta se é Mercosul (5º caractere é letra) ou antiga (5º é número)
       const isMercosul = cleaned.length >= 5 && /[A-Z]/.test(cleaned[4]);
-      if (isMercosul) {
-        return cleaned; // Mercosul: ABC1D23 (sem hífen)
-      }
-      return cleaned.slice(0, 3) + '-' + cleaned.slice(3); // Antiga: ABC-1234
+      if (isMercosul) return cleaned;
+      return cleaned.slice(0, 3) + '-' + cleaned.slice(3);
     }
-    // Se passou de 7, limita
     const limited = cleaned.slice(0, 7);
     const isMercosul = /[A-Z]/.test(limited[4]);
     if (isMercosul) return limited;
@@ -311,7 +309,7 @@ export default function VeiculosPage() {
                       <Car size={20} className="text-white" />
                     </div>
                     <div>
-                      <h3 className="font-bold text-[#E8E8E8]">{veiculo.marca} {veiculo.modelo}</h3>
+                      <h3 className="font-bold text-[#E8E8E8]">{capitalize(veiculo.marca)} {capitalize(veiculo.modelo)}</h3>
                       <p className="text-sm text-[#9E9E9E]">{veiculo.ano || 'Ano não informado'}</p>
                     </div>
                   </div>
@@ -325,7 +323,7 @@ export default function VeiculosPage() {
                     <span className="text-[#9E9E9E] flex items-center gap-2">
                       <User size={14} /> Proprietário
                     </span>
-                    <span className="text-[#E8E8E8]">{veiculo.cliente.nome}</span>
+                    <span className="text-[#E8E8E8]">{capitalize(veiculo.cliente.nome)}</span>
                   </div>
                   {veiculo.kmAtual && (
                     <div className="flex items-center justify-between text-sm p-2 rounded-lg bg-[#121212]">
@@ -338,7 +336,7 @@ export default function VeiculosPage() {
                   {veiculo.cor && (
                     <div className="flex items-center justify-between text-sm p-2 rounded-lg bg-[#121212]">
                       <span className="text-[#9E9E9E]">Cor</span>
-                      <span className="text-[#E8E8E8]">{veiculo.cor}</span>
+                      <span className="text-[#E8E8E8]">{capitalize(veiculo.cor)}</span>
                     </div>
                   )}
                 </div>
@@ -411,7 +409,7 @@ export default function VeiculosPage() {
                     type="text"
                     placeholder="ABC1D23 ou ABC1234"
                     value={form.placa}
-                    onChange={(e) => setForm({ ...form, placa: formatPlate(e.target.value) })}
+                    onChange={(e) => setForm({ ...form, placa: formatPlateInput(e.target.value) })}
                     className="flex-1 bg-[#121212] border border-[#333333] rounded-xl px-4 py-3 text-[#E8E8E8] placeholder-[#616161] focus:outline-none focus:border-[#43A047]/50 focus:ring-1 focus:ring-[#43A047]/20 uppercase font-mono transition-all duration-200"
                   />
                   <button
@@ -531,7 +529,7 @@ export default function VeiculosPage() {
                   type="text"
                   placeholder="ABC1D23 ou ABC1234"
                   value={form.placa}
-                  onChange={(e) => setForm({ ...form, placa: formatPlate(e.target.value) })}
+                  onChange={(e) => setForm({ ...form, placa: formatPlateInput(e.target.value) })}
                   className="w-full bg-[#121212] border border-[#333333] rounded-xl px-4 py-3 text-[#E8E8E8] placeholder-[#616161] focus:outline-none focus:border-[#43A047]/50 focus:ring-1 focus:ring-[#43A047]/20 uppercase font-mono transition-all duration-200"
                 />
               </div>
@@ -617,8 +615,8 @@ export default function VeiculosPage() {
                   <Trash2 size={24} className="text-red-400" />
                 </div>
                 <div>
-                  <p className="text-[#E8E8E8] font-medium">{selectedVeiculo.marca} {selectedVeiculo.modelo}</p>
-                  <p className="text-sm text-[#43A047] font-mono">{selectedVeiculo.placa}</p>
+                  <p className="text-[#E8E8E8] font-medium">{capitalize(selectedVeiculo.marca)} {capitalize(selectedVeiculo.modelo)}</p>
+                  <p className="text-sm text-[#43A047] font-mono">{formatPlate(selectedVeiculo.placa)}</p>
                 </div>
               </div>
               <p className="text-[#94a3b8] text-sm">

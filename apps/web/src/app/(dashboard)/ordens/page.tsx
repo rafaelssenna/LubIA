@@ -11,6 +11,7 @@ import { useState, useEffect, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { useToast } from '@/components/Toast';
 import { downloadOrdemPDF } from '@/lib/pdfGenerator';
+import { capitalize, formatPlate } from '@/utils/format';
 
 interface Cliente {
   id: number;
@@ -682,8 +683,8 @@ function OrdensPageContent() {
                               }}
                               className={`p-2 rounded-lg text-xs ${status.bg} ${status.color} border border-[#333333] mb-1 hover:scale-[1.02] transition-transform duration-200 cursor-pointer`}
                             >
-                              <p className="font-semibold truncate">{ordem.veiculo.cliente.nome}</p>
-                              <p className="truncate opacity-90">{ordem.veiculo.placa}</p>
+                              <p className="font-semibold truncate">{capitalize(ordem.veiculo.cliente.nome)}</p>
+                              <p className="truncate opacity-90">{formatPlate(ordem.veiculo.placa)}</p>
                               <p className="truncate opacity-75">{ordem.itens[0]?.servicoNome || 'Servico'}</p>
                             </div>
                           );
@@ -738,13 +739,13 @@ function OrdensPageContent() {
                         <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-[#9E9E9E]">
                           <span className="flex items-center gap-1.5">
                             <Car size={14} className="text-[#43A047]" />
-                            <span className="font-medium text-[#9E9E9E]">{ordem.veiculo.placa}</span>
+                            <span className="font-medium text-[#9E9E9E]">{formatPlate(ordem.veiculo.placa)}</span>
                             <span className="text-[#66BB6A]">•</span>
-                            {ordem.veiculo.marca} {ordem.veiculo.modelo}
+                            {capitalize(ordem.veiculo.marca)} {capitalize(ordem.veiculo.modelo)}
                           </span>
                           <span className="flex items-center gap-1.5">
                             <User size={14} className="text-blue-400" />
-                            {ordem.veiculo.cliente.nome}
+                            {capitalize(ordem.veiculo.cliente.nome)}
                           </span>
                         </div>
                         <div className="flex items-center gap-4 text-xs text-[#9E9E9E]">
@@ -912,11 +913,11 @@ function OrdensPageContent() {
                             </div>
                             <div>
                               <div className="flex items-center gap-2">
-                                <span className="font-bold text-[#E8E8E8]">{veiculo.placa}</span>
-                                <span className="text-[#9E9E9E]">{veiculo.marca} {veiculo.modelo}</span>
+                                <span className="font-bold text-[#E8E8E8]">{formatPlate(veiculo.placa)}</span>
+                                <span className="text-[#9E9E9E]">{capitalize(veiculo.marca)} {capitalize(veiculo.modelo)}</span>
                                 {veiculo.ano && <span className="text-[#9E9E9E]">({veiculo.ano})</span>}
                               </div>
-                              <p className="text-sm text-[#9E9E9E]">{veiculo.cliente.nome}</p>
+                              <p className="text-sm text-[#9E9E9E]">{capitalize(veiculo.cliente.nome)}</p>
                             </div>
                           </div>
                         </button>
@@ -1065,8 +1066,8 @@ function OrdensPageContent() {
                       const veiculo = veiculos.find(v => v.id === selectedVeiculoId);
                       return veiculo ? (
                         <div>
-                          <p className="text-[#E8E8E8] font-bold">{veiculo.placa} - {veiculo.marca} {veiculo.modelo}</p>
-                          <p className="text-sm text-[#9E9E9E]">{veiculo.cliente.nome}</p>
+                          <p className="text-[#E8E8E8] font-bold">{formatPlate(veiculo.placa)} - {capitalize(veiculo.marca)} {capitalize(veiculo.modelo)}</p>
+                          <p className="text-sm text-[#9E9E9E]">{capitalize(veiculo.cliente.nome)}</p>
                           {kmEntrada && <p className="text-sm text-[#9E9E9E]">KM: {kmEntrada}</p>}
                           {dataAgendada && <p className="text-sm text-[#9E9E9E]">Agendamento: {new Date(dataAgendada).toLocaleString('pt-BR')}</p>}
                         </div>
@@ -1192,15 +1193,15 @@ function OrdensPageContent() {
                     <Car size={16} />
                     <span className="text-xs">Veiculo</span>
                   </div>
-                  <p className="text-[#E8E8E8] font-bold">{selectedOrdem.veiculo.placa}</p>
-                  <p className="text-sm text-[#9E9E9E]">{selectedOrdem.veiculo.marca} {selectedOrdem.veiculo.modelo}</p>
+                  <p className="text-[#E8E8E8] font-bold">{formatPlate(selectedOrdem.veiculo.placa)}</p>
+                  <p className="text-sm text-[#9E9E9E]">{capitalize(selectedOrdem.veiculo.marca)} {capitalize(selectedOrdem.veiculo.modelo)}</p>
                 </div>
                 <div className="p-4 bg-[#121212] rounded-xl">
                   <div className="flex items-center gap-2 text-[#9E9E9E] mb-2">
                     <User size={16} />
                     <span className="text-xs">Cliente</span>
                   </div>
-                  <p className="text-[#E8E8E8] font-bold">{selectedOrdem.veiculo.cliente.nome}</p>
+                  <p className="text-[#E8E8E8] font-bold">{capitalize(selectedOrdem.veiculo.cliente.nome)}</p>
                   <p className="text-sm text-[#9E9E9E]">{selectedOrdem.veiculo.cliente.telefone}</p>
                 </div>
               </div>
@@ -1328,7 +1329,7 @@ function OrdensPageContent() {
                 </div>
                 <div>
                   <p className="text-[#E8E8E8] font-medium">O.S. #{selectedOrdem.numero.slice(-8).toUpperCase()}</p>
-                  <p className="text-sm text-[#9E9E9E]">{selectedOrdem.veiculo.placa} - {selectedOrdem.veiculo.cliente.nome}</p>
+                  <p className="text-sm text-[#9E9E9E]">{formatPlate(selectedOrdem.veiculo.placa)} - {capitalize(selectedOrdem.veiculo.cliente.nome)}</p>
                 </div>
               </div>
               <p className="text-[#9E9E9E] text-sm">

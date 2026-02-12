@@ -4,6 +4,7 @@ import Header from '@/components/Header';
 import { Plus, Search, Phone, Car, Eye, MessageCircle, X, Edit, Trash2, User, Mail, MapPin, CreditCard, Loader2 } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { useToast } from '@/components/Toast';
+import { capitalize, formatCpfCnpj, formatPhone, formatPlate } from '@/utils/format';
 
 interface Veiculo {
   id: number;
@@ -284,27 +285,6 @@ export default function ClientesPage() {
     }
   };
 
-  const formatPhone = (phone: string) => {
-    const cleaned = phone.replace(/\D/g, '');
-    if (cleaned.length === 11) {
-      return `(${cleaned.slice(0, 2)}) ${cleaned.slice(2, 7)}-${cleaned.slice(7)}`;
-    }
-    return phone;
-  };
-
-  const formatCpfCnpj = (value: string) => {
-    const cleaned = value.replace(/\D/g, '');
-    if (cleaned.length === 11) {
-      // CPF: 000.000.000-00
-      return `${cleaned.slice(0, 3)}.${cleaned.slice(3, 6)}.${cleaned.slice(6, 9)}-${cleaned.slice(9)}`;
-    }
-    if (cleaned.length === 14) {
-      // CNPJ: 00.000.000/0000-00
-      return `${cleaned.slice(0, 2)}.${cleaned.slice(2, 5)}.${cleaned.slice(5, 8)}/${cleaned.slice(8, 12)}-${cleaned.slice(12)}`;
-    }
-    return value;
-  };
-
   return (
     <div className="min-h-screen bg-[#121212]">
       <Header title="Clientes" subtitle="Gerencie seus clientes" />
@@ -410,12 +390,12 @@ export default function ClientesPage() {
                       <td className="px-6 py-4">
                         <div className="flex items-center gap-3">
                           <div className="w-10 h-10 bg-gradient-to-br from-[#43A047] to-[#1B5E20] rounded-xl flex items-center justify-center text-white font-bold ring-2 ring-[#43A047]/20">
-                            {cliente.nome.charAt(0).toUpperCase()}
+                            {capitalize(cliente.nome).charAt(0)}
                           </div>
                           <div>
-                            <span className="font-medium text-[#E8E8E8]">{cliente.nome}</span>
+                            <span className="font-medium text-[#E8E8E8]">{capitalize(cliente.nome)}</span>
                             {cliente.email && (
-                              <p className="text-xs text-[#9E9E9E]">{cliente.email}</p>
+                              <p className="text-xs text-[#9E9E9E]">{cliente.email.toLowerCase()}</p>
                             )}
                           </div>
                         </div>
@@ -857,10 +837,10 @@ export default function ClientesPage() {
             <div className="p-6 border-b border-[#333333] flex items-center justify-between">
               <div className="flex items-center gap-4">
                 <div className="w-14 h-14 bg-gradient-to-br from-[#43A047] to-[#1B5E20] rounded-2xl flex items-center justify-center text-white text-2xl font-bold ring-2 ring-[#43A047]/20">
-                  {selectedCliente.nome.charAt(0).toUpperCase()}
+                  {capitalize(selectedCliente.nome).charAt(0)}
                 </div>
                 <div>
-                  <h2 className="text-xl font-semibold text-[#E8E8E8]">{selectedCliente.nome}</h2>
+                  <h2 className="text-xl font-semibold text-[#E8E8E8]">{capitalize(selectedCliente.nome)}</h2>
                   <p className="text-sm text-[#9E9E9E]">Cliente #{selectedCliente.id}</p>
                 </div>
               </div>
@@ -891,7 +871,7 @@ export default function ClientesPage() {
                     <Mail size={14} />
                     <span className="text-xs">Email</span>
                   </div>
-                  <p className="text-[#E8E8E8]">{selectedCliente.email}</p>
+                  <p className="text-[#E8E8E8]">{selectedCliente.email.toLowerCase()}</p>
                 </div>
               )}
               {selectedCliente.cpf && (
@@ -925,8 +905,8 @@ export default function ClientesPage() {
                             <Car size={16} className="text-blue-400" />
                           </div>
                           <div>
-                            <p className="text-[#E8E8E8]">{veiculo.marca} {veiculo.modelo}</p>
-                            <p className="text-xs text-[#43A047] font-mono">{veiculo.placa}</p>
+                            <p className="text-[#E8E8E8]">{capitalize(veiculo.marca)} {capitalize(veiculo.modelo)}</p>
+                            <p className="text-xs text-[#43A047] font-mono">{formatPlate(veiculo.placa)}</p>
                           </div>
                         </div>
                       </div>

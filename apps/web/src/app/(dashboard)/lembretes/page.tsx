@@ -21,6 +21,7 @@ import {
   RefreshCw,
 } from 'lucide-react';
 import { useState, useEffect } from 'react';
+import { capitalize, formatPlate, formatPhone } from '@/utils/format';
 
 interface Lembrete {
   id: number;
@@ -505,17 +506,17 @@ export default function LembretesPage() {
                       <div className="flex-1">
                         <div className="flex items-center gap-3 mb-1">
                           <User size={16} className="text-[#6B7280]" />
-                          <span className="font-medium text-[#E8E8E8]">{lembrete.veiculo.cliente.nome}</span>
+                          <span className="font-medium text-[#E8E8E8]">{capitalize(lembrete.veiculo.cliente.nome)}</span>
                           <span className="text-[#6B7280]">-</span>
-                          <span className="text-[#9E9E9E] text-sm">{lembrete.veiculo.cliente.telefone}</span>
+                          <span className="text-[#9E9E9E] text-sm">{formatPhone(lembrete.veiculo.cliente.telefone)}</span>
                         </div>
                         <div className="flex items-center gap-3 mb-1">
                           <Car size={16} className="text-[#6B7280]" />
                           <span className="text-[#9E9E9E] text-sm">
-                            {lembrete.veiculo.marca} {lembrete.veiculo.modelo} {lembrete.veiculo.ano}
+                            {capitalize(lembrete.veiculo.marca)} {capitalize(lembrete.veiculo.modelo)} {lembrete.veiculo.ano}
                           </span>
                           <span className="px-2 py-0.5 bg-[#121212] rounded text-xs text-[#43A047] ring-1 ring-[#43A047]/20">
-                            {lembrete.veiculo.placa}
+                            {formatPlate(lembrete.veiculo.placa)}
                           </span>
                         </div>
                         <div className="flex items-center gap-3">
@@ -617,7 +618,7 @@ export default function LembretesPage() {
                   <option value="">Selecione um veiculo</option>
                   {veiculos.map((v) => (
                     <option key={v.id} value={v.id}>
-                      {v.placa} - {v.marca} {v.modelo} ({v.cliente.nome})
+                      {formatPlate(v.placa)} - {capitalize(v.marca)} {capitalize(v.modelo)} ({capitalize(v.cliente.nome)})
                     </option>
                   ))}
                 </select>
@@ -703,7 +704,7 @@ export default function LembretesPage() {
               <h3 className="text-lg font-semibold text-[#E8E8E8] text-center mb-2">Excluir Lembrete?</h3>
               <p className="text-[#9E9E9E] text-center text-sm">
                 O lembrete de {tipoLabels[deletingLembrete.tipo] || deletingLembrete.tipo} para{' '}
-                <strong>{deletingLembrete.veiculo.placa}</strong> sera excluido permanentemente.
+                <strong>{formatPlate(deletingLembrete.veiculo.placa)}</strong> sera excluido permanentemente.
               </p>
             </div>
             <div className="p-6 border-t border-[#333333] flex gap-3">
