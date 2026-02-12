@@ -98,6 +98,7 @@ export async function PUT(
         localizacao: body.localizacao || null,
         cnpjFornecedor: body.cnpjFornecedor !== undefined ? body.cnpjFornecedor : existingProduto.cnpjFornecedor,
         filialId: body.filialId !== undefined ? body.filialId : existingProduto.filialId,
+        ativo: body.ativo !== undefined ? body.ativo : existingProduto.ativo,
       },
     });
 

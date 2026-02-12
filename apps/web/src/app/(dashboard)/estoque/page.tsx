@@ -485,6 +485,30 @@ export default function EstoquePage() {
     }
   };
 
+  const handleToggleAtivo = async (produto: Produto) => {
+    try {
+      const res = await fetch(`/api/produtos/${produto.id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          ...produto,
+          ativo: !produto.ativo,
+        }),
+      });
+
+      if (res.ok) {
+        toast.success(produto.ativo ? 'Produto desativado!' : 'Produto ativado!');
+        fetchProdutos();
+      } else {
+        const data = await res.json();
+        toast.error(data.error || 'Erro ao alterar status');
+      }
+    } catch (error) {
+      console.error('Erro ao alterar status:', error);
+      toast.error('Erro ao alterar status do produto');
+    }
+  };
+
   const exportToCSV = () => {
     const headers = ['Código', 'Nome', 'Marca', 'Categoria', 'Unidade', 'Quantidade', 'Estoque Mínimo', 'Preço Compra', 'Preço Venda', 'Valor em Estoque'];
     const rows = produtos.map(p => [
@@ -916,6 +940,17 @@ export default function EstoquePage() {
                             title="Histórico"
                           >
                             <History size={16} />
+                          </button>
+                          <button
+                            onClick={() => handleToggleAtivo(produto)}
+                            className={`p-2 rounded-md transition-all duration-200 ${
+                              produto.ativo
+                                ? 'hover:bg-orange-500/10 text-[#66BB6A] hover:text-orange-400'
+                                : 'hover:bg-green-500/10 text-orange-400 hover:text-[#43A047]'
+                            }`}
+                            title={produto.ativo ? 'Desativar' : 'Ativar'}
+                          >
+                            {produto.ativo ? <EyeOff size={16} /> : <Eye size={16} />}
                           </button>
                           <button
                             onClick={() => openEditModal(produto)}
