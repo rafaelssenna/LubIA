@@ -6,10 +6,10 @@ import { hashPassword, createSession, setSessionCookie } from '@/lib/auth';
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { nome, email, senha, nomeEmpresa, telefoneEmpresa } = body;
+    const { nome, email, senha, nomeEmpresa, cnpjEmpresa, telefoneEmpresa, enderecoEmpresa } = body;
 
     // Validações básicas
-    if (!nome || !email || !senha || !nomeEmpresa || !telefoneEmpresa) {
+    if (!nome || !email || !senha || !nomeEmpresa || !cnpjEmpresa || !telefoneEmpresa || !enderecoEmpresa) {
       return NextResponse.json(
         { error: 'Todos os campos são obrigatórios' },
         { status: 400 }
@@ -79,7 +79,9 @@ export async function POST(request: NextRequest) {
         data: {
           empresaId: empresa.id,
           nomeOficina: nomeEmpresa,
+          cnpj: cnpjEmpresa,
           telefone: telefoneEmpresa,
+          endereco: enderecoEmpresa,
           chatbotEnabled: true,
           chatbotNome: 'LoopIA',
           chatbotHorario: JSON.stringify({

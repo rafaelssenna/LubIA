@@ -45,9 +45,9 @@ export default function Sidebar() {
         const data = await res.json();
         if (data.data) {
           const { nomeOficina, cnpj, telefone, endereco } = data.data;
-          // Só mostra alerta se TODOS os campos estiverem vazios
-          const allEmpty = !nomeOficina && !cnpj && !telefone && !endereco;
-          setConfigIncomplete(allEmpty);
+          // Mostra alerta se QUALQUER campo obrigatório estiver vazio
+          const anyEmpty = !nomeOficina || !cnpj || !telefone || !endereco;
+          setConfigIncomplete(anyEmpty);
         } else {
           // Sem config = incompleta
           setConfigIncomplete(true);

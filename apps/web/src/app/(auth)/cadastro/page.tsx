@@ -5,6 +5,24 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { UserPlus, Loader2, AlertCircle, ArrowLeft } from 'lucide-react';
 
+// Formatar CNPJ enquanto digita: 00.000.000/0000-00
+function formatCnpj(value: string): string {
+  const cleaned = value.replace(/\D/g, '').slice(0, 14);
+  if (cleaned.length <= 2) return cleaned;
+  if (cleaned.length <= 5) return `${cleaned.slice(0, 2)}.${cleaned.slice(2)}`;
+  if (cleaned.length <= 8) return `${cleaned.slice(0, 2)}.${cleaned.slice(2, 5)}.${cleaned.slice(5)}`;
+  if (cleaned.length <= 12) return `${cleaned.slice(0, 2)}.${cleaned.slice(2, 5)}.${cleaned.slice(5, 8)}/${cleaned.slice(8)}`;
+  return `${cleaned.slice(0, 2)}.${cleaned.slice(2, 5)}.${cleaned.slice(5, 8)}/${cleaned.slice(8, 12)}-${cleaned.slice(12)}`;
+}
+
+// Formatar telefone enquanto digita: (00) 00000-0000
+function formatTelefone(value: string): string {
+  const cleaned = value.replace(/\D/g, '').slice(0, 11);
+  if (cleaned.length <= 2) return cleaned.length ? `(${cleaned}` : '';
+  if (cleaned.length <= 7) return `(${cleaned.slice(0, 2)}) ${cleaned.slice(2)}`;
+  return `(${cleaned.slice(0, 2)}) ${cleaned.slice(2, 7)}-${cleaned.slice(7)}`;
+}
+
 export default function CadastroPage() {
   const router = useRouter();
   const [nome, setNome] = useState('');
@@ -12,7 +30,9 @@ export default function CadastroPage() {
   const [senha, setSenha] = useState('');
   const [confirmarSenha, setConfirmarSenha] = useState('');
   const [nomeEmpresa, setNomeEmpresa] = useState('');
+  const [cnpjEmpresa, setCnpjEmpresa] = useState('');
   const [telefoneEmpresa, setTelefoneEmpresa] = useState('');
+  const [enderecoEmpresa, setEnderecoEmpresa] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
@@ -34,8 +54,20 @@ export default function CadastroPage() {
       return;
     }
 
+    if (!cnpjEmpresa || cnpjEmpresa.replace(/\D/g, '').length !== 14) {
+      setError('CNPJ da empresa é obrigatório (14 dígitos)');
+      setLoading(false);
+      return;
+    }
+
     if (!telefoneEmpresa || telefoneEmpresa.replace(/\D/g, '').length < 10) {
       setError('Telefone da empresa é obrigatório (mínimo 10 dígitos)');
+      setLoading(false);
+      return;
+    }
+
+    if (!enderecoEmpresa.trim()) {
+      setError('Endereço da empresa é obrigatório');
       setLoading(false);
       return;
     }
@@ -44,7 +76,7 @@ export default function CadastroPage() {
       const res = await fetch('/api/auth/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ nome, email, senha, nomeEmpresa, telefoneEmpresa }),
+        body: JSON.stringify({ nome, email, senha, nomeEmpresa, cnpjEmpresa, telefoneEmpresa, enderecoEmpresa }),
       });
 
       const data = await res.json();
@@ -106,16 +138,48 @@ export default function CadastroPage() {
 
             <div>
               <label className="block text-sm font-medium text-[#9E9E9E] mb-2">
+                CNPJ da Empresa
+              </label>
+              <input
+                type="text"
+                value={cnpjEmpresa}
+                onChange={(e) => setCnpjEmpresa(formatCnpj(e.target.value))}
+                required
+                className="w-full bg-[#121212] border border-[#333333] rounded-xl px-4 py-3 text-[#E8E8E8] focus:outline-none focus:border-[#43A047] transition-colors"
+                placeholder="00.000.000/0000-00"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-[#9E9E9E] mb-2">
                 Telefone da Empresa (WhatsApp)
               </label>
               <input
                 type="tel"
                 value={telefoneEmpresa}
-                onChange={(e) => setTelefoneEmpresa(e.target.value)}
+                onChange={(e) => setTelefoneEmpresa(formatTelefone(e.target.value))}
                 required
                 className="w-full bg-[#121212] border border-[#333333] rounded-xl px-4 py-3 text-[#E8E8E8] focus:outline-none focus:border-[#43A047] transition-colors"
                 placeholder="(31) 99999-9999"
               />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-[#9E9E9E] mb-2">
+                Endereço da Empresa
+              </label>
+              <input
+                type="text"
+                value={enderecoEmpresa}
+                onChange={(e) => setEnderecoEmpresa(e.target.value)}
+                required
+                className="w-full bg-[#121212] border border-[#333333] rounded-xl px-4 py-3 text-[#E8E8E8] focus:outline-none focus:border-[#43A047] transition-colors"
+                placeholder="Rua, número, bairro, cidade"
+              />
+            </div>
+
+            <div className="border-t border-[#333333] pt-4 mt-4">
+              <p className="text-sm text-[#9E9E9E] mb-4">Dados do administrador</p>
             </div>
 
             <div>
