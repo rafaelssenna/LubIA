@@ -24,7 +24,6 @@ import {
   Eye,
   EyeOff,
   Sparkles,
-  Loader2,
 } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import OCRScanner from '@/components/OCRScanner';
@@ -318,9 +317,6 @@ export default function EstoquePage() {
   const [movimentacoes, setMovimentacoes] = useState<any[]>([]);
   const [loadingHistory, setLoadingHistory] = useState(false);
 
-  // Auto-fix categories
-  const [fixingCategories, setFixingCategories] = useState(false);
-
   // Form state
   const [form, setForm] = useState({
     codigo: '',
@@ -367,40 +363,29 @@ export default function EstoquePage() {
     }
   };
 
-  // Função para corrigir categorias automaticamente
-  const handleFixCategories = async () => {
-    setFixingCategories(true);
-    try {
-      const res = await fetch('/api/produtos/corrigir-categorias', { method: 'POST' });
-      const data = await res.json();
-
-      if (data.success) {
-        if (data.correcoes.length > 0) {
-          toast.success(`${data.correcoes.length} categoria(s) corrigida(s)!`);
-          // Mostrar detalhes das correções
-          data.correcoes.forEach((c: any) => {
-            console.log(`✅ ${c.nome}: ${c.de} → ${c.para}`);
-          });
-          // Recarregar produtos
-          fetchProdutos();
-        } else {
-          toast.info('Todas as categorias já estão corretas!');
-        }
-      } else {
-        toast.error('Erro ao corrigir categorias');
-      }
-    } catch (error) {
-      console.error('Erro ao corrigir categorias:', error);
-      toast.error('Erro ao corrigir categorias');
-    } finally {
-      setFixingCategories(false);
-    }
-  };
+  // Corrigir categorias automaticamente ao carregar (só uma vez por sessão)
+  const [categoriesChecked, setCategoriesChecked] = useState(false);
 
   useEffect(() => {
+    const autoFixCategories = async () => {
+      if (categoriesChecked) return;
+      setCategoriesChecked(true);
+      try {
+        const res = await fetch('/api/produtos/corrigir-categorias', { method: 'POST' });
+        const data = await res.json();
+        if (data.correcoes?.length > 0) {
+          toast.success(`${data.correcoes.length} categoria(s) corrigida(s) automaticamente`);
+          fetchProdutos(); // Recarregar após correção
+        }
+      } catch (error) {
+        console.error('Erro ao auto-corrigir categorias:', error);
+      }
+    };
+
     fetchProdutos();
     fetchFiliais();
-  }, [searchTerm, categoriaFilter, ativoFilter, filialFilter]);
+    autoFixCategories();
+  }, [searchTerm, categoriaFilter, ativoFilter, filialFilter, categoriesChecked]);
 
   // Reset to page 1 when filters change
   useEffect(() => {
@@ -939,24 +924,14 @@ export default function EstoquePage() {
             </button>
             <button
               onClick={() => setShowOCR(true)}
-              className="flex items-center gap-2 px-6 py-3 border border-[#333333] rounded-xl text-[#9E9E9E] hover:bg-[#121212] hover:text-[#E8E8E8] transition-all duration-200"
-              title="Escanear nota fiscal"
+              className="group relative flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 rounded-xl text-white font-medium hover:shadow-lg hover:shadow-purple-500/30 hover:scale-[1.02] active:scale-[0.98] transition-all duration-200 overflow-hidden"
+              title="Escanear nota fiscal com IA"
             >
+              <div className="absolute inset-0 bg-gradient-to-r from-blue-400 to-purple-400 opacity-0 group-hover:opacity-20 transition-opacity" />
+              <Sparkles size={18} className="text-yellow-300 animate-pulse" />
               <FileText size={20} />
-              Escanear NF
-            </button>
-            <button
-              onClick={handleFixCategories}
-              disabled={fixingCategories}
-              className="flex items-center gap-2 px-4 py-3 bg-gradient-to-r from-purple-500/20 to-blue-500/20 border border-purple-500/30 rounded-xl text-purple-300 font-medium hover:border-purple-500/50 hover:shadow-lg hover:shadow-purple-500/10 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
-              title="Corrigir categorias automaticamente usando IA"
-            >
-              {fixingCategories ? (
-                <Loader2 size={18} className="animate-spin" />
-              ) : (
-                <Sparkles size={18} />
-              )}
-              <span className="hidden lg:inline">Auto-categorizar</span>
+              <span>Escanear NF</span>
+              <span className="text-xs bg-white/20 px-2 py-0.5 rounded-full">IA</span>
             </button>
             <button
               onClick={() => setShowModal(true)}
