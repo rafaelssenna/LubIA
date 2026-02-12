@@ -19,17 +19,26 @@ export async function GET(request: NextRequest) {
     const busca = searchParams.get('busca') || '';
     const categoria = searchParams.get('categoria') || '';
     const ativoParam = searchParams.get('ativo');
+    const filialIdParam = searchParams.get('filialId');
 
-    console.log('[PRODUTOS API] Params - busca:', busca, 'categoria:', categoria, 'ativo:', ativoParam);
+    console.log('[PRODUTOS API] Params - busca:', busca, 'categoria:', categoria, 'ativo:', ativoParam, 'filialId:', filialIdParam);
     console.log('[PRODUTOS API] Tentando conectar ao banco...');
 
     // Filtro de ativo: 'todos' = não filtra, 'true' = apenas ativos, 'false' = apenas inativos
     const ativoFilter = ativoParam === 'todos' ? {} : ativoParam === 'false' ? { ativo: false } : { ativo: true };
 
+    // Filtro de filial: se 'sem' = produtos sem filial, se número = filial específica
+    const filialFilter = filialIdParam === 'sem'
+      ? { filialId: null }
+      : filialIdParam
+        ? { filialId: parseInt(filialIdParam) }
+        : {};
+
     const produtos = await prisma.produto.findMany({
       where: {
         empresaId: session.empresaId,
         ...ativoFilter,
+        ...filialFilter,
         ...(busca && {
           OR: [
             { nome: { contains: busca, mode: 'insensitive' } },

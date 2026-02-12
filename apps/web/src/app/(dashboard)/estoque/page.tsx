@@ -207,6 +207,9 @@ export default function EstoquePage() {
   // Active filter: 'todos' | 'ativos' | 'inativos'
   const [ativoFilter, setAtivoFilter] = useState<'todos' | 'ativos' | 'inativos'>('ativos');
 
+  // Filial filter
+  const [filialFilter, setFilialFilter] = useState<string>('');
+
   // Filiais for dropdown
   const [filiais, setFiliais] = useState<Filial[]>([]);
 
@@ -248,6 +251,7 @@ export default function EstoquePage() {
       const params = new URLSearchParams();
       if (searchTerm) params.append('busca', searchTerm);
       if (categoriaFilter) params.append('categoria', categoriaFilter);
+      if (filialFilter) params.append('filialId', filialFilter);
       // Map filter to API param
       const ativoParam = ativoFilter === 'todos' ? 'todos' : ativoFilter === 'inativos' ? 'false' : 'true';
       params.append('ativo', ativoParam);
@@ -265,12 +269,12 @@ export default function EstoquePage() {
   useEffect(() => {
     fetchProdutos();
     fetchFiliais();
-  }, [searchTerm, categoriaFilter, ativoFilter]);
+  }, [searchTerm, categoriaFilter, ativoFilter, filialFilter]);
 
   // Reset to page 1 when filters change
   useEffect(() => {
     setCurrentPage(1);
-  }, [searchTerm, categoriaFilter, showOnlyLowStock, sortBy, sortOrder, ativoFilter]);
+  }, [searchTerm, categoriaFilter, showOnlyLowStock, sortBy, sortOrder, ativoFilter, filialFilter]);
 
   // Fetch movimentações for history
   const fetchMovimentacoes = async (produtoId: number) => {
@@ -769,6 +773,20 @@ export default function EstoquePage() {
               <option value="ativos">Ativos</option>
               <option value="inativos">Inativos</option>
               <option value="todos">Todos</option>
+            </select>
+            <select
+              value={filialFilter}
+              onChange={(e) => setFilialFilter(e.target.value)}
+              className="bg-[#121212] border border-[#333333] rounded-xl px-4 py-3 text-[#9E9E9E] focus:outline-none focus:border-[#43A047]/50 focus:ring-1 focus:ring-[#43A047]/20 transition-all duration-200"
+              title="Filtrar por filial/fornecedor"
+            >
+              <option value="">Todas Filiais</option>
+              <option value="sem">Sem Filial</option>
+              {filiais.map((filial) => (
+                <option key={filial.id} value={filial.id}>
+                  {filial.nome} - {filial.cnpj}
+                </option>
+              ))}
             </select>
           </div>
           <div className="flex gap-3">
