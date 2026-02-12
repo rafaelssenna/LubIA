@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import Image from 'next/image';
 import { LogIn, Loader2, AlertCircle, UserPlus, Car } from 'lucide-react';
 
 export default function LoginPage() {
@@ -45,11 +46,14 @@ export default function LoginPage() {
       <div className="w-full max-w-md">
         {/* Logo */}
         <div className="text-center mb-8">
-          <div className="flex items-center justify-center gap-3 mb-2">
-            <div className="w-12 h-12 bg-gradient-to-br from-[#43A047] to-[#1B5E20] rounded-2xl flex items-center justify-center">
-              <span className="text-2xl font-bold text-white">L</span>
-            </div>
-            <h1 className="text-3xl font-bold text-[#E8E8E8]">Loop<span className="text-[#43A047]">IA</span></h1>
+          <div className="flex items-center justify-center mb-3">
+            <Image
+              src="/logo.png"
+              alt="LoopIA"
+              width={180}
+              height={60}
+              className="h-14 w-auto"
+            />
           </div>
           <p className="text-[#9E9E9E]">Sistema de Gestão de Oficinas</p>
         </div>
