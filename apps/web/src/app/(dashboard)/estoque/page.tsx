@@ -318,6 +318,7 @@ export default function EstoquePage() {
       });
 
       if (res.ok) {
+        toast.success('Produto cadastrado com sucesso!');
         setShowModal(false);
         setForm({
           codigo: '',
@@ -335,6 +336,7 @@ export default function EstoquePage() {
       }
     } catch (error) {
       console.error('Erro ao cadastrar produto:', error);
+      toast.error('Erro ao cadastrar produto');
     }
   };
 
@@ -353,6 +355,7 @@ export default function EstoquePage() {
       });
 
       if (res.ok) {
+        toast.success('Movimentação registrada com sucesso!');
         setShowMovModal(false);
         setSelectedProduto(null);
         setMovQuantidade('');
@@ -361,6 +364,7 @@ export default function EstoquePage() {
       }
     } catch (error) {
       console.error('Erro ao registrar movimentação:', error);
+      toast.error('Erro ao registrar movimentação');
     }
   };
 
@@ -400,6 +404,7 @@ export default function EstoquePage() {
       });
 
       if (res.ok) {
+        toast.success('Produto atualizado com sucesso!');
         setShowEditModal(false);
         setEditingProduto(null);
         fetchProdutos();
@@ -422,6 +427,7 @@ export default function EstoquePage() {
       });
 
       if (res.ok) {
+        toast.success('Produto excluído com sucesso!');
         setShowDeleteConfirm(false);
         setDeletingProduto(null);
         fetchProdutos();

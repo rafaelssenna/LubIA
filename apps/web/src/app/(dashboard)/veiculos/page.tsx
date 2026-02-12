@@ -110,6 +110,7 @@ export default function VeiculosPage() {
       if (res.ok) {
         setShowModal(false);
         resetForm();
+        toast.success('Veículo cadastrado com sucesso!');
         fetchVeiculos();
       } else {
         toast.error(data.error || 'Erro ao cadastrar veículo');
@@ -153,6 +154,7 @@ export default function VeiculosPage() {
         setShowEditModal(false);
         setSelectedVeiculo(null);
         resetForm();
+        toast.success('Veículo atualizado com sucesso!');
         fetchVeiculos();
       } else {
         toast.error(data.error || 'Erro ao atualizar veículo');
@@ -179,6 +181,7 @@ export default function VeiculosPage() {
       if (res.ok) {
         setShowDeleteConfirm(false);
         setSelectedVeiculo(null);
+        toast.success('Veículo excluído com sucesso!');
         fetchVeiculos();
       } else {
         toast.error(data.error || 'Erro ao excluir veículo');

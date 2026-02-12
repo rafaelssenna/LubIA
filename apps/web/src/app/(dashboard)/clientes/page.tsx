@@ -186,6 +186,7 @@ export default function ClientesPage() {
         setShowModal(false);
         setForm({ nome: '', telefone: '', email: '', cpf: '', endereco: '' });
         setEnderecoForm({ cep: '', rua: '', numero: '', complemento: '', bairro: '', cidade: '', uf: '' });
+        toast.success('Cliente cadastrado com sucesso!');
         fetchClientes();
       } else {
         toast.error(data.error || 'Erro ao cadastrar cliente');
@@ -230,6 +231,7 @@ export default function ClientesPage() {
         setSelectedCliente(null);
         setForm({ nome: '', telefone: '', email: '', cpf: '', endereco: '' });
         setEnderecoForm({ cep: '', rua: '', numero: '', complemento: '', bairro: '', cidade: '', uf: '' });
+        toast.success('Cliente atualizado com sucesso!');
         fetchClientes();
       } else {
         toast.error(data.error || 'Erro ao atualizar cliente');
@@ -256,6 +258,7 @@ export default function ClientesPage() {
       if (res.ok) {
         setShowDeleteConfirm(false);
         setSelectedCliente(null);
+        toast.success('Cliente excluído com sucesso!');
         fetchClientes();
       } else {
         toast.error(data.error || 'Erro ao excluir cliente');
