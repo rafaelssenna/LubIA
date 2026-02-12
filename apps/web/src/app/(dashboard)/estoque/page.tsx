@@ -23,6 +23,8 @@ import {
   X,
   Eye,
   EyeOff,
+  Sparkles,
+  Loader2,
 } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import OCRScanner from '@/components/OCRScanner';
@@ -91,43 +93,140 @@ const getCategoriaColor = (categoria: string) => {
   return colors[categoria.toLowerCase()] || 'bg-gray-500/10 text-gray-400';
 };
 
-// Auto-detect category based on product description
-const detectCategoria = (descricao: string): string => {
+// Auto-detect category based on product description and code
+const detectCategoria = (descricao: string, codigo?: string): string => {
   const texto = descricao.toLowerCase();
+  const cod = (codigo || '').toUpperCase();
+
+  // === DETECÇÃO POR CÓDIGO DO PRODUTO ===
+
+  // Wega filters (marca brasileira de filtros)
+  // WO = Oil filter, WA = Air filter, WAP = Air filter, WFC = Fuel filter, WAC = A/C filter
+  if (cod.includes('WO') || texto.match(/\bwo[-\s]?\d+/i)) {
+    return 'FILTRO_OLEO';
+  }
+  if (cod.includes('WAC') || texto.match(/\bwac[-\s]?\d+/i)) {
+    return 'FILTRO_AR_CONDICIONADO';
+  }
+  if (cod.includes('WFC') || texto.match(/\bwfc[-\s]?\d+/i)) {
+    return 'FILTRO_COMBUSTIVEL';
+  }
+  if (cod.includes('WA') || cod.includes('WAP') || texto.match(/\bwa[p]?[-\s]?\d+/i)) {
+    return 'FILTRO_AR';
+  }
+
+  // Tecfil filters
+  // PSL = Oil filter, ARL = Air filter, ACP = A/C filter, GI = Fuel filter
+  if (cod.includes('PSL') || cod.includes('PEL') || texto.match(/\bpsl[-\s]?\d+/i)) {
+    return 'FILTRO_OLEO';
+  }
+  if (cod.includes('ARL') || texto.match(/\barl[-\s]?\d+/i)) {
+    return 'FILTRO_AR';
+  }
+  if (cod.includes('ACP') || texto.match(/\bacp[-\s]?\d+/i)) {
+    return 'FILTRO_AR_CONDICIONADO';
+  }
+  if (cod.includes('GI') || texto.match(/\bgi[-\s]?\d+/i)) {
+    return 'FILTRO_COMBUSTIVEL';
+  }
+
+  // Mann filters
+  // W = Oil filter, C = Air filter, CU/CUK = A/C filter, WK = Fuel filter, HU = Oil filter
+  if (cod.match(/^W\d/) || cod.includes('HU') || texto.match(/\bw\d{3}/i) || texto.match(/\bhu\d{3}/i)) {
+    return 'FILTRO_OLEO';
+  }
+  if (cod.match(/^C\d/) && !cod.includes('CU') || texto.match(/\bc\d{4,}/i)) {
+    return 'FILTRO_AR';
+  }
+  if (cod.includes('CUK') || cod.includes('CU') || texto.match(/\bcuk?\d+/i)) {
+    return 'FILTRO_AR_CONDICIONADO';
+  }
+  if (cod.includes('WK') || texto.match(/\bwk[-\s]?\d+/i)) {
+    return 'FILTRO_COMBUSTIVEL';
+  }
+
+  // Fram filters
+  // PH = Oil filter, CA = Air filter, CF = A/C filter, G = Fuel filter
+  if (cod.match(/^PH\d/) || texto.match(/\bph\d{4}/i)) {
+    return 'FILTRO_OLEO';
+  }
+  if (cod.match(/^CA\d/) || texto.match(/\bca\d{4,}/i)) {
+    return 'FILTRO_AR';
+  }
+  if (cod.match(/^CF\d/) || texto.match(/\bcf\d+/i)) {
+    return 'FILTRO_AR_CONDICIONADO';
+  }
+  if (cod.match(/^G\d/) || texto.match(/\bg\d{4}/i)) {
+    return 'FILTRO_COMBUSTIVEL';
+  }
+
+  // Bosch filters
+  // OB/OF = Oil filter
+  if (cod.includes('OB') || cod.includes('OF') || texto.match(/\bo[bf]\d+/i)) {
+    return 'FILTRO_OLEO';
+  }
+
+  // === DETECÇÃO POR DESCRIÇÃO ===
 
   // Óleos lubrificantes
   if (texto.includes('óleo') || texto.includes('oleo') ||
-      texto.match(/\d+w\d+/) || // 5W30, 10W40, etc
-      texto.includes('lubrificante') || texto.includes('motor') ||
+      texto.match(/\d+w[-]?\d+/) || // 5W30, 10W40, 5W-30, etc
+      texto.includes('lubrificante') ||
       texto.includes('castrol') || texto.includes('mobil') ||
-      texto.includes('shell') || texto.includes('petronas') ||
-      texto.includes('selenia') || texto.includes('motul')) {
+      texto.includes('shell helix') || texto.includes('petronas') ||
+      texto.includes('selenia') || texto.includes('motul') ||
+      texto.includes('lubrax') || texto.includes('total quartz') ||
+      texto.includes('sintético') || texto.includes('sintetico')) {
     return 'OLEO_LUBRIFICANTE';
   }
 
-  // Filtros
-  if (texto.includes('filtro')) {
-    if (texto.includes('ar condicionado') || texto.includes('cabine') || texto.includes('antipolen')) {
+  // Filtros por descrição
+  if (texto.includes('filtro') || texto.includes('filter')) {
+    if (texto.includes('ar condicionado') || texto.includes('cabine') ||
+        texto.includes('antipolen') || texto.includes('anti-polen') ||
+        texto.includes('carvão ativado') || texto.includes('cabin')) {
       return 'FILTRO_AR_CONDICIONADO';
     }
-    if (texto.includes('combustível') || texto.includes('combustivel') || texto.includes('diesel') || texto.includes('gasolina')) {
+    if (texto.includes('combustível') || texto.includes('combustivel') ||
+        texto.includes('diesel') || texto.includes('gasolina') ||
+        texto.includes('fuel')) {
       return 'FILTRO_COMBUSTIVEL';
     }
-    if (texto.includes('ar') || texto.includes('air')) {
+    if (texto.includes('ar motor') || texto.includes('ar do motor') ||
+        (texto.includes('ar') && !texto.includes('condicionado'))) {
       return 'FILTRO_AR';
     }
-    return 'FILTRO_OLEO'; // Default for filters
+    // Default para filtros genéricos = filtro de óleo
+    return 'FILTRO_OLEO';
+  }
+
+  // Marcas conhecidas de filtros (quando não tem "filtro" na descrição)
+  if (texto.includes('wega') || texto.includes('tecfil') ||
+      texto.includes('fram') || texto.includes('mann') ||
+      texto.includes('mahle') || texto.includes('bosch filter')) {
+    // Tenta detectar pelo código se disponível
+    return 'FILTRO_OLEO'; // Default para marcas de filtro
   }
 
   // Aditivos
   if (texto.includes('aditivo') || texto.includes('arla') ||
-      texto.includes('anticorrosivo') || texto.includes('antiferrugem')) {
+      texto.includes('anticorrosivo') || texto.includes('antiferrugem') ||
+      texto.includes('radiador') || texto.includes('coolant') ||
+      texto.includes('limpa bico') || texto.includes('limpa injetor') ||
+      texto.includes('descarbonizante')) {
     return 'ADITIVO';
   }
 
   // Graxa
-  if (texto.includes('graxa') || texto.includes('grease')) {
+  if (texto.includes('graxa') || texto.includes('grease') ||
+      texto.includes('chassis') || texto.includes('rolamento')) {
     return 'GRAXA';
+  }
+
+  // Fluidos (categorizar como acessório)
+  if (texto.includes('fluido') || texto.includes('dot4') || texto.includes('dot 4') ||
+      texto.includes('freio') || texto.includes('direção hidráulica')) {
+    return 'ACESSORIO';
   }
 
   return 'OUTRO';
@@ -219,6 +318,8 @@ export default function EstoquePage() {
   const [movimentacoes, setMovimentacoes] = useState<any[]>([]);
   const [loadingHistory, setLoadingHistory] = useState(false);
 
+  // Auto-fix categories
+  const [fixingCategories, setFixingCategories] = useState(false);
 
   // Form state
   const [form, setForm] = useState({
@@ -263,6 +364,36 @@ export default function EstoquePage() {
       console.error('Erro ao buscar produtos:', error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  // Função para corrigir categorias automaticamente
+  const handleFixCategories = async () => {
+    setFixingCategories(true);
+    try {
+      const res = await fetch('/api/produtos/corrigir-categorias', { method: 'POST' });
+      const data = await res.json();
+
+      if (data.success) {
+        if (data.correcoes.length > 0) {
+          toast.success(`${data.correcoes.length} categoria(s) corrigida(s)!`);
+          // Mostrar detalhes das correções
+          data.correcoes.forEach((c: any) => {
+            console.log(`✅ ${c.nome}: ${c.de} → ${c.para}`);
+          });
+          // Recarregar produtos
+          fetchProdutos();
+        } else {
+          toast.info('Todas as categorias já estão corretas!');
+        }
+      } else {
+        toast.error('Erro ao corrigir categorias');
+      }
+    } catch (error) {
+      console.error('Erro ao corrigir categorias:', error);
+      toast.error('Erro ao corrigir categorias');
+    } finally {
+      setFixingCategories(false);
     }
   };
 
@@ -644,10 +775,10 @@ export default function EstoquePage() {
   const valorTotal = produtos.reduce((acc, p) => acc + (p.quantidade * p.precoCompraAtual), 0);
 
   return (
-    <div className="min-h-screen bg-[#121212]">
+    <div className="min-h-screen bg-[#121212] w-full max-w-full overflow-x-hidden">
       <Header title="Controle de Estoque" subtitle="Gerencie produtos e movimentações" />
 
-      <div className="p-6 space-y-6 animate-fade-in">
+      <div className="p-4 md:p-6 space-y-6 animate-fade-in">
         {/* Stats */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           <div className="bg-[#1E1E1E] border border-[#333333] rounded-xl p-4 hover:border-green-500/30 hover:shadow-lg hover:shadow-green-500/10 transition-all duration-300">
@@ -813,6 +944,19 @@ export default function EstoquePage() {
             >
               <FileText size={20} />
               Escanear NF
+            </button>
+            <button
+              onClick={handleFixCategories}
+              disabled={fixingCategories}
+              className="flex items-center gap-2 px-4 py-3 bg-gradient-to-r from-purple-500/20 to-blue-500/20 border border-purple-500/30 rounded-xl text-purple-300 font-medium hover:border-purple-500/50 hover:shadow-lg hover:shadow-purple-500/10 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
+              title="Corrigir categorias automaticamente usando IA"
+            >
+              {fixingCategories ? (
+                <Loader2 size={18} className="animate-spin" />
+              ) : (
+                <Sparkles size={18} />
+              )}
+              <span className="hidden lg:inline">Auto-categorizar</span>
             </button>
             <button
               onClick={() => setShowModal(true)}

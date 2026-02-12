@@ -5,7 +5,7 @@ import {
   Plus, Search, X, ClipboardList, Car, User, Calendar, Clock,
   Play, CheckCircle, Pause, XCircle, Truck, Filter, Eye, Edit,
   Trash2, Loader2, Package, Wrench, DollarSign, FileDown,
-  List, CalendarDays, ChevronLeft, ChevronRight
+  List, CalendarDays, ChevronLeft, ChevronRight, AlertCircle, Gauge
 } from 'lucide-react';
 import { useState, useEffect, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
@@ -936,17 +936,29 @@ function OrdensPageContent() {
                   </div>
                   {selectedVeiculoId && (
                     <div className="pt-4 border-t border-[#333333] space-y-4">
-                      <div>
-                        <label className="block text-sm font-medium text-[#9E9E9E] mb-2">KM de Entrada</label>
+                      {/* Destaque para KM de Entrada */}
+                      <div className="bg-gradient-to-r from-amber-500/10 to-orange-500/10 border border-amber-500/50 rounded-xl p-4">
+                        <div className="flex items-center gap-2 mb-3">
+                          <div className="p-1.5 bg-amber-500/20 rounded-lg">
+                            <Gauge className="w-4 h-4 text-amber-400" />
+                          </div>
+                          <label className="text-sm font-semibold text-amber-400">KM de Entrada</label>
+                          <span className="text-xs bg-amber-500/20 text-amber-300 px-2 py-0.5 rounded-full ml-auto">
+                            Importante
+                          </span>
+                        </div>
                         <input
                           type="number"
                           value={kmEntrada}
                           onChange={(e) => setKmEntrada(e.target.value)}
                           placeholder="Ex: 45000"
                           max={9999999}
-                          className="w-full bg-[#121212] border border-[#333333] rounded-xl px-4 py-3 text-[#E8E8E8] placeholder-gray-400 focus:outline-none focus:border-[#43A047]"
+                          className="w-full bg-[#1a1a1a] border-2 border-amber-500/30 rounded-xl px-4 py-3 text-[#E8E8E8] placeholder-gray-500 focus:outline-none focus:border-amber-500 transition-colors"
                         />
-                        <p className="text-xs text-[#6B7280] mt-1">Atualize com os km atuais</p>
+                        <div className="flex items-center gap-1.5 mt-2">
+                          <AlertCircle className="w-3.5 h-3.5 text-amber-400" />
+                          <p className="text-xs text-amber-300/80">Confirme a quilometragem atual do veículo</p>
+                        </div>
                       </div>
                       <div>
                         <label className="block text-sm font-medium text-[#9E9E9E] mb-2">Data e Hora do Agendamento</label>

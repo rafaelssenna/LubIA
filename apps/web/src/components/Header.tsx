@@ -30,8 +30,8 @@ export default function Header({ title, subtitle }: HeaderProps) {
   };
 
   return (
-    <header className="glass border-b border-[#333333] px-8 py-5">
-      <div className="flex items-center justify-between">
+    <header className="glass border-b border-[#333333] px-4 md:px-8 py-5">
+      <div className="flex items-center justify-between gap-4 flex-wrap md:flex-nowrap">
         {/* Title */}
         <div className="animate-fade-in">
           <h1 className="text-3xl font-bold text-[#E8E8E8] tracking-tight">{title}</h1>
@@ -46,12 +46,12 @@ export default function Header({ title, subtitle }: HeaderProps) {
         {/* Actions */}
         <div className="flex items-center gap-4">
           {/* Search */}
-          <div className="relative group">
+          <div className="relative group hidden lg:block">
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-[#66BB6A] group-focus-within:text-[#43A047] transition-colors" size={18} />
             <input
               type="text"
               placeholder="Buscar cliente, placa, O.S..."
-              className="bg-[#121212] border border-[#333333] rounded-2xl pl-11 pr-4 py-3 w-80 text-sm text-[#E8E8E8] placeholder-gray-400 focus:outline-none focus:border-[#43A047]/50 focus:bg-white transition-all duration-300 focus:shadow-lg focus:shadow-[#43A047]/10"
+              className="bg-[#121212] border border-[#333333] rounded-2xl pl-11 pr-4 py-3 w-64 xl:w-80 text-sm text-[#E8E8E8] placeholder-gray-400 focus:outline-none focus:border-[#43A047]/50 focus:bg-white transition-all duration-300 focus:shadow-lg focus:shadow-[#43A047]/10"
             />
           </div>
 
