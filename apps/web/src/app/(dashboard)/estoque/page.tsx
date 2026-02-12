@@ -43,8 +43,17 @@ interface Produto {
   precoGranel: number | null;
   localizacao: string | null;
   cnpjFornecedor: string | null;
+  filialId: number | null;
+  filialNome: string | null;
   ativo: boolean;
   estoqueBaixo: boolean;
+}
+
+interface Filial {
+  id: number;
+  nome: string;
+  cnpj: string;
+  ativo: boolean;
 }
 
 // Usa API routes do Next.js (mesmo domínio)
@@ -181,6 +190,7 @@ export default function EstoquePage() {
     precoVenda: '',
     precoGranel: '',
     cnpjFornecedor: '',
+    filialId: '' as string | number,
   });
 
   // Sorting state
@@ -196,6 +206,9 @@ export default function EstoquePage() {
 
   // Active filter: 'todos' | 'ativos' | 'inativos'
   const [ativoFilter, setAtivoFilter] = useState<'todos' | 'ativos' | 'inativos'>('ativos');
+
+  // Filiais for dropdown
+  const [filiais, setFiliais] = useState<Filial[]>([]);
 
   // History modal
   const [showHistoryModal, setShowHistoryModal] = useState(false);
@@ -217,7 +230,18 @@ export default function EstoquePage() {
     precoVenda: '',
     precoGranel: '',
     cnpjFornecedor: '',
+    filialId: '' as string | number,
   });
+
+  const fetchFiliais = async () => {
+    try {
+      const res = await fetch('/api/filiais');
+      const data = await res.json();
+      setFiliais(data.data || []);
+    } catch (error) {
+      console.error('Erro ao buscar filiais:', error);
+    }
+  };
 
   const fetchProdutos = async () => {
     try {
@@ -240,6 +264,7 @@ export default function EstoquePage() {
 
   useEffect(() => {
     fetchProdutos();
+    fetchFiliais();
   }, [searchTerm, categoriaFilter, ativoFilter]);
 
   // Reset to page 1 when filters change
@@ -327,6 +352,7 @@ export default function EstoquePage() {
           precoVenda: parseFloat(form.precoVenda) || 0,
           precoGranel: form.precoGranel ? parseFloat(form.precoGranel) : null,
           cnpjFornecedor: form.cnpjFornecedor || null,
+          filialId: form.filialId ? parseInt(form.filialId.toString()) : null,
         }),
       });
 
@@ -345,6 +371,7 @@ export default function EstoquePage() {
           precoVenda: '',
           precoGranel: '',
           cnpjFornecedor: '',
+          filialId: '',
         });
         fetchProdutos();
       }
@@ -396,6 +423,7 @@ export default function EstoquePage() {
       precoVenda: produto.precoVenda.toString(),
       precoGranel: produto.precoGranel?.toString() || '',
       cnpjFornecedor: produto.cnpjFornecedor || '',
+      filialId: produto.filialId || '',
     });
     setShowEditModal(true);
   };
@@ -415,6 +443,7 @@ export default function EstoquePage() {
           precoCompraAtual: parseFloat(editingForm.precoCompra) || 0,
           precoVenda: parseFloat(editingForm.precoVenda) || 0,
           precoGranel: editingForm.precoGranel ? parseFloat(editingForm.precoGranel) : null,
+          filialId: editingForm.filialId ? parseInt(editingForm.filialId.toString()) : null,
         }),
       });
 
@@ -770,7 +799,7 @@ export default function EstoquePage() {
                     </div>
                   </th>
                   <th className="text-left px-6 py-4 text-sm font-medium text-[#6B7280]">Categoria</th>
-                  <th className="text-left px-6 py-4 text-sm font-medium text-[#6B7280]">CNPJ Fornecedor</th>
+                  <th className="text-left px-6 py-4 text-sm font-medium text-[#6B7280]">Filial</th>
                   <th
                     className="text-right px-6 py-4 text-sm font-medium text-[#6B7280] cursor-pointer hover:text-[#E8E8E8] transition-all duration-200 select-none"
                     onClick={() => handleSort('quantidade')}
@@ -837,8 +866,8 @@ export default function EstoquePage() {
                           {getCategoriaLabel(produto.categoria)}
                         </span>
                       </td>
-                      <td className="px-6 py-4 text-[#9E9E9E] text-sm font-mono">
-                        {produto.cnpjFornecedor || '-'}
+                      <td className="px-6 py-4 text-[#9E9E9E] text-sm">
+                        {produto.filialNome || '-'}
                       </td>
                       <td className="px-6 py-4 text-right">
                         <div className="flex items-center justify-end gap-2">
@@ -1094,14 +1123,24 @@ export default function EstoquePage() {
                 </div>
               </div>
               <div>
-                <label className="block text-sm font-medium text-[#9E9E9E] mb-2">CNPJ Fornecedor</label>
-                <input
-                  type="text"
-                  value={form.cnpjFornecedor}
-                  onChange={(e) => setForm({ ...form, cnpjFornecedor: e.target.value })}
-                  placeholder="00.000.000/0000-00"
-                  className="w-full bg-[#121212] border border-[#333333] rounded-xl px-4 py-3 text-[#E8E8E8] placeholder-[#616161] focus:outline-none focus:border-[#43A047]/50 focus:ring-1 focus:ring-[#43A047]/20 transition-all duration-200"
-                />
+                <label className="block text-sm font-medium text-[#9E9E9E] mb-2">Filial/Fornecedor</label>
+                <select
+                  value={form.filialId}
+                  onChange={(e) => setForm({ ...form, filialId: e.target.value })}
+                  className="w-full bg-[#121212] border border-[#333333] rounded-xl px-4 py-3 text-[#E8E8E8] focus:outline-none focus:border-[#43A047]/50 focus:ring-1 focus:ring-[#43A047]/20 transition-all duration-200"
+                >
+                  <option value="">Selecione uma filial</option>
+                  {filiais.map((filial) => (
+                    <option key={filial.id} value={filial.id}>
+                      {filial.nome} - {filial.cnpj}
+                    </option>
+                  ))}
+                </select>
+                {filiais.length === 0 && (
+                  <p className="text-xs text-[#6B7280] mt-1">
+                    Nenhuma filial cadastrada. Cadastre em Configurações.
+                  </p>
+                )}
               </div>
             </div>
             <div className="p-6 border-t border-[#333333] flex gap-3 justify-end">
@@ -1656,14 +1695,19 @@ export default function EstoquePage() {
                 </div>
               </div>
               <div>
-                <label className="block text-sm font-medium text-[#9E9E9E] mb-2">CNPJ Fornecedor</label>
-                <input
-                  type="text"
-                  value={editingForm.cnpjFornecedor}
-                  onChange={(e) => setEditingForm({ ...editingForm, cnpjFornecedor: e.target.value })}
-                  placeholder="00.000.000/0000-00"
-                  className="w-full bg-[#121212] border border-[#333333] rounded-xl px-4 py-3 text-[#E8E8E8] placeholder-[#616161] focus:outline-none focus:border-[#43A047]/50 focus:ring-1 focus:ring-[#43A047]/20 transition-all duration-200"
-                />
+                <label className="block text-sm font-medium text-[#9E9E9E] mb-2">Filial/Fornecedor</label>
+                <select
+                  value={editingForm.filialId}
+                  onChange={(e) => setEditingForm({ ...editingForm, filialId: e.target.value })}
+                  className="w-full bg-[#121212] border border-[#333333] rounded-xl px-4 py-3 text-[#E8E8E8] focus:outline-none focus:border-[#43A047]/50 focus:ring-1 focus:ring-[#43A047]/20 transition-all duration-200"
+                >
+                  <option value="">Selecione uma filial</option>
+                  {filiais.map((filial) => (
+                    <option key={filial.id} value={filial.id}>
+                      {filial.nome} - {filial.cnpj}
+                    </option>
+                  ))}
+                </select>
               </div>
             </div>
             <div className="p-6 border-t border-[#333333] flex gap-3 justify-end">

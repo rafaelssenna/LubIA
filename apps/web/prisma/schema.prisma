@@ -35,6 +35,7 @@ model Empresa {
   conversas     Conversa[]
   mensagens     Mensagem[]
   configuracao  Configuracao?
+  filiais       Filial[]
 
   @@map("empresas")
 }
@@ -261,6 +262,24 @@ enum UnidadeMedida {
   METRO
 }
 
+// Filial/Fornecedor da empresa
+model Filial {
+  id        Int      @id @default(autoincrement())
+  empresaId Int
+  nome      String
+  cnpj      String
+  ativo     Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  empresa   Empresa   @relation(fields: [empresaId], references: [id], onDelete: Cascade)
+  produtos  Produto[]
+
+  @@unique([cnpj, empresaId])
+  @@index([empresaId])
+  @@map("filiais")
+}
+
 // Produto no estoque
 model Produto {
   id                Int              @id @default(autoincrement())
@@ -277,17 +296,20 @@ model Produto {
   precoVenda        Decimal          @db.Decimal(10, 2) @default(0)
   precoGranel       Decimal?         @db.Decimal(10, 2)
   localizacao       String?
-  cnpjFornecedor    String?          // CNPJ do fornecedor da última compra
+  cnpjFornecedor    String?          // Campo legado - usar filialId
+  filialId          Int?             // Filial/Fornecedor de onde veio o produto
   ativo             Boolean          @default(true)
   createdAt         DateTime         @default(now())
   updatedAt         DateTime         @updatedAt
 
   empresa           Empresa              @relation(fields: [empresaId], references: [id], onDelete: Cascade)
+  filial            Filial?              @relation(fields: [filialId], references: [id])
   movimentacoes     MovimentacaoEstoque[]
   itensOrdem        ItemOrdemProduto[]
 
   @@unique([codigo, empresaId])
   @@index([empresaId])
+  @@index([filialId])
   @@map("produtos")
 }
 

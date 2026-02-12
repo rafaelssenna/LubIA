@@ -39,6 +39,15 @@ export async function GET(request: NextRequest) {
         }),
         ...(categoria && { categoria: categoria as any }),
       },
+      include: {
+        filial: {
+          select: {
+            id: true,
+            nome: true,
+            cnpj: true,
+          },
+        },
+      },
       orderBy: { nome: 'asc' },
     });
 
@@ -60,6 +69,8 @@ export async function GET(request: NextRequest) {
       precoGranel: p.precoGranel ? Number(p.precoGranel) : null,
       localizacao: p.localizacao,
       cnpjFornecedor: p.cnpjFornecedor,
+      filialId: p.filialId,
+      filialNome: p.filial?.nome || null,
       ativo: p.ativo,
       estoqueBaixo: Number(p.quantidade) <= Number(p.estoqueMinimo),
     }));
@@ -130,6 +141,7 @@ export async function POST(request: NextRequest) {
         precoGranel: body.precoGranel || null,
         localizacao: body.localizacao || null,
         cnpjFornecedor: body.cnpjFornecedor || null,
+        filialId: body.filialId || null,
         empresaId: session.empresaId,
       },
     });

@@ -18,6 +18,10 @@ import {
   Power,
   Wrench,
   DollarSign,
+  Plus,
+  Edit,
+  Trash2,
+  Store,
 } from 'lucide-react';
 import { useState, useEffect } from 'react';
 
@@ -52,6 +56,13 @@ interface Servico {
   nome: string;
   categoria: string;
   precoBase: string;
+  ativo: boolean;
+}
+
+interface Filial {
+  id: number;
+  nome: string;
+  cnpj: string;
   ativo: boolean;
 }
 
@@ -156,6 +167,13 @@ export default function ConfiguracoesPage() {
   // Serviços do banco
   const [servicos, setServicos] = useState<Servico[]>([]);
 
+  // Filiais
+  const [filiais, setFiliais] = useState<Filial[]>([]);
+  const [showFilialModal, setShowFilialModal] = useState(false);
+  const [editingFilial, setEditingFilial] = useState<Filial | null>(null);
+  const [filialForm, setFilialForm] = useState({ nome: '', cnpj: '' });
+  const [savingFilial, setSavingFilial] = useState(false);
+
   // Atualizar dia específico do horário
   const updateHorarioDia = (dia: keyof HorarioSemana, campo: keyof DiaHorario, valor: boolean | string) => {
     setChatbotHorario(prev => ({
@@ -209,6 +227,75 @@ export default function ConfiguracoesPage() {
     }
   };
 
+  const fetchFiliais = async () => {
+    try {
+      const res = await fetch('/api/filiais?ativo=todos');
+      const data = await res.json();
+      if (data.data) {
+        setFiliais(data.data);
+      }
+    } catch (error) {
+      console.error('Erro ao buscar filiais:', error);
+    }
+  };
+
+  const handleSaveFilial = async () => {
+    if (!filialForm.nome || !filialForm.cnpj) {
+      toast.error('Preencha nome e CNPJ');
+      return;
+    }
+
+    setSavingFilial(true);
+    try {
+      const url = editingFilial ? `/api/filiais/${editingFilial.id}` : '/api/filiais';
+      const method = editingFilial ? 'PUT' : 'POST';
+
+      const res = await fetch(url, {
+        method,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(filialForm),
+      });
+
+      if (res.ok) {
+        toast.success(editingFilial ? 'Filial atualizada!' : 'Filial cadastrada!');
+        setShowFilialModal(false);
+        setEditingFilial(null);
+        setFilialForm({ nome: '', cnpj: '' });
+        fetchFiliais();
+      } else {
+        const data = await res.json();
+        toast.error(data.error || 'Erro ao salvar filial');
+      }
+    } catch (error) {
+      toast.error('Erro ao salvar filial');
+    } finally {
+      setSavingFilial(false);
+    }
+  };
+
+  const handleDeleteFilial = async (filial: Filial) => {
+    if (!confirm(`Deseja realmente excluir a filial "${filial.nome}"?`)) return;
+
+    try {
+      const res = await fetch(`/api/filiais/${filial.id}`, { method: 'DELETE' });
+      if (res.ok) {
+        toast.success('Filial excluída!');
+        fetchFiliais();
+      } else {
+        const data = await res.json();
+        toast.error(data.error || 'Erro ao excluir filial');
+      }
+    } catch (error) {
+      toast.error('Erro ao excluir filial');
+    }
+  };
+
+  const openEditFilial = (filial: Filial) => {
+    setEditingFilial(filial);
+    setFilialForm({ nome: filial.nome, cnpj: filial.cnpj });
+    setShowFilialModal(true);
+  };
+
   const checkWhatsAppStatus = async () => {
     setCheckingStatus(true);
     try {
@@ -237,6 +324,7 @@ export default function ConfiguracoesPage() {
   useEffect(() => {
     fetchConfig();
     fetchServicos();
+    fetchFiliais();
     checkWhatsAppStatus();
   }, []);
 
@@ -410,6 +498,148 @@ export default function ConfiguracoesPage() {
             </div>
           </div>
         </div>
+
+        {/* Filiais/Fornecedores */}
+        <div className="bg-[#1E1E1E] border border-[#333333] rounded-2xl overflow-hidden">
+          <div className="p-6 border-b border-[#333333] flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="p-2.5 bg-purple-500/10 rounded-xl">
+                <Store size={20} className="text-purple-400" />
+              </div>
+              <div>
+                <h2 className="text-lg font-semibold text-[#E8E8E8]">Filiais / Fornecedores</h2>
+                <p className="text-sm text-[#6B7280]">Cadastre as filiais para associar aos produtos</p>
+              </div>
+            </div>
+            <button
+              onClick={() => {
+                setEditingFilial(null);
+                setFilialForm({ nome: '', cnpj: '' });
+                setShowFilialModal(true);
+              }}
+              className="flex items-center gap-2 px-4 py-2 bg-purple-500/10 border border-purple-500/30 rounded-xl text-purple-400 hover:bg-purple-500/20 transition-colors"
+            >
+              <Plus size={18} />
+              Nova Filial
+            </button>
+          </div>
+
+          <div className="p-6">
+            {filiais.length > 0 ? (
+              <div className="space-y-3">
+                {filiais.map((filial) => (
+                  <div
+                    key={filial.id}
+                    className={`flex items-center justify-between p-4 rounded-xl border transition-colors ${
+                      filial.ativo
+                        ? 'bg-[#121212] border-[#333333]'
+                        : 'bg-[#121212]/50 border-[#333333]/50 opacity-60'
+                    }`}
+                  >
+                    <div className="flex items-center gap-4">
+                      <div className="p-2.5 bg-purple-500/10 rounded-lg">
+                        <Store size={18} className="text-purple-400" />
+                      </div>
+                      <div>
+                        <p className="font-medium text-[#E8E8E8]">{filial.nome}</p>
+                        <p className="text-sm text-[#6B7280] font-mono">{filial.cnpj}</p>
+                      </div>
+                      {!filial.ativo && (
+                        <span className="px-2 py-0.5 bg-red-500/10 text-red-400 text-xs rounded-full">
+                          Inativo
+                        </span>
+                      )}
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <button
+                        onClick={() => openEditFilial(filial)}
+                        className="p-2 hover:bg-[#333333] rounded-lg transition-colors"
+                        title="Editar"
+                      >
+                        <Edit size={16} className="text-[#9E9E9E]" />
+                      </button>
+                      <button
+                        onClick={() => handleDeleteFilial(filial)}
+                        className="p-2 hover:bg-red-500/10 rounded-lg transition-colors"
+                        title="Excluir"
+                      >
+                        <Trash2 size={16} className="text-red-400" />
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-8">
+                <Store size={32} className="text-[#6B7280] mx-auto mb-3" />
+                <p className="text-[#9E9E9E]">Nenhuma filial cadastrada</p>
+                <p className="text-xs text-[#6B7280] mt-1">
+                  Cadastre filiais para associar aos produtos no estoque
+                </p>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Modal Filial */}
+        {showFilialModal && (
+          <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+            <div className="bg-[#1E1E1E] border border-[#333333] rounded-2xl w-full max-w-md animate-fade-in shadow-2xl">
+              <div className="p-6 border-b border-[#333333]">
+                <h2 className="text-xl font-semibold text-[#E8E8E8]">
+                  {editingFilial ? 'Editar Filial' : 'Nova Filial'}
+                </h2>
+              </div>
+              <div className="p-6 space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-[#9E9E9E] mb-2">Nome da Filial</label>
+                  <input
+                    type="text"
+                    value={filialForm.nome}
+                    onChange={(e) => setFilialForm({ ...filialForm, nome: e.target.value })}
+                    placeholder="Ex: Filial Centro"
+                    className="w-full bg-[#121212] border border-[#333333] rounded-xl px-4 py-3 text-[#E8E8E8] placeholder-gray-500 focus:outline-none focus:border-purple-500"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-[#9E9E9E] mb-2">CNPJ</label>
+                  <input
+                    type="text"
+                    value={filialForm.cnpj}
+                    onChange={(e) => setFilialForm({ ...filialForm, cnpj: e.target.value })}
+                    placeholder="00.000.000/0000-00"
+                    className="w-full bg-[#121212] border border-[#333333] rounded-xl px-4 py-3 text-[#E8E8E8] placeholder-gray-500 focus:outline-none focus:border-purple-500"
+                  />
+                </div>
+              </div>
+              <div className="p-6 border-t border-[#333333] flex gap-3 justify-end">
+                <button
+                  onClick={() => {
+                    setShowFilialModal(false);
+                    setEditingFilial(null);
+                    setFilialForm({ nome: '', cnpj: '' });
+                  }}
+                  className="px-6 py-3 border border-[#333333] rounded-xl text-[#9E9E9E] hover:bg-[#121212] hover:text-[#E8E8E8] transition-all duration-200"
+                >
+                  Cancelar
+                </button>
+                <button
+                  onClick={handleSaveFilial}
+                  disabled={savingFilial}
+                  className="px-6 py-3 bg-gradient-to-r from-purple-500 to-purple-700 rounded-xl text-white font-medium hover:shadow-lg hover:shadow-purple-500/10 disabled:opacity-50 transition-all duration-200"
+                >
+                  {savingFilial ? (
+                    <Loader2 className="animate-spin" size={20} />
+                  ) : editingFilial ? (
+                    'Salvar'
+                  ) : (
+                    'Cadastrar'
+                  )}
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Integracao WhatsApp */}
         <div className="bg-[#1E1E1E] border border-[#333333] rounded-2xl overflow-hidden">
