@@ -946,6 +946,7 @@ function OrdensPageContent() {
                           max={9999999}
                           className="w-full bg-[#121212] border border-[#333333] rounded-xl px-4 py-3 text-[#E8E8E8] placeholder-gray-400 focus:outline-none focus:border-[#43A047]"
                         />
+                        <p className="text-xs text-[#6B7280] mt-1">Atualize com os km atuais</p>
                       </div>
                       <div>
                         <label className="block text-sm font-medium text-[#9E9E9E] mb-2">Data e Hora do Agendamento</label>
