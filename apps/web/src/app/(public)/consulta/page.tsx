@@ -76,8 +76,19 @@ export default function ConsultaPage() {
   const formatPlaca = (value: string) => {
     const clean = value.replace(/[^A-Za-z0-9]/g, '').toUpperCase();
     if (clean.length <= 3) return clean;
-    if (clean.length <= 7) return clean.slice(0, 3) + '-' + clean.slice(3);
-    return clean.slice(0, 3) + '-' + clean.slice(3, 7);
+    if (clean.length <= 7) {
+      // Detecta se é Mercosul (5º caractere é letra) ou antiga (5º é número)
+      const isMercosul = clean.length >= 5 && /[A-Z]/.test(clean[4]);
+      if (isMercosul) {
+        return clean; // Mercosul: ABC1D23 (sem hífen)
+      }
+      return clean.slice(0, 3) + '-' + clean.slice(3); // Antiga: ABC-1234
+    }
+    // Se passou de 7, limita e formata
+    const limited = clean.slice(0, 7);
+    const isMercosul = /[A-Z]/.test(limited[4]);
+    if (isMercosul) return limited;
+    return limited.slice(0, 3) + '-' + limited.slice(3);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -201,7 +212,7 @@ export default function ConsultaPage() {
               type="text"
               value={placa}
               onChange={(e) => setPlaca(formatPlaca(e.target.value))}
-              placeholder="Digite a placa (ex: ABC-1234)"
+              placeholder="ABC1D23 ou ABC-1234"
               maxLength={8}
               className="w-full bg-[#1E1E1E] border border-[#333333] rounded-xl pl-12 pr-4 py-4 text-lg text-[#E8E8E8] placeholder-gray-500 focus:outline-none focus:border-[#43A047] focus:ring-2 focus:ring-[#43A047]/20 transition-all uppercase tracking-wider font-mono"
             />

@@ -204,7 +204,15 @@ export default function VeiculosPage() {
   const formatPlate = (placa: string) => {
     const cleaned = placa.replace(/[^A-Za-z0-9]/g, '').toUpperCase();
     if (cleaned.length === 7) {
-      return cleaned;
+      // Detecta se é Mercosul (5º caractere é letra) ou antiga (5º é número)
+      const isMercosul = /[A-Z]/.test(cleaned[4]);
+      if (isMercosul) {
+        // Mercosul: ABC1D23
+        return cleaned;
+      } else {
+        // Antiga: ABC-1234
+        return `${cleaned.slice(0, 3)}-${cleaned.slice(3)}`;
+      }
     }
     return placa;
   };
@@ -399,7 +407,7 @@ export default function VeiculosPage() {
                 <div className="flex gap-2">
                   <input
                     type="text"
-                    placeholder="ABC1D23"
+                    placeholder="ABC1D23 ou ABC1234"
                     value={form.placa}
                     onChange={(e) => setForm({ ...form, placa: e.target.value.toUpperCase() })}
                     className="flex-1 bg-[#121212] border border-[#333333] rounded-xl px-4 py-3 text-[#E8E8E8] placeholder-[#616161] focus:outline-none focus:border-[#43A047]/50 focus:ring-1 focus:ring-[#43A047]/20 uppercase font-mono transition-all duration-200"
@@ -519,9 +527,10 @@ export default function VeiculosPage() {
                 <label className="block text-sm font-medium text-[#94a3b8] mb-2">Placa *</label>
                 <input
                   type="text"
+                  placeholder="ABC1D23 ou ABC1234"
                   value={form.placa}
                   onChange={(e) => setForm({ ...form, placa: e.target.value.toUpperCase() })}
-                  className="w-full bg-[#121212] border border-[#333333] rounded-xl px-4 py-3 text-[#E8E8E8] focus:outline-none focus:border-[#43A047]/50 focus:ring-1 focus:ring-[#43A047]/20 uppercase font-mono transition-all duration-200"
+                  className="w-full bg-[#121212] border border-[#333333] rounded-xl px-4 py-3 text-[#E8E8E8] placeholder-[#616161] focus:outline-none focus:border-[#43A047]/50 focus:ring-1 focus:ring-[#43A047]/20 uppercase font-mono transition-all duration-200"
                 />
               </div>
               <div className="grid grid-cols-2 gap-4">
