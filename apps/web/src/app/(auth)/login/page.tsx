@@ -45,17 +45,17 @@ export default function LoginPage() {
     <div className="min-h-screen flex items-center justify-center p-4">
       <div className="w-full max-w-md">
         {/* Logo */}
-        <div className="text-center mb-8">
-          <div className="flex items-center justify-center mb-3">
+        <div className="text-center mb-10">
+          <div className="flex items-center justify-center mb-4">
             <Image
               src="/logo.png"
               alt="LoopIA"
-              width={180}
-              height={60}
-              className="h-14 w-auto"
+              width={320}
+              height={100}
+              className="h-24 w-auto"
             />
           </div>
-          <p className="text-[#9E9E9E]">Sistema de Gestão de Oficinas</p>
+          <p className="text-[#9E9E9E] text-lg">Sistema de Gestão de Oficinas</p>
         </div>
 
         {/* Form */}
