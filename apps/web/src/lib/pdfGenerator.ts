@@ -69,6 +69,33 @@ const formatCurrency = (value: number) => {
   return value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
 };
 
+// Formatar telefone para exibição
+const formatPhone = (phone: string | null | undefined): string => {
+  if (!phone) return '';
+  const cleaned = phone.replace(/\D/g, '');
+  if (cleaned.length === 11) {
+    return `(${cleaned.slice(0, 2)}) ${cleaned.slice(2, 7)}-${cleaned.slice(7)}`;
+  }
+  if (cleaned.length === 10) {
+    return `(${cleaned.slice(0, 2)}) ${cleaned.slice(2, 6)}-${cleaned.slice(6)}`;
+  }
+  if (cleaned.length === 13 && cleaned.startsWith('55')) {
+    // Com código do país: 5531971206977
+    return `(${cleaned.slice(2, 4)}) ${cleaned.slice(4, 9)}-${cleaned.slice(9)}`;
+  }
+  if (cleaned.length === 12 && cleaned.startsWith('55')) {
+    // Com código do país (fixo): 553171206977
+    return `(${cleaned.slice(2, 4)}) ${cleaned.slice(4, 8)}-${cleaned.slice(8)}`;
+  }
+  return phone;
+};
+
+// Truncar texto longo
+const truncateText = (text: string, maxLength: number): string => {
+  if (text.length <= maxLength) return text;
+  return text.slice(0, maxLength - 3) + '...';
+};
+
 export function generateOrdemPDF(ordem: OrdemPDF, empresaConfig?: EmpresaConfig) {
   const doc = new jsPDF();
   const pageWidth = doc.internal.pageSize.getWidth();
@@ -143,17 +170,30 @@ export function generateOrdemPDF(ordem: OrdemPDF, empresaConfig?: EmpresaConfig)
   doc.setFontSize(10);
   doc.setFont('helvetica', 'normal');
 
+  // Nome (pode ser longo, então usa linha inteira)
   doc.setFont('helvetica', 'bold');
   doc.text('Nome:', margin, yPos);
   doc.setFont('helvetica', 'normal');
-  doc.text(ordem.veiculo.cliente.nome, margin + 20, yPos);
+  const nomeCliente = truncateText(ordem.veiculo.cliente.nome, 70);
+  doc.text(nomeCliente, margin + 18, yPos);
 
+  yPos += 7;
+
+  // Telefone na linha de baixo
   doc.setFont('helvetica', 'bold');
-  doc.text('Telefone:', pageWidth / 2, yPos);
+  doc.text('Telefone:', margin, yPos);
   doc.setFont('helvetica', 'normal');
-  doc.text(ordem.veiculo.cliente.telefone, pageWidth / 2 + 25, yPos);
+  doc.text(formatPhone(ordem.veiculo.cliente.telefone), margin + 25, yPos);
 
-  yPos += 12;
+  // Email ao lado do telefone (se existir)
+  if (ordem.veiculo.cliente.email) {
+    doc.setFont('helvetica', 'bold');
+    doc.text('Email:', pageWidth / 2, yPos);
+    doc.setFont('helvetica', 'normal');
+    doc.text(ordem.veiculo.cliente.email, pageWidth / 2 + 18, yPos);
+  }
+
+  yPos += 10;
 
   // ============ DADOS DO VEÍCULO ============
   doc.setTextColor(34, 197, 94);
@@ -326,7 +366,19 @@ export function generateOrdemPDF(ordem: OrdemPDF, empresaConfig?: EmpresaConfig)
   }
 
   // ============ TOTAL ============
-  yPos += 10;
+  // Se não tem serviços nem produtos, adiciona mensagem
+  const hasItems = (ordem.servicosExtras && ordem.servicosExtras.length > 0) ||
+                   (ordem.itensProduto && ordem.itensProduto.length > 0);
+
+  if (!hasItems && ordem.total > 0) {
+    doc.setTextColor(100, 100, 100);
+    doc.setFontSize(9);
+    doc.setFont('helvetica', 'italic');
+    doc.text('(Serviços e valores a serem definidos)', margin, yPos);
+    yPos += 10;
+  }
+
+  yPos += 5;
 
   // Box do total (alinhado à direita)
   const totalBoxWidth = 90;
@@ -343,13 +395,11 @@ export function generateOrdemPDF(ordem: OrdemPDF, empresaConfig?: EmpresaConfig)
   doc.setFontSize(18);
   doc.text(formatCurrency(ordem.total), totalBoxX + totalBoxWidth / 2, yPos + 22, { align: 'center' });
 
-  yPos += 45;
+  yPos += 40;
 
   // ============ ASSINATURA ============
-  // Garantir espaço mínimo para assinatura e footer
-  const minSignatureY = yPos;
-  const maxSignatureY = pageHeight - 50;
-  const signatureY = Math.max(minSignatureY, Math.min(yPos, maxSignatureY));
+  // Posicionar assinatura logo após o total, mas garantir espaço para footer
+  const signatureY = Math.min(yPos, pageHeight - 55);
 
   doc.setTextColor(100, 100, 100);
   doc.setFontSize(8);
