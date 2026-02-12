@@ -292,12 +292,17 @@ export default function ClientesPage() {
     return phone;
   };
 
-  const formatCPF = (cpf: string) => {
-    const cleaned = cpf.replace(/\D/g, '');
+  const formatCpfCnpj = (value: string) => {
+    const cleaned = value.replace(/\D/g, '');
     if (cleaned.length === 11) {
+      // CPF: 000.000.000-00
       return `${cleaned.slice(0, 3)}.${cleaned.slice(3, 6)}.${cleaned.slice(6, 9)}-${cleaned.slice(9)}`;
     }
-    return cpf;
+    if (cleaned.length === 14) {
+      // CNPJ: 00.000.000/0000-00
+      return `${cleaned.slice(0, 2)}.${cleaned.slice(2, 5)}.${cleaned.slice(5, 8)}/${cleaned.slice(8, 12)}-${cleaned.slice(12)}`;
+    }
+    return value;
   };
 
   return (
@@ -353,7 +358,7 @@ export default function ClientesPage() {
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-[#9E9E9E]" size={18} />
             <input
               type="text"
-              placeholder="Buscar cliente por nome, telefone ou CPF..."
+              placeholder="Buscar cliente por nome, telefone ou CPF/CNPJ..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="w-full bg-[#1E1E1E] border border-[#333333] rounded-xl pl-11 pr-4 py-3 text-sm text-[#E8E8E8] placeholder-[#616161] focus:outline-none focus:border-[#43A047]/50 focus:ring-1 focus:ring-[#43A047]/20 transition-all duration-200"
@@ -380,7 +385,7 @@ export default function ClientesPage() {
                 <tr className="border-b border-[#333333]">
                   <th className="text-left px-6 py-4 text-sm font-medium text-[#9E9E9E]">Cliente</th>
                   <th className="text-left px-6 py-4 text-sm font-medium text-[#9E9E9E]">Telefone</th>
-                  <th className="text-left px-6 py-4 text-sm font-medium text-[#9E9E9E]">CPF</th>
+                  <th className="text-left px-6 py-4 text-sm font-medium text-[#9E9E9E]">CPF/CNPJ</th>
                   <th className="text-center px-6 py-4 text-sm font-medium text-[#9E9E9E]">Veiculos</th>
                   <th className="text-right px-6 py-4 text-sm font-medium text-[#9E9E9E]">Acoes</th>
                 </tr>
@@ -423,7 +428,7 @@ export default function ClientesPage() {
                       </td>
                       <td className="px-6 py-4">
                         <span className="text-[#9E9E9E]">
-                          {cliente.cpf ? formatCPF(cliente.cpf) : '-'}
+                          {cliente.cpf ? formatCpfCnpj(cliente.cpf) : '-'}
                         </span>
                       </td>
                       <td className="px-6 py-4 text-center">
@@ -523,12 +528,12 @@ export default function ClientesPage() {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-[#9E9E9E] mb-2">CPF</label>
+                <label className="block text-sm font-medium text-[#9E9E9E] mb-2">CPF/CNPJ</label>
                 <input
                   type="text"
                   value={form.cpf}
                   onChange={(e) => setForm({ ...form, cpf: e.target.value })}
-                  placeholder="000.000.000-00"
+                  placeholder="CPF ou CNPJ"
                   className="w-full bg-[#121212] border border-[#333333] rounded-xl px-4 py-3 text-[#E8E8E8] placeholder-[#616161] focus:outline-none focus:border-[#43A047]/50 focus:ring-1 focus:ring-[#43A047]/20 transition-all duration-200"
                 />
               </div>
@@ -679,11 +684,12 @@ export default function ClientesPage() {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-[#9E9E9E] mb-2">CPF</label>
+                <label className="block text-sm font-medium text-[#9E9E9E] mb-2">CPF/CNPJ</label>
                 <input
                   type="text"
                   value={form.cpf}
                   onChange={(e) => setForm({ ...form, cpf: e.target.value })}
+                  placeholder="CPF ou CNPJ"
                   className="w-full bg-[#121212] border border-[#333333] rounded-xl px-4 py-3 text-[#E8E8E8] placeholder-[#616161] focus:outline-none focus:border-[#43A047]/50 focus:ring-1 focus:ring-[#43A047]/20 transition-all duration-200"
                 />
               </div>
@@ -892,9 +898,9 @@ export default function ClientesPage() {
                 <div className="p-4 bg-[#121212] rounded-xl border border-[#333333]">
                   <div className="flex items-center gap-2 text-[#9E9E9E] mb-1">
                     <CreditCard size={14} />
-                    <span className="text-xs">CPF</span>
+                    <span className="text-xs">CPF/CNPJ</span>
                   </div>
-                  <p className="text-[#E8E8E8]">{formatCPF(selectedCliente.cpf)}</p>
+                  <p className="text-[#E8E8E8]">{formatCpfCnpj(selectedCliente.cpf)}</p>
                 </div>
               )}
               {selectedCliente.endereco && (
