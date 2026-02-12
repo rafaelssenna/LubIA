@@ -34,7 +34,48 @@ export default function CadastroPage() {
   const [telefoneEmpresa, setTelefoneEmpresa] = useState('');
   const [enderecoEmpresa, setEnderecoEmpresa] = useState('');
   const [loading, setLoading] = useState(false);
+  const [buscandoCnpj, setBuscandoCnpj] = useState(false);
   const [error, setError] = useState('');
+
+  // Buscar dados da empresa pelo CNPJ na Receita Federal
+  const buscarDadosCnpj = async (cnpjValue: string) => {
+    const cnpjLimpo = cnpjValue.replace(/\D/g, '');
+    if (cnpjLimpo.length !== 14) return;
+
+    setBuscandoCnpj(true);
+    try {
+      const res = await fetch(`https://brasilapi.com.br/api/cnpj/v1/${cnpjLimpo}`);
+      if (res.ok) {
+        const data = await res.json();
+        // Preencher campos automaticamente
+        if (data.razao_social && !nomeEmpresa) {
+          setNomeEmpresa(data.nome_fantasia || data.razao_social);
+        }
+        if (data.ddd_telefone_1 && !telefoneEmpresa) {
+          const tel = data.ddd_telefone_1.replace(/\D/g, '');
+          setTelefoneEmpresa(formatTelefone(tel));
+        }
+        if (data.logradouro && !enderecoEmpresa) {
+          const end = `${data.logradouro}, ${data.numero || 'S/N'}${data.complemento ? ` - ${data.complemento}` : ''}, ${data.bairro} - ${data.municipio}/${data.uf}`;
+          setEnderecoEmpresa(end);
+        }
+      }
+    } catch {
+      // Silencioso - não mostrar erro se API falhar
+    } finally {
+      setBuscandoCnpj(false);
+    }
+  };
+
+  // Handler do CNPJ com busca automática
+  const handleCnpjChange = (value: string) => {
+    const formatted = formatCnpj(value);
+    setCnpjEmpresa(formatted);
+    // Buscar quando CNPJ estiver completo (14 dígitos)
+    if (formatted.replace(/\D/g, '').length === 14) {
+      buscarDadosCnpj(formatted);
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -140,14 +181,24 @@ export default function CadastroPage() {
               <label className="block text-sm font-medium text-[#9E9E9E] mb-2">
                 CNPJ da Empresa
               </label>
-              <input
-                type="text"
-                value={cnpjEmpresa}
-                onChange={(e) => setCnpjEmpresa(formatCnpj(e.target.value))}
-                required
-                className="w-full bg-[#121212] border border-[#333333] rounded-xl px-4 py-3 text-[#E8E8E8] focus:outline-none focus:border-[#43A047] transition-colors"
-                placeholder="00.000.000/0000-00"
-              />
+              <div className="relative">
+                <input
+                  type="text"
+                  value={cnpjEmpresa}
+                  onChange={(e) => handleCnpjChange(e.target.value)}
+                  required
+                  className="w-full bg-[#121212] border border-[#333333] rounded-xl px-4 py-3 text-[#E8E8E8] focus:outline-none focus:border-[#43A047] transition-colors"
+                  placeholder="00.000.000/0000-00"
+                />
+                {buscandoCnpj && (
+                  <div className="absolute right-3 top-1/2 -translate-y-1/2">
+                    <Loader2 className="animate-spin text-[#43A047]" size={20} />
+                  </div>
+                )}
+              </div>
+              <p className="text-xs text-[#666666] mt-1">
+                Os dados da empresa serão preenchidos automaticamente
+              </p>
             </div>
 
             <div>

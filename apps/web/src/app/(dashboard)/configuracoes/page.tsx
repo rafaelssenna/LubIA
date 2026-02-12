@@ -175,6 +175,48 @@ export default function ConfiguracoesPage() {
   const [cnpj, setCnpj] = useState('');
   const [telefone, setTelefone] = useState('');
   const [endereco, setEndereco] = useState('');
+  const [buscandoCnpj, setBuscandoCnpj] = useState(false);
+
+  // Buscar dados da empresa pelo CNPJ na Receita Federal
+  const buscarDadosCnpj = async (cnpjValue: string) => {
+    const cnpjLimpo = cnpjValue.replace(/\D/g, '');
+    if (cnpjLimpo.length !== 14) return;
+
+    setBuscandoCnpj(true);
+    try {
+      const res = await fetch(`https://brasilapi.com.br/api/cnpj/v1/${cnpjLimpo}`);
+      if (res.ok) {
+        const data = await res.json();
+        // Preencher campos automaticamente
+        if (data.razao_social && !nomeOficina) {
+          setNomeOficina(data.nome_fantasia || data.razao_social);
+        }
+        if (data.ddd_telefone_1 && !telefone) {
+          const tel = data.ddd_telefone_1.replace(/\D/g, '');
+          setTelefone(formatTelefone(tel));
+        }
+        if (data.logradouro && !endereco) {
+          const end = `${data.logradouro}, ${data.numero || 'S/N'}${data.complemento ? ` - ${data.complemento}` : ''}, ${data.bairro} - ${data.municipio}/${data.uf}`;
+          setEndereco(end);
+        }
+        toast.success('Dados da empresa carregados!');
+      }
+    } catch {
+      // Silencioso - não mostrar erro se API falhar
+    } finally {
+      setBuscandoCnpj(false);
+    }
+  };
+
+  // Handler do CNPJ com busca automática
+  const handleCnpjChange = (value: string) => {
+    const formatted = formatCnpj(value);
+    setCnpj(formatted);
+    // Buscar quando CNPJ estiver completo (14 dígitos)
+    if (formatted.replace(/\D/g, '').length === 14) {
+      buscarDadosCnpj(formatted);
+    }
+  };
 
   // Chatbot states
   const [chatbotEnabled, setChatbotEnabled] = useState(true);
@@ -498,13 +540,21 @@ export default function ConfiguracoesPage() {
               <label className="block text-sm font-medium text-[#9E9E9E] mb-2">
                 CNPJ <span className="text-red-400">*</span>
               </label>
-              <input
-                type="text"
-                value={cnpj}
-                onChange={(e) => setCnpj(formatCnpj(e.target.value))}
-                placeholder="00.000.000/0000-00"
-                className="w-full bg-[#121212] border border-[#333333] rounded-xl px-4 py-3 text-[#E8E8E8] placeholder-gray-500 focus:outline-none focus:border-[#43A047]"
-              />
+              <div className="relative">
+                <input
+                  type="text"
+                  value={cnpj}
+                  onChange={(e) => handleCnpjChange(e.target.value)}
+                  placeholder="00.000.000/0000-00"
+                  className="w-full bg-[#121212] border border-[#333333] rounded-xl px-4 py-3 text-[#E8E8E8] placeholder-gray-500 focus:outline-none focus:border-[#43A047]"
+                />
+                {buscandoCnpj && (
+                  <div className="absolute right-3 top-1/2 -translate-y-1/2">
+                    <Loader2 size={18} className="animate-spin text-[#43A047]" />
+                  </div>
+                )}
+              </div>
+              <p className="text-xs text-[#6B7280] mt-1">Digite o CNPJ para preencher automaticamente</p>
             </div>
             <div>
               <label className="block text-sm font-medium text-[#9E9E9E] mb-2">
