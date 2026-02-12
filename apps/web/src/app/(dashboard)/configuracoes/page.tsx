@@ -139,6 +139,24 @@ function stringParaHorario(str: string): HorarioSemana {
   return { ...horarioPadrao };
 }
 
+// Formatar CNPJ enquanto digita: 00.000.000/0000-00
+function formatCnpj(value: string): string {
+  const cleaned = value.replace(/\D/g, '').slice(0, 14);
+  if (cleaned.length <= 2) return cleaned;
+  if (cleaned.length <= 5) return `${cleaned.slice(0, 2)}.${cleaned.slice(2)}`;
+  if (cleaned.length <= 8) return `${cleaned.slice(0, 2)}.${cleaned.slice(2, 5)}.${cleaned.slice(5)}`;
+  if (cleaned.length <= 12) return `${cleaned.slice(0, 2)}.${cleaned.slice(2, 5)}.${cleaned.slice(5, 8)}/${cleaned.slice(8)}`;
+  return `${cleaned.slice(0, 2)}.${cleaned.slice(2, 5)}.${cleaned.slice(5, 8)}/${cleaned.slice(8, 12)}-${cleaned.slice(12)}`;
+}
+
+// Formatar telefone enquanto digita: (00) 00000-0000
+function formatTelefone(value: string): string {
+  const cleaned = value.replace(/\D/g, '').slice(0, 11);
+  if (cleaned.length <= 2) return cleaned.length ? `(${cleaned}` : '';
+  if (cleaned.length <= 7) return `(${cleaned.slice(0, 2)}) ${cleaned.slice(2)}`;
+  return `(${cleaned.slice(0, 2)}) ${cleaned.slice(2, 7)}-${cleaned.slice(7)}`;
+}
+
 export default function ConfiguracoesPage() {
   const toast = useToast();
   const [loading, setLoading] = useState(true);
@@ -483,7 +501,7 @@ export default function ConfiguracoesPage() {
               <input
                 type="text"
                 value={cnpj}
-                onChange={(e) => setCnpj(e.target.value)}
+                onChange={(e) => setCnpj(formatCnpj(e.target.value))}
                 placeholder="00.000.000/0000-00"
                 className="w-full bg-[#121212] border border-[#333333] rounded-xl px-4 py-3 text-[#E8E8E8] placeholder-gray-500 focus:outline-none focus:border-[#43A047]"
               />
@@ -495,7 +513,7 @@ export default function ConfiguracoesPage() {
               <input
                 type="text"
                 value={telefone}
-                onChange={(e) => setTelefone(e.target.value)}
+                onChange={(e) => setTelefone(formatTelefone(e.target.value))}
                 placeholder="(00) 00000-0000"
                 className="w-full bg-[#121212] border border-[#333333] rounded-xl px-4 py-3 text-[#E8E8E8] placeholder-gray-500 focus:outline-none focus:border-[#43A047]"
               />

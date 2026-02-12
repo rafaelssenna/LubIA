@@ -44,9 +44,10 @@ export default function Sidebar() {
         const res = await fetch('/api/configuracoes');
         const data = await res.json();
         if (data.data) {
-          const { cnpj, telefone } = data.data;
-          // Se CNPJ ou telefone estiver vazio, config está incompleta
-          setConfigIncomplete(!cnpj || !telefone);
+          const { nomeOficina, cnpj, telefone, endereco } = data.data;
+          // Só mostra alerta se TODOS os campos estiverem vazios
+          const allEmpty = !nomeOficina && !cnpj && !telefone && !endereco;
+          setConfigIncomplete(allEmpty);
         } else {
           // Sem config = incompleta
           setConfigIncomplete(true);
