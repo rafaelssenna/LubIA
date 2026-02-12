@@ -41,7 +41,7 @@ export default function Sidebar() {
   useEffect(() => {
     const checkConfig = async () => {
       try {
-        const res = await fetch('/api/configuracoes');
+        const res = await fetch('/api/whatsapp/config');
         const data = await res.json();
         if (data.data) {
           const { nomeOficina, cnpj, telefone, endereco } = data.data;
