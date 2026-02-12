@@ -241,7 +241,13 @@ function OrdensPageContent() {
     const [hours, minutes] = hora.split(':');
     const scheduledDate = new Date(date);
     scheduledDate.setHours(parseInt(hours), parseInt(minutes), 0, 0);
-    const formattedDate = scheduledDate.toISOString().slice(0, 16);
+    // Formatar em timezone local (YYYY-MM-DDTHH:MM)
+    const year = scheduledDate.getFullYear();
+    const month = String(scheduledDate.getMonth() + 1).padStart(2, '0');
+    const day = String(scheduledDate.getDate()).padStart(2, '0');
+    const hour = String(scheduledDate.getHours()).padStart(2, '0');
+    const min = String(scheduledDate.getMinutes()).padStart(2, '0');
+    const formattedDate = `${year}-${month}-${day}T${hour}:${min}`;
     openNewModal(formattedDate);
   };
 
