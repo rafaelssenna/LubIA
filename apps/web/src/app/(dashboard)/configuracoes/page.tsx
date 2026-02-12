@@ -339,6 +339,16 @@ export default function ConfiguracoesPage() {
   }, [qrCode, whatsappStatus?.connected]);
 
   const handleSaveConfig = async () => {
+    // Validar campos obrigatórios
+    if (!cnpj.trim()) {
+      toast.error('CNPJ é obrigatório');
+      return;
+    }
+    if (!telefone.trim()) {
+      toast.error('Telefone é obrigatório');
+      return;
+    }
+
     setSaving(true);
     try {
       const res = await fetch('/api/whatsapp/config', {
@@ -467,7 +477,9 @@ export default function ConfiguracoesPage() {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-[#9E9E9E] mb-2">CNPJ</label>
+              <label className="block text-sm font-medium text-[#9E9E9E] mb-2">
+                CNPJ <span className="text-red-400">*</span>
+              </label>
               <input
                 type="text"
                 value={cnpj}
@@ -477,7 +489,9 @@ export default function ConfiguracoesPage() {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-[#9E9E9E] mb-2">Telefone</label>
+              <label className="block text-sm font-medium text-[#9E9E9E] mb-2">
+                Telefone <span className="text-red-400">*</span>
+              </label>
               <input
                 type="text"
                 value={telefone}

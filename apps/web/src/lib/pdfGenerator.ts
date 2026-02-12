@@ -98,10 +98,14 @@ export function generateOrdemPDF(ordem: OrdemPDF, empresaConfig?: EmpresaConfig)
   doc.setFont('helvetica', 'normal');
   doc.text(config.subtitulo, margin, 26);
 
-  // Dados da oficina no header
+  // Dados da oficina no header (só mostra se tiver valor)
   doc.setFontSize(8);
-  doc.text(`CNPJ: ${config.cnpj}`, margin, 34);
-  doc.text(`Tel: ${config.telefone}`, margin, 40);
+  if (config.cnpj) {
+    doc.text(`CNPJ: ${config.cnpj}`, margin, 34);
+  }
+  if (config.telefone) {
+    doc.text(`Tel: ${config.telefone}`, margin, 40);
+  }
 
   // O.S. Number (lado direito)
   doc.setFontSize(11);
