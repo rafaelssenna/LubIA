@@ -232,7 +232,17 @@ function OrdensPageContent() {
     setSelectedVeiculoId(null);
     setKmEntrada('');
     setObservacoes('');
-    setDataAgendada(presetDate || '');
+    // Se não tiver data preset, usa a próxima hora cheia
+    if (!presetDate) {
+      const now = new Date();
+      now.setHours(now.getHours() + 1, 0, 0, 0);
+      const year = now.getFullYear();
+      const month = String(now.getMonth() + 1).padStart(2, '0');
+      const day = String(now.getDate()).padStart(2, '0');
+      const hour = String(now.getHours()).padStart(2, '0');
+      presetDate = `${year}-${month}-${day}T${hour}:00`;
+    }
+    setDataAgendada(presetDate);
     setServicosExtras([]);
     setSelectedProdutos([]);
     setSearchVeiculo('');
@@ -472,8 +482,17 @@ function OrdensPageContent() {
     return ordens.filter(o => {
       if (!o.dataAgendada) return false;
       const oDate = new Date(o.dataAgendada);
-      // Comparar apenas a hora (slot de 1 hora), não os minutos exatos
-      const oHour = oDate.getHours().toString().padStart(2, '0') + ':00';
+      const oHourNum = oDate.getHours();
+      // Ordens agendadas antes das 07:00 aparecem no slot de 07:00
+      // Ordens agendadas depois das 18:00 aparecem no slot de 18:00
+      let oHour: string;
+      if (oHourNum < 7) {
+        oHour = '07:00';
+      } else if (oHourNum > 18) {
+        oHour = '18:00';
+      } else {
+        oHour = oHourNum.toString().padStart(2, '0') + ':00';
+      }
       return oDate.getDate() === date.getDate() &&
              oDate.getMonth() === date.getMonth() &&
              oDate.getFullYear() === date.getFullYear() &&
