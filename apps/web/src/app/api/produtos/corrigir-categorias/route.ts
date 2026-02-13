@@ -184,8 +184,14 @@ export async function GET() {
     // Buscar TODOS os produtos com categoria "OUTRO" de todas as empresas
     const produtos = await prisma.produto.findMany({
       where: { categoria: 'OUTRO' },
-      select: { id: true, codigo: true, nome: true, categoria: true, empresaId: true },
-      include: { empresa: { select: { nome: true } } }
+      select: {
+        id: true,
+        codigo: true,
+        nome: true,
+        categoria: true,
+        empresaId: true,
+        empresa: { select: { nome: true } }
+      }
     });
 
     const sugestoes: Array<{ id: number; codigo: string; nome: string; categoriaAtual: string; categoriaSugerida: string; empresa: string }> = [];
@@ -200,7 +206,7 @@ export async function GET() {
           nome: produto.nome,
           categoriaAtual: produto.categoria,
           categoriaSugerida: categoriaDetectada,
-          empresa: (produto as any).empresa?.nome || 'Desconhecida'
+          empresa: produto.empresa?.nome || 'Desconhecida'
         });
       }
     }
