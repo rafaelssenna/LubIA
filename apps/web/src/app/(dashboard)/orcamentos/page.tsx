@@ -100,7 +100,6 @@ function OrcamentosPageContent() {
   const [selectedProdutos, setSelectedProdutos] = useState<{ produtoId: number; quantidade: number; precoUnitario: number }[]>([]);
   const [searchVeiculo, setSearchVeiculo] = useState('');
   const [searchProduto, setSearchProduto] = useState('');
-  const [step, setStep] = useState(1);
   const [editingOrcamento, setEditingOrcamento] = useState<Orcamento | null>(null);
   const [novoServicoExtra, setNovoServicoExtra] = useState({ descricao: '', valor: '' });
 
@@ -201,7 +200,6 @@ function OrcamentosPageContent() {
     setSearchVeiculo('');
     setSearchProduto('');
     setNovoServicoExtra({ descricao: '', valor: '' });
-    setStep(1);
     setShowModal(true);
   };
 
@@ -230,7 +228,6 @@ function OrcamentosPageContent() {
     setSearchVeiculo('');
     setSearchProduto('');
     setNovoServicoExtra({ descricao: '', valor: '' });
-    setStep(1);
     setShowModal(true);
   };
 
@@ -720,253 +717,223 @@ function OrcamentosPageContent() {
               </button>
             </div>
 
-            <div className="flex-1 overflow-y-auto p-4">
-              {step === 1 && (
-                <div className="space-y-4">
-                  <div>
-                    <label className="block text-sm font-medium text-zinc-300 mb-2">
-                      Buscar Veículo *
-                    </label>
-                    <div className="relative">
-                      <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-400" />
-                      <input
-                        type="text"
-                        placeholder="Buscar por placa, cliente ou modelo..."
-                        value={searchVeiculo}
-                        onChange={(e) => setSearchVeiculo(e.target.value)}
-                        className="w-full pl-10 pr-4 py-2 bg-[#232323] border border-zinc-700 rounded-lg text-white placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-[#E85D04]"
-                      />
-                    </div>
-                  </div>
+            <div className="flex-1 overflow-y-auto p-4 space-y-4">
+              {/* Veículo */}
+              <div>
+                <label className="block text-sm font-medium text-zinc-300 mb-2">
+                  Buscar Veículo *
+                </label>
+                <div className="relative">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-400" />
+                  <input
+                    type="text"
+                    placeholder="Buscar por placa, cliente ou modelo..."
+                    value={searchVeiculo}
+                    onChange={(e) => setSearchVeiculo(e.target.value)}
+                    className="w-full pl-10 pr-4 py-2 bg-[#232323] border border-zinc-700 rounded-lg text-white placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-[#E85D04]"
+                  />
+                </div>
+              </div>
 
-                  <div className="max-h-48 overflow-y-auto space-y-2">
-                    {filteredVeiculos.map((veiculo) => (
-                      <button
-                        key={veiculo.id}
-                        onClick={() => setSelectedVeiculoId(veiculo.id)}
-                        className={`w-full p-3 rounded-lg border transition-colors text-left ${
-                          selectedVeiculoId === veiculo.id
-                            ? 'bg-[#E85D04]/10 border-[#E85D04] text-white'
-                            : 'bg-[#232323] border-zinc-700 text-zinc-300 hover:border-zinc-600'
-                        }`}
-                      >
-                        <div className="flex items-center gap-3">
-                          <Car className="h-5 w-5" />
-                          <div>
-                            <p className="font-medium">{formatPlate(veiculo.placa)} - {veiculo.marca} {veiculo.modelo}</p>
-                            <p className="text-xs text-zinc-400">{veiculo.cliente.nome}</p>
+              <div className="max-h-32 overflow-y-auto space-y-2">
+                {filteredVeiculos.map((veiculo) => (
+                  <button
+                    key={veiculo.id}
+                    onClick={() => setSelectedVeiculoId(veiculo.id)}
+                    className={`w-full p-3 rounded-lg border transition-colors text-left ${
+                      selectedVeiculoId === veiculo.id
+                        ? 'bg-[#E85D04]/10 border-[#E85D04] text-white'
+                        : 'bg-[#232323] border-zinc-700 text-zinc-300 hover:border-zinc-600'
+                    }`}
+                  >
+                    <div className="flex items-center gap-3">
+                      <Car className="h-5 w-5" />
+                      <div>
+                        <p className="font-medium">{formatPlate(veiculo.placa)} - {veiculo.marca} {veiculo.modelo}</p>
+                        <p className="text-xs text-zinc-400">{veiculo.cliente.nome}</p>
+                      </div>
+                    </div>
+                  </button>
+                ))}
+              </div>
+
+              {/* Produtos */}
+              <div>
+                <label className="block text-sm font-medium text-zinc-300 mb-2">
+                  Adicionar Produtos
+                </label>
+                <div className="relative mb-2">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-400" />
+                  <input
+                    type="text"
+                    placeholder="Buscar produto..."
+                    value={searchProduto}
+                    onChange={(e) => setSearchProduto(e.target.value)}
+                    className="w-full pl-10 pr-4 py-2 bg-[#232323] border border-zinc-700 rounded-lg text-white placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-[#E85D04]"
+                  />
+                </div>
+                {searchProduto && (
+                  <div className="max-h-32 overflow-y-auto space-y-1 mb-2">
+                    {produtos
+                      .filter(p =>
+                        p.nome.toLowerCase().includes(searchProduto.toLowerCase()) ||
+                        p.codigo.toLowerCase().includes(searchProduto.toLowerCase())
+                      )
+                      .slice(0, 5)
+                      .map((produto) => (
+                        <button
+                          key={produto.id}
+                          onClick={() => {
+                            addProduto(produto);
+                            setSearchProduto('');
+                          }}
+                          className="w-full p-2 bg-[#232323] border border-zinc-700 rounded-lg text-left hover:border-[#E85D04] transition-colors"
+                        >
+                          <div className="flex justify-between items-center">
+                            <div>
+                              <p className="text-white text-sm">{produto.nome}</p>
+                              <p className="text-xs text-zinc-400">{produto.codigo}</p>
+                            </div>
+                            <span className="text-[#E85D04] font-medium">{formatCurrency(produto.precoVenda)}</span>
                           </div>
+                        </button>
+                      ))}
+                  </div>
+                )}
+
+                {/* Selected products */}
+                {selectedProdutos.length > 0 && (
+                  <div className="space-y-2 mt-2">
+                    {selectedProdutos.map((sp) => {
+                      const produto = produtos.find(p => p.id === sp.produtoId);
+                      return (
+                        <div key={sp.produtoId} className="flex items-center gap-2 p-2 bg-[#232323] rounded-lg">
+                          <Package className="h-4 w-4 text-zinc-400" />
+                          <span className="flex-1 text-white text-sm">{produto?.nome}</span>
+                          <input
+                            type="number"
+                            min="1"
+                            value={sp.quantidade}
+                            onChange={(e) => {
+                              const newQtd = parseInt(e.target.value) || 1;
+                              setSelectedProdutos(selectedProdutos.map(p =>
+                                p.produtoId === sp.produtoId ? { ...p, quantidade: newQtd } : p
+                              ));
+                            }}
+                            className="w-16 px-2 py-1 bg-zinc-700 border border-zinc-600 rounded text-white text-center text-sm"
+                          />
+                          <span className="text-zinc-400 text-sm">{formatCurrency(sp.precoUnitario * sp.quantidade)}</span>
+                          <button
+                            onClick={() => removeProduto(sp.produtoId)}
+                            className="p-1 text-red-400 hover:bg-red-400/10 rounded"
+                          >
+                            <X className="h-4 w-4" />
+                          </button>
                         </div>
-                      </button>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
+
+              {/* Serviços Extras */}
+              <div>
+                <label className="block text-sm font-medium text-zinc-300 mb-2">
+                  Serviços / Mão de Obra
+                </label>
+                <div className="flex gap-2 mb-2">
+                  <input
+                    type="text"
+                    placeholder="Descrição do serviço..."
+                    value={novoServicoExtra.descricao}
+                    onChange={(e) => setNovoServicoExtra({ ...novoServicoExtra, descricao: e.target.value })}
+                    className="flex-1 px-3 py-2 bg-[#232323] border border-zinc-700 rounded-lg text-white placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-[#E85D04] text-sm"
+                  />
+                  <input
+                    type="number"
+                    placeholder="Valor"
+                    value={novoServicoExtra.valor}
+                    onChange={(e) => setNovoServicoExtra({ ...novoServicoExtra, valor: e.target.value })}
+                    className="w-24 px-3 py-2 bg-[#232323] border border-zinc-700 rounded-lg text-white placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-[#E85D04] text-sm"
+                  />
+                  <button
+                    onClick={addServicoExtra}
+                    className="px-3 py-2 bg-[#E85D04] hover:bg-[#E85D04]/90 text-white rounded-lg transition-colors"
+                  >
+                    <Plus className="h-4 w-4" />
+                  </button>
+                </div>
+
+                {servicosExtras.length > 0 && (
+                  <div className="space-y-2">
+                    {servicosExtras.map((servico, index) => (
+                      <div key={index} className="flex items-center gap-2 p-2 bg-[#232323] rounded-lg">
+                        <DollarSign className="h-4 w-4 text-zinc-400" />
+                        <span className="flex-1 text-white text-sm">{servico.descricao}</span>
+                        <span className="text-zinc-400 text-sm">{formatCurrency(servico.valor)}</span>
+                        <button
+                          onClick={() => removeServicoExtra(index)}
+                          className="p-1 text-red-400 hover:bg-red-400/10 rounded"
+                        >
+                          <X className="h-4 w-4" />
+                        </button>
+                      </div>
                     ))}
                   </div>
+                )}
+              </div>
 
-                  <div>
-                    <label className="block text-sm font-medium text-zinc-300 mb-2">
-                      Validade do Orçamento
-                    </label>
-                    <input
-                      type="date"
-                      value={validade}
-                      onChange={(e) => setValidade(e.target.value)}
-                      className="w-full px-4 py-2 bg-[#232323] border border-zinc-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-[#E85D04]"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-zinc-300 mb-2">
-                      Observações
-                    </label>
-                    <textarea
-                      value={observacoes}
-                      onChange={(e) => setObservacoes(e.target.value)}
-                      rows={2}
-                      className="w-full px-4 py-2 bg-[#232323] border border-zinc-700 rounded-lg text-white placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-[#E85D04]"
-                      placeholder="Observações sobre o orçamento..."
-                    />
-                  </div>
+              {/* Validade e Observações */}
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-zinc-300 mb-2">
+                    Validade
+                  </label>
+                  <input
+                    type="date"
+                    value={validade}
+                    onChange={(e) => setValidade(e.target.value)}
+                    className="w-full px-4 py-2 bg-[#232323] border border-zinc-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-[#E85D04]"
+                  />
                 </div>
-              )}
-
-              {step === 2 && (
-                <div className="space-y-4">
-                  {/* Produtos */}
-                  <div>
-                    <label className="block text-sm font-medium text-zinc-300 mb-2">
-                      Adicionar Produtos
-                    </label>
-                    <div className="relative mb-2">
-                      <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-400" />
-                      <input
-                        type="text"
-                        placeholder="Buscar produto..."
-                        value={searchProduto}
-                        onChange={(e) => setSearchProduto(e.target.value)}
-                        className="w-full pl-10 pr-4 py-2 bg-[#232323] border border-zinc-700 rounded-lg text-white placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-[#E85D04]"
-                      />
-                    </div>
-                    {searchProduto && (
-                      <div className="max-h-32 overflow-y-auto space-y-1 mb-2">
-                        {produtos
-                          .filter(p =>
-                            p.nome.toLowerCase().includes(searchProduto.toLowerCase()) ||
-                            p.codigo.toLowerCase().includes(searchProduto.toLowerCase())
-                          )
-                          .slice(0, 5)
-                          .map((produto) => (
-                            <button
-                              key={produto.id}
-                              onClick={() => {
-                                addProduto(produto);
-                                setSearchProduto('');
-                              }}
-                              className="w-full p-2 bg-[#232323] border border-zinc-700 rounded-lg text-left hover:border-[#E85D04] transition-colors"
-                            >
-                              <div className="flex justify-between items-center">
-                                <div>
-                                  <p className="text-white text-sm">{produto.nome}</p>
-                                  <p className="text-xs text-zinc-400">{produto.codigo}</p>
-                                </div>
-                                <span className="text-[#E85D04] font-medium">{formatCurrency(produto.precoVenda)}</span>
-                              </div>
-                            </button>
-                          ))}
-                      </div>
-                    )}
-
-                    {/* Selected products */}
-                    {selectedProdutos.length > 0 && (
-                      <div className="space-y-2 mt-2">
-                        {selectedProdutos.map((sp) => {
-                          const produto = produtos.find(p => p.id === sp.produtoId);
-                          return (
-                            <div key={sp.produtoId} className="flex items-center gap-2 p-2 bg-[#232323] rounded-lg">
-                              <Package className="h-4 w-4 text-zinc-400" />
-                              <span className="flex-1 text-white text-sm">{produto?.nome}</span>
-                              <input
-                                type="number"
-                                min="1"
-                                value={sp.quantidade}
-                                onChange={(e) => {
-                                  const newQtd = parseInt(e.target.value) || 1;
-                                  setSelectedProdutos(selectedProdutos.map(p =>
-                                    p.produtoId === sp.produtoId ? { ...p, quantidade: newQtd } : p
-                                  ));
-                                }}
-                                className="w-16 px-2 py-1 bg-zinc-700 border border-zinc-600 rounded text-white text-center text-sm"
-                              />
-                              <span className="text-zinc-400 text-sm">{formatCurrency(sp.precoUnitario * sp.quantidade)}</span>
-                              <button
-                                onClick={() => removeProduto(sp.produtoId)}
-                                className="p-1 text-red-400 hover:bg-red-400/10 rounded"
-                              >
-                                <X className="h-4 w-4" />
-                              </button>
-                            </div>
-                          );
-                        })}
-                      </div>
-                    )}
-                  </div>
-
-                  {/* Serviços Extras */}
-                  <div>
-                    <label className="block text-sm font-medium text-zinc-300 mb-2">
-                      Serviços / Mão de Obra
-                    </label>
-                    <div className="flex gap-2 mb-2">
-                      <input
-                        type="text"
-                        placeholder="Descrição do serviço..."
-                        value={novoServicoExtra.descricao}
-                        onChange={(e) => setNovoServicoExtra({ ...novoServicoExtra, descricao: e.target.value })}
-                        className="flex-1 px-3 py-2 bg-[#232323] border border-zinc-700 rounded-lg text-white placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-[#E85D04] text-sm"
-                      />
-                      <input
-                        type="number"
-                        placeholder="Valor"
-                        value={novoServicoExtra.valor}
-                        onChange={(e) => setNovoServicoExtra({ ...novoServicoExtra, valor: e.target.value })}
-                        className="w-24 px-3 py-2 bg-[#232323] border border-zinc-700 rounded-lg text-white placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-[#E85D04] text-sm"
-                      />
-                      <button
-                        onClick={addServicoExtra}
-                        className="px-3 py-2 bg-[#E85D04] hover:bg-[#E85D04]/90 text-white rounded-lg transition-colors"
-                      >
-                        <Plus className="h-4 w-4" />
-                      </button>
-                    </div>
-
-                    {servicosExtras.length > 0 && (
-                      <div className="space-y-2">
-                        {servicosExtras.map((servico, index) => (
-                          <div key={index} className="flex items-center gap-2 p-2 bg-[#232323] rounded-lg">
-                            <DollarSign className="h-4 w-4 text-zinc-400" />
-                            <span className="flex-1 text-white text-sm">{servico.descricao}</span>
-                            <span className="text-zinc-400 text-sm">{formatCurrency(servico.valor)}</span>
-                            <button
-                              onClick={() => removeServicoExtra(index)}
-                              className="p-1 text-red-400 hover:bg-red-400/10 rounded"
-                            >
-                              <X className="h-4 w-4" />
-                            </button>
-                          </div>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-
-                  {/* Total */}
-                  <div className="p-4 bg-[#E85D04]/10 rounded-lg">
-                    <div className="flex justify-between items-center">
-                      <span className="text-lg font-medium text-white">Total do Orçamento:</span>
-                      <span className="text-2xl font-bold text-[#E85D04]">{formatCurrency(calcularTotal())}</span>
-                    </div>
-                  </div>
+                <div>
+                  <label className="block text-sm font-medium text-zinc-300 mb-2">
+                    Observações
+                  </label>
+                  <input
+                    type="text"
+                    value={observacoes}
+                    onChange={(e) => setObservacoes(e.target.value)}
+                    className="w-full px-4 py-2 bg-[#232323] border border-zinc-700 rounded-lg text-white placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-[#E85D04]"
+                    placeholder="Opcional..."
+                  />
                 </div>
-              )}
+              </div>
+
+              {/* Total */}
+              <div className="p-4 bg-[#E85D04]/10 rounded-lg">
+                <div className="flex justify-between items-center">
+                  <span className="text-lg font-medium text-white">Total do Orçamento:</span>
+                  <span className="text-2xl font-bold text-[#E85D04]">{formatCurrency(calcularTotal())}</span>
+                </div>
+              </div>
             </div>
 
             <div className="p-4 border-t border-zinc-800 flex justify-between">
-              {step === 1 ? (
-                <>
-                  <button
-                    onClick={() => setShowModal(false)}
-                    className="px-4 py-2 text-zinc-400 hover:text-white transition-colors"
-                  >
-                    Cancelar
-                  </button>
-                  <button
-                    onClick={() => {
-                      if (!selectedVeiculoId) {
-                        toast.warning('Selecione um veículo');
-                        return;
-                      }
-                      setStep(2);
-                    }}
-                    className="px-6 py-2 bg-[#E85D04] hover:bg-[#E85D04]/90 text-white font-medium rounded-lg transition-colors"
-                  >
-                    Próximo
-                  </button>
-                </>
-              ) : (
-                <>
-                  <button
-                    onClick={() => setStep(1)}
-                    className="px-4 py-2 text-zinc-400 hover:text-white transition-colors"
-                  >
-                    Voltar
-                  </button>
-                  <button
-                    onClick={handleSubmit}
-                    disabled={saving}
-                    className="flex items-center gap-2 px-6 py-2 bg-[#E85D04] hover:bg-[#E85D04]/90 text-white font-medium rounded-lg transition-colors disabled:opacity-50"
-                  >
-                    {saving && <Loader2 className="h-4 w-4 animate-spin" />}
-                    {editingOrcamento ? 'Salvar Alterações' : 'Criar Orçamento'}
-                  </button>
-                </>
-              )}
+              <button
+                onClick={() => setShowModal(false)}
+                className="px-4 py-2 text-zinc-400 hover:text-white transition-colors"
+              >
+                Cancelar
+              </button>
+              <button
+                onClick={handleSubmit}
+                disabled={saving}
+                className="flex items-center gap-2 px-6 py-2 bg-[#E85D04] hover:bg-[#E85D04]/90 text-white font-medium rounded-lg transition-colors disabled:opacity-50"
+              >
+                {saving && <Loader2 className="h-4 w-4 animate-spin" />}
+                {editingOrcamento ? 'Salvar Alterações' : 'Criar Orçamento'}
+              </button>
             </div>
           </div>
         </div>
