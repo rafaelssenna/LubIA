@@ -120,12 +120,25 @@ export async function POST(request: NextRequest) {
       endpoint = '/send/media';
       // Detectar se é PDF (por extensão ou base64)
       const isPdf = file.includes('.pdf') || file.includes('application/pdf');
+
+      // Se for base64, extrair apenas o conteúdo base64 (sem o prefixo data:...)
+      let fileData = file;
+      let mimetype: string | undefined;
+      if (file.startsWith('data:')) {
+        const matches = file.match(/^data:([^;]+);base64,(.+)$/);
+        if (matches) {
+          mimetype = matches[1];
+          fileData = matches[2]; // Apenas o base64 puro
+        }
+      }
+
       payload = {
         ...payload,
         type: isPdf ? 'document' : 'image',
-        file: file,
+        file: fileData,
         docName: docName || (isPdf ? 'documento.pdf' : undefined),
         text: caption || '',
+        ...(mimetype && { mimetype }),
       };
     } else {
       // Enviar texto simples
