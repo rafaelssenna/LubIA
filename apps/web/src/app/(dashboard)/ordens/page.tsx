@@ -472,11 +472,12 @@ function OrdensPageContent() {
     return ordens.filter(o => {
       if (!o.dataAgendada) return false;
       const oDate = new Date(o.dataAgendada);
-      const oHora = oDate.toTimeString().slice(0, 5);
+      // Comparar apenas a hora (slot de 1 hora), não os minutos exatos
+      const oHour = oDate.getHours().toString().padStart(2, '0') + ':00';
       return oDate.getDate() === date.getDate() &&
              oDate.getMonth() === date.getMonth() &&
              oDate.getFullYear() === date.getFullYear() &&
-             oHora === hora;
+             oHour === hora;
     });
   };
 
