@@ -336,9 +336,13 @@ function OrcamentosPageContent() {
       const doc = generateOrcamentoPDF(orcamento as any, empresaConfig || undefined);
       const pdfBase64 = doc.output('datauristring').split(',')[1]; // Remove o prefixo "data:application/pdf;base64,"
 
-      // Montar caption do PDF
+      // Montar caption do PDF com todos os detalhes
       const caption = `*Orçamento ${orcamento.numero}*\n\n` +
-        (orcamento.nomeCliente ? `*Cliente:* ${orcamento.nomeCliente}\n` : '') +
+        (orcamento.nomeCliente ? `*Cliente:* ${orcamento.nomeCliente}\n\n` : '') +
+        (orcamento.itensProduto.length > 0 ? `*Produtos:*\n` +
+          orcamento.itensProduto.map(i => `  • ${i.produtoNome} (${i.quantidade}x) - ${formatCurrency(i.subtotal)}`).join('\n') + '\n\n' : '') +
+        (orcamento.servicosExtras.length > 0 ? `*Serviços:*\n` +
+          orcamento.servicosExtras.map(s => `  • ${s.descricao} - ${formatCurrency(s.valor)}`).join('\n') + '\n\n' : '') +
         `*Total: ${formatCurrency(orcamento.total)}*\n\n` +
         `_Orçamento válido mediante aprovação._`;
 
