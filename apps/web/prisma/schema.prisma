@@ -44,8 +44,9 @@ model Empresa {
 // Níveis de acesso do usuário
 enum RoleUsuario {
   ADMIN      // Acesso total, cria usuários, configura empresa
-  GERENTE    // Relatórios, ordens, orçamentos
-  ATENDENTE  // Cria O.S., WhatsApp, orçamentos
+  GERENTE    // Relatórios, ordens, orçamentos, estoque, lembretes
+  ATENDENTE  // Dashboard, O.S., WhatsApp, orçamentos
+  VENDEDOR   // Apenas clientes, veículos, orçamentos, WhatsApp
 }
 
 // Usuario para autenticação

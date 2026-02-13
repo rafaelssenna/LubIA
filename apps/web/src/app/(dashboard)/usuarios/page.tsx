@@ -13,7 +13,7 @@ interface Usuario {
   id: number;
   nome: string;
   email: string;
-  role: 'ADMIN' | 'GERENTE' | 'ATENDENTE';
+  role: 'ADMIN' | 'GERENTE' | 'ATENDENTE' | 'VENDEDOR';
   ativo: boolean;
   lastLoginAt: string | null;
   createdAt: string;
@@ -23,6 +23,7 @@ const roleConfig: Record<string, { label: string; color: string; bg: string }> =
   ADMIN: { label: 'Administrador', color: 'text-purple-400', bg: 'bg-purple-500/10' },
   GERENTE: { label: 'Gerente', color: 'text-blue-400', bg: 'bg-blue-500/10' },
   ATENDENTE: { label: 'Atendente', color: 'text-green-400', bg: 'bg-green-500/10' },
+  VENDEDOR: { label: 'Vendedor', color: 'text-orange-400', bg: 'bg-orange-500/10' },
 };
 
 function UsuariosPageContent() {
@@ -41,7 +42,7 @@ function UsuariosPageContent() {
   const [nome, setNome] = useState('');
   const [email, setEmail] = useState('');
   const [senha, setSenha] = useState('');
-  const [role, setRole] = useState<'ADMIN' | 'GERENTE' | 'ATENDENTE'>('ATENDENTE');
+  const [role, setRole] = useState<'ADMIN' | 'GERENTE' | 'ATENDENTE' | 'VENDEDOR'>('ATENDENTE');
   const [ativo, setAtivo] = useState(true);
   const [showPassword, setShowPassword] = useState(false);
   const [editingUsuario, setEditingUsuario] = useState<Usuario | null>(null);
@@ -402,14 +403,16 @@ function UsuariosPageContent() {
                   onChange={(e) => setRole(e.target.value as any)}
                   className="w-full px-4 py-2 bg-[#232323] border border-zinc-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-[#E85D04]"
                 >
+                  <option value="VENDEDOR">Vendedor</option>
                   <option value="ATENDENTE">Atendente</option>
                   <option value="GERENTE">Gerente</option>
                   <option value="ADMIN">Administrador</option>
                 </select>
                 <p className="mt-1 text-xs text-zinc-500">
                   {role === 'ADMIN' && 'Acesso total, cria usuários, configura empresa'}
-                  {role === 'GERENTE' && 'Relatórios, ordens, orçamentos, estoque'}
-                  {role === 'ATENDENTE' && 'Cria O.S., WhatsApp, orçamentos'}
+                  {role === 'GERENTE' && 'Relatórios, ordens, orçamentos, estoque, lembretes'}
+                  {role === 'ATENDENTE' && 'Dashboard, O.S., orçamentos, WhatsApp'}
+                  {role === 'VENDEDOR' && 'Apenas clientes, veículos, orçamentos, WhatsApp'}
                 </p>
               </div>
 

@@ -23,13 +23,14 @@ import {
 import { useSidebar } from '@/contexts/SidebarContext';
 import { useAuth } from '@/contexts/AuthContext';
 
-type RoleUsuario = 'ADMIN' | 'GERENTE' | 'ATENDENTE';
+type RoleUsuario = 'ADMIN' | 'GERENTE' | 'ATENDENTE' | 'VENDEDOR';
 
 // Permissões por role
 const ROLE_PERMISSIONS: Record<RoleUsuario, string[]> = {
   ADMIN: ['*'],
   GERENTE: ['dashboard', 'clientes', 'veiculos', 'ordens', 'orcamentos', 'estoque', 'lembretes', 'whatsapp'],
   ATENDENTE: ['dashboard', 'clientes', 'veiculos', 'ordens', 'orcamentos', 'whatsapp'],
+  VENDEDOR: ['clientes', 'veiculos', 'orcamentos', 'whatsapp'],
 };
 
 const menuItems = [

@@ -8,7 +8,7 @@ const JWT_SECRET = new TextEncoder().encode(
 const COOKIE_NAME = 'lubia-session';
 
 // Tipos de role
-export type RoleUsuario = 'ADMIN' | 'GERENTE' | 'ATENDENTE';
+export type RoleUsuario = 'ADMIN' | 'GERENTE' | 'ATENDENTE' | 'VENDEDOR';
 
 // Payload da sessão JWT
 export interface SessionPayload {
@@ -26,6 +26,7 @@ const ROLE_PERMISSIONS: Record<RoleUsuario, string[]> = {
   ADMIN: ['*'], // Acesso total
   GERENTE: ['dashboard', 'clientes', 'veiculos', 'ordens', 'orcamentos', 'estoque', 'lembretes', 'whatsapp'],
   ATENDENTE: ['dashboard', 'clientes', 'veiculos', 'ordens', 'orcamentos', 'whatsapp'],
+  VENDEDOR: ['clientes', 'veiculos', 'orcamentos', 'whatsapp'],
 };
 
 // Verificar se role tem permissão

@@ -79,7 +79,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Validar role
-    const validRoles = ['ADMIN', 'GERENTE', 'ATENDENTE'];
+    const validRoles = ['ADMIN', 'GERENTE', 'ATENDENTE', 'VENDEDOR'];
     const userRole = validRoles.includes(role) ? role : 'ATENDENTE';
 
     // Hash da senha

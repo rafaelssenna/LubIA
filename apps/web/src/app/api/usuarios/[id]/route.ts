@@ -109,7 +109,7 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
     const updateData: any = {};
     if (nome) updateData.nome = nome.trim();
     if (email) updateData.email = email.toLowerCase().trim();
-    if (role && ['ADMIN', 'GERENTE', 'ATENDENTE'].includes(role)) {
+    if (role && ['ADMIN', 'GERENTE', 'ATENDENTE', 'VENDEDOR'].includes(role)) {
       updateData.role = role;
     }
     if (typeof ativo === 'boolean') updateData.ativo = ativo;
