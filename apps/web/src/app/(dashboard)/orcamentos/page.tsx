@@ -9,7 +9,7 @@ import {
 } from 'lucide-react';
 import { useState, useEffect, Suspense } from 'react';
 import { useToast } from '@/components/Toast';
-import { downloadOrcamentoPDF, EmpresaConfig } from '@/lib/pdfGenerator';
+import { downloadOrcamentoPDF, generateOrcamentoPDF, EmpresaConfig } from '@/lib/pdfGenerator';
 
 interface ServicoExtra {
   id?: number;
@@ -330,22 +330,28 @@ function OrcamentosPageContent() {
     setSendingWhatsApp(orcamento.id);
 
     const telefone = orcamento.telefoneCliente.replace(/\D/g, '');
-    const text = `*Orçamento ${orcamento.numero}*\n\n` +
-      (orcamento.nomeCliente ? `*Cliente:* ${orcamento.nomeCliente}\n\n` : '') +
-      (orcamento.itensProduto.length > 0 ? `*Produtos:*\n` +
-        orcamento.itensProduto.map(i => `• ${i.produtoNome} (${i.quantidade}x) - ${formatCurrency(i.subtotal)}`).join('\n') + '\n\n' : '') +
-      (orcamento.servicosExtras.length > 0 ? `*Serviços:*\n` +
-        orcamento.servicosExtras.map(s => `• ${s.descricao} - ${formatCurrency(s.valor)}`).join('\n') + '\n\n' : '') +
-      `*Total: ${formatCurrency(orcamento.total)}*\n\n` +
-      `_Orçamento válido mediante aprovação._`;
 
     try {
+      // Gerar PDF e converter para base64
+      const doc = generateOrcamentoPDF(orcamento as any, empresaConfig || undefined);
+      const pdfBase64 = doc.output('datauristring').split(',')[1]; // Remove o prefixo "data:application/pdf;base64,"
+
+      // Montar caption do PDF
+      const caption = `*Orçamento ${orcamento.numero}*\n\n` +
+        (orcamento.nomeCliente ? `*Cliente:* ${orcamento.nomeCliente}\n` : '') +
+        `*Total: ${formatCurrency(orcamento.total)}*\n\n` +
+        `_Orçamento válido mediante aprovação._`;
+
+      // Enviar PDF via API
       const res = await fetch('/api/whatsapp/send', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           number: telefone,
-          text,
+          type: 'media',
+          file: `data:application/pdf;base64,${pdfBase64}`,
+          docName: `${orcamento.numero}.pdf`,
+          caption,
         }),
       });
 

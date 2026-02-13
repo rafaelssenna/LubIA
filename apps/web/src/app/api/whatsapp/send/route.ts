@@ -118,11 +118,13 @@ export async function POST(request: NextRequest) {
     if (type === 'media' && file) {
       // Enviar mídia (imagem, documento, etc)
       endpoint = '/send/media';
+      // Detectar se é PDF (por extensão ou base64)
+      const isPdf = file.includes('.pdf') || file.includes('application/pdf');
       payload = {
         ...payload,
-        type: file.includes('.pdf') ? 'document' : 'image',
+        type: isPdf ? 'document' : 'image',
         file: file,
-        docName: docName || 'documento.pdf',
+        docName: docName || (isPdf ? 'documento.pdf' : undefined),
         text: caption || '',
       };
     } else {
@@ -153,8 +155,9 @@ export async function POST(request: NextRequest) {
     const messageId = data.key?.id || data.id;
 
     // Salvar mensagem enviada no banco
-    const conteudo = type === 'media' ? (caption || `[${file.includes('.pdf') ? 'Documento' : 'Mídia'}]`) : text;
-    const tipoMsg = type === 'media' ? (file.includes('.pdf') ? 'DOCUMENTO' : 'IMAGEM') : 'TEXTO';
+    const isPdfFile = file && (file.includes('.pdf') || file.includes('application/pdf'));
+    const conteudo = type === 'media' ? (caption || `[${isPdfFile ? 'Documento' : 'Mídia'}]`) : text;
+    const tipoMsg = type === 'media' ? (isPdfFile ? 'DOCUMENTO' : 'IMAGEM') : 'TEXTO';
     await saveOutgoingMessage(formattedNumber, conteudo, session.empresaId, tipoMsg as any, messageId);
 
     return NextResponse.json({
