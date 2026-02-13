@@ -2,31 +2,14 @@
 
 import Header from '@/components/Header';
 import {
-  Plus, Search, X, FileText, Car, User, Calendar,
-  CheckCircle, XCircle, Clock, ArrowRight, Eye, Edit,
+  Plus, Search, X, FileText, User, Phone,
+  CheckCircle, XCircle, Clock, Eye, Edit,
   Trash2, Loader2, Package, DollarSign, FileDown,
-  AlertCircle, Send, Copy
+  AlertCircle, Send
 } from 'lucide-react';
 import { useState, useEffect, Suspense } from 'react';
 import { useToast } from '@/components/Toast';
-import { capitalize, formatPlate } from '@/utils/format';
 import { downloadOrcamentoPDF, EmpresaConfig } from '@/lib/pdfGenerator';
-
-interface Cliente {
-  id: number;
-  nome: string;
-  telefone: string;
-}
-
-interface Veiculo {
-  id: number;
-  placa: string;
-  marca: string;
-  modelo: string;
-  ano: number | null;
-  kmAtual: number | null;
-  cliente: Cliente;
-}
 
 interface ServicoExtra {
   id?: number;
@@ -47,13 +30,12 @@ interface ItemProduto {
 interface Orcamento {
   id: number;
   numero: string;
+  nomeCliente: string | null;
+  telefoneCliente: string | null;
   status: string;
-  validade: string;
-  observacoes: string | null;
   total: number;
-  ordemServicoId: number | null;
+  observacoes: string | null;
   createdAt: string;
-  veiculo: Veiculo;
   servicosExtras: ServicoExtra[];
   itensProduto: ItemProduto[];
 }
@@ -71,7 +53,7 @@ const statusConfig: Record<string, { label: string; color: string; icon: any; bg
   APROVADO: { label: 'Aprovado', color: 'text-[#43A047]', icon: CheckCircle, bg: 'bg-green-500/10' },
   RECUSADO: { label: 'Recusado', color: 'text-red-500', icon: XCircle, bg: 'bg-red-500/10' },
   EXPIRADO: { label: 'Expirado', color: 'text-gray-400', icon: AlertCircle, bg: 'bg-gray-500/10' },
-  CONVERTIDO: { label: 'Convertido', color: 'text-blue-400', icon: ArrowRight, bg: 'bg-blue-500/10' },
+  CONVERTIDO: { label: 'Convertido', color: 'text-blue-400', icon: CheckCircle, bg: 'bg-blue-500/10' },
 };
 
 function OrcamentosPageContent() {
@@ -86,26 +68,19 @@ function OrcamentosPageContent() {
   const [showModal, setShowModal] = useState(false);
   const [showDetailModal, setShowDetailModal] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
-  const [showConverterModal, setShowConverterModal] = useState(false);
   const [selectedOrcamento, setSelectedOrcamento] = useState<Orcamento | null>(null);
   const [saving, setSaving] = useState(false);
 
-  // Form states for new orçamento
-  const [veiculos, setVeiculos] = useState<Veiculo[]>([]);
+  // Form states
   const [produtos, setProdutos] = useState<Produto[]>([]);
-  const [selectedVeiculoId, setSelectedVeiculoId] = useState<number | null>(null);
-  const [validade, setValidade] = useState('');
+  const [nomeCliente, setNomeCliente] = useState('');
+  const [telefoneCliente, setTelefoneCliente] = useState('');
   const [observacoes, setObservacoes] = useState('');
   const [servicosExtras, setServicosExtras] = useState<{ descricao: string; valor: number }[]>([]);
   const [selectedProdutos, setSelectedProdutos] = useState<{ produtoId: number; quantidade: number; precoUnitario: number }[]>([]);
-  const [searchVeiculo, setSearchVeiculo] = useState('');
   const [searchProduto, setSearchProduto] = useState('');
   const [editingOrcamento, setEditingOrcamento] = useState<Orcamento | null>(null);
   const [novoServicoExtra, setNovoServicoExtra] = useState({ descricao: '', valor: '' });
-
-  // Converter modal states
-  const [dataAgendadaConversao, setDataAgendadaConversao] = useState('');
-  const [kmEntradaConversao, setKmEntradaConversao] = useState('');
 
   // Pagination
   const [currentPage, setCurrentPage] = useState(1);
@@ -136,16 +111,6 @@ function OrcamentosPageContent() {
       console.error('Erro ao buscar orçamentos:', error);
     } finally {
       setLoading(false);
-    }
-  };
-
-  const fetchVeiculos = async () => {
-    try {
-      const res = await fetch('/api/veiculos');
-      const data = await res.json();
-      setVeiculos(data.data || []);
-    } catch (error) {
-      console.error('Erro ao buscar veículos:', error);
     }
   };
 
@@ -186,18 +151,13 @@ function OrcamentosPageContent() {
   }, [searchTerm, statusFilter]);
 
   const openNewModal = () => {
-    fetchVeiculos();
     fetchProdutos();
     setEditingOrcamento(null);
-    setSelectedVeiculoId(null);
-    // Validade padrão: 7 dias
-    const defaultValidade = new Date();
-    defaultValidade.setDate(defaultValidade.getDate() + 7);
-    setValidade(defaultValidade.toISOString().slice(0, 10));
+    setNomeCliente('');
+    setTelefoneCliente('');
     setObservacoes('');
     setServicosExtras([]);
     setSelectedProdutos([]);
-    setSearchVeiculo('');
     setSearchProduto('');
     setNovoServicoExtra({ descricao: '', valor: '' });
     setShowModal(true);
@@ -209,12 +169,11 @@ function OrcamentosPageContent() {
       return;
     }
 
-    fetchVeiculos();
     fetchProdutos();
 
     setEditingOrcamento(orcamento);
-    setSelectedVeiculoId(orcamento.veiculo.id);
-    setValidade(new Date(orcamento.validade).toISOString().slice(0, 10));
+    setNomeCliente(orcamento.nomeCliente || '');
+    setTelefoneCliente(orcamento.telefoneCliente || '');
     setObservacoes(orcamento.observacoes || '');
     setServicosExtras(orcamento.servicosExtras?.map(s => ({
       descricao: s.descricao,
@@ -225,18 +184,12 @@ function OrcamentosPageContent() {
       quantidade: i.quantidade,
       precoUnitario: i.precoUnitario,
     })));
-    setSearchVeiculo('');
     setSearchProduto('');
     setNovoServicoExtra({ descricao: '', valor: '' });
     setShowModal(true);
   };
 
   const handleSubmit = async () => {
-    if (!selectedVeiculoId) {
-      toast.warning('Selecione um veículo');
-      return;
-    }
-
     if (servicosExtras.length === 0 && selectedProdutos.length === 0) {
       toast.warning('Adicione pelo menos um produto ou serviço');
       return;
@@ -246,8 +199,8 @@ function OrcamentosPageContent() {
     setSaving(true);
     try {
       const payload = {
-        veiculoId: selectedVeiculoId,
-        validade: validade || null,
+        nomeCliente: nomeCliente || null,
+        telefoneCliente: telefoneCliente || null,
         observacoes: observacoes || null,
         servicosExtras: servicosExtras,
         itensProduto: selectedProdutos,
@@ -283,26 +236,6 @@ function OrcamentosPageContent() {
     }
   };
 
-  const handleStatusChange = async (orcamento: Orcamento, newStatus: string) => {
-    try {
-      const res = await fetch(`/api/orcamentos/${orcamento.id}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ status: newStatus }),
-      });
-
-      if (res.ok) {
-        toast.success('Status atualizado!');
-        fetchOrcamentos();
-      } else {
-        const data = await res.json();
-        toast.error(data.error || 'Erro ao atualizar status');
-      }
-    } catch (error) {
-      toast.error('Erro ao atualizar status');
-    }
-  };
-
   const handleDelete = async () => {
     if (!selectedOrcamento) return;
 
@@ -324,55 +257,6 @@ function OrcamentosPageContent() {
       }
     } catch (error) {
       toast.error('Erro ao excluir orçamento');
-    } finally {
-      setSaving(false);
-    }
-  };
-
-  const openConverterModal = (orcamento: Orcamento) => {
-    if (orcamento.status === 'CONVERTIDO') {
-      toast.warning('Orçamento já foi convertido');
-      return;
-    }
-    if (orcamento.status === 'RECUSADO') {
-      toast.warning('Orçamento foi recusado');
-      return;
-    }
-    setSelectedOrcamento(orcamento);
-    // Data padrão: próxima hora cheia
-    const now = new Date();
-    now.setHours(now.getHours() + 1, 0, 0, 0);
-    setDataAgendadaConversao(now.toISOString().slice(0, 16));
-    setKmEntradaConversao(orcamento.veiculo.kmAtual?.toString() || '');
-    setShowConverterModal(true);
-  };
-
-  const handleConverter = async () => {
-    if (!selectedOrcamento) return;
-
-    setSaving(true);
-    try {
-      const res = await fetch(`/api/orcamentos/${selectedOrcamento.id}/converter`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          dataAgendada: dataAgendadaConversao || null,
-          kmEntrada: kmEntradaConversao ? parseInt(kmEntradaConversao) : null,
-        }),
-      });
-
-      const data = await res.json();
-
-      if (res.ok) {
-        toast.success(data.message || 'Orçamento convertido em O.S.!');
-        setShowConverterModal(false);
-        setSelectedOrcamento(null);
-        fetchOrcamentos();
-      } else {
-        toast.error(data.error || 'Erro ao converter orçamento');
-      }
-    } catch (error) {
-      toast.error('Erro ao converter orçamento');
     } finally {
       setSaving(false);
     }
@@ -425,28 +309,30 @@ function OrcamentosPageContent() {
     return value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
   };
 
-  const filteredVeiculos = veiculos.filter(v =>
-    v.placa.toLowerCase().includes(searchVeiculo.toLowerCase()) ||
-    v.cliente.nome.toLowerCase().includes(searchVeiculo.toLowerCase()) ||
-    `${v.marca} ${v.modelo}`.toLowerCase().includes(searchVeiculo.toLowerCase())
-  );
-
-  const isExpired = (validade: string) => {
-    return new Date(validade) < new Date();
+  const formatPhone = (phone: string | null) => {
+    if (!phone) return '-';
+    const cleaned = phone.replace(/\D/g, '');
+    if (cleaned.length === 11) {
+      return `(${cleaned.slice(0, 2)}) ${cleaned.slice(2, 7)}-${cleaned.slice(7)}`;
+    }
+    return phone;
   };
 
-  const copyToClipboard = (orcamento: Orcamento) => {
-    const text = `*Orçamento ${orcamento.numero}*\n` +
-      `Veículo: ${orcamento.veiculo.placa} - ${orcamento.veiculo.marca} ${orcamento.veiculo.modelo}\n` +
-      `Cliente: ${orcamento.veiculo.cliente.nome}\n\n` +
-      `*Itens:*\n` +
-      orcamento.itensProduto.map(i => `• ${i.produtoNome} (${i.quantidade}x) - ${formatCurrency(i.subtotal)}`).join('\n') +
-      (orcamento.servicosExtras.length > 0 ? '\n' + orcamento.servicosExtras.map(s => `• ${s.descricao} - ${formatCurrency(s.valor)}`).join('\n') : '') +
-      `\n\n*Total: ${formatCurrency(orcamento.total)}*\n` +
-      `Válido até: ${formatDate(orcamento.validade)}`;
+  const sendWhatsApp = (orcamento: Orcamento) => {
+    if (!orcamento.telefoneCliente) {
+      toast.warning('Este orçamento não tem telefone cadastrado');
+      return;
+    }
 
-    navigator.clipboard.writeText(text);
-    toast.success('Orçamento copiado para WhatsApp!');
+    const telefone = orcamento.telefoneCliente.replace(/\D/g, '');
+    const text = `*Orçamento ${orcamento.numero}*\n\n` +
+      `*Itens:*\n` +
+      orcamento.itensProduto.map(i => `- ${i.produtoNome} (${i.quantidade}x) - ${formatCurrency(i.subtotal)}`).join('\n') +
+      (orcamento.servicosExtras.length > 0 ? '\n\n*Serviços:*\n' + orcamento.servicosExtras.map(s => `- ${s.descricao} - ${formatCurrency(s.valor)}`).join('\n') : '') +
+      `\n\n*Total: ${formatCurrency(orcamento.total)}*`;
+
+    const url = `https://wa.me/55${telefone}?text=${encodeURIComponent(text)}`;
+    window.open(url, '_blank');
   };
 
   if (loading) {
@@ -502,7 +388,7 @@ function OrcamentosPageContent() {
         <div className="bg-[#232323] rounded-lg p-4">
           <div className="flex items-center gap-3">
             <div className="p-2 bg-blue-500/10 rounded-lg">
-              <ArrowRight className="h-5 w-5 text-blue-400" />
+              <CheckCircle className="h-5 w-5 text-blue-400" />
             </div>
             <div>
               <p className="text-2xl font-bold text-white">{stats.convertidos}</p>
@@ -518,7 +404,7 @@ function OrcamentosPageContent() {
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-400" />
           <input
             type="text"
-            placeholder="Buscar por número, placa ou cliente..."
+            placeholder="Buscar por número, cliente ou telefone..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className="w-full pl-10 pr-4 py-2 bg-[#232323] border border-zinc-700 rounded-lg text-white placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-[#E85D04] focus:border-transparent"
@@ -533,7 +419,6 @@ function OrcamentosPageContent() {
           <option value="PENDENTE">Pendente</option>
           <option value="APROVADO">Aprovado</option>
           <option value="RECUSADO">Recusado</option>
-          <option value="EXPIRADO">Expirado</option>
           <option value="CONVERTIDO">Convertido</option>
         </select>
         <button
@@ -564,9 +449,8 @@ function OrcamentosPageContent() {
               <thead className="bg-[#1a1a1a]">
                 <tr>
                   <th className="text-left px-4 py-3 text-xs font-medium text-zinc-400 uppercase tracking-wider">Número</th>
-                  <th className="text-left px-4 py-3 text-xs font-medium text-zinc-400 uppercase tracking-wider">Cliente / Veículo</th>
+                  <th className="text-left px-4 py-3 text-xs font-medium text-zinc-400 uppercase tracking-wider">Cliente</th>
                   <th className="text-left px-4 py-3 text-xs font-medium text-zinc-400 uppercase tracking-wider">Status</th>
-                  <th className="text-left px-4 py-3 text-xs font-medium text-zinc-400 uppercase tracking-wider">Validade</th>
                   <th className="text-right px-4 py-3 text-xs font-medium text-zinc-400 uppercase tracking-wider">Total</th>
                   <th className="text-right px-4 py-3 text-xs font-medium text-zinc-400 uppercase tracking-wider">Ações</th>
                 </tr>
@@ -575,7 +459,6 @@ function OrcamentosPageContent() {
                 {orcamentos.map((orcamento) => {
                   const statusInfo = statusConfig[orcamento.status] || statusConfig.PENDENTE;
                   const StatusIcon = statusInfo.icon;
-                  const expired = orcamento.status === 'PENDENTE' && isExpired(orcamento.validade);
 
                   return (
                     <tr key={orcamento.id} className="hover:bg-zinc-800/50 transition-colors">
@@ -586,11 +469,11 @@ function OrcamentosPageContent() {
                       <td className="px-4 py-3">
                         <div className="flex items-center gap-2">
                           <div className="p-1.5 bg-zinc-700 rounded">
-                            <Car className="h-4 w-4 text-zinc-400" />
+                            <User className="h-4 w-4 text-zinc-400" />
                           </div>
                           <div>
-                            <p className="text-white font-medium">{formatPlate(orcamento.veiculo.placa)}</p>
-                            <p className="text-xs text-zinc-400">{orcamento.veiculo.cliente.nome}</p>
+                            <p className="text-white font-medium">{orcamento.nomeCliente || 'Não informado'}</p>
+                            <p className="text-xs text-zinc-400">{formatPhone(orcamento.telefoneCliente)}</p>
                           </div>
                         </div>
                       </td>
@@ -599,14 +482,6 @@ function OrcamentosPageContent() {
                           <StatusIcon className="h-3 w-3" />
                           {statusInfo.label}
                         </span>
-                      </td>
-                      <td className="px-4 py-3">
-                        <span className={`text-sm ${expired ? 'text-red-400' : 'text-zinc-300'}`}>
-                          {formatDate(orcamento.validade)}
-                        </span>
-                        {expired && (
-                          <p className="text-xs text-red-400">Expirado</p>
-                        )}
                       </td>
                       <td className="px-4 py-3 text-right">
                         <span className="text-white font-medium">{formatCurrency(orcamento.total)}</span>
@@ -623,13 +498,15 @@ function OrcamentosPageContent() {
                           >
                             <Eye className="h-4 w-4" />
                           </button>
-                          <button
-                            onClick={() => copyToClipboard(orcamento)}
-                            className="p-1.5 text-zinc-400 hover:text-green-400 hover:bg-zinc-700 rounded transition-colors"
-                            title="Copiar para WhatsApp"
-                          >
-                            <Copy className="h-4 w-4" />
-                          </button>
+                          {orcamento.telefoneCliente && (
+                            <button
+                              onClick={() => sendWhatsApp(orcamento)}
+                              className="p-1.5 text-zinc-400 hover:text-green-400 hover:bg-zinc-700 rounded transition-colors"
+                              title="Enviar via WhatsApp"
+                            >
+                              <Send className="h-4 w-4" />
+                            </button>
+                          )}
                           <button
                             onClick={() => downloadOrcamentoPDF(orcamento as any, empresaConfig || undefined)}
                             className="p-1.5 text-zinc-400 hover:text-[#E85D04] hover:bg-zinc-700 rounded transition-colors"
@@ -645,13 +522,6 @@ function OrcamentosPageContent() {
                                 title="Editar"
                               >
                                 <Edit className="h-4 w-4" />
-                              </button>
-                              <button
-                                onClick={() => openConverterModal(orcamento)}
-                                className="p-1.5 text-zinc-400 hover:text-[#E85D04] hover:bg-zinc-700 rounded transition-colors"
-                                title="Converter em O.S."
-                              >
-                                <ArrowRight className="h-4 w-4" />
                               </button>
                               <button
                                 onClick={() => {
@@ -718,43 +588,33 @@ function OrcamentosPageContent() {
             </div>
 
             <div className="flex-1 overflow-y-auto p-4 space-y-4">
-              {/* Veículo */}
-              <div>
-                <label className="block text-sm font-medium text-zinc-300 mb-2">
-                  Buscar Veículo *
-                </label>
-                <div className="relative">
-                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-400" />
+              {/* Cliente */}
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-zinc-300 mb-2">
+                    Nome do Cliente
+                  </label>
                   <input
                     type="text"
-                    placeholder="Buscar por placa, cliente ou modelo..."
-                    value={searchVeiculo}
-                    onChange={(e) => setSearchVeiculo(e.target.value)}
-                    className="w-full pl-10 pr-4 py-2 bg-[#232323] border border-zinc-700 rounded-lg text-white placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-[#E85D04]"
+                    value={nomeCliente}
+                    onChange={(e) => setNomeCliente(e.target.value)}
+                    placeholder="Nome (opcional)"
+                    className="w-full px-4 py-2 bg-[#232323] border border-zinc-700 rounded-lg text-white placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-[#E85D04]"
                   />
                 </div>
-              </div>
-
-              <div className="max-h-32 overflow-y-auto space-y-2">
-                {filteredVeiculos.map((veiculo) => (
-                  <button
-                    key={veiculo.id}
-                    onClick={() => setSelectedVeiculoId(veiculo.id)}
-                    className={`w-full p-3 rounded-lg border transition-colors text-left ${
-                      selectedVeiculoId === veiculo.id
-                        ? 'bg-[#E85D04]/10 border-[#E85D04] text-white'
-                        : 'bg-[#232323] border-zinc-700 text-zinc-300 hover:border-zinc-600'
-                    }`}
-                  >
-                    <div className="flex items-center gap-3">
-                      <Car className="h-5 w-5" />
-                      <div>
-                        <p className="font-medium">{formatPlate(veiculo.placa)} - {veiculo.marca} {veiculo.modelo}</p>
-                        <p className="text-xs text-zinc-400">{veiculo.cliente.nome}</p>
-                      </div>
-                    </div>
-                  </button>
-                ))}
+                <div>
+                  <label className="block text-sm font-medium text-zinc-300 mb-2">
+                    <Phone className="inline h-4 w-4 mr-1" />
+                    WhatsApp
+                  </label>
+                  <input
+                    type="text"
+                    value={telefoneCliente}
+                    onChange={(e) => setTelefoneCliente(e.target.value)}
+                    placeholder="(11) 99999-9999"
+                    className="w-full px-4 py-2 bg-[#232323] border border-zinc-700 rounded-lg text-white placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-[#E85D04]"
+                  />
+                </div>
               </div>
 
               {/* Produtos */}
@@ -883,31 +743,18 @@ function OrcamentosPageContent() {
                 )}
               </div>
 
-              {/* Validade e Observações */}
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-zinc-300 mb-2">
-                    Validade
-                  </label>
-                  <input
-                    type="date"
-                    value={validade}
-                    onChange={(e) => setValidade(e.target.value)}
-                    className="w-full px-4 py-2 bg-[#232323] border border-zinc-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-[#E85D04]"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-zinc-300 mb-2">
-                    Observações
-                  </label>
-                  <input
-                    type="text"
-                    value={observacoes}
-                    onChange={(e) => setObservacoes(e.target.value)}
-                    className="w-full px-4 py-2 bg-[#232323] border border-zinc-700 rounded-lg text-white placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-[#E85D04]"
-                    placeholder="Opcional..."
-                  />
-                </div>
+              {/* Observações */}
+              <div>
+                <label className="block text-sm font-medium text-zinc-300 mb-2">
+                  Observações
+                </label>
+                <textarea
+                  value={observacoes}
+                  onChange={(e) => setObservacoes(e.target.value)}
+                  rows={2}
+                  className="w-full px-4 py-2 bg-[#232323] border border-zinc-700 rounded-lg text-white placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-[#E85D04]"
+                  placeholder="Observações (opcional)..."
+                />
               </div>
 
               {/* Total */}
@@ -967,20 +814,13 @@ function OrcamentosPageContent() {
                 </span>
               </div>
 
-              {/* Vehicle */}
+              {/* Cliente */}
               <div className="p-3 bg-[#232323] rounded-lg">
                 <div className="flex items-center gap-3">
-                  <Car className="h-5 w-5 text-zinc-400" />
-                  <div>
-                    <p className="text-white font-medium">{formatPlate(selectedOrcamento.veiculo.placa)}</p>
-                    <p className="text-sm text-zinc-400">{selectedOrcamento.veiculo.marca} {selectedOrcamento.veiculo.modelo}</p>
-                  </div>
-                </div>
-                <div className="flex items-center gap-3 mt-2 pt-2 border-t border-zinc-700">
                   <User className="h-5 w-5 text-zinc-400" />
                   <div>
-                    <p className="text-white">{selectedOrcamento.veiculo.cliente.nome}</p>
-                    <p className="text-sm text-zinc-400">{selectedOrcamento.veiculo.cliente.telefone}</p>
+                    <p className="text-white font-medium">{selectedOrcamento.nomeCliente || 'Cliente não informado'}</p>
+                    <p className="text-sm text-zinc-400">{formatPhone(selectedOrcamento.telefoneCliente)}</p>
                   </div>
                 </div>
               </div>
@@ -1008,8 +848,8 @@ function OrcamentosPageContent() {
                 <div>
                   <h4 className="text-sm font-medium text-zinc-400 mb-2">Serviços</h4>
                   <div className="space-y-2">
-                    {selectedOrcamento.servicosExtras.map((servico) => (
-                      <div key={servico.id} className="flex justify-between items-center p-2 bg-[#232323] rounded">
+                    {selectedOrcamento.servicosExtras.map((servico, idx) => (
+                      <div key={idx} className="flex justify-between items-center p-2 bg-[#232323] rounded">
                         <span className="text-white text-sm">{servico.descricao}</span>
                         <span className="text-white font-medium">{formatCurrency(servico.valor)}</span>
                       </div>
@@ -1017,14 +857,6 @@ function OrcamentosPageContent() {
                   </div>
                 </div>
               )}
-
-              {/* Validade */}
-              <div className="flex items-center justify-between p-3 bg-[#232323] rounded-lg">
-                <span className="text-zinc-400">Validade:</span>
-                <span className={`font-medium ${isExpired(selectedOrcamento.validade) && selectedOrcamento.status === 'PENDENTE' ? 'text-red-400' : 'text-white'}`}>
-                  {formatDate(selectedOrcamento.validade)}
-                </span>
-              </div>
 
               {/* Total */}
               <div className="p-4 bg-[#E85D04]/10 rounded-lg">
@@ -1034,121 +866,25 @@ function OrcamentosPageContent() {
                 </div>
               </div>
 
-              {/* Status buttons */}
-              {selectedOrcamento.status === 'PENDENTE' && (
-                <div className="flex gap-2">
+              {/* Actions */}
+              <div className="flex gap-2">
+                <button
+                  onClick={() => downloadOrcamentoPDF(selectedOrcamento as any, empresaConfig || undefined)}
+                  className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-[#E85D04] hover:bg-[#E85D04]/90 text-white font-medium rounded-lg transition-colors"
+                >
+                  <FileDown className="h-4 w-4" />
+                  Baixar PDF
+                </button>
+                {selectedOrcamento.telefoneCliente && (
                   <button
-                    onClick={() => {
-                      handleStatusChange(selectedOrcamento, 'APROVADO');
-                      setShowDetailModal(false);
-                    }}
+                    onClick={() => sendWhatsApp(selectedOrcamento)}
                     className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-green-600 hover:bg-green-700 text-white font-medium rounded-lg transition-colors"
                   >
-                    <CheckCircle className="h-4 w-4" />
-                    Aprovar
+                    <Send className="h-4 w-4" />
+                    Enviar WhatsApp
                   </button>
-                  <button
-                    onClick={() => {
-                      handleStatusChange(selectedOrcamento, 'RECUSADO');
-                      setShowDetailModal(false);
-                    }}
-                    className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-red-600 hover:bg-red-700 text-white font-medium rounded-lg transition-colors"
-                  >
-                    <XCircle className="h-4 w-4" />
-                    Recusar
-                  </button>
-                </div>
-              )}
-
-              {(selectedOrcamento.status === 'PENDENTE' || selectedOrcamento.status === 'APROVADO') && (
-                <button
-                  onClick={() => {
-                    setShowDetailModal(false);
-                    openConverterModal(selectedOrcamento);
-                  }}
-                  className="w-full flex items-center justify-center gap-2 px-4 py-2 bg-[#E85D04] hover:bg-[#E85D04]/90 text-white font-medium rounded-lg transition-colors"
-                >
-                  <ArrowRight className="h-4 w-4" />
-                  Converter em O.S.
-                </button>
-              )}
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Converter Modal */}
-      {showConverterModal && selectedOrcamento && (
-        <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4">
-          <div className="bg-[#1a1a1a] rounded-xl w-full max-w-md">
-            <div className="flex items-center justify-between p-4 border-b border-zinc-800">
-              <h2 className="text-xl font-bold text-white">
-                Converter em O.S.
-              </h2>
-              <button
-                onClick={() => {
-                  setShowConverterModal(false);
-                  setSelectedOrcamento(null);
-                }}
-                className="p-2 hover:bg-zinc-800 rounded-lg transition-colors"
-              >
-                <X className="h-5 w-5 text-zinc-400" />
-              </button>
-            </div>
-
-            <div className="p-4 space-y-4">
-              <div className="p-3 bg-[#232323] rounded-lg">
-                <p className="text-white font-medium">{selectedOrcamento.numero}</p>
-                <p className="text-sm text-zinc-400">
-                  {formatPlate(selectedOrcamento.veiculo.placa)} - {selectedOrcamento.veiculo.cliente.nome}
-                </p>
-                <p className="text-[#E85D04] font-medium mt-1">{formatCurrency(selectedOrcamento.total)}</p>
+                )}
               </div>
-
-              <div>
-                <label className="block text-sm font-medium text-zinc-300 mb-2">
-                  Data/Hora Agendada (opcional)
-                </label>
-                <input
-                  type="datetime-local"
-                  value={dataAgendadaConversao}
-                  onChange={(e) => setDataAgendadaConversao(e.target.value)}
-                  className="w-full px-4 py-2 bg-[#232323] border border-zinc-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-[#E85D04]"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-zinc-300 mb-2">
-                  KM de Entrada (opcional)
-                </label>
-                <input
-                  type="number"
-                  value={kmEntradaConversao}
-                  onChange={(e) => setKmEntradaConversao(e.target.value)}
-                  placeholder="Ex: 50000"
-                  className="w-full px-4 py-2 bg-[#232323] border border-zinc-700 rounded-lg text-white placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-[#E85D04]"
-                />
-              </div>
-            </div>
-
-            <div className="p-4 border-t border-zinc-800 flex justify-end gap-3">
-              <button
-                onClick={() => {
-                  setShowConverterModal(false);
-                  setSelectedOrcamento(null);
-                }}
-                className="px-4 py-2 text-zinc-400 hover:text-white transition-colors"
-              >
-                Cancelar
-              </button>
-              <button
-                onClick={handleConverter}
-                disabled={saving}
-                className="flex items-center gap-2 px-6 py-2 bg-[#E85D04] hover:bg-[#E85D04]/90 text-white font-medium rounded-lg transition-colors disabled:opacity-50"
-              >
-                {saving && <Loader2 className="h-4 w-4 animate-spin" />}
-                Converter em O.S.
-              </button>
             </div>
           </div>
         </div>

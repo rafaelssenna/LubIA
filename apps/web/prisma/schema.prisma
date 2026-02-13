@@ -481,22 +481,25 @@ enum StatusOrcamento {
   CONVERTIDO
 }
 
-// Orçamento para cliente
+// Orçamento para cliente (pode ser criado sem cliente/veículo cadastrado)
 model Orcamento {
-  id             Int              @id @default(autoincrement())
-  empresaId      Int
-  numero         String           // ORC-0001
-  veiculoId      Int
-  status         StatusOrcamento  @default(PENDENTE)
-  validade       DateTime         // Data de validade do orçamento
-  observacoes    String?
-  total          Decimal          @db.Decimal(10, 2) @default(0)
-  ordemServicoId Int?             @unique // Quando convertido para O.S.
-  createdAt      DateTime         @default(now())
-  updatedAt      DateTime         @updatedAt
+  id              Int              @id @default(autoincrement())
+  empresaId       Int
+  numero          String           // ORC-0001
+  // Cliente (pode ser apenas nome/telefone sem cadastro)
+  nomeCliente     String?
+  telefoneCliente String?
+  veiculoId       Int?             // Opcional - se o cliente já tiver veículo cadastrado
+  status          StatusOrcamento  @default(PENDENTE)
+  validade        DateTime?        // Opcional
+  observacoes     String?
+  total           Decimal          @db.Decimal(10, 2) @default(0)
+  ordemServicoId  Int?             @unique // Quando convertido para O.S.
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
 
   empresa        Empresa                  @relation(fields: [empresaId], references: [id], onDelete: Cascade)
-  veiculo        Veiculo                  @relation(fields: [veiculoId], references: [id], onDelete: Cascade)
+  veiculo        Veiculo?                 @relation(fields: [veiculoId], references: [id], onDelete: Cascade)
   itens          ItemOrcamento[]
   itensProduto   ItemOrcamentoProduto[]
   servicosExtras ServicoExtraOrcamento[]

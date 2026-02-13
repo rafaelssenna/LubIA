@@ -18,7 +18,7 @@ export async function POST(
 
   try {
     const body = await request.json().catch(() => ({}));
-    const { dataAgendada, kmEntrada } = body;
+    const { dataAgendada, kmEntrada, veiculoId: bodyVeiculoId } = body;
 
     // Buscar orçamento com todos os itens
     const orcamento = await prisma.orcamento.findFirst({
@@ -49,6 +49,25 @@ export async function POST(
 
     if (orcamento.status === 'RECUSADO') {
       return NextResponse.json({ error: 'Orçamento foi recusado' }, { status: 400 });
+    }
+
+    // Veículo pode vir do orçamento ou do body (se informado)
+    const veiculoId = orcamento.veiculoId || bodyVeiculoId;
+
+    if (!veiculoId) {
+      return NextResponse.json({
+        error: 'Para converter em O.S., é necessário selecionar um veículo'
+      }, { status: 400 });
+    }
+
+    // Verificar se o veículo existe
+    const veiculo = await prisma.veiculo.findFirst({
+      where: { id: veiculoId, empresaId: session.empresaId },
+      include: { cliente: true },
+    });
+
+    if (!veiculo) {
+      return NextResponse.json({ error: 'Veículo não encontrado' }, { status: 404 });
     }
 
     // Prepare product items data
@@ -114,9 +133,9 @@ export async function POST(
       const novaOrdem = await tx.ordemServico.create({
         data: {
           numero: numeroFormatado,
-          veiculoId: orcamento.veiculoId,
+          veiculoId: veiculoId,
           dataAgendada: dataAgendada ? new Date(dataAgendada) : null,
-          kmEntrada: kmEntrada || orcamento.veiculo.kmAtual || null,
+          kmEntrada: kmEntrada || veiculo.kmAtual || null,
           observacoes: orcamento.observacoes,
           total: Number(orcamento.total),
           empresaId: session.empresaId,
@@ -128,13 +147,6 @@ export async function POST(
           },
           servicosExtras: {
             create: servicosExtrasData,
-          },
-        },
-        include: {
-          veiculo: {
-            include: {
-              cliente: true,
-            },
           },
         },
       });
@@ -161,9 +173,9 @@ export async function POST(
       });
 
       // Update vehicle km if provided
-      if (kmEntrada && kmEntrada > (orcamento.veiculo.kmAtual || 0)) {
+      if (kmEntrada && kmEntrada > (veiculo.kmAtual || 0)) {
         await tx.veiculo.update({
-          where: { id: orcamento.veiculoId },
+          where: { id: veiculoId },
           data: { kmAtual: kmEntrada },
         });
       }
@@ -178,8 +190,8 @@ export async function POST(
         status: ordem.status,
         total: Number(ordem.total),
         veiculo: {
-          placa: ordem.veiculo.placa,
-          cliente: ordem.veiculo.cliente.nome,
+          placa: veiculo.placa,
+          cliente: veiculo.cliente.nome,
         },
       },
       message: `Orçamento convertido em O.S. #${ordem.numero}`,

@@ -452,22 +452,12 @@ export function openOrdemPDF(ordem: OrdemPDF, empresaConfig?: EmpresaConfig) {
 interface OrcamentoPDF {
   id: number;
   numero: string;
+  nomeCliente?: string | null;
+  telefoneCliente?: string | null;
   status: string;
-  validade: string;
   observacoes: string | null;
   total: number;
   createdAt: string;
-  veiculo: {
-    placa: string;
-    marca: string;
-    modelo: string;
-    ano: number | null;
-    cliente: {
-      nome: string;
-      telefone: string;
-      email?: string | null;
-    };
-  };
   servicosExtras: {
     descricao: string;
     valor: number;
@@ -547,91 +537,44 @@ export function generateOrcamentoPDF(orcamento: OrcamentoPDF, empresaConfig?: Em
 
   let yPos = 55;
 
-  // ============ VALIDADE ============
-  doc.setFillColor(255, 243, 224);
-  doc.setDrawColor(232, 93, 4);
-  doc.setLineWidth(0.5);
-  doc.roundedRect(margin, yPos - 3, pageWidth - margin * 2, 14, 2, 2, 'FD');
-
-  doc.setTextColor(232, 93, 4);
-  doc.setFontSize(10);
-  doc.setFont('helvetica', 'bold');
-  doc.text('VÁLIDO ATÉ:', margin + 5, yPos + 6);
-  doc.setFontSize(12);
-  doc.text(new Date(orcamento.validade).toLocaleDateString('pt-BR'), margin + 38, yPos + 6);
-
-  yPos += 20;
-
   // ============ DADOS DO CLIENTE ============
-  doc.setTextColor(232, 93, 4);
-  doc.setFontSize(11);
-  doc.setFont('helvetica', 'bold');
-  doc.text('DADOS DO CLIENTE', margin, yPos);
-
-  yPos += 3;
-  doc.setDrawColor(232, 93, 4);
-  doc.setLineWidth(0.5);
-  doc.line(margin, yPos, pageWidth - margin, yPos);
-
-  yPos += 8;
-  doc.setTextColor(60, 60, 60);
-  doc.setFontSize(10);
-  doc.setFont('helvetica', 'normal');
-
-  // Nome
-  doc.setFont('helvetica', 'bold');
-  doc.text('Nome:', margin, yPos);
-  doc.setFont('helvetica', 'normal');
-  const nomeCliente = truncateText(orcamento.veiculo.cliente.nome, 70);
-  doc.text(nomeCliente, margin + 18, yPos);
-
-  yPos += 7;
-
-  // Telefone
-  doc.setFont('helvetica', 'bold');
-  doc.text('Telefone:', margin, yPos);
-  doc.setFont('helvetica', 'normal');
-  doc.text(formatPhone(orcamento.veiculo.cliente.telefone), margin + 25, yPos);
-
-  // Email
-  if (orcamento.veiculo.cliente.email) {
+  if (orcamento.nomeCliente || orcamento.telefoneCliente) {
+    doc.setTextColor(232, 93, 4);
+    doc.setFontSize(11);
     doc.setFont('helvetica', 'bold');
-    doc.text('Email:', pageWidth / 2, yPos);
+    doc.text('DADOS DO CLIENTE', margin, yPos);
+
+    yPos += 3;
+    doc.setDrawColor(232, 93, 4);
+    doc.setLineWidth(0.5);
+    doc.line(margin, yPos, pageWidth - margin, yPos);
+
+    yPos += 8;
+    doc.setTextColor(60, 60, 60);
+    doc.setFontSize(10);
     doc.setFont('helvetica', 'normal');
-    doc.text(orcamento.veiculo.cliente.email, pageWidth / 2 + 18, yPos);
+
+    // Nome
+    if (orcamento.nomeCliente) {
+      doc.setFont('helvetica', 'bold');
+      doc.text('Nome:', margin, yPos);
+      doc.setFont('helvetica', 'normal');
+      const nomeCliente = truncateText(orcamento.nomeCliente, 70);
+      doc.text(nomeCliente, margin + 18, yPos);
+      yPos += 7;
+    }
+
+    // Telefone
+    if (orcamento.telefoneCliente) {
+      doc.setFont('helvetica', 'bold');
+      doc.text('WhatsApp:', margin, yPos);
+      doc.setFont('helvetica', 'normal');
+      doc.text(formatPhone(orcamento.telefoneCliente), margin + 28, yPos);
+      yPos += 7;
+    }
+
+    yPos += 5;
   }
-
-  yPos += 10;
-
-  // ============ DADOS DO VEÍCULO ============
-  doc.setTextColor(232, 93, 4);
-  doc.setFontSize(11);
-  doc.setFont('helvetica', 'bold');
-  doc.text('DADOS DO VEÍCULO', margin, yPos);
-
-  yPos += 3;
-  doc.line(margin, yPos, pageWidth - margin, yPos);
-
-  yPos += 8;
-  doc.setTextColor(60, 60, 60);
-  doc.setFontSize(10);
-
-  // Placa com destaque
-  doc.setFillColor(240, 240, 240);
-  doc.roundedRect(margin, yPos - 5, 50, 14, 2, 2, 'F');
-  doc.setFont('helvetica', 'bold');
-  doc.setFontSize(14);
-  doc.text(orcamento.veiculo.placa, margin + 25, yPos + 4, { align: 'center' });
-
-  // Veículo info
-  doc.setFontSize(10);
-  doc.setFont('helvetica', 'bold');
-  doc.text('Veículo:', margin + 60, yPos);
-  doc.setFont('helvetica', 'normal');
-  const veiculoInfo = `${orcamento.veiculo.marca} ${orcamento.veiculo.modelo}${orcamento.veiculo.ano ? ` (${orcamento.veiculo.ano})` : ''}`;
-  doc.text(veiculoInfo, margin + 60 + 22, yPos);
-
-  yPos += 18;
 
   // ============ SERVIÇOS EXTRAS ============
   if (orcamento.servicosExtras && orcamento.servicosExtras.length > 0) {

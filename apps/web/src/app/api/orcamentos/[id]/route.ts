@@ -46,13 +46,15 @@ export async function GET(
       data: {
         id: orcamento.id,
         numero: orcamento.numero,
+        nomeCliente: orcamento.nomeCliente,
+        telefoneCliente: orcamento.telefoneCliente,
         status: orcamento.status,
         validade: orcamento.validade,
         observacoes: orcamento.observacoes,
         total: Number(orcamento.total),
         ordemServicoId: orcamento.ordemServicoId,
         createdAt: orcamento.createdAt,
-        veiculo: {
+        veiculo: orcamento.veiculo ? {
           id: orcamento.veiculo.id,
           placa: orcamento.veiculo.placa,
           marca: orcamento.veiculo.marca,
@@ -65,7 +67,7 @@ export async function GET(
             telefone: orcamento.veiculo.cliente.telefone,
             email: orcamento.veiculo.cliente.email,
           },
-        },
+        } : null,
         itens: orcamento.itens.map(i => ({
           id: i.id,
           servicoId: i.servicoId,
@@ -112,7 +114,7 @@ export async function PUT(
 
   try {
     const body = await request.json();
-    const { status, validade, observacoes, itens, itensProduto, servicosExtras } = body;
+    const { status, nomeCliente, telefoneCliente, observacoes, itensProduto, servicosExtras } = body;
 
     // Verify orcamento exists and belongs to this empresa
     const orcamentoExistente = await prisma.orcamento.findFirst({
@@ -130,36 +132,11 @@ export async function PUT(
 
     // Calculate totals if items provided
     let total = Number(orcamentoExistente.total);
-    let itensData: any[] | undefined;
     let itensProdutoData: any[] | undefined;
     let servicosExtrasData: any[] | undefined;
 
-    if (itens !== undefined || itensProduto !== undefined || servicosExtras !== undefined) {
+    if (itensProduto !== undefined || servicosExtras !== undefined) {
       // Recalculate all totals
-      let totalServicos = 0;
-      itensData = [];
-      if (itens && itens.length > 0) {
-        for (const item of itens) {
-          const servico = await prisma.servico.findFirst({
-            where: { id: item.servicoId, empresaId: session.empresaId },
-          });
-          if (servico) {
-            const precoUnit = item.precoUnitario || Number(servico.precoBase);
-            const qtd = item.quantidade || 1;
-            const desc = item.desconto || 0;
-            const subtotal = (precoUnit * qtd) - desc;
-            totalServicos += subtotal;
-            itensData.push({
-              servicoId: item.servicoId,
-              quantidade: qtd,
-              precoUnitario: precoUnit,
-              desconto: desc,
-              subtotal,
-            });
-          }
-        }
-      }
-
       let totalProdutos = 0;
       itensProdutoData = [];
       if (itensProduto && itensProduto.length > 0) {
@@ -198,15 +175,12 @@ export async function PUT(
         }
       }
 
-      total = totalServicos + totalProdutos + totalExtras;
+      total = totalProdutos + totalExtras;
     }
 
     // Update orcamento
     const orcamento = await prisma.$transaction(async (tx) => {
       // Delete existing items if new ones provided
-      if (itensData !== undefined) {
-        await tx.itemOrcamento.deleteMany({ where: { orcamentoId } });
-      }
       if (itensProdutoData !== undefined) {
         await tx.itemOrcamentoProduto.deleteMany({ where: { orcamentoId } });
       }
@@ -218,14 +192,10 @@ export async function PUT(
         where: { id: orcamentoId },
         data: {
           ...(status && { status }),
-          ...(validade && { validade: new Date(validade) }),
+          ...(nomeCliente !== undefined && { nomeCliente: nomeCliente || null }),
+          ...(telefoneCliente !== undefined && { telefoneCliente: telefoneCliente || null }),
           ...(observacoes !== undefined && { observacoes }),
           total,
-          ...(itensData && {
-            itens: {
-              create: itensData,
-            },
-          }),
           ...(itensProdutoData && {
             itensProduto: {
               create: itensProdutoData,
@@ -238,16 +208,6 @@ export async function PUT(
           }),
         },
         include: {
-          veiculo: {
-            include: {
-              cliente: true,
-            },
-          },
-          itens: {
-            include: {
-              servico: true,
-            },
-          },
           itensProduto: {
             include: {
               produto: true,
@@ -264,8 +224,9 @@ export async function PUT(
       data: {
         id: orcamento.id,
         numero: orcamento.numero,
+        nomeCliente: orcamento.nomeCliente,
+        telefoneCliente: orcamento.telefoneCliente,
         status: orcamento.status,
-        validade: orcamento.validade,
         total: Number(orcamento.total),
       },
     });

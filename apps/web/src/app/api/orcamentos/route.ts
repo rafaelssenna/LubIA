@@ -23,6 +23,8 @@ export async function GET(request: NextRequest) {
     if (busca) {
       where.OR = [
         { numero: { contains: busca, mode: 'insensitive' } },
+        { nomeCliente: { contains: busca, mode: 'insensitive' } },
+        { telefoneCliente: { contains: busca, mode: 'insensitive' } },
         { veiculo: { placa: { contains: busca, mode: 'insensitive' } } },
         { veiculo: { cliente: { nome: { contains: busca, mode: 'insensitive' } } } },
       ];
@@ -84,13 +86,16 @@ export async function GET(request: NextRequest) {
       data: orcamentos.map(o => ({
         id: o.id,
         numero: o.numero,
+        nomeCliente: o.nomeCliente,
+        telefoneCliente: o.telefoneCliente,
         status: o.status,
         validade: o.validade,
         observacoes: o.observacoes,
         total: Number(o.total),
         ordemServicoId: o.ordemServicoId,
         createdAt: o.createdAt,
-        veiculo: {
+        // Veículo pode ser null agora
+        veiculo: o.veiculo ? {
           id: o.veiculo.id,
           placa: o.veiculo.placa,
           marca: o.veiculo.marca,
@@ -101,7 +106,7 @@ export async function GET(request: NextRequest) {
             nome: o.veiculo.cliente.nome,
             telefone: o.veiculo.cliente.telefone,
           },
-        },
+        } : null,
         itens: o.itens.map(i => ({
           id: i.id,
           servicoId: i.servicoId,
@@ -149,45 +154,7 @@ export async function POST(request: NextRequest) {
 
   try {
     const body = await request.json();
-    const { veiculoId, validade, observacoes, itens, itensProduto, servicosExtras } = body;
-
-    if (!veiculoId) {
-      return NextResponse.json({ error: 'Veículo é obrigatório' }, { status: 400 });
-    }
-
-    // Verify vehicle exists and belongs to this empresa
-    const veiculo = await prisma.veiculo.findFirst({
-      where: { id: veiculoId, empresaId: session.empresaId },
-    });
-
-    if (!veiculo) {
-      return NextResponse.json({ error: 'Veículo não encontrado' }, { status: 404 });
-    }
-
-    // Calculate total from services
-    let totalServicos = 0;
-    const itensData: any[] = [];
-    if (itens && itens.length > 0) {
-      for (const item of itens) {
-        const servico = await prisma.servico.findFirst({
-          where: { id: item.servicoId, empresaId: session.empresaId },
-        });
-        if (servico) {
-          const precoUnit = item.precoUnitario || Number(servico.precoBase);
-          const qtd = item.quantidade || 1;
-          const desc = item.desconto || 0;
-          const subtotal = (precoUnit * qtd) - desc;
-          totalServicos += subtotal;
-          itensData.push({
-            servicoId: item.servicoId,
-            quantidade: qtd,
-            precoUnitario: precoUnit,
-            desconto: desc,
-            subtotal,
-          });
-        }
-      }
-    }
+    const { nomeCliente, telefoneCliente, observacoes, itensProduto, servicosExtras } = body;
 
     // Calculate total from products
     let totalProdutos = 0;
@@ -214,7 +181,7 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // Calculate total from serviços extras
+    // Calculate total from serviços extras (mão de obra)
     let totalExtras = 0;
     const servicosExtrasData: { descricao: string; valor: number }[] = [];
     if (servicosExtras && servicosExtras.length > 0) {
@@ -229,10 +196,11 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    const total = totalServicos + totalProdutos + totalExtras;
+    const total = totalProdutos + totalExtras;
 
-    // Default validade: 7 dias
-    const validadeDate = validade ? new Date(validade) : new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
+    if (total === 0) {
+      return NextResponse.json({ error: 'Adicione pelo menos um produto ou serviço' }, { status: 400 });
+    }
 
     // Create orcamento with items
     const orcamento = await prisma.$transaction(async (tx) => {
@@ -258,14 +226,11 @@ export async function POST(request: NextRequest) {
       const novoOrcamento = await tx.orcamento.create({
         data: {
           numero: numeroFormatado,
-          veiculoId,
-          validade: validadeDate,
+          nomeCliente: nomeCliente || null,
+          telefoneCliente: telefoneCliente || null,
           observacoes: observacoes || null,
           total,
           empresaId: session.empresaId,
-          itens: {
-            create: itensData,
-          },
           itensProduto: {
             create: itensProdutoData,
           },
@@ -274,16 +239,6 @@ export async function POST(request: NextRequest) {
           },
         },
         include: {
-          veiculo: {
-            include: {
-              cliente: true,
-            },
-          },
-          itens: {
-            include: {
-              servico: true,
-            },
-          },
           itensProduto: {
             include: {
               produto: true,
@@ -300,13 +255,10 @@ export async function POST(request: NextRequest) {
       data: {
         id: orcamento.id,
         numero: orcamento.numero,
+        nomeCliente: orcamento.nomeCliente,
+        telefoneCliente: orcamento.telefoneCliente,
         status: orcamento.status,
-        validade: orcamento.validade,
         total: Number(orcamento.total),
-        veiculo: {
-          placa: orcamento.veiculo.placa,
-          cliente: orcamento.veiculo.cliente.nome,
-        },
       },
     }, { status: 201 });
   } catch (error: any) {
