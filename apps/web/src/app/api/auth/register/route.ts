@@ -62,7 +62,7 @@ export async function POST(request: NextRequest) {
         },
       });
 
-      // 2. Criar usuário
+      // 2. Criar usuário (primeiro usuário é sempre ADMIN)
       const senhaHash = await hashPassword(senha);
       const usuario = await tx.usuario.create({
         data: {
@@ -70,6 +70,7 @@ export async function POST(request: NextRequest) {
           senhaHash,
           nome,
           empresaId: empresa.id,
+          role: 'ADMIN',
           ativo: true,
         },
       });
@@ -137,13 +138,14 @@ export async function POST(request: NextRequest) {
       return { empresa, usuario };
     });
 
-    // Criar token e fazer login automático
+    // Criar token e fazer login automático (primeiro usuário é sempre ADMIN)
     const token = await createSession({
       userId: result.usuario.id,
       empresaId: result.empresa.id,
       email: result.usuario.email,
       nome: result.usuario.nome,
       empresaNome: result.empresa.nome,
+      role: 'ADMIN',
     });
 
     await setSessionCookie(token);

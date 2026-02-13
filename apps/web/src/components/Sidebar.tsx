@@ -18,6 +18,7 @@ import {
   ClipboardList,
   FileText,
   AlertCircle,
+  UserCog,
 } from 'lucide-react';
 import { useSidebar } from '@/contexts/SidebarContext';
 import { useAuth } from '@/contexts/AuthContext';
@@ -36,7 +37,7 @@ const menuItems = [
 export default function Sidebar() {
   const pathname = usePathname();
   const { collapsed, toggleCollapsed } = useSidebar();
-  const { logout } = useAuth();
+  const { logout, isAdmin } = useAuth();
   const [configIncomplete, setConfigIncomplete] = useState(false);
 
   // Verificar se a configuração está completa
@@ -129,6 +130,21 @@ export default function Sidebar() {
 
       {/* Footer */}
       <div className="p-4 border-t border-white/15 space-y-1.5">
+        {/* Usuários - apenas para ADMIN */}
+        {isAdmin && (
+          <Link
+            href="/usuarios"
+            className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-300 group ${
+              pathname === '/usuarios'
+                ? 'bg-white/20 text-white shadow-lg shadow-black/10 ring-1 ring-white/20'
+                : 'text-white/70 hover:bg-white/10 hover:text-white'
+            } ${collapsed ? 'justify-center px-3' : ''}`}
+            title={collapsed ? 'Usuários' : undefined}
+          >
+            <UserCog size={20} className="group-hover:scale-110 transition-transform" />
+            {!collapsed && <span className="font-medium">Usuários</span>}
+          </Link>
+        )}
         <Link
           href="/configuracoes"
           className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-300 group relative ${

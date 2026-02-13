@@ -16,6 +16,7 @@ export async function GET() {
         email: session.email,
         empresaId: session.empresaId,
         empresaNome: session.empresaNome,
+        role: session.role,
       },
     });
   } catch (error: any) {

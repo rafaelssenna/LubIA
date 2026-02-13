@@ -3,12 +3,15 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { useRouter } from 'next/navigation';
 
+type RoleUsuario = 'ADMIN' | 'GERENTE' | 'ATENDENTE';
+
 interface User {
   id: number;
   nome: string;
   email: string;
   empresaId: number;
   empresaNome: string;
+  role: RoleUsuario;
 }
 
 interface AuthContextType {
@@ -16,6 +19,9 @@ interface AuthContextType {
   loading: boolean;
   logout: () => Promise<void>;
   refreshUser: () => Promise<void>;
+  isAdmin: boolean;
+  isGerente: boolean;
+  isAtendente: boolean;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -56,8 +62,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     refreshUser();
   }, []);
 
+  const isAdmin = user?.role === 'ADMIN';
+  const isGerente = user?.role === 'GERENTE' || isAdmin;
+  const isAtendente = user?.role === 'ATENDENTE' || isGerente;
+
   return (
-    <AuthContext.Provider value={{ user, loading, logout, refreshUser }}>
+    <AuthContext.Provider value={{ user, loading, logout, refreshUser, isAdmin, isGerente, isAtendente }}>
       {children}
     </AuthContext.Provider>
   );

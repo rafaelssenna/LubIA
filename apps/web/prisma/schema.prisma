@@ -41,16 +41,24 @@ model Empresa {
   @@map("empresas")
 }
 
+// Níveis de acesso do usuário
+enum RoleUsuario {
+  ADMIN      // Acesso total, cria usuários, configura empresa
+  GERENTE    // Relatórios, ordens, orçamentos
+  ATENDENTE  // Cria O.S., WhatsApp, orçamentos
+}
+
 // Usuario para autenticação
 model Usuario {
-  id          Int       @id @default(autoincrement())
-  email       String    @unique
+  id          Int          @id @default(autoincrement())
+  email       String       @unique
   senhaHash   String
   nome        String
   empresaId   Int
-  ativo       Boolean   @default(true)
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
+  role        RoleUsuario  @default(ATENDENTE)
+  ativo       Boolean      @default(true)
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
   lastLoginAt DateTime?
 
   empresa Empresa @relation(fields: [empresaId], references: [id], onDelete: Cascade)

@@ -7,6 +7,9 @@ const JWT_SECRET = new TextEncoder().encode(
 );
 const COOKIE_NAME = 'lubia-session';
 
+// Tipos de role
+export type RoleUsuario = 'ADMIN' | 'GERENTE' | 'ATENDENTE';
+
 // Payload da sessão JWT
 export interface SessionPayload {
   userId: number;
@@ -14,7 +17,31 @@ export interface SessionPayload {
   nome: string;
   empresaId: number;
   empresaNome: string;
+  role: RoleUsuario;
   exp?: number;
+}
+
+// Permissões por role
+const ROLE_PERMISSIONS: Record<RoleUsuario, string[]> = {
+  ADMIN: ['*'], // Acesso total
+  GERENTE: ['dashboard', 'clientes', 'veiculos', 'ordens', 'orcamentos', 'estoque', 'lembretes', 'whatsapp'],
+  ATENDENTE: ['dashboard', 'clientes', 'veiculos', 'ordens', 'orcamentos', 'whatsapp'],
+};
+
+// Verificar se role tem permissão
+export function hasPermission(role: RoleUsuario, permission: string): boolean {
+  const permissions = ROLE_PERMISSIONS[role];
+  return permissions.includes('*') || permissions.includes(permission);
+}
+
+// Verificar se role pode acessar página
+export function canAccessPage(role: RoleUsuario, page: string): boolean {
+  // Páginas que requerem ADMIN
+  const adminOnlyPages = ['configuracoes', 'usuarios'];
+  if (adminOnlyPages.includes(page)) {
+    return role === 'ADMIN';
+  }
+  return hasPermission(role, page);
 }
 
 // Hash de senha com bcrypt

@@ -56,6 +56,7 @@ export async function POST(request: NextRequest) {
       nome: usuario.nome,
       empresaId: usuario.empresaId,
       empresaNome: usuario.empresa.nome,
+      role: usuario.role as 'ADMIN' | 'GERENTE' | 'ATENDENTE',
     });
 
     // Salvar cookie
@@ -68,6 +69,7 @@ export async function POST(request: NextRequest) {
         nome: usuario.nome,
         email: usuario.email,
         empresa: usuario.empresa.nome,
+        role: usuario.role,
       },
     });
   } catch (error: any) {
