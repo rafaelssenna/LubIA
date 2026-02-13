@@ -88,6 +88,9 @@ function OrcamentosPageContent() {
   const [totalItems, setTotalItems] = useState(0);
   const itemsPerPage = 20;
 
+  // WhatsApp sending state
+  const [sendingWhatsApp, setSendingWhatsApp] = useState<number | null>(null);
+
   // Empresa config for PDF
   const [empresaConfig, setEmpresaConfig] = useState<EmpresaConfig | null>(null);
 
@@ -318,21 +321,47 @@ function OrcamentosPageContent() {
     return phone;
   };
 
-  const sendWhatsApp = (orcamento: Orcamento) => {
+  const sendWhatsApp = async (orcamento: Orcamento) => {
     if (!orcamento.telefoneCliente) {
       toast.warning('Este orçamento não tem telefone cadastrado');
       return;
     }
 
+    setSendingWhatsApp(orcamento.id);
+
     const telefone = orcamento.telefoneCliente.replace(/\D/g, '');
     const text = `*Orçamento ${orcamento.numero}*\n\n` +
-      `*Itens:*\n` +
-      orcamento.itensProduto.map(i => `- ${i.produtoNome} (${i.quantidade}x) - ${formatCurrency(i.subtotal)}`).join('\n') +
-      (orcamento.servicosExtras.length > 0 ? '\n\n*Serviços:*\n' + orcamento.servicosExtras.map(s => `- ${s.descricao} - ${formatCurrency(s.valor)}`).join('\n') : '') +
-      `\n\n*Total: ${formatCurrency(orcamento.total)}*`;
+      (orcamento.nomeCliente ? `*Cliente:* ${orcamento.nomeCliente}\n\n` : '') +
+      (orcamento.itensProduto.length > 0 ? `*Produtos:*\n` +
+        orcamento.itensProduto.map(i => `• ${i.produtoNome} (${i.quantidade}x) - ${formatCurrency(i.subtotal)}`).join('\n') + '\n\n' : '') +
+      (orcamento.servicosExtras.length > 0 ? `*Serviços:*\n` +
+        orcamento.servicosExtras.map(s => `• ${s.descricao} - ${formatCurrency(s.valor)}`).join('\n') + '\n\n' : '') +
+      `*Total: ${formatCurrency(orcamento.total)}*\n\n` +
+      `_Orçamento válido mediante aprovação._`;
 
-    const url = `https://wa.me/55${telefone}?text=${encodeURIComponent(text)}`;
-    window.open(url, '_blank');
+    try {
+      const res = await fetch('/api/whatsapp/send', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          number: telefone,
+          text,
+        }),
+      });
+
+      const data = await res.json();
+
+      if (res.ok) {
+        toast.success('Orçamento enviado via WhatsApp!');
+      } else {
+        toast.error(data.error || 'Erro ao enviar via WhatsApp');
+      }
+    } catch (error) {
+      console.error('Erro ao enviar WhatsApp:', error);
+      toast.error('Erro ao enviar via WhatsApp');
+    } finally {
+      setSendingWhatsApp(null);
+    }
   };
 
   if (loading) {
@@ -501,10 +530,15 @@ function OrcamentosPageContent() {
                           {orcamento.telefoneCliente && (
                             <button
                               onClick={() => sendWhatsApp(orcamento)}
-                              className="p-1.5 text-zinc-400 hover:text-green-400 hover:bg-zinc-700 rounded transition-colors"
+                              disabled={sendingWhatsApp === orcamento.id}
+                              className="p-1.5 text-zinc-400 hover:text-green-400 hover:bg-zinc-700 rounded transition-colors disabled:opacity-50"
                               title="Enviar via WhatsApp"
                             >
-                              <Send className="h-4 w-4" />
+                              {sendingWhatsApp === orcamento.id ? (
+                                <Loader2 className="h-4 w-4 animate-spin" />
+                              ) : (
+                                <Send className="h-4 w-4" />
+                              )}
                             </button>
                           )}
                           <button
@@ -878,10 +912,15 @@ function OrcamentosPageContent() {
                 {selectedOrcamento.telefoneCliente && (
                   <button
                     onClick={() => sendWhatsApp(selectedOrcamento)}
-                    className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-green-600 hover:bg-green-700 text-white font-medium rounded-lg transition-colors"
+                    disabled={sendingWhatsApp === selectedOrcamento.id}
+                    className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-green-600 hover:bg-green-700 text-white font-medium rounded-lg transition-colors disabled:opacity-50"
                   >
-                    <Send className="h-4 w-4" />
-                    Enviar WhatsApp
+                    {sendingWhatsApp === selectedOrcamento.id ? (
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                    ) : (
+                      <Send className="h-4 w-4" />
+                    )}
+                    {sendingWhatsApp === selectedOrcamento.id ? 'Enviando...' : 'Enviar WhatsApp'}
                   </button>
                 )}
               </div>
