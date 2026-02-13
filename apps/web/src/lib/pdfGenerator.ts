@@ -446,3 +446,350 @@ export function openOrdemPDF(ordem: OrdemPDF, empresaConfig?: EmpresaConfig) {
   const doc = generateOrdemPDF(ordem, empresaConfig);
   window.open(doc.output('bloburl'), '_blank');
 }
+
+// ============ ORÇAMENTO PDF ============
+
+interface OrcamentoPDF {
+  id: number;
+  numero: string;
+  status: string;
+  validade: string;
+  observacoes: string | null;
+  total: number;
+  createdAt: string;
+  veiculo: {
+    placa: string;
+    marca: string;
+    modelo: string;
+    ano: number | null;
+    cliente: {
+      nome: string;
+      telefone: string;
+      email?: string | null;
+    };
+  };
+  servicosExtras: {
+    descricao: string;
+    valor: number;
+  }[];
+  itensProduto: {
+    produtoNome: string;
+    quantidade: number;
+    precoUnitario: number;
+    subtotal: number;
+  }[];
+}
+
+const statusOrcamentoLabels: Record<string, string> = {
+  PENDENTE: 'Pendente',
+  APROVADO: 'Aprovado',
+  RECUSADO: 'Recusado',
+  EXPIRADO: 'Expirado',
+  CONVERTIDO: 'Convertido em O.S.',
+};
+
+export function generateOrcamentoPDF(orcamento: OrcamentoPDF, empresaConfig?: EmpresaConfig) {
+  const doc = new jsPDF();
+  const pageWidth = doc.internal.pageSize.getWidth();
+  const pageHeight = doc.internal.pageSize.getHeight();
+  const margin = 14;
+
+  // Usar dados da empresa ou fallback
+  const config = {
+    nome: empresaConfig?.nomeOficina || DEFAULT_CONFIG.nome,
+    subtitulo: DEFAULT_CONFIG.subtitulo,
+    cnpj: empresaConfig?.cnpj || DEFAULT_CONFIG.cnpj,
+    telefone: empresaConfig?.telefone || DEFAULT_CONFIG.telefone,
+    endereco: empresaConfig?.endereco || DEFAULT_CONFIG.endereco,
+  };
+
+  // ============ HEADER ============
+  // Cor laranja para orçamento (diferenciar da O.S.)
+  doc.setFillColor(232, 93, 4);
+  doc.rect(0, 0, pageWidth, 45, 'F');
+
+  // Logo/Nome da oficina
+  doc.setTextColor(255, 255, 255);
+  doc.setFontSize(28);
+  doc.setFont('helvetica', 'bold');
+  doc.text(config.nome, margin, 18);
+
+  doc.setFontSize(11);
+  doc.setFont('helvetica', 'normal');
+  doc.text(config.subtitulo, margin, 26);
+
+  // Dados da oficina no header
+  doc.setFontSize(8);
+  if (config.cnpj) {
+    doc.text(`CNPJ: ${config.cnpj}`, margin, 34);
+  }
+  if (config.telefone) {
+    doc.text(`Tel: ${config.telefone}`, margin, 40);
+  }
+
+  // Orçamento Number (lado direito)
+  doc.setFontSize(11);
+  doc.setFont('helvetica', 'bold');
+  doc.text('ORÇAMENTO', pageWidth - margin, 14, { align: 'right' });
+
+  doc.setFontSize(20);
+  doc.text(orcamento.numero, pageWidth - margin, 26, { align: 'right' });
+
+  // Status badge
+  const statusText = statusOrcamentoLabels[orcamento.status] || orcamento.status;
+  doc.setFontSize(10);
+  doc.setFont('helvetica', 'normal');
+  doc.text(`Status: ${statusText}`, pageWidth - margin, 36, { align: 'right' });
+
+  // Data de emissão
+  doc.setFontSize(8);
+  doc.text(`Emitido: ${formatDateTime(orcamento.createdAt)}`, pageWidth - margin, 42, { align: 'right' });
+
+  let yPos = 55;
+
+  // ============ VALIDADE ============
+  doc.setFillColor(255, 243, 224);
+  doc.setDrawColor(232, 93, 4);
+  doc.setLineWidth(0.5);
+  doc.roundedRect(margin, yPos - 3, pageWidth - margin * 2, 14, 2, 2, 'FD');
+
+  doc.setTextColor(232, 93, 4);
+  doc.setFontSize(10);
+  doc.setFont('helvetica', 'bold');
+  doc.text('VÁLIDO ATÉ:', margin + 5, yPos + 6);
+  doc.setFontSize(12);
+  doc.text(new Date(orcamento.validade).toLocaleDateString('pt-BR'), margin + 38, yPos + 6);
+
+  yPos += 20;
+
+  // ============ DADOS DO CLIENTE ============
+  doc.setTextColor(232, 93, 4);
+  doc.setFontSize(11);
+  doc.setFont('helvetica', 'bold');
+  doc.text('DADOS DO CLIENTE', margin, yPos);
+
+  yPos += 3;
+  doc.setDrawColor(232, 93, 4);
+  doc.setLineWidth(0.5);
+  doc.line(margin, yPos, pageWidth - margin, yPos);
+
+  yPos += 8;
+  doc.setTextColor(60, 60, 60);
+  doc.setFontSize(10);
+  doc.setFont('helvetica', 'normal');
+
+  // Nome
+  doc.setFont('helvetica', 'bold');
+  doc.text('Nome:', margin, yPos);
+  doc.setFont('helvetica', 'normal');
+  const nomeCliente = truncateText(orcamento.veiculo.cliente.nome, 70);
+  doc.text(nomeCliente, margin + 18, yPos);
+
+  yPos += 7;
+
+  // Telefone
+  doc.setFont('helvetica', 'bold');
+  doc.text('Telefone:', margin, yPos);
+  doc.setFont('helvetica', 'normal');
+  doc.text(formatPhone(orcamento.veiculo.cliente.telefone), margin + 25, yPos);
+
+  // Email
+  if (orcamento.veiculo.cliente.email) {
+    doc.setFont('helvetica', 'bold');
+    doc.text('Email:', pageWidth / 2, yPos);
+    doc.setFont('helvetica', 'normal');
+    doc.text(orcamento.veiculo.cliente.email, pageWidth / 2 + 18, yPos);
+  }
+
+  yPos += 10;
+
+  // ============ DADOS DO VEÍCULO ============
+  doc.setTextColor(232, 93, 4);
+  doc.setFontSize(11);
+  doc.setFont('helvetica', 'bold');
+  doc.text('DADOS DO VEÍCULO', margin, yPos);
+
+  yPos += 3;
+  doc.line(margin, yPos, pageWidth - margin, yPos);
+
+  yPos += 8;
+  doc.setTextColor(60, 60, 60);
+  doc.setFontSize(10);
+
+  // Placa com destaque
+  doc.setFillColor(240, 240, 240);
+  doc.roundedRect(margin, yPos - 5, 50, 14, 2, 2, 'F');
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(14);
+  doc.text(orcamento.veiculo.placa, margin + 25, yPos + 4, { align: 'center' });
+
+  // Veículo info
+  doc.setFontSize(10);
+  doc.setFont('helvetica', 'bold');
+  doc.text('Veículo:', margin + 60, yPos);
+  doc.setFont('helvetica', 'normal');
+  const veiculoInfo = `${orcamento.veiculo.marca} ${orcamento.veiculo.modelo}${orcamento.veiculo.ano ? ` (${orcamento.veiculo.ano})` : ''}`;
+  doc.text(veiculoInfo, margin + 60 + 22, yPos);
+
+  yPos += 18;
+
+  // ============ SERVIÇOS EXTRAS ============
+  if (orcamento.servicosExtras && orcamento.servicosExtras.length > 0) {
+    doc.setTextColor(232, 93, 4);
+    doc.setFontSize(11);
+    doc.setFont('helvetica', 'bold');
+    doc.text('SERVIÇOS / MÃO DE OBRA', margin, yPos);
+
+    yPos += 5;
+
+    autoTable(doc, {
+      startY: yPos,
+      head: [['Descrição do Serviço', 'Valor']],
+      body: orcamento.servicosExtras.map(item => [
+        item.descricao,
+        formatCurrency(item.valor),
+      ]),
+      theme: 'striped',
+      headStyles: {
+        fillColor: [232, 93, 4],
+        textColor: 255,
+        fontStyle: 'bold',
+        fontSize: 9,
+      },
+      styles: {
+        fontSize: 9,
+        cellPadding: 4,
+      },
+      columnStyles: {
+        0: { cellWidth: 'auto' },
+        1: { cellWidth: 40, halign: 'right', fontStyle: 'bold' },
+      },
+      alternateRowStyles: {
+        fillColor: [255, 250, 245],
+      },
+    });
+
+    yPos = (doc as any).lastAutoTable.finalY + 8;
+  }
+
+  // ============ PRODUTOS ============
+  if (orcamento.itensProduto && orcamento.itensProduto.length > 0) {
+    doc.setTextColor(59, 130, 246);
+    doc.setFontSize(11);
+    doc.setFont('helvetica', 'bold');
+    doc.text('PEÇAS E PRODUTOS', margin, yPos);
+
+    yPos += 5;
+
+    autoTable(doc, {
+      startY: yPos,
+      head: [['Descrição do Produto', 'Qtd', 'Valor Unit.', 'Subtotal']],
+      body: orcamento.itensProduto.map(item => [
+        item.produtoNome,
+        item.quantidade.toString(),
+        formatCurrency(item.precoUnitario),
+        formatCurrency(item.subtotal),
+      ]),
+      theme: 'striped',
+      headStyles: {
+        fillColor: [59, 130, 246],
+        textColor: 255,
+        fontStyle: 'bold',
+        fontSize: 9,
+      },
+      styles: {
+        fontSize: 9,
+        cellPadding: 4,
+      },
+      columnStyles: {
+        0: { cellWidth: 'auto' },
+        1: { cellWidth: 18, halign: 'center' },
+        2: { cellWidth: 32, halign: 'right' },
+        3: { cellWidth: 32, halign: 'right', fontStyle: 'bold' },
+      },
+      alternateRowStyles: {
+        fillColor: [248, 250, 252],
+      },
+    });
+
+    yPos = (doc as any).lastAutoTable.finalY + 8;
+  }
+
+  // ============ OBSERVAÇÕES ============
+  if (orcamento.observacoes) {
+    doc.setTextColor(100, 100, 100);
+    doc.setFontSize(11);
+    doc.setFont('helvetica', 'bold');
+    doc.text('OBSERVAÇÕES', margin, yPos);
+
+    yPos += 5;
+    doc.setFillColor(255, 251, 235);
+    doc.setDrawColor(251, 191, 36);
+    doc.setLineWidth(0.3);
+
+    const splitText = doc.splitTextToSize(orcamento.observacoes, pageWidth - margin * 2 - 10);
+    const obsHeight = splitText.length * 5 + 8;
+    doc.roundedRect(margin, yPos, pageWidth - margin * 2, obsHeight, 2, 2, 'FD');
+
+    doc.setTextColor(60, 60, 60);
+    doc.setFontSize(9);
+    doc.setFont('helvetica', 'normal');
+    doc.text(splitText, margin + 5, yPos + 6);
+
+    yPos += obsHeight + 8;
+  }
+
+  // ============ TOTAL ============
+  yPos += 5;
+
+  // Box do total (alinhado à direita)
+  const totalBoxWidth = 90;
+  const totalBoxX = pageWidth - margin - totalBoxWidth;
+
+  doc.setFillColor(232, 93, 4);
+  doc.roundedRect(totalBoxX, yPos, totalBoxWidth, 28, 3, 3, 'F');
+
+  doc.setTextColor(255, 255, 255);
+  doc.setFontSize(10);
+  doc.setFont('helvetica', 'bold');
+  doc.text('VALOR TOTAL', totalBoxX + totalBoxWidth / 2, yPos + 10, { align: 'center' });
+
+  doc.setFontSize(18);
+  doc.text(formatCurrency(orcamento.total), totalBoxX + totalBoxWidth / 2, yPos + 22, { align: 'center' });
+
+  yPos += 40;
+
+  // ============ TERMOS ============
+  const termsY = Math.min(yPos, pageHeight - 50);
+
+  doc.setTextColor(100, 100, 100);
+  doc.setFontSize(8);
+  doc.setFont('helvetica', 'italic');
+  doc.text('Este orçamento não tem valor fiscal. Valores sujeitos a alteração sem aviso prévio.', margin, termsY);
+  doc.text('Orçamento válido mediante aprovação do cliente.', margin, termsY + 5);
+
+  // ============ FOOTER ============
+  doc.setDrawColor(220, 220, 220);
+  doc.setLineWidth(0.3);
+  doc.line(margin, pageHeight - 15, pageWidth - margin, pageHeight - 15);
+
+  doc.setTextColor(150, 150, 150);
+  doc.setFontSize(7);
+  const footerParts = [config.endereco, config.telefone].filter(Boolean);
+  if (footerParts.length > 0) {
+    doc.text(footerParts.join(' | '), pageWidth / 2, pageHeight - 10, { align: 'center' });
+  }
+  doc.text(`Gerado em ${new Date().toLocaleString('pt-BR')}`, pageWidth / 2, pageHeight - 6, { align: 'center' });
+
+  return doc;
+}
+
+export function downloadOrcamentoPDF(orcamento: OrcamentoPDF, empresaConfig?: EmpresaConfig) {
+  const doc = generateOrcamentoPDF(orcamento, empresaConfig);
+  doc.save(`${orcamento.numero}.pdf`);
+}
+
+export function openOrcamentoPDF(orcamento: OrcamentoPDF, empresaConfig?: EmpresaConfig) {
+  const doc = generateOrcamentoPDF(orcamento, empresaConfig);
+  window.open(doc.output('bloburl'), '_blank');
+}
