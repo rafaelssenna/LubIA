@@ -23,22 +23,38 @@ import {
 import { useSidebar } from '@/contexts/SidebarContext';
 import { useAuth } from '@/contexts/AuthContext';
 
+type RoleUsuario = 'ADMIN' | 'GERENTE' | 'ATENDENTE';
+
+// Permissões por role
+const ROLE_PERMISSIONS: Record<RoleUsuario, string[]> = {
+  ADMIN: ['*'],
+  GERENTE: ['dashboard', 'clientes', 'veiculos', 'ordens', 'orcamentos', 'estoque', 'lembretes', 'whatsapp'],
+  ATENDENTE: ['dashboard', 'clientes', 'veiculos', 'ordens', 'orcamentos', 'whatsapp'],
+};
+
 const menuItems = [
-  { icon: LayoutDashboard, label: 'Dashboard', href: '/' },
-  { icon: Users, label: 'Clientes', href: '/clientes' },
-  { icon: Car, label: 'Veículos', href: '/veiculos' },
-  { icon: ClipboardList, label: 'Ordens', href: '/ordens' },
-  { icon: FileText, label: 'Orçamentos', href: '/orcamentos' },
-  { icon: Package, label: 'Estoque', href: '/estoque' },
-  { icon: Bell, label: 'Lembretes', href: '/lembretes' },
-  { icon: MessageCircle, label: 'WhatsApp', href: '/whatsapp' },
+  { icon: LayoutDashboard, label: 'Dashboard', href: '/', permission: 'dashboard' },
+  { icon: Users, label: 'Clientes', href: '/clientes', permission: 'clientes' },
+  { icon: Car, label: 'Veículos', href: '/veiculos', permission: 'veiculos' },
+  { icon: ClipboardList, label: 'Ordens', href: '/ordens', permission: 'ordens' },
+  { icon: FileText, label: 'Orçamentos', href: '/orcamentos', permission: 'orcamentos' },
+  { icon: Package, label: 'Estoque', href: '/estoque', permission: 'estoque' },
+  { icon: Bell, label: 'Lembretes', href: '/lembretes', permission: 'lembretes' },
+  { icon: MessageCircle, label: 'WhatsApp', href: '/whatsapp', permission: 'whatsapp' },
 ];
 
 export default function Sidebar() {
   const pathname = usePathname();
   const { collapsed, toggleCollapsed } = useSidebar();
-  const { logout, isAdmin } = useAuth();
+  const { logout, isAdmin, user } = useAuth();
   const [configIncomplete, setConfigIncomplete] = useState(false);
+
+  // Filtrar menu baseado nas permissões do role
+  const userRole = (user?.role || 'ATENDENTE') as RoleUsuario;
+  const permissions = ROLE_PERMISSIONS[userRole];
+  const filteredMenuItems = menuItems.filter(item =>
+    permissions.includes('*') || permissions.includes(item.permission)
+  );
 
   // Verificar se a configuração está completa
   useEffect(() => {
@@ -94,7 +110,7 @@ export default function Sidebar() {
 
       {/* Menu */}
       <nav className="flex-1 p-4 space-y-1.5 overflow-y-auto custom-scrollbar">
-        {menuItems.map((item, index) => {
+        {filteredMenuItems.map((item, index) => {
           const isActive = pathname === item.href;
           return (
             <Link
@@ -130,50 +146,52 @@ export default function Sidebar() {
 
       {/* Footer */}
       <div className="p-4 border-t border-white/15 space-y-1.5">
-        {/* Usuários - apenas para ADMIN */}
+        {/* Usuários e Configurações - apenas para ADMIN */}
         {isAdmin && (
-          <Link
-            href="/usuarios"
-            className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-300 group ${
-              pathname === '/usuarios'
-                ? 'bg-white/20 text-white shadow-lg shadow-black/10 ring-1 ring-white/20'
-                : 'text-white/70 hover:bg-white/10 hover:text-white'
-            } ${collapsed ? 'justify-center px-3' : ''}`}
-            title={collapsed ? 'Usuários' : undefined}
-          >
-            <UserCog size={20} className="group-hover:scale-110 transition-transform" />
-            {!collapsed && <span className="font-medium">Usuários</span>}
-          </Link>
-        )}
-        <Link
-          href="/configuracoes"
-          className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-300 group relative ${
-            configIncomplete
-              ? 'bg-orange-500/10 text-orange-400 ring-1 ring-orange-500/30'
-              : 'text-white/70 hover:bg-white/10 hover:text-white'
-          } ${collapsed ? 'justify-center px-3' : ''}`}
-          title={collapsed ? (configIncomplete ? 'Configurações - Preencha os dados!' : 'Configurações') : undefined}
-        >
-          {configIncomplete ? (
-            <div className="relative">
-              <Settings size={20} className="animate-pulse" />
-              <span className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-orange-500 rounded-full animate-ping"></span>
-              <span className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-orange-500 rounded-full"></span>
-            </div>
-          ) : (
-            <Settings size={20} className="group-hover:rotate-90 transition-transform duration-500" />
-          )}
-          {!collapsed && (
-            <span className="font-medium flex items-center gap-2">
-              Configurações
-              {configIncomplete && (
-                <span className="text-xs bg-orange-500/20 px-2 py-0.5 rounded-full animate-pulse">
-                  Pendente
+          <>
+            <Link
+              href="/usuarios"
+              className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-300 group ${
+                pathname === '/usuarios'
+                  ? 'bg-white/20 text-white shadow-lg shadow-black/10 ring-1 ring-white/20'
+                  : 'text-white/70 hover:bg-white/10 hover:text-white'
+              } ${collapsed ? 'justify-center px-3' : ''}`}
+              title={collapsed ? 'Usuários' : undefined}
+            >
+              <UserCog size={20} className="group-hover:scale-110 transition-transform" />
+              {!collapsed && <span className="font-medium">Usuários</span>}
+            </Link>
+            <Link
+              href="/configuracoes"
+              className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-300 group relative ${
+                configIncomplete
+                  ? 'bg-orange-500/10 text-orange-400 ring-1 ring-orange-500/30'
+                  : 'text-white/70 hover:bg-white/10 hover:text-white'
+              } ${collapsed ? 'justify-center px-3' : ''}`}
+              title={collapsed ? (configIncomplete ? 'Configurações - Preencha os dados!' : 'Configurações') : undefined}
+            >
+              {configIncomplete ? (
+                <div className="relative">
+                  <Settings size={20} className="animate-pulse" />
+                  <span className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-orange-500 rounded-full animate-ping"></span>
+                  <span className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-orange-500 rounded-full"></span>
+                </div>
+              ) : (
+                <Settings size={20} className="group-hover:rotate-90 transition-transform duration-500" />
+              )}
+              {!collapsed && (
+                <span className="font-medium flex items-center gap-2">
+                  Configurações
+                  {configIncomplete && (
+                    <span className="text-xs bg-orange-500/20 px-2 py-0.5 rounded-full animate-pulse">
+                      Pendente
+                    </span>
+                  )}
                 </span>
               )}
-            </span>
-          )}
-        </Link>
+            </Link>
+          </>
+        )}
         <button
           onClick={logout}
           className={`flex items-center gap-3 px-4 py-3 rounded-xl text-white/70 hover:bg-red-500/20 hover:text-red-300 transition-all duration-300 w-full group ${
