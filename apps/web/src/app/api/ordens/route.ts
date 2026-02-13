@@ -266,8 +266,25 @@ export async function POST(request: NextRequest) {
 
     // Create order with items AND deduct stock in a transaction
     const ordem = await prisma.$transaction(async (tx) => {
+      // Gerar número sequencial por empresa (001, 002, 003...)
+      const ultimaOrdem = await tx.ordemServico.findFirst({
+        where: { empresaId: session.empresaId },
+        orderBy: { id: 'desc' },
+        select: { numero: true }
+      });
+
+      let proximoNumero = 1;
+      if (ultimaOrdem?.numero) {
+        const numeroAtual = parseInt(ultimaOrdem.numero, 10);
+        if (!isNaN(numeroAtual)) {
+          proximoNumero = numeroAtual + 1;
+        }
+      }
+      const numeroFormatado = proximoNumero.toString().padStart(4, '0');
+
       const novaOrdem = await tx.ordemServico.create({
         data: {
+          numero: numeroFormatado,
           veiculoId,
           dataAgendada: dataAgendada ? new Date(dataAgendada) : null,
           kmEntrada: kmEntrada || null,
