@@ -395,25 +395,110 @@ function UsuariosPageContent() {
 
               {/* Role */}
               <div>
-                <label className="block text-sm font-medium text-zinc-300 mb-2">
+                <label className="block text-sm font-medium text-zinc-300 mb-3">
                   Nível de Acesso
                 </label>
-                <select
-                  value={role}
-                  onChange={(e) => setRole(e.target.value as any)}
-                  className="w-full px-4 py-2 bg-[#232323] border border-zinc-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-[#E85D04]"
-                >
-                  <option value="VENDEDOR">Vendedor</option>
-                  <option value="ATENDENTE">Atendente</option>
-                  <option value="GERENTE">Gerente</option>
-                  <option value="ADMIN">Administrador</option>
-                </select>
-                <p className="mt-1 text-xs text-zinc-500">
-                  {role === 'ADMIN' && 'Acesso total, cria usuários, configura empresa'}
-                  {role === 'GERENTE' && 'Relatórios, ordens, orçamentos, estoque, lembretes'}
-                  {role === 'ATENDENTE' && 'Dashboard, O.S., orçamentos, WhatsApp'}
-                  {role === 'VENDEDOR' && 'Apenas clientes, veículos, orçamentos, WhatsApp'}
-                </p>
+                <div className="space-y-2">
+                  {/* VENDEDOR */}
+                  <label
+                    className={`flex items-start gap-3 p-3 rounded-lg border cursor-pointer transition-all ${
+                      role === 'VENDEDOR'
+                        ? 'bg-orange-500/10 border-orange-500/50'
+                        : 'bg-[#232323] border-zinc-700 hover:border-zinc-600'
+                    }`}
+                  >
+                    <input
+                      type="radio"
+                      name="role"
+                      value="VENDEDOR"
+                      checked={role === 'VENDEDOR'}
+                      onChange={(e) => setRole(e.target.value as any)}
+                      className="mt-1 w-4 h-4 text-[#E85D04] bg-zinc-700 border-zinc-600 focus:ring-[#E85D04]"
+                    />
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2">
+                        <span className="font-medium text-white">Vendedor</span>
+                        <span className="text-xs px-2 py-0.5 rounded-full bg-orange-500/20 text-orange-400">VENDEDOR</span>
+                      </div>
+                      <p className="text-xs text-zinc-400 mt-1">Clientes, Veículos, Orçamentos, WhatsApp</p>
+                    </div>
+                  </label>
+
+                  {/* ATENDENTE */}
+                  <label
+                    className={`flex items-start gap-3 p-3 rounded-lg border cursor-pointer transition-all ${
+                      role === 'ATENDENTE'
+                        ? 'bg-green-500/10 border-green-500/50'
+                        : 'bg-[#232323] border-zinc-700 hover:border-zinc-600'
+                    }`}
+                  >
+                    <input
+                      type="radio"
+                      name="role"
+                      value="ATENDENTE"
+                      checked={role === 'ATENDENTE'}
+                      onChange={(e) => setRole(e.target.value as any)}
+                      className="mt-1 w-4 h-4 text-[#E85D04] bg-zinc-700 border-zinc-600 focus:ring-[#E85D04]"
+                    />
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2">
+                        <span className="font-medium text-white">Atendente</span>
+                        <span className="text-xs px-2 py-0.5 rounded-full bg-green-500/20 text-green-400">ATENDENTE</span>
+                      </div>
+                      <p className="text-xs text-zinc-400 mt-1">Dashboard, Clientes, Veículos, Ordens, Orçamentos, WhatsApp</p>
+                    </div>
+                  </label>
+
+                  {/* GERENTE */}
+                  <label
+                    className={`flex items-start gap-3 p-3 rounded-lg border cursor-pointer transition-all ${
+                      role === 'GERENTE'
+                        ? 'bg-blue-500/10 border-blue-500/50'
+                        : 'bg-[#232323] border-zinc-700 hover:border-zinc-600'
+                    }`}
+                  >
+                    <input
+                      type="radio"
+                      name="role"
+                      value="GERENTE"
+                      checked={role === 'GERENTE'}
+                      onChange={(e) => setRole(e.target.value as any)}
+                      className="mt-1 w-4 h-4 text-[#E85D04] bg-zinc-700 border-zinc-600 focus:ring-[#E85D04]"
+                    />
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2">
+                        <span className="font-medium text-white">Gerente</span>
+                        <span className="text-xs px-2 py-0.5 rounded-full bg-blue-500/20 text-blue-400">GERENTE</span>
+                      </div>
+                      <p className="text-xs text-zinc-400 mt-1">Tudo exceto Usuários e Configurações</p>
+                    </div>
+                  </label>
+
+                  {/* ADMIN */}
+                  <label
+                    className={`flex items-start gap-3 p-3 rounded-lg border cursor-pointer transition-all ${
+                      role === 'ADMIN'
+                        ? 'bg-purple-500/10 border-purple-500/50'
+                        : 'bg-[#232323] border-zinc-700 hover:border-zinc-600'
+                    }`}
+                  >
+                    <input
+                      type="radio"
+                      name="role"
+                      value="ADMIN"
+                      checked={role === 'ADMIN'}
+                      onChange={(e) => setRole(e.target.value as any)}
+                      className="mt-1 w-4 h-4 text-[#E85D04] bg-zinc-700 border-zinc-600 focus:ring-[#E85D04]"
+                    />
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2">
+                        <span className="font-medium text-white">Administrador</span>
+                        <span className="text-xs px-2 py-0.5 rounded-full bg-purple-500/20 text-purple-400">ADMIN</span>
+                      </div>
+                      <p className="text-xs text-zinc-400 mt-1">Acesso total ao sistema</p>
+                    </div>
+                  </label>
+                </div>
               </div>
 
               {/* Ativo */}
