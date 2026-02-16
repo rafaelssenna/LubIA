@@ -487,11 +487,11 @@ function OrcamentosPageContent() {
             <table className="w-full">
               <thead className="bg-[#1a1a1a]">
                 <tr>
-                  <th className="text-left px-4 py-3 text-xs font-medium text-zinc-400 uppercase tracking-wider">Número</th>
-                  <th className="text-left px-4 py-3 text-xs font-medium text-zinc-400 uppercase tracking-wider">Cliente</th>
-                  <th className="text-left px-4 py-3 text-xs font-medium text-zinc-400 uppercase tracking-wider">Status</th>
-                  <th className="text-right px-4 py-3 text-xs font-medium text-zinc-400 uppercase tracking-wider">Total</th>
-                  <th className="text-right px-4 py-3 text-xs font-medium text-zinc-400 uppercase tracking-wider">Ações</th>
+                  <th className="text-left px-6 py-4 text-xs font-medium text-zinc-400 uppercase tracking-wider">Número</th>
+                  <th className="text-left px-6 py-4 text-xs font-medium text-zinc-400 uppercase tracking-wider">Cliente</th>
+                  <th className="text-center px-6 py-4 text-xs font-medium text-zinc-400 uppercase tracking-wider">Status</th>
+                  <th className="text-right px-6 py-4 text-xs font-medium text-zinc-400 uppercase tracking-wider">Total</th>
+                  <th className="text-right px-6 py-4 text-xs font-medium text-zinc-400 uppercase tracking-wider">Ações</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-zinc-800">
@@ -501,81 +501,81 @@ function OrcamentosPageContent() {
 
                   return (
                     <tr key={orcamento.id} className="hover:bg-zinc-800/50 transition-colors">
-                      <td className="px-4 py-3">
-                        <span className="font-medium text-white">{orcamento.numero}</span>
-                        <p className="text-xs text-zinc-500">{formatDate(orcamento.createdAt)}</p>
+                      <td className="px-6 py-4">
+                        <span className="font-semibold text-white text-base">ORC-{orcamento.numero}</span>
+                        <p className="text-sm text-zinc-500 mt-0.5">{formatDate(orcamento.createdAt)}</p>
                       </td>
-                      <td className="px-4 py-3">
-                        <div className="flex items-center gap-2">
-                          <div className="p-1.5 bg-zinc-700 rounded">
-                            <User className="h-4 w-4 text-zinc-400" />
+                      <td className="px-6 py-4">
+                        <div className="flex items-center gap-3">
+                          <div className="p-2 bg-zinc-700 rounded-lg">
+                            <User className="h-5 w-5 text-zinc-400" />
                           </div>
                           <div>
-                            <p className="text-white font-medium">{orcamento.nomeCliente || 'Não informado'}</p>
-                            <p className="text-xs text-zinc-400">{formatPhone(orcamento.telefoneCliente)}</p>
+                            <p className="text-white font-medium text-base">{orcamento.nomeCliente || 'Não informado'}</p>
+                            <p className="text-sm text-zinc-400">{formatPhone(orcamento.telefoneCliente)}</p>
                           </div>
                         </div>
                       </td>
-                      <td className="px-4 py-3">
-                        <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium ${statusInfo.bg} ${statusInfo.color}`}>
-                          <StatusIcon className="h-3 w-3" />
+                      <td className="px-6 py-4 text-center">
+                        <span className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium ${statusInfo.bg} ${statusInfo.color}`}>
+                          <StatusIcon className="h-4 w-4" />
                           {statusInfo.label}
                         </span>
                       </td>
-                      <td className="px-4 py-3 text-right">
-                        <span className="text-white font-medium">{formatCurrency(orcamento.total)}</span>
+                      <td className="px-6 py-4 text-right">
+                        <span className="text-white font-semibold text-lg">{formatCurrency(orcamento.total)}</span>
                       </td>
-                      <td className="px-4 py-3">
-                        <div className="flex items-center justify-end gap-1">
+                      <td className="px-6 py-4">
+                        <div className="flex items-center justify-end gap-2">
                           <button
                             onClick={() => {
                               setSelectedOrcamento(orcamento);
                               setShowDetailModal(true);
                             }}
-                            className="p-1.5 text-zinc-400 hover:text-white hover:bg-zinc-700 rounded transition-colors"
+                            className="p-2 text-zinc-400 hover:text-white hover:bg-zinc-700 rounded-lg transition-colors"
                             title="Ver detalhes"
                           >
-                            <Eye className="h-4 w-4" />
+                            <Eye className="h-5 w-5" />
                           </button>
                           {orcamento.telefoneCliente && (
                             <button
                               onClick={() => sendWhatsApp(orcamento)}
                               disabled={sendingWhatsApp === orcamento.id}
-                              className="p-1.5 text-zinc-400 hover:text-green-400 hover:bg-zinc-700 rounded transition-colors disabled:opacity-50"
+                              className="p-2 text-zinc-400 hover:text-green-400 hover:bg-zinc-700 rounded-lg transition-colors disabled:opacity-50"
                               title="Enviar via WhatsApp"
                             >
                               {sendingWhatsApp === orcamento.id ? (
-                                <Loader2 className="h-4 w-4 animate-spin" />
+                                <Loader2 className="h-5 w-5 animate-spin" />
                               ) : (
-                                <Send className="h-4 w-4" />
+                                <Send className="h-5 w-5" />
                               )}
                             </button>
                           )}
                           <button
                             onClick={() => downloadOrcamentoPDF(orcamento as any, empresaConfig || undefined)}
-                            className="p-1.5 text-zinc-400 hover:text-[#E85D04] hover:bg-zinc-700 rounded transition-colors"
+                            className="p-2 text-zinc-400 hover:text-[#E85D04] hover:bg-zinc-700 rounded-lg transition-colors"
                             title="Baixar PDF"
                           >
-                            <FileDown className="h-4 w-4" />
+                            <FileDown className="h-5 w-5" />
                           </button>
                           {orcamento.status !== 'CONVERTIDO' && (
                             <>
                               <button
                                 onClick={() => openEditModal(orcamento)}
-                                className="p-1.5 text-zinc-400 hover:text-blue-400 hover:bg-zinc-700 rounded transition-colors"
+                                className="p-2 text-zinc-400 hover:text-blue-400 hover:bg-zinc-700 rounded-lg transition-colors"
                                 title="Editar"
                               >
-                                <Edit className="h-4 w-4" />
+                                <Edit className="h-5 w-5" />
                               </button>
                               <button
                                 onClick={() => {
                                   setSelectedOrcamento(orcamento);
                                   setShowDeleteConfirm(true);
                                 }}
-                                className="p-1.5 text-zinc-400 hover:text-red-400 hover:bg-zinc-700 rounded transition-colors"
+                                className="p-2 text-zinc-400 hover:text-red-400 hover:bg-zinc-700 rounded-lg transition-colors"
                                 title="Excluir"
                               >
-                                <Trash2 className="h-4 w-4" />
+                                <Trash2 className="h-5 w-5" />
                               </button>
                             </>
                           )}
