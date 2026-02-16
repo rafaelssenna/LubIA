@@ -386,7 +386,7 @@ function OrcamentosPageContent() {
   }
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 px-4 lg:px-8">
       <Header
         title="Orçamentos"
         subtitle="Crie e gerencie orçamentos para seus clientes"
