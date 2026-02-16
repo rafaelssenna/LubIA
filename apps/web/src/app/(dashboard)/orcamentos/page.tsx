@@ -5,7 +5,7 @@ import {
   Plus, Search, X, FileText, User, Phone,
   CheckCircle, XCircle, Clock, Eye, Edit,
   Trash2, Loader2, Package, DollarSign, FileDown,
-  AlertCircle, Send
+  AlertCircle, Send, TrendingUp, ArrowRight
 } from 'lucide-react';
 import { useState, useEffect, Suspense } from 'react';
 import { useToast } from '@/components/Toast';
@@ -48,12 +48,12 @@ interface Produto {
   quantidade: number;
 }
 
-const statusConfig: Record<string, { label: string; color: string; icon: any; bg: string }> = {
-  PENDENTE: { label: 'Pendente', color: 'text-amber-400', icon: Clock, bg: 'bg-amber-500/10' },
-  APROVADO: { label: 'Aprovado', color: 'text-[#43A047]', icon: CheckCircle, bg: 'bg-green-500/10' },
-  RECUSADO: { label: 'Recusado', color: 'text-red-500', icon: XCircle, bg: 'bg-red-500/10' },
-  EXPIRADO: { label: 'Expirado', color: 'text-gray-400', icon: AlertCircle, bg: 'bg-gray-500/10' },
-  CONVERTIDO: { label: 'Convertido', color: 'text-blue-400', icon: CheckCircle, bg: 'bg-blue-500/10' },
+const statusConfig: Record<string, { label: string; color: string; icon: any; bg: string; border: string }> = {
+  PENDENTE: { label: 'Pendente', color: 'text-amber-400', icon: Clock, bg: 'bg-amber-500/10', border: 'border-amber-500/30' },
+  APROVADO: { label: 'Aprovado', color: 'text-emerald-400', icon: CheckCircle, bg: 'bg-emerald-500/10', border: 'border-emerald-500/30' },
+  RECUSADO: { label: 'Recusado', color: 'text-red-400', icon: XCircle, bg: 'bg-red-500/10', border: 'border-red-500/30' },
+  EXPIRADO: { label: 'Expirado', color: 'text-zinc-400', icon: AlertCircle, bg: 'bg-zinc-500/10', border: 'border-zinc-500/30' },
+  CONVERTIDO: { label: 'Convertido', color: 'text-blue-400', icon: TrendingUp, bg: 'bg-blue-500/10', border: 'border-blue-500/30' },
 };
 
 function OrcamentosPageContent() {
@@ -332,11 +332,9 @@ function OrcamentosPageContent() {
     const telefone = orcamento.telefoneCliente.replace(/\D/g, '');
 
     try {
-      // Gerar PDF e converter para base64
       const doc = generateOrcamentoPDF(orcamento as any, empresaConfig || undefined);
-      const pdfBase64 = doc.output('datauristring').split(',')[1]; // Remove o prefixo "data:application/pdf;base64,"
+      const pdfBase64 = doc.output('datauristring').split(',')[1];
 
-      // Montar caption do PDF com todos os detalhes
       const caption = `*Orçamento ${orcamento.numero}*\n\n` +
         (orcamento.nomeCliente ? `*Cliente:* ${orcamento.nomeCliente}\n\n` : '') +
         (orcamento.itensProduto.length > 0 ? `*Produtos:*\n` +
@@ -346,7 +344,6 @@ function OrcamentosPageContent() {
         `*Total: ${formatCurrency(orcamento.total)}*\n\n` +
         `_Orçamento válido mediante aprovação._`;
 
-      // Enviar PDF via API
       const res = await fetch('/api/whatsapp/send', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -377,237 +374,299 @@ function OrcamentosPageContent() {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-[60vh]">
-        <Loader2 className="h-8 w-8 animate-spin text-[#E85D04]" />
+        <div className="flex flex-col items-center gap-4">
+          <div className="relative">
+            <div className="w-16 h-16 border-4 border-[#E85D04]/20 rounded-full"></div>
+            <div className="absolute top-0 left-0 w-16 h-16 border-4 border-transparent border-t-[#E85D04] rounded-full animate-spin"></div>
+          </div>
+          <p className="text-zinc-400 animate-pulse">Carregando orçamentos...</p>
+        </div>
       </div>
     );
   }
 
   return (
-    <div>
+    <div className="space-y-8">
       <Header
         title="Orçamentos"
         subtitle="Crie e gerencie orçamentos para seus clientes"
       />
 
-      {/* Stats Cards */}
-      <div className="flex flex-wrap gap-6 mb-10">
-        <div className="flex-1 min-w-[200px] bg-[#232323] rounded-xl p-6 border border-zinc-800">
-          <div className="flex items-center gap-4">
-            <div className="p-3 bg-[#E85D04]/10 rounded-xl">
-              <FileText className="h-6 w-6 text-[#E85D04]" />
+      {/* Stats Banner */}
+      <div className="grid grid-cols-2 xl:grid-cols-4 gap-8">
+        <div className="group relative overflow-hidden bg-gradient-to-br from-[#E85D04]/20 to-[#E85D04]/5 rounded-2xl p-6 border border-[#E85D04]/20 hover:border-[#E85D04]/40 transition-all duration-300">
+          <div className="absolute top-0 right-0 w-32 h-32 bg-[#E85D04]/10 rounded-full blur-3xl group-hover:scale-150 transition-transform duration-500"></div>
+          <div className="relative">
+            <div className="flex items-center justify-between mb-4">
+              <div className="p-3 bg-[#E85D04]/20 rounded-xl">
+                <FileText className="h-6 w-6 text-[#E85D04]" />
+              </div>
+              <span className="text-xs font-medium text-[#E85D04] bg-[#E85D04]/10 px-2 py-1 rounded-full">Total</span>
             </div>
-            <div>
-              <p className="text-3xl font-bold text-white">{stats.total}</p>
-              <p className="text-sm text-zinc-400">Total</p>
-            </div>
+            <p className="text-4xl font-bold text-white mb-1">{stats.total}</p>
+            <p className="text-sm text-zinc-400">orçamentos criados</p>
           </div>
         </div>
-        <div className="flex-1 min-w-[200px] bg-[#232323] rounded-xl p-6 border border-zinc-800">
-          <div className="flex items-center gap-4">
-            <div className="p-3 bg-amber-500/10 rounded-xl">
-              <Clock className="h-6 w-6 text-amber-400" />
+
+        <div className="group relative overflow-hidden bg-gradient-to-br from-amber-500/20 to-amber-500/5 rounded-2xl p-6 border border-amber-500/20 hover:border-amber-500/40 transition-all duration-300">
+          <div className="absolute top-0 right-0 w-32 h-32 bg-amber-500/10 rounded-full blur-3xl group-hover:scale-150 transition-transform duration-500"></div>
+          <div className="relative">
+            <div className="flex items-center justify-between mb-4">
+              <div className="p-3 bg-amber-500/20 rounded-xl">
+                <Clock className="h-6 w-6 text-amber-400" />
+              </div>
+              <span className="text-xs font-medium text-amber-400 bg-amber-500/10 px-2 py-1 rounded-full">Aguardando</span>
             </div>
-            <div>
-              <p className="text-3xl font-bold text-white">{stats.pendentes}</p>
-              <p className="text-sm text-zinc-400">Pendentes</p>
-            </div>
+            <p className="text-4xl font-bold text-white mb-1">{stats.pendentes}</p>
+            <p className="text-sm text-zinc-400">pendentes de resposta</p>
           </div>
         </div>
-        <div className="flex-1 min-w-[200px] bg-[#232323] rounded-xl p-6 border border-zinc-800">
-          <div className="flex items-center gap-4">
-            <div className="p-3 bg-green-500/10 rounded-xl">
-              <CheckCircle className="h-6 w-6 text-[#43A047]" />
+
+        <div className="group relative overflow-hidden bg-gradient-to-br from-emerald-500/20 to-emerald-500/5 rounded-2xl p-6 border border-emerald-500/20 hover:border-emerald-500/40 transition-all duration-300">
+          <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-500/10 rounded-full blur-3xl group-hover:scale-150 transition-transform duration-500"></div>
+          <div className="relative">
+            <div className="flex items-center justify-between mb-4">
+              <div className="p-3 bg-emerald-500/20 rounded-xl">
+                <CheckCircle className="h-6 w-6 text-emerald-400" />
+              </div>
+              <span className="text-xs font-medium text-emerald-400 bg-emerald-500/10 px-2 py-1 rounded-full">Aceitos</span>
             </div>
-            <div>
-              <p className="text-3xl font-bold text-white">{stats.aprovados}</p>
-              <p className="text-sm text-zinc-400">Aprovados</p>
-            </div>
+            <p className="text-4xl font-bold text-white mb-1">{stats.aprovados}</p>
+            <p className="text-sm text-zinc-400">aprovados pelo cliente</p>
           </div>
         </div>
-        <div className="flex-1 min-w-[200px] bg-[#232323] rounded-xl p-6 border border-zinc-800">
-          <div className="flex items-center gap-4">
-            <div className="p-3 bg-blue-500/10 rounded-xl">
-              <CheckCircle className="h-6 w-6 text-blue-400" />
+
+        <div className="group relative overflow-hidden bg-gradient-to-br from-blue-500/20 to-blue-500/5 rounded-2xl p-6 border border-blue-500/20 hover:border-blue-500/40 transition-all duration-300">
+          <div className="absolute top-0 right-0 w-32 h-32 bg-blue-500/10 rounded-full blur-3xl group-hover:scale-150 transition-transform duration-500"></div>
+          <div className="relative">
+            <div className="flex items-center justify-between mb-4">
+              <div className="p-3 bg-blue-500/20 rounded-xl">
+                <TrendingUp className="h-6 w-6 text-blue-400" />
+              </div>
+              <span className="text-xs font-medium text-blue-400 bg-blue-500/10 px-2 py-1 rounded-full">Sucesso</span>
             </div>
-            <div>
-              <p className="text-3xl font-bold text-white">{stats.convertidos}</p>
-              <p className="text-sm text-zinc-400">Convertidos</p>
-            </div>
+            <p className="text-4xl font-bold text-white mb-1">{stats.convertidos}</p>
+            <p className="text-sm text-zinc-400">convertidos em O.S.</p>
           </div>
         </div>
       </div>
 
-      {/* Search and Filters */}
-      <div className="flex flex-col md:flex-row gap-4 mb-6">
-        <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-400" />
-          <input
-            type="text"
-            placeholder="Buscar por número, cliente ou telefone..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full pl-10 pr-4 py-2 bg-[#232323] border border-zinc-700 rounded-lg text-white placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-[#E85D04] focus:border-transparent"
-          />
+      {/* Actions Bar */}
+      <div className="flex flex-col lg:flex-row gap-4 items-start lg:items-center justify-between bg-[#1a1a1a] rounded-2xl p-4 border border-zinc-800/50">
+        <div className="flex flex-col sm:flex-row gap-3 flex-1 w-full lg:w-auto">
+          <div className="relative flex-1 min-w-[280px]">
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-zinc-500" />
+            <input
+              type="text"
+              placeholder="Buscar por número, cliente ou telefone..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="w-full pl-12 pr-4 py-3 bg-[#232323] border border-zinc-700/50 rounded-xl text-white placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-[#E85D04]/50 focus:border-[#E85D04]/50 transition-all"
+            />
+          </div>
+          <select
+            value={statusFilter}
+            onChange={(e) => setStatusFilter(e.target.value)}
+            className="px-4 py-3 bg-[#232323] border border-zinc-700/50 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-[#E85D04]/50 cursor-pointer min-w-[160px]"
+          >
+            <option value="">Todos os status</option>
+            <option value="PENDENTE">Pendente</option>
+            <option value="APROVADO">Aprovado</option>
+            <option value="RECUSADO">Recusado</option>
+            <option value="CONVERTIDO">Convertido</option>
+          </select>
         </div>
-        <select
-          value={statusFilter}
-          onChange={(e) => setStatusFilter(e.target.value)}
-          className="px-4 py-2 bg-[#232323] border border-zinc-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-[#E85D04]"
-        >
-          <option value="">Todos os status</option>
-          <option value="PENDENTE">Pendente</option>
-          <option value="APROVADO">Aprovado</option>
-          <option value="RECUSADO">Recusado</option>
-          <option value="CONVERTIDO">Convertido</option>
-        </select>
         <button
           onClick={openNewModal}
-          className="flex items-center gap-2 px-4 py-2 bg-[#E85D04] hover:bg-[#E85D04]/90 text-white font-medium rounded-lg transition-colors"
+          className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-[#E85D04] to-[#ff6b1a] hover:from-[#ff6b1a] hover:to-[#E85D04] text-white font-semibold rounded-xl transition-all duration-300 shadow-lg shadow-[#E85D04]/25 hover:shadow-[#E85D04]/40 hover:scale-[1.02] w-full lg:w-auto justify-center"
         >
-          <Plus className="h-4 w-4" />
+          <Plus className="h-5 w-5" />
           <span>Novo Orçamento</span>
         </button>
       </div>
 
       {/* Orçamentos List */}
-      <div className="bg-[#232323] rounded-lg overflow-hidden">
-        {orcamentos.length === 0 ? (
-          <div className="text-center py-12">
-            <FileText className="h-12 w-12 text-zinc-600 mx-auto mb-4" />
-            <p className="text-zinc-400">Nenhum orçamento encontrado</p>
-            <button
-              onClick={openNewModal}
-              className="mt-4 text-[#E85D04] hover:underline"
-            >
-              Criar primeiro orçamento
-            </button>
+      {orcamentos.length === 0 ? (
+        <div className="flex flex-col items-center justify-center py-20 bg-[#1a1a1a] rounded-2xl border border-zinc-800/50">
+          <div className="p-6 bg-zinc-800/50 rounded-full mb-6">
+            <FileText className="h-12 w-12 text-zinc-600" />
           </div>
-        ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead className="bg-[#1a1a1a]">
-                <tr>
-                  <th className="text-left px-6 py-4 text-xs font-medium text-zinc-400 uppercase tracking-wider">Número</th>
-                  <th className="text-left px-6 py-4 text-xs font-medium text-zinc-400 uppercase tracking-wider">Cliente</th>
-                  <th className="text-center px-6 py-4 text-xs font-medium text-zinc-400 uppercase tracking-wider">Status</th>
-                  <th className="text-right px-6 py-4 text-xs font-medium text-zinc-400 uppercase tracking-wider">Total</th>
-                  <th className="text-right px-6 py-4 text-xs font-medium text-zinc-400 uppercase tracking-wider">Ações</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-zinc-800">
-                {orcamentos.map((orcamento) => {
-                  const statusInfo = statusConfig[orcamento.status] || statusConfig.PENDENTE;
-                  const StatusIcon = statusInfo.icon;
+          <h3 className="text-xl font-semibold text-white mb-2">Nenhum orçamento encontrado</h3>
+          <p className="text-zinc-400 mb-6">Comece criando seu primeiro orçamento</p>
+          <button
+            onClick={openNewModal}
+            className="flex items-center gap-2 px-6 py-3 bg-[#E85D04] hover:bg-[#E85D04]/90 text-white font-medium rounded-xl transition-colors"
+          >
+            <Plus className="h-5 w-5" />
+            Criar Orçamento
+          </button>
+        </div>
+      ) : (
+        <div className="space-y-4">
+          {orcamentos.map((orcamento) => {
+            const statusInfo = statusConfig[orcamento.status] || statusConfig.PENDENTE;
+            const StatusIcon = statusInfo.icon;
 
-                  return (
-                    <tr key={orcamento.id} className="hover:bg-zinc-800/50 transition-colors">
-                      <td className="px-6 py-4">
-                        <span className="font-semibold text-white text-base">{orcamento.numero}</span>
-                        <p className="text-sm text-zinc-500 mt-0.5">{formatDate(orcamento.createdAt)}</p>
-                      </td>
-                      <td className="px-6 py-4">
-                        <div className="flex items-center gap-3">
-                          <div className="p-2 bg-zinc-700 rounded-lg">
-                            <User className="h-5 w-5 text-zinc-400" />
-                          </div>
-                          <div>
-                            <p className="text-white font-medium text-base">{orcamento.nomeCliente || 'Não informado'}</p>
-                            <p className="text-sm text-zinc-400">{formatPhone(orcamento.telefoneCliente)}</p>
-                          </div>
+            return (
+              <div
+                key={orcamento.id}
+                className="group bg-[#1a1a1a] hover:bg-[#1e1e1e] rounded-2xl border border-zinc-800/50 hover:border-zinc-700/50 transition-all duration-300 overflow-hidden"
+              >
+                <div className="p-6">
+                  <div className="flex flex-col lg:flex-row lg:items-center gap-6">
+                    {/* Número e Data */}
+                    <div className="flex items-center gap-4 min-w-[180px]">
+                      <div className="p-3 bg-[#E85D04]/10 rounded-xl group-hover:bg-[#E85D04]/20 transition-colors">
+                        <FileText className="h-6 w-6 text-[#E85D04]" />
+                      </div>
+                      <div>
+                        <p className="text-lg font-bold text-white">{orcamento.numero}</p>
+                        <p className="text-sm text-zinc-500">{formatDate(orcamento.createdAt)}</p>
+                      </div>
+                    </div>
+
+                    {/* Cliente */}
+                    <div className="flex items-center gap-4 flex-1 min-w-[200px]">
+                      <div className="p-3 bg-zinc-800 rounded-xl">
+                        <User className="h-5 w-5 text-zinc-400" />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-white font-medium truncate">
+                          {orcamento.nomeCliente || 'Cliente não informado'}
+                        </p>
+                        <div className="flex items-center gap-1.5 text-sm text-zinc-400">
+                          <Phone className="h-3.5 w-3.5" />
+                          <span>{formatPhone(orcamento.telefoneCliente)}</span>
                         </div>
-                      </td>
-                      <td className="px-6 py-4 text-center">
-                        <span className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium ${statusInfo.bg} ${statusInfo.color}`}>
-                          <StatusIcon className="h-4 w-4" />
-                          {statusInfo.label}
-                        </span>
-                      </td>
-                      <td className="px-6 py-4 text-right">
-                        <span className="text-white font-semibold text-lg">{formatCurrency(orcamento.total)}</span>
-                      </td>
-                      <td className="px-6 py-4">
-                        <div className="flex items-center justify-end gap-2">
+                      </div>
+                    </div>
+
+                    {/* Status */}
+                    <div className="flex items-center">
+                      <span className={`inline-flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium border ${statusInfo.bg} ${statusInfo.color} ${statusInfo.border}`}>
+                        <StatusIcon className="h-4 w-4" />
+                        {statusInfo.label}
+                      </span>
+                    </div>
+
+                    {/* Total */}
+                    <div className="flex flex-col items-end min-w-[140px]">
+                      <span className="text-2xl font-bold text-white">{formatCurrency(orcamento.total)}</span>
+                      <span className="text-xs text-zinc-500">
+                        {orcamento.itensProduto.length + orcamento.servicosExtras.length} itens
+                      </span>
+                    </div>
+
+                    {/* Actions */}
+                    <div className="flex items-center gap-2 pl-4 border-l border-zinc-800">
+                      <button
+                        onClick={() => {
+                          setSelectedOrcamento(orcamento);
+                          setShowDetailModal(true);
+                        }}
+                        className="p-2.5 text-zinc-400 hover:text-white hover:bg-zinc-800 rounded-xl transition-all"
+                        title="Ver detalhes"
+                      >
+                        <Eye className="h-5 w-5" />
+                      </button>
+                      {orcamento.telefoneCliente && (
+                        <button
+                          onClick={() => sendWhatsApp(orcamento)}
+                          disabled={sendingWhatsApp === orcamento.id}
+                          className="p-2.5 text-zinc-400 hover:text-green-400 hover:bg-green-500/10 rounded-xl transition-all disabled:opacity-50"
+                          title="Enviar via WhatsApp"
+                        >
+                          {sendingWhatsApp === orcamento.id ? (
+                            <Loader2 className="h-5 w-5 animate-spin" />
+                          ) : (
+                            <Send className="h-5 w-5" />
+                          )}
+                        </button>
+                      )}
+                      <button
+                        onClick={() => downloadOrcamentoPDF(orcamento as any, empresaConfig || undefined)}
+                        className="p-2.5 text-zinc-400 hover:text-[#E85D04] hover:bg-[#E85D04]/10 rounded-xl transition-all"
+                        title="Baixar PDF"
+                      >
+                        <FileDown className="h-5 w-5" />
+                      </button>
+                      {orcamento.status !== 'CONVERTIDO' && (
+                        <>
+                          <button
+                            onClick={() => openEditModal(orcamento)}
+                            className="p-2.5 text-zinc-400 hover:text-blue-400 hover:bg-blue-500/10 rounded-xl transition-all"
+                            title="Editar"
+                          >
+                            <Edit className="h-5 w-5" />
+                          </button>
                           <button
                             onClick={() => {
                               setSelectedOrcamento(orcamento);
-                              setShowDetailModal(true);
+                              setShowDeleteConfirm(true);
                             }}
-                            className="p-2 text-zinc-400 hover:text-white hover:bg-zinc-700 rounded-lg transition-colors"
-                            title="Ver detalhes"
+                            className="p-2.5 text-zinc-400 hover:text-red-400 hover:bg-red-500/10 rounded-xl transition-all"
+                            title="Excluir"
                           >
-                            <Eye className="h-5 w-5" />
+                            <Trash2 className="h-5 w-5" />
                           </button>
-                          {orcamento.telefoneCliente && (
-                            <button
-                              onClick={() => sendWhatsApp(orcamento)}
-                              disabled={sendingWhatsApp === orcamento.id}
-                              className="p-2 text-zinc-400 hover:text-green-400 hover:bg-zinc-700 rounded-lg transition-colors disabled:opacity-50"
-                              title="Enviar via WhatsApp"
-                            >
-                              {sendingWhatsApp === orcamento.id ? (
-                                <Loader2 className="h-5 w-5 animate-spin" />
-                              ) : (
-                                <Send className="h-5 w-5" />
-                              )}
-                            </button>
-                          )}
-                          <button
-                            onClick={() => downloadOrcamentoPDF(orcamento as any, empresaConfig || undefined)}
-                            className="p-2 text-zinc-400 hover:text-[#E85D04] hover:bg-zinc-700 rounded-lg transition-colors"
-                            title="Baixar PDF"
-                          >
-                            <FileDown className="h-5 w-5" />
-                          </button>
-                          {orcamento.status !== 'CONVERTIDO' && (
-                            <>
-                              <button
-                                onClick={() => openEditModal(orcamento)}
-                                className="p-2 text-zinc-400 hover:text-blue-400 hover:bg-zinc-700 rounded-lg transition-colors"
-                                title="Editar"
-                              >
-                                <Edit className="h-5 w-5" />
-                              </button>
-                              <button
-                                onClick={() => {
-                                  setSelectedOrcamento(orcamento);
-                                  setShowDeleteConfirm(true);
-                                }}
-                                className="p-2 text-zinc-400 hover:text-red-400 hover:bg-zinc-700 rounded-lg transition-colors"
-                                title="Excluir"
-                              >
-                                <Trash2 className="h-5 w-5" />
-                              </button>
-                            </>
-                          )}
-                        </div>
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
-        )}
-      </div>
+                        </>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      )}
 
       {/* Pagination */}
       {totalPages > 1 && (
-        <div className="flex items-center justify-between mt-4 px-4">
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-4 bg-[#1a1a1a] rounded-2xl p-4 border border-zinc-800/50">
           <p className="text-sm text-zinc-400">
-            Mostrando {((currentPage - 1) * itemsPerPage) + 1} a {Math.min(currentPage * itemsPerPage, totalItems)} de {totalItems}
+            Mostrando <span className="text-white font-medium">{((currentPage - 1) * itemsPerPage) + 1}</span> a{' '}
+            <span className="text-white font-medium">{Math.min(currentPage * itemsPerPage, totalItems)}</span> de{' '}
+            <span className="text-white font-medium">{totalItems}</span> orçamentos
           </p>
-          <div className="flex gap-2">
+          <div className="flex items-center gap-2">
             <button
               onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
               disabled={currentPage === 1}
-              className="px-3 py-1 bg-zinc-700 text-white rounded disabled:opacity-50"
+              className="px-4 py-2 bg-zinc-800 hover:bg-zinc-700 text-white rounded-xl disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             >
               Anterior
             </button>
+            <div className="flex items-center gap-1">
+              {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+                let page: number;
+                if (totalPages <= 5) {
+                  page = i + 1;
+                } else if (currentPage <= 3) {
+                  page = i + 1;
+                } else if (currentPage >= totalPages - 2) {
+                  page = totalPages - 4 + i;
+                } else {
+                  page = currentPage - 2 + i;
+                }
+                return (
+                  <button
+                    key={page}
+                    onClick={() => setCurrentPage(page)}
+                    className={`w-10 h-10 rounded-xl font-medium transition-colors ${
+                      currentPage === page
+                        ? 'bg-[#E85D04] text-white'
+                        : 'bg-zinc-800 text-zinc-400 hover:bg-zinc-700 hover:text-white'
+                    }`}
+                  >
+                    {page}
+                  </button>
+                );
+              })}
+            </div>
             <button
               onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
               disabled={currentPage === totalPages}
-              className="px-3 py-1 bg-zinc-700 text-white rounded disabled:opacity-50"
+              className="px-4 py-2 bg-zinc-800 hover:bg-zinc-700 text-white rounded-xl disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             >
               Próximo
             </button>
@@ -617,23 +676,28 @@ function OrcamentosPageContent() {
 
       {/* Create/Edit Modal */}
       {showModal && (
-        <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4">
-          <div className="bg-[#1a1a1a] rounded-xl w-full max-w-2xl max-h-[90vh] overflow-hidden flex flex-col">
-            <div className="flex items-center justify-between p-4 border-b border-zinc-800">
-              <h2 className="text-xl font-bold text-white">
-                {editingOrcamento ? 'Editar Orçamento' : 'Novo Orçamento'}
-              </h2>
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="bg-[#1a1a1a] rounded-2xl w-full max-w-2xl max-h-[90vh] overflow-hidden flex flex-col border border-zinc-800">
+            <div className="flex items-center justify-between p-6 border-b border-zinc-800">
+              <div>
+                <h2 className="text-2xl font-bold text-white">
+                  {editingOrcamento ? 'Editar Orçamento' : 'Novo Orçamento'}
+                </h2>
+                <p className="text-sm text-zinc-400 mt-1">
+                  {editingOrcamento ? 'Atualize as informações do orçamento' : 'Preencha os dados para criar um novo orçamento'}
+                </p>
+              </div>
               <button
                 onClick={() => setShowModal(false)}
-                className="p-2 hover:bg-zinc-800 rounded-lg transition-colors"
+                className="p-2 hover:bg-zinc-800 rounded-xl transition-colors"
               >
-                <X className="h-5 w-5 text-zinc-400" />
+                <X className="h-6 w-6 text-zinc-400" />
               </button>
             </div>
 
-            <div className="flex-1 overflow-y-auto p-4 space-y-4">
+            <div className="flex-1 overflow-y-auto p-6 space-y-6">
               {/* Cliente */}
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-zinc-300 mb-2">
                     Nome do Cliente
@@ -643,12 +707,12 @@ function OrcamentosPageContent() {
                     value={nomeCliente}
                     onChange={(e) => setNomeCliente(e.target.value)}
                     placeholder="Nome (opcional)"
-                    className="w-full px-4 py-2 bg-[#232323] border border-zinc-700 rounded-lg text-white placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-[#E85D04]"
+                    className="w-full px-4 py-3 bg-[#232323] border border-zinc-700/50 rounded-xl text-white placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-[#E85D04]/50 focus:border-[#E85D04]/50 transition-all"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-zinc-300 mb-2">
-                    <Phone className="inline h-4 w-4 mr-1" />
+                  <label className="flex items-center gap-2 text-sm font-medium text-zinc-300 mb-2">
+                    <Phone className="h-4 w-4" />
                     WhatsApp
                   </label>
                   <input
@@ -656,28 +720,28 @@ function OrcamentosPageContent() {
                     value={telefoneCliente}
                     onChange={(e) => setTelefoneCliente(e.target.value)}
                     placeholder="(11) 99999-9999"
-                    className="w-full px-4 py-2 bg-[#232323] border border-zinc-700 rounded-lg text-white placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-[#E85D04]"
+                    className="w-full px-4 py-3 bg-[#232323] border border-zinc-700/50 rounded-xl text-white placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-[#E85D04]/50 focus:border-[#E85D04]/50 transition-all"
                   />
                 </div>
               </div>
 
               {/* Produtos */}
-              <div>
-                <label className="block text-sm font-medium text-zinc-300 mb-2">
+              <div className="space-y-3">
+                <label className="block text-sm font-medium text-zinc-300">
                   Adicionar Produtos
                 </label>
-                <div className="relative mb-2">
-                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-400" />
+                <div className="relative">
+                  <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-500" />
                   <input
                     type="text"
                     placeholder="Buscar produto..."
                     value={searchProduto}
                     onChange={(e) => setSearchProduto(e.target.value)}
-                    className="w-full pl-10 pr-4 py-2 bg-[#232323] border border-zinc-700 rounded-lg text-white placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-[#E85D04]"
+                    className="w-full pl-11 pr-4 py-3 bg-[#232323] border border-zinc-700/50 rounded-xl text-white placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-[#E85D04]/50 focus:border-[#E85D04]/50 transition-all"
                   />
                 </div>
                 {searchProduto && (
-                  <div className="max-h-32 overflow-y-auto space-y-1 mb-2">
+                  <div className="max-h-40 overflow-y-auto space-y-2 p-2 bg-[#232323] rounded-xl border border-zinc-700/50">
                     {produtos
                       .filter(p =>
                         p.nome.toLowerCase().includes(searchProduto.toLowerCase()) ||
@@ -691,29 +755,28 @@ function OrcamentosPageContent() {
                             addProduto(produto);
                             setSearchProduto('');
                           }}
-                          className="w-full p-2 bg-[#232323] border border-zinc-700 rounded-lg text-left hover:border-[#E85D04] transition-colors"
+                          className="w-full p-3 bg-[#1a1a1a] border border-zinc-700/50 rounded-xl text-left hover:border-[#E85D04]/50 hover:bg-[#E85D04]/5 transition-all"
                         >
                           <div className="flex justify-between items-center">
                             <div>
-                              <p className="text-white text-sm">{produto.nome}</p>
+                              <p className="text-white font-medium">{produto.nome}</p>
                               <p className="text-xs text-zinc-400">{produto.codigo}</p>
                             </div>
-                            <span className="text-[#E85D04] font-medium">{formatCurrency(produto.precoVenda)}</span>
+                            <span className="text-[#E85D04] font-bold">{formatCurrency(produto.precoVenda)}</span>
                           </div>
                         </button>
                       ))}
                   </div>
                 )}
 
-                {/* Selected products */}
                 {selectedProdutos.length > 0 && (
-                  <div className="space-y-2 mt-2">
+                  <div className="space-y-2">
                     {selectedProdutos.map((sp) => {
                       const produto = produtos.find(p => p.id === sp.produtoId);
                       return (
-                        <div key={sp.produtoId} className="flex items-center gap-2 p-2 bg-[#232323] rounded-lg">
-                          <Package className="h-4 w-4 text-zinc-400" />
-                          <span className="flex-1 text-white text-sm">{produto?.nome}</span>
+                        <div key={sp.produtoId} className="flex items-center gap-3 p-3 bg-[#232323] rounded-xl border border-zinc-700/50">
+                          <Package className="h-5 w-5 text-[#E85D04]" />
+                          <span className="flex-1 text-white font-medium">{produto?.nome}</span>
                           <input
                             type="number"
                             min="1"
@@ -724,12 +787,12 @@ function OrcamentosPageContent() {
                                 p.produtoId === sp.produtoId ? { ...p, quantidade: newQtd } : p
                               ));
                             }}
-                            className="w-16 px-2 py-1 bg-zinc-700 border border-zinc-600 rounded text-white text-center text-sm"
+                            className="w-20 px-3 py-2 bg-[#1a1a1a] border border-zinc-700/50 rounded-lg text-white text-center focus:outline-none focus:ring-2 focus:ring-[#E85D04]/50"
                           />
-                          <span className="text-zinc-400 text-sm">{formatCurrency(sp.precoUnitario * sp.quantidade)}</span>
+                          <span className="text-zinc-300 font-medium min-w-[100px] text-right">{formatCurrency(sp.precoUnitario * sp.quantidade)}</span>
                           <button
                             onClick={() => removeProduto(sp.produtoId)}
-                            className="p-1 text-red-400 hover:bg-red-400/10 rounded"
+                            className="p-2 text-red-400 hover:bg-red-500/10 rounded-lg transition-colors"
                           >
                             <X className="h-4 w-4" />
                           </button>
@@ -741,43 +804,43 @@ function OrcamentosPageContent() {
               </div>
 
               {/* Serviços Extras */}
-              <div>
-                <label className="block text-sm font-medium text-zinc-300 mb-2">
+              <div className="space-y-3">
+                <label className="block text-sm font-medium text-zinc-300">
                   Serviços / Mão de Obra
                 </label>
-                <div className="flex gap-2 mb-2">
+                <div className="flex gap-2">
                   <input
                     type="text"
                     placeholder="Descrição do serviço..."
                     value={novoServicoExtra.descricao}
                     onChange={(e) => setNovoServicoExtra({ ...novoServicoExtra, descricao: e.target.value })}
-                    className="flex-1 px-3 py-2 bg-[#232323] border border-zinc-700 rounded-lg text-white placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-[#E85D04] text-sm"
+                    className="flex-1 px-4 py-3 bg-[#232323] border border-zinc-700/50 rounded-xl text-white placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-[#E85D04]/50 focus:border-[#E85D04]/50 transition-all"
                   />
                   <input
                     type="number"
                     placeholder="Valor"
                     value={novoServicoExtra.valor}
                     onChange={(e) => setNovoServicoExtra({ ...novoServicoExtra, valor: e.target.value })}
-                    className="w-24 px-3 py-2 bg-[#232323] border border-zinc-700 rounded-lg text-white placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-[#E85D04] text-sm"
+                    className="w-32 px-4 py-3 bg-[#232323] border border-zinc-700/50 rounded-xl text-white placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-[#E85D04]/50 focus:border-[#E85D04]/50 transition-all"
                   />
                   <button
                     onClick={addServicoExtra}
-                    className="px-3 py-2 bg-[#E85D04] hover:bg-[#E85D04]/90 text-white rounded-lg transition-colors"
+                    className="px-4 py-3 bg-[#E85D04] hover:bg-[#E85D04]/90 text-white rounded-xl transition-colors"
                   >
-                    <Plus className="h-4 w-4" />
+                    <Plus className="h-5 w-5" />
                   </button>
                 </div>
 
                 {servicosExtras.length > 0 && (
                   <div className="space-y-2">
                     {servicosExtras.map((servico, index) => (
-                      <div key={index} className="flex items-center gap-2 p-2 bg-[#232323] rounded-lg">
-                        <DollarSign className="h-4 w-4 text-zinc-400" />
-                        <span className="flex-1 text-white text-sm">{servico.descricao}</span>
-                        <span className="text-zinc-400 text-sm">{formatCurrency(servico.valor)}</span>
+                      <div key={index} className="flex items-center gap-3 p-3 bg-[#232323] rounded-xl border border-zinc-700/50">
+                        <DollarSign className="h-5 w-5 text-emerald-400" />
+                        <span className="flex-1 text-white font-medium">{servico.descricao}</span>
+                        <span className="text-zinc-300 font-medium">{formatCurrency(servico.valor)}</span>
                         <button
                           onClick={() => removeServicoExtra(index)}
-                          className="p-1 text-red-400 hover:bg-red-400/10 rounded"
+                          className="p-2 text-red-400 hover:bg-red-500/10 rounded-lg transition-colors"
                         >
                           <X className="h-4 w-4" />
                         </button>
@@ -795,34 +858,34 @@ function OrcamentosPageContent() {
                 <textarea
                   value={observacoes}
                   onChange={(e) => setObservacoes(e.target.value)}
-                  rows={2}
-                  className="w-full px-4 py-2 bg-[#232323] border border-zinc-700 rounded-lg text-white placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-[#E85D04]"
-                  placeholder="Observações (opcional)..."
+                  rows={3}
+                  className="w-full px-4 py-3 bg-[#232323] border border-zinc-700/50 rounded-xl text-white placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-[#E85D04]/50 focus:border-[#E85D04]/50 transition-all resize-none"
+                  placeholder="Observações adicionais (opcional)..."
                 />
               </div>
 
               {/* Total */}
-              <div className="p-4 bg-[#E85D04]/10 rounded-lg">
+              <div className="p-5 bg-gradient-to-r from-[#E85D04]/20 to-[#E85D04]/10 rounded-xl border border-[#E85D04]/30">
                 <div className="flex justify-between items-center">
                   <span className="text-lg font-medium text-white">Total do Orçamento:</span>
-                  <span className="text-2xl font-bold text-[#E85D04]">{formatCurrency(calcularTotal())}</span>
+                  <span className="text-3xl font-bold text-[#E85D04]">{formatCurrency(calcularTotal())}</span>
                 </div>
               </div>
             </div>
 
-            <div className="p-4 border-t border-zinc-800 flex justify-between">
+            <div className="p-6 border-t border-zinc-800 flex justify-between">
               <button
                 onClick={() => setShowModal(false)}
-                className="px-4 py-2 text-zinc-400 hover:text-white transition-colors"
+                className="px-6 py-3 text-zinc-400 hover:text-white transition-colors"
               >
                 Cancelar
               </button>
               <button
                 onClick={handleSubmit}
                 disabled={saving}
-                className="flex items-center gap-2 px-6 py-2 bg-[#E85D04] hover:bg-[#E85D04]/90 text-white font-medium rounded-lg transition-colors disabled:opacity-50"
+                className="flex items-center gap-2 px-8 py-3 bg-gradient-to-r from-[#E85D04] to-[#ff6b1a] hover:from-[#ff6b1a] hover:to-[#E85D04] text-white font-semibold rounded-xl transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {saving && <Loader2 className="h-4 w-4 animate-spin" />}
+                {saving && <Loader2 className="h-5 w-5 animate-spin" />}
                 {editingOrcamento ? 'Salvar Alterações' : 'Criar Orçamento'}
               </button>
             </div>
@@ -832,39 +895,47 @@ function OrcamentosPageContent() {
 
       {/* Detail Modal */}
       {showDetailModal && selectedOrcamento && (
-        <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4">
-          <div className="bg-[#1a1a1a] rounded-xl w-full max-w-lg max-h-[90vh] overflow-hidden flex flex-col">
-            <div className="flex items-center justify-between p-4 border-b border-zinc-800">
-              <h2 className="text-xl font-bold text-white">
-                Orçamento {selectedOrcamento.numero}
-              </h2>
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="bg-[#1a1a1a] rounded-2xl w-full max-w-lg max-h-[90vh] overflow-hidden flex flex-col border border-zinc-800">
+            <div className="flex items-center justify-between p-6 border-b border-zinc-800">
+              <div>
+                <h2 className="text-2xl font-bold text-white">
+                  {selectedOrcamento.numero}
+                </h2>
+                <p className="text-sm text-zinc-400 mt-1">{formatDate(selectedOrcamento.createdAt)}</p>
+              </div>
               <button
                 onClick={() => {
                   setShowDetailModal(false);
                   setSelectedOrcamento(null);
                 }}
-                className="p-2 hover:bg-zinc-800 rounded-lg transition-colors"
+                className="p-2 hover:bg-zinc-800 rounded-xl transition-colors"
               >
-                <X className="h-5 w-5 text-zinc-400" />
+                <X className="h-6 w-6 text-zinc-400" />
               </button>
             </div>
 
-            <div className="flex-1 overflow-y-auto p-4 space-y-4">
+            <div className="flex-1 overflow-y-auto p-6 space-y-6">
               {/* Status */}
-              <div className="flex items-center justify-between">
+              <div className="flex items-center justify-between p-4 bg-[#232323] rounded-xl">
                 <span className="text-zinc-400">Status:</span>
-                <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium ${statusConfig[selectedOrcamento.status].bg} ${statusConfig[selectedOrcamento.status].color}`}>
+                <span className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-medium ${statusConfig[selectedOrcamento.status].bg} ${statusConfig[selectedOrcamento.status].color}`}>
                   {statusConfig[selectedOrcamento.status].label}
                 </span>
               </div>
 
               {/* Cliente */}
-              <div className="p-3 bg-[#232323] rounded-lg">
-                <div className="flex items-center gap-3">
-                  <User className="h-5 w-5 text-zinc-400" />
+              <div className="p-4 bg-[#232323] rounded-xl">
+                <div className="flex items-center gap-4">
+                  <div className="p-3 bg-zinc-700 rounded-xl">
+                    <User className="h-6 w-6 text-zinc-300" />
+                  </div>
                   <div>
-                    <p className="text-white font-medium">{selectedOrcamento.nomeCliente || 'Cliente não informado'}</p>
-                    <p className="text-sm text-zinc-400">{formatPhone(selectedOrcamento.telefoneCliente)}</p>
+                    <p className="text-white font-semibold text-lg">{selectedOrcamento.nomeCliente || 'Cliente não informado'}</p>
+                    <p className="text-zinc-400 flex items-center gap-2 mt-1">
+                      <Phone className="h-4 w-4" />
+                      {formatPhone(selectedOrcamento.telefoneCliente)}
+                    </p>
                   </div>
                 </div>
               </div>
@@ -872,15 +943,18 @@ function OrcamentosPageContent() {
               {/* Products */}
               {selectedOrcamento.itensProduto.length > 0 && (
                 <div>
-                  <h4 className="text-sm font-medium text-zinc-400 mb-2">Produtos</h4>
+                  <h4 className="text-sm font-medium text-zinc-400 mb-3 flex items-center gap-2">
+                    <Package className="h-4 w-4" />
+                    Produtos
+                  </h4>
                   <div className="space-y-2">
                     {selectedOrcamento.itensProduto.map((item) => (
-                      <div key={item.id} className="flex justify-between items-center p-2 bg-[#232323] rounded">
+                      <div key={item.id} className="flex justify-between items-center p-4 bg-[#232323] rounded-xl">
                         <div>
-                          <p className="text-white text-sm">{item.produtoNome}</p>
-                          <p className="text-xs text-zinc-400">{item.quantidade}x {formatCurrency(item.precoUnitario)}</p>
+                          <p className="text-white font-medium">{item.produtoNome}</p>
+                          <p className="text-sm text-zinc-400">{item.quantidade}x {formatCurrency(item.precoUnitario)}</p>
                         </div>
-                        <span className="text-white font-medium">{formatCurrency(item.subtotal)}</span>
+                        <span className="text-white font-bold">{formatCurrency(item.subtotal)}</span>
                       </div>
                     ))}
                   </div>
@@ -890,12 +964,15 @@ function OrcamentosPageContent() {
               {/* Services */}
               {selectedOrcamento.servicosExtras.length > 0 && (
                 <div>
-                  <h4 className="text-sm font-medium text-zinc-400 mb-2">Serviços</h4>
+                  <h4 className="text-sm font-medium text-zinc-400 mb-3 flex items-center gap-2">
+                    <DollarSign className="h-4 w-4" />
+                    Serviços
+                  </h4>
                   <div className="space-y-2">
                     {selectedOrcamento.servicosExtras.map((servico, idx) => (
-                      <div key={idx} className="flex justify-between items-center p-2 bg-[#232323] rounded">
-                        <span className="text-white text-sm">{servico.descricao}</span>
-                        <span className="text-white font-medium">{formatCurrency(servico.valor)}</span>
+                      <div key={idx} className="flex justify-between items-center p-4 bg-[#232323] rounded-xl">
+                        <span className="text-white font-medium">{servico.descricao}</span>
+                        <span className="text-white font-bold">{formatCurrency(servico.valor)}</span>
                       </div>
                     ))}
                   </div>
@@ -903,34 +980,34 @@ function OrcamentosPageContent() {
               )}
 
               {/* Total */}
-              <div className="p-4 bg-[#E85D04]/10 rounded-lg">
+              <div className="p-5 bg-gradient-to-r from-[#E85D04]/20 to-[#E85D04]/10 rounded-xl border border-[#E85D04]/30">
                 <div className="flex justify-between items-center">
                   <span className="text-lg font-medium text-white">Total:</span>
-                  <span className="text-2xl font-bold text-[#E85D04]">{formatCurrency(selectedOrcamento.total)}</span>
+                  <span className="text-3xl font-bold text-[#E85D04]">{formatCurrency(selectedOrcamento.total)}</span>
                 </div>
               </div>
 
               {/* Actions */}
-              <div className="flex gap-2">
+              <div className="grid grid-cols-2 gap-3">
                 <button
                   onClick={() => downloadOrcamentoPDF(selectedOrcamento as any, empresaConfig || undefined)}
-                  className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-[#E85D04] hover:bg-[#E85D04]/90 text-white font-medium rounded-lg transition-colors"
+                  className="flex items-center justify-center gap-2 px-4 py-3 bg-[#E85D04] hover:bg-[#E85D04]/90 text-white font-medium rounded-xl transition-colors"
                 >
-                  <FileDown className="h-4 w-4" />
+                  <FileDown className="h-5 w-5" />
                   Baixar PDF
                 </button>
                 {selectedOrcamento.telefoneCliente && (
                   <button
                     onClick={() => sendWhatsApp(selectedOrcamento)}
                     disabled={sendingWhatsApp === selectedOrcamento.id}
-                    className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-green-600 hover:bg-green-700 text-white font-medium rounded-lg transition-colors disabled:opacity-50"
+                    className="flex items-center justify-center gap-2 px-4 py-3 bg-green-600 hover:bg-green-700 text-white font-medium rounded-xl transition-colors disabled:opacity-50"
                   >
                     {sendingWhatsApp === selectedOrcamento.id ? (
-                      <Loader2 className="h-4 w-4 animate-spin" />
+                      <Loader2 className="h-5 w-5 animate-spin" />
                     ) : (
-                      <Send className="h-4 w-4" />
+                      <Send className="h-5 w-5" />
                     )}
-                    {sendingWhatsApp === selectedOrcamento.id ? 'Enviando...' : 'Enviar WhatsApp'}
+                    WhatsApp
                   </button>
                 )}
               </div>
@@ -941,18 +1018,18 @@ function OrcamentosPageContent() {
 
       {/* Delete Confirmation Modal */}
       {showDeleteConfirm && selectedOrcamento && (
-        <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4">
-          <div className="bg-[#1a1a1a] rounded-xl w-full max-w-sm p-6">
-            <div className="flex items-center gap-3 mb-4">
-              <div className="p-3 bg-red-500/10 rounded-full">
-                <Trash2 className="h-6 w-6 text-red-500" />
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="bg-[#1a1a1a] rounded-2xl w-full max-w-sm p-6 border border-zinc-800">
+            <div className="flex items-center gap-4 mb-6">
+              <div className="p-4 bg-red-500/10 rounded-full">
+                <Trash2 className="h-8 w-8 text-red-500" />
               </div>
               <div>
-                <h3 className="text-lg font-bold text-white">Excluir Orçamento</h3>
-                <p className="text-sm text-zinc-400">{selectedOrcamento.numero}</p>
+                <h3 className="text-xl font-bold text-white">Excluir Orçamento</h3>
+                <p className="text-zinc-400">{selectedOrcamento.numero}</p>
               </div>
             </div>
-            <p className="text-zinc-300 mb-6">
+            <p className="text-zinc-300 mb-8">
               Tem certeza que deseja excluir este orçamento? Esta ação não pode ser desfeita.
             </p>
             <div className="flex gap-3">
@@ -961,16 +1038,16 @@ function OrcamentosPageContent() {
                   setShowDeleteConfirm(false);
                   setSelectedOrcamento(null);
                 }}
-                className="flex-1 px-4 py-2 border border-zinc-700 text-white rounded-lg hover:bg-zinc-800 transition-colors"
+                className="flex-1 px-4 py-3 border border-zinc-700 text-white rounded-xl hover:bg-zinc-800 transition-colors font-medium"
               >
                 Cancelar
               </button>
               <button
                 onClick={handleDelete}
                 disabled={saving}
-                className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors disabled:opacity-50"
+                className="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-red-600 hover:bg-red-700 text-white rounded-xl transition-colors font-medium disabled:opacity-50"
               >
-                {saving && <Loader2 className="h-4 w-4 animate-spin" />}
+                {saving && <Loader2 className="h-5 w-5 animate-spin" />}
                 Excluir
               </button>
             </div>
@@ -985,7 +1062,13 @@ export default function OrcamentosPage() {
   return (
     <Suspense fallback={
       <div className="flex items-center justify-center h-[60vh]">
-        <Loader2 className="h-8 w-8 animate-spin text-[#E85D04]" />
+        <div className="flex flex-col items-center gap-4">
+          <div className="relative">
+            <div className="w-16 h-16 border-4 border-[#E85D04]/20 rounded-full"></div>
+            <div className="absolute top-0 left-0 w-16 h-16 border-4 border-transparent border-t-[#E85D04] rounded-full animate-spin"></div>
+          </div>
+          <p className="text-zinc-400 animate-pulse">Carregando orçamentos...</p>
+        </div>
       </div>
     }>
       <OrcamentosPageContent />
