@@ -502,7 +502,7 @@ function OrcamentosPageContent() {
                   return (
                     <tr key={orcamento.id} className="hover:bg-zinc-800/50 transition-colors">
                       <td className="px-6 py-4">
-                        <span className="font-semibold text-white text-base">ORC-{orcamento.numero}</span>
+                        <span className="font-semibold text-white text-base">{orcamento.numero}</span>
                         <p className="text-sm text-zinc-500 mt-0.5">{formatDate(orcamento.createdAt)}</p>
                       </td>
                       <td className="px-6 py-4">
