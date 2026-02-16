@@ -264,6 +264,9 @@ export async function POST(request: NextRequest) {
       }
     }
 
+    // Converter kmEntrada para número
+    const kmEntradaNum = kmEntrada ? parseInt(kmEntrada, 10) : null;
+
     // Create order with items AND deduct stock in a transaction
     const ordem = await prisma.$transaction(async (tx) => {
       // Gerar número sequencial por empresa (001, 002, 003...)
@@ -287,7 +290,7 @@ export async function POST(request: NextRequest) {
           numero: numeroFormatado,
           veiculoId,
           dataAgendada: dataAgendada ? new Date(dataAgendada) : null,
-          kmEntrada: kmEntrada || null,
+          kmEntrada: kmEntradaNum,
           observacoes: observacoes || null,
           total,
           empresaId: session.empresaId,
@@ -321,6 +324,14 @@ export async function POST(request: NextRequest) {
         },
       });
 
+      // Atualizar KM do veículo se o novo KM for maior que o atual
+      if (kmEntradaNum && kmEntradaNum > (veiculo.kmAtual || 0)) {
+        await tx.veiculo.update({
+          where: { id: veiculoId },
+          data: { kmAtual: kmEntradaNum },
+        });
+      }
+
       // Deduzir estoque
       if (itensProdutoData.length > 0) {
         await executeStockOperations(tx, itensProdutoData.map(item => ({
@@ -335,14 +346,6 @@ export async function POST(request: NextRequest) {
 
       return novaOrdem;
     });
-
-    // Update vehicle km if provided
-    if (kmEntrada && kmEntrada > (veiculo.kmAtual || 0)) {
-      await prisma.veiculo.update({
-        where: { id: veiculoId },
-        data: { kmAtual: kmEntrada },
-      });
-    }
 
     return NextResponse.json({
       data: {
