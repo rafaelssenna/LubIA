@@ -502,42 +502,48 @@ export default function ConfiguracoesPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#121212] flex items-center justify-center">
-        <Loader2 className="animate-spin text-[#43A047]" size={48} />
+      <div className="flex items-center justify-center h-[60vh]">
+        <div className="flex flex-col items-center gap-4">
+          <div className="relative">
+            <div className="w-16 h-16 border-4 border-[#43A047]/20 rounded-full"></div>
+            <div className="absolute top-0 left-0 w-16 h-16 border-4 border-transparent border-t-[#43A047] rounded-full animate-spin"></div>
+          </div>
+          <p className="text-zinc-400 animate-pulse">Carregando configuracoes...</p>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-[#121212]">
+    <div className="space-y-8">
       <Header title="Configuracoes" subtitle="Configure o sistema" />
 
-      <div className="p-6 space-y-6 animate-fade-in max-w-4xl mx-auto">
+      <div className="px-4 lg:px-8 space-y-8 max-w-4xl mx-auto">
         {/* Dados da Oficina */}
-        <div className="bg-[#1E1E1E] border border-[#333333] rounded-2xl overflow-hidden">
-          <div className="p-6 border-b border-[#333333] flex items-center gap-3">
-            <div className="p-2.5 bg-blue-500/10 rounded-xl">
-              <Building2 size={20} className="text-blue-400" />
+        <div className="bg-[#1a1a1a] border border-zinc-800/50 rounded-2xl overflow-hidden">
+          <div className="p-6 border-b border-zinc-800/50 flex items-center gap-4">
+            <div className="p-3 bg-blue-500/10 rounded-xl border border-blue-500/20">
+              <Building2 size={22} className="text-blue-400" />
             </div>
             <div>
-              <h2 className="text-lg font-semibold text-[#E8E8E8]">Dados da Oficina</h2>
-              <p className="text-sm text-[#6B7280]">Informacoes que aparecem nas O.S. e documentos</p>
+              <h2 className="text-lg font-bold text-white">Dados da Oficina</h2>
+              <p className="text-sm text-zinc-400">Informacoes que aparecem nas O.S. e documentos</p>
             </div>
           </div>
 
           <div className="p-6 grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-[#9E9E9E] mb-2">Nome da Oficina</label>
+              <label className="block text-sm font-medium text-zinc-400 mb-2">Nome da Oficina</label>
               <input
                 type="text"
                 value={nomeOficina}
                 onChange={(e) => setNomeOficina(e.target.value)}
                 placeholder="Ex: Auto Center Silva"
-                className="w-full bg-[#121212] border border-[#333333] rounded-xl px-4 py-3 text-[#E8E8E8] placeholder-gray-500 focus:outline-none focus:border-[#43A047]"
+                className="w-full bg-zinc-900/50 border border-zinc-800/50 rounded-xl px-4 py-3 text-white placeholder-zinc-500 focus:outline-none focus:border-blue-500/50 focus:ring-2 focus:ring-blue-500/20 transition-all"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-[#9E9E9E] mb-2">
+              <label className="block text-sm font-medium text-zinc-400 mb-2">
                 CNPJ <span className="text-red-400">*</span>
               </label>
               <div className="relative">
@@ -546,7 +552,7 @@ export default function ConfiguracoesPage() {
                   value={cnpj}
                   onChange={(e) => handleCnpjChange(e.target.value)}
                   placeholder="00.000.000/0000-00"
-                  className="w-full bg-[#121212] border border-[#333333] rounded-xl px-4 py-3 text-[#E8E8E8] placeholder-gray-500 focus:outline-none focus:border-[#43A047]"
+                  className="w-full bg-zinc-900/50 border border-zinc-800/50 rounded-xl px-4 py-3 text-white placeholder-zinc-500 focus:outline-none focus:border-blue-500/50 focus:ring-2 focus:ring-blue-500/20 transition-all"
                 />
                 {buscandoCnpj && (
                   <div className="absolute right-3 top-1/2 -translate-y-1/2">
@@ -554,10 +560,10 @@ export default function ConfiguracoesPage() {
                   </div>
                 )}
               </div>
-              <p className="text-xs text-[#6B7280] mt-1">Digite o CNPJ para preencher automaticamente</p>
+              <p className="text-xs text-zinc-500 mt-1">Digite o CNPJ para preencher automaticamente</p>
             </div>
             <div>
-              <label className="block text-sm font-medium text-[#9E9E9E] mb-2">
+              <label className="block text-sm font-medium text-zinc-400 mb-2">
                 Telefone <span className="text-red-400">*</span>
               </label>
               <input
@@ -565,26 +571,26 @@ export default function ConfiguracoesPage() {
                 value={telefone}
                 onChange={(e) => setTelefone(formatTelefone(e.target.value))}
                 placeholder="(00) 00000-0000"
-                className="w-full bg-[#121212] border border-[#333333] rounded-xl px-4 py-3 text-[#E8E8E8] placeholder-gray-500 focus:outline-none focus:border-[#43A047]"
+                className="w-full bg-zinc-900/50 border border-zinc-800/50 rounded-xl px-4 py-3 text-white placeholder-zinc-500 focus:outline-none focus:border-blue-500/50 focus:ring-2 focus:ring-blue-500/20 transition-all"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-[#9E9E9E] mb-2">Endereco</label>
+              <label className="block text-sm font-medium text-zinc-400 mb-2">Endereco</label>
               <input
                 type="text"
                 value={endereco}
                 onChange={(e) => setEndereco(e.target.value)}
                 placeholder="Rua, numero, bairro"
-                className="w-full bg-[#121212] border border-[#333333] rounded-xl px-4 py-3 text-[#E8E8E8] placeholder-gray-500 focus:outline-none focus:border-[#43A047]"
+                className="w-full bg-zinc-900/50 border border-zinc-800/50 rounded-xl px-4 py-3 text-white placeholder-zinc-500 focus:outline-none focus:border-blue-500/50 focus:ring-2 focus:ring-blue-500/20 transition-all"
               />
             </div>
 
-            {/* Botão Salvar */}
+            {/* Botao Salvar */}
             <div className="md:col-span-2 flex justify-end pt-2">
               <button
                 onClick={handleSaveConfig}
                 disabled={saving}
-                className="flex items-center gap-2 px-6 py-2.5 bg-[#43A047] hover:bg-[#388E3C] disabled:opacity-50 rounded-xl text-white font-medium transition-colors"
+                className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-[#43A047] to-[#2E7D32] hover:from-[#2E7D32] hover:to-[#43A047] rounded-xl text-white font-semibold transition-all duration-300 shadow-lg shadow-[#43A047]/25 disabled:opacity-50"
               >
                 {saving ? (
                   <Loader2 size={18} className="animate-spin" />
@@ -598,15 +604,15 @@ export default function ConfiguracoesPage() {
         </div>
 
         {/* Filiais/Fornecedores */}
-        <div className="bg-[#1E1E1E] border border-[#333333] rounded-2xl overflow-hidden">
-          <div className="p-6 border-b border-[#333333] flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="p-2.5 bg-purple-500/10 rounded-xl">
-                <Store size={20} className="text-purple-400" />
+        <div className="bg-[#1a1a1a] border border-zinc-800/50 rounded-2xl overflow-hidden">
+          <div className="p-6 border-b border-zinc-800/50 flex items-center justify-between">
+            <div className="flex items-center gap-4">
+              <div className="p-3 bg-purple-500/10 rounded-xl border border-purple-500/20">
+                <Store size={22} className="text-purple-400" />
               </div>
               <div>
-                <h2 className="text-lg font-semibold text-[#E8E8E8]">Filiais / Fornecedores</h2>
-                <p className="text-sm text-[#6B7280]">Cadastre as filiais para associar aos produtos</p>
+                <h2 className="text-lg font-bold text-white">Filiais / Fornecedores</h2>
+                <p className="text-sm text-zinc-400">Cadastre as filiais para associar aos produtos</p>
               </div>
             </div>
             <button
@@ -615,7 +621,7 @@ export default function ConfiguracoesPage() {
                 setFilialForm({ nome: '', cnpj: '' });
                 setShowFilialModal(true);
               }}
-              className="flex items-center gap-2 px-4 py-2 bg-purple-500/10 border border-purple-500/30 rounded-xl text-purple-400 hover:bg-purple-500/20 transition-colors"
+              className="flex items-center gap-2 px-4 py-3 bg-purple-500/10 border border-purple-500/30 rounded-xl text-purple-400 font-medium hover:bg-purple-500/20 hover:border-purple-500/50 transition-all"
             >
               <Plus size={18} />
               Nova Filial
@@ -628,40 +634,40 @@ export default function ConfiguracoesPage() {
                 {filiais.map((filial) => (
                   <div
                     key={filial.id}
-                    className={`flex items-center justify-between p-4 rounded-xl border transition-colors ${
+                    className={`flex items-center justify-between p-4 rounded-xl border transition-all ${
                       filial.ativo
-                        ? 'bg-[#121212] border-[#333333]'
-                        : 'bg-[#121212]/50 border-[#333333]/50 opacity-60'
+                        ? 'bg-zinc-900/50 border-zinc-800/50 hover:border-purple-500/30'
+                        : 'bg-zinc-900/30 border-zinc-800/30 opacity-60'
                     }`}
                   >
                     <div className="flex items-center gap-4">
-                      <div className="p-2.5 bg-purple-500/10 rounded-lg">
+                      <div className="p-2.5 bg-purple-500/10 rounded-xl border border-purple-500/20">
                         <Store size={18} className="text-purple-400" />
                       </div>
                       <div>
-                        <p className="font-medium text-[#E8E8E8]">{filial.nome}</p>
-                        <p className="text-sm text-[#6B7280] font-mono">{filial.cnpj}</p>
+                        <p className="font-semibold text-white">{filial.nome}</p>
+                        <p className="text-sm text-zinc-400 font-mono">{filial.cnpj}</p>
                       </div>
                       {!filial.ativo && (
-                        <span className="px-2 py-0.5 bg-red-500/10 text-red-400 text-xs rounded-full">
+                        <span className="px-2.5 py-1 bg-red-500/10 text-red-400 text-xs rounded-lg border border-red-500/20">
                           Inativo
                         </span>
                       )}
                     </div>
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-1.5">
                       <button
                         onClick={() => openEditFilial(filial)}
-                        className="p-2 hover:bg-[#333333] rounded-lg transition-colors"
+                        className="p-2 hover:bg-blue-500/10 rounded-lg text-zinc-400 hover:text-blue-400 transition-all"
                         title="Editar"
                       >
-                        <Edit size={16} className="text-[#9E9E9E]" />
+                        <Edit size={16} />
                       </button>
                       <button
                         onClick={() => handleDeleteFilial(filial)}
-                        className="p-2 hover:bg-red-500/10 rounded-lg transition-colors"
+                        className="p-2 hover:bg-red-500/10 rounded-lg text-zinc-400 hover:text-red-400 transition-all"
                         title="Excluir"
                       >
-                        <Trash2 size={16} className="text-red-400" />
+                        <Trash2 size={16} />
                       </button>
                     </div>
                   </div>
@@ -669,9 +675,11 @@ export default function ConfiguracoesPage() {
               </div>
             ) : (
               <div className="text-center py-8">
-                <Store size={32} className="text-[#6B7280] mx-auto mb-3" />
-                <p className="text-[#9E9E9E]">Nenhuma filial cadastrada</p>
-                <p className="text-xs text-[#6B7280] mt-1">
+                <div className="p-4 bg-purple-500/10 rounded-2xl w-fit mx-auto mb-4 border border-purple-500/20">
+                  <Store size={28} className="text-purple-400" />
+                </div>
+                <p className="text-white font-medium">Nenhuma filial cadastrada</p>
+                <p className="text-sm text-zinc-400 mt-1">
                   Cadastre filiais para associar aos produtos no estoque
                 </p>
               </div>
@@ -681,50 +689,50 @@ export default function ConfiguracoesPage() {
 
         {/* Modal Filial */}
         {showFilialModal && (
-          <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-            <div className="bg-[#1E1E1E] border border-[#333333] rounded-2xl w-full max-w-md animate-fade-in shadow-2xl">
-              <div className="p-6 border-b border-[#333333]">
-                <h2 className="text-xl font-semibold text-[#E8E8E8]">
+          <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+            <div className="bg-[#1a1a1a] border border-zinc-800/50 rounded-2xl w-full max-w-md shadow-2xl shadow-black/50">
+              <div className="p-6 border-b border-zinc-800/50">
+                <h2 className="text-xl font-bold text-white">
                   {editingFilial ? 'Editar Filial' : 'Nova Filial'}
                 </h2>
               </div>
               <div className="p-6 space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-[#9E9E9E] mb-2">Nome da Filial</label>
+                  <label className="block text-sm font-medium text-zinc-400 mb-2">Nome da Filial</label>
                   <input
                     type="text"
                     value={filialForm.nome}
                     onChange={(e) => setFilialForm({ ...filialForm, nome: e.target.value })}
                     placeholder="Ex: Filial Centro"
-                    className="w-full bg-[#121212] border border-[#333333] rounded-xl px-4 py-3 text-[#E8E8E8] placeholder-gray-500 focus:outline-none focus:border-purple-500"
+                    className="w-full bg-zinc-900/50 border border-zinc-800/50 rounded-xl px-4 py-3 text-white placeholder-zinc-500 focus:outline-none focus:border-purple-500/50 focus:ring-2 focus:ring-purple-500/20 transition-all"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-[#9E9E9E] mb-2">CNPJ</label>
+                  <label className="block text-sm font-medium text-zinc-400 mb-2">CNPJ</label>
                   <input
                     type="text"
                     value={filialForm.cnpj}
                     onChange={(e) => setFilialForm({ ...filialForm, cnpj: e.target.value })}
                     placeholder="00.000.000/0000-00"
-                    className="w-full bg-[#121212] border border-[#333333] rounded-xl px-4 py-3 text-[#E8E8E8] placeholder-gray-500 focus:outline-none focus:border-purple-500"
+                    className="w-full bg-zinc-900/50 border border-zinc-800/50 rounded-xl px-4 py-3 text-white placeholder-zinc-500 focus:outline-none focus:border-purple-500/50 focus:ring-2 focus:ring-purple-500/20 transition-all"
                   />
                 </div>
               </div>
-              <div className="p-6 border-t border-[#333333] flex gap-3 justify-end">
+              <div className="p-6 border-t border-zinc-800/50 flex gap-3 justify-end">
                 <button
                   onClick={() => {
                     setShowFilialModal(false);
                     setEditingFilial(null);
                     setFilialForm({ nome: '', cnpj: '' });
                   }}
-                  className="px-6 py-3 border border-[#333333] rounded-xl text-[#9E9E9E] hover:bg-[#121212] hover:text-[#E8E8E8] transition-all duration-200"
+                  className="px-6 py-3 border border-zinc-700 rounded-xl text-zinc-300 hover:bg-zinc-800 transition-colors"
                 >
                   Cancelar
                 </button>
                 <button
                   onClick={handleSaveFilial}
                   disabled={savingFilial}
-                  className="px-6 py-3 bg-gradient-to-r from-purple-500 to-purple-700 rounded-xl text-white font-medium hover:shadow-lg hover:shadow-purple-500/10 disabled:opacity-50 transition-all duration-200"
+                  className="px-6 py-3 bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-500 rounded-xl text-white font-semibold transition-all duration-300 shadow-lg shadow-purple-500/25 disabled:opacity-50"
                 >
                   {savingFilial ? (
                     <Loader2 className="animate-spin" size={20} />
@@ -740,25 +748,25 @@ export default function ConfiguracoesPage() {
         )}
 
         {/* Integracao WhatsApp */}
-        <div className="bg-[#1E1E1E] border border-[#333333] rounded-2xl overflow-hidden">
-          <div className="p-6 border-b border-[#333333] flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="p-2.5 bg-[#25D366]/10 rounded-xl">
-                <MessageCircle size={20} className="text-[#25D366]" />
+        <div className="bg-[#1a1a1a] border border-zinc-800/50 rounded-2xl overflow-hidden">
+          <div className="p-6 border-b border-zinc-800/50 flex items-center justify-between">
+            <div className="flex items-center gap-4">
+              <div className="p-3 bg-[#25D366]/10 rounded-xl border border-[#25D366]/20">
+                <MessageCircle size={22} className="text-[#25D366]" />
               </div>
               <div>
-                <h2 className="text-lg font-semibold text-[#E8E8E8]">Integracao WhatsApp</h2>
-                <p className="text-sm text-[#6B7280]">Envie lembretes e mensagens automaticas</p>
+                <h2 className="text-lg font-bold text-white">Integracao WhatsApp</h2>
+                <p className="text-sm text-zinc-400">Envie lembretes e mensagens automaticas</p>
               </div>
             </div>
             <div className="flex items-center gap-2">
               {whatsappStatus?.connected ? (
-                <span className="flex items-center gap-2 px-3 py-1.5 bg-green-500/10 text-[#43A047] text-sm rounded-full ring-1 ring-[#43A047]/20">
+                <span className="flex items-center gap-2 px-4 py-2 bg-emerald-500/10 text-emerald-400 text-sm font-medium rounded-xl border border-emerald-500/20">
                   <CheckCircle size={16} />
                   Conectado
                 </span>
               ) : (
-                <span className="flex items-center gap-2 px-3 py-1.5 bg-red-500/10 text-red-400 text-sm rounded-full ring-1 ring-red-500/20">
+                <span className="flex items-center gap-2 px-4 py-2 bg-red-500/10 text-red-400 text-sm font-medium rounded-xl border border-red-500/20">
                   <XCircle size={16} />
                   Desconectado
                 </span>
@@ -769,15 +777,15 @@ export default function ConfiguracoesPage() {
           <div className="p-6 space-y-6">
             {/* Status e Conexao */}
             {whatsappStatus?.connected ? (
-              <div className="bg-green-500/5 border border-[#43A047]/30 rounded-xl p-4">
+              <div className="bg-emerald-500/5 border border-emerald-500/20 rounded-xl p-5">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-4">
-                    <div className="w-12 h-12 bg-[#25D366]/20 rounded-full flex items-center justify-center">
-                      <Smartphone size={24} className="text-[#25D366]" />
+                    <div className="w-14 h-14 bg-[#25D366]/20 rounded-2xl flex items-center justify-center border border-[#25D366]/30">
+                      <Smartphone size={26} className="text-[#25D366]" />
                     </div>
                     <div>
-                      <p className="font-medium text-[#E8E8E8]">{whatsappStatus.profileName || 'WhatsApp Conectado'}</p>
-                      <p className="text-sm text-[#9E9E9E]">{whatsappStatus.number}</p>
+                      <p className="font-semibold text-white">{whatsappStatus.profileName || 'WhatsApp Conectado'}</p>
+                      <p className="text-sm text-zinc-400">{whatsappStatus.number}</p>
                       {whatsappStatus.isBusiness && (
                         <span className="text-xs text-[#25D366]">WhatsApp Business</span>
                       )}
@@ -785,7 +793,7 @@ export default function ConfiguracoesPage() {
                   </div>
                   <button
                     onClick={handleDisconnect}
-                    className="flex items-center gap-2 px-4 py-2 bg-red-500/10 border border-red-500/30 rounded-xl text-red-400 hover:bg-red-500/20 transition-colors"
+                    className="flex items-center gap-2 px-4 py-2.5 bg-red-500/10 border border-red-500/30 rounded-xl text-red-400 font-medium hover:bg-red-500/20 transition-all"
                   >
                     <Unplug size={18} />
                     Desconectar
@@ -793,41 +801,41 @@ export default function ConfiguracoesPage() {
                 </div>
               </div>
             ) : qrCode ? (
-              <div className="bg-[#121212] border border-[#333333] rounded-xl p-6 text-center">
-                <p className="text-[#E8E8E8] font-medium mb-4">Escaneie o QR Code com o WhatsApp</p>
+              <div className="bg-zinc-900/50 border border-zinc-800/50 rounded-xl p-6 text-center">
+                <p className="text-white font-semibold mb-4">Escaneie o QR Code com o WhatsApp</p>
                 <div className="inline-block p-4 bg-white rounded-xl mb-4">
                   <img src={qrCode} alt="QR Code" className="w-64 h-64" />
                 </div>
                 {pairCode && (
                   <div className="mb-4">
-                    <p className="text-sm text-[#9E9E9E] mb-2">Ou use o codigo de pareamento:</p>
+                    <p className="text-sm text-zinc-400 mb-2">Ou use o codigo de pareamento:</p>
                     <p className="text-2xl font-mono text-[#43A047] tracking-widest">{pairCode}</p>
                   </div>
                 )}
-                <p className="text-sm text-[#6B7280]">
+                <p className="text-sm text-zinc-500">
                   Aguardando conexao... <Loader2 className="inline animate-spin ml-2" size={16} />
                 </p>
                 <button
                   onClick={() => { setQrCode(null); setPairCode(null); }}
-                  className="mt-4 text-sm text-[#9E9E9E] hover:text-[#E8E8E8]"
+                  className="mt-4 text-sm text-zinc-400 hover:text-white transition-colors"
                 >
                   Cancelar
                 </button>
               </div>
             ) : (
               <div className="text-center py-8">
-                <div className="w-16 h-16 mx-auto mb-4 bg-[#25D366]/10 rounded-full flex items-center justify-center">
+                <div className="p-4 bg-[#25D366]/10 rounded-2xl w-fit mx-auto mb-4 border border-[#25D366]/20">
                   <MessageCircle size={32} className="text-[#25D366]" />
                 </div>
-                <p className="text-[#E8E8E8] font-medium mb-2">Conecte seu WhatsApp</p>
-                <p className="text-sm text-[#6B7280] mb-6 max-w-md mx-auto">
+                <p className="text-white font-semibold mb-2">Conecte seu WhatsApp</p>
+                <p className="text-sm text-zinc-400 mb-6 max-w-md mx-auto">
                   Ao conectar, voce podera enviar mensagens automaticas de lembretes e acompanhamento para seus clientes.
                 </p>
                 <div className="flex items-center justify-center gap-4">
                   <button
                     onClick={handleConnect}
                     disabled={connecting}
-                    className="flex items-center gap-2 px-6 py-3 bg-[#25D366] rounded-xl text-white font-medium hover:bg-[#25D366]/90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                    className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-[#25D366] to-[#128C7E] hover:from-[#128C7E] hover:to-[#25D366] rounded-xl text-white font-semibold transition-all duration-300 shadow-lg shadow-[#25D366]/25 disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     {connecting ? (
                       <Loader2 className="animate-spin" size={20} />
@@ -839,7 +847,7 @@ export default function ConfiguracoesPage() {
                   <button
                     onClick={checkWhatsAppStatus}
                     disabled={checkingStatus}
-                    className="p-3 bg-[#121212] border border-[#333333] rounded-xl text-[#9E9E9E] hover:text-[#E8E8E8] hover:border-[#43A047]/40 transition-colors"
+                    className="p-3 bg-zinc-900/50 border border-zinc-800/50 rounded-xl text-zinc-400 hover:text-white hover:border-[#25D366]/50 transition-all"
                     title="Verificar status"
                   >
                     <RefreshCw size={20} className={checkingStatus ? 'animate-spin' : ''} />
@@ -851,25 +859,25 @@ export default function ConfiguracoesPage() {
         </div>
 
         {/* Chatbot LoopIA */}
-        <div className="bg-[#1E1E1E] border border-[#333333] rounded-2xl overflow-hidden">
-          <div className="p-6 border-b border-[#333333] flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="p-2.5 bg-purple-500/10 rounded-xl">
-                <Bot size={20} className="text-purple-400" />
+        <div className="bg-[#1a1a1a] border border-zinc-800/50 rounded-2xl overflow-hidden">
+          <div className="p-6 border-b border-zinc-800/50 flex items-center justify-between">
+            <div className="flex items-center gap-4">
+              <div className="p-3 bg-purple-500/10 rounded-xl border border-purple-500/20">
+                <Bot size={22} className="text-purple-400" />
               </div>
               <div>
-                <h2 className="text-lg font-semibold text-[#E8E8E8]">Chatbot LoopIA</h2>
-                <p className="text-sm text-[#6B7280]">Assistente virtual com inteligencia artificial</p>
+                <h2 className="text-lg font-bold text-white">Chatbot LoopIA</h2>
+                <p className="text-sm text-zinc-400">Assistente virtual com inteligencia artificial</p>
               </div>
             </div>
             <button
               onClick={() => setChatbotEnabled(!chatbotEnabled)}
-              className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-                chatbotEnabled ? 'bg-[#43A047]' : 'bg-[#333333]'
+              className={`relative inline-flex h-7 w-12 items-center rounded-full transition-all duration-300 ${
+                chatbotEnabled ? 'bg-gradient-to-r from-[#43A047] to-[#2E7D32]' : 'bg-zinc-700'
               }`}
             >
               <span
-                className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                className={`inline-block h-5 w-5 transform rounded-full bg-white transition-transform shadow-lg ${
                   chatbotEnabled ? 'translate-x-6' : 'translate-x-1'
                 }`}
               />
@@ -879,57 +887,57 @@ export default function ConfiguracoesPage() {
           {chatbotEnabled && (
             <div className="p-6 space-y-4">
               <div>
-                <label className="block text-sm font-medium text-[#9E9E9E] mb-2">Nome do Assistente</label>
+                <label className="block text-sm font-medium text-zinc-400 mb-2">Nome do Assistente</label>
                 <input
                   type="text"
                   value={chatbotNome}
                   onChange={(e) => setChatbotNome(e.target.value)}
                   placeholder="LoopIA"
-                  className="w-full bg-[#121212] border border-[#333333] rounded-xl px-4 py-3 text-[#E8E8E8] placeholder-gray-500 focus:outline-none focus:border-purple-500"
+                  className="w-full bg-zinc-900/50 border border-zinc-800/50 rounded-xl px-4 py-3 text-white placeholder-zinc-500 focus:outline-none focus:border-purple-500/50 focus:ring-2 focus:ring-purple-500/20 transition-all"
                 />
               </div>
 
-              {/* Horário de Funcionamento */}
+              {/* Horario de Funcionamento */}
               <div>
-                <label className="block text-sm font-medium text-[#9E9E9E] mb-2">Horario de Funcionamento</label>
-                <div className="bg-[#121212] border border-[#333333] rounded-xl p-4 space-y-2">
+                <label className="block text-sm font-medium text-zinc-400 mb-2">Horario de Funcionamento</label>
+                <div className="bg-zinc-900/50 border border-zinc-800/50 rounded-xl p-4 space-y-2">
                   {DIAS_SEMANA.map((dia) => (
                     <div
                       key={dia.key}
-                      className={`flex items-center gap-3 p-2 rounded-lg transition-colors ${
-                        chatbotHorario[dia.key].ativo ? 'bg-[#1E1E1E]' : 'bg-transparent opacity-50'
+                      className={`flex items-center gap-3 p-2.5 rounded-lg transition-all ${
+                        chatbotHorario[dia.key].ativo ? 'bg-zinc-800/50' : 'bg-transparent opacity-50'
                       }`}
                     >
                       <button
                         type="button"
                         onClick={() => updateHorarioDia(dia.key, 'ativo', !chatbotHorario[dia.key].ativo)}
-                        className={`w-5 h-5 rounded flex items-center justify-center border transition-colors ${
+                        className={`w-5 h-5 rounded flex items-center justify-center border transition-all ${
                           chatbotHorario[dia.key].ativo
                             ? 'bg-[#43A047] border-[#43A047]'
-                            : 'bg-transparent border-[#333333]'
+                            : 'bg-transparent border-zinc-600'
                         }`}
                       >
                         {chatbotHorario[dia.key].ativo && (
                           <CheckCircle size={14} className="text-white" />
                         )}
                       </button>
-                      <span className="w-20 text-sm text-[#E8E8E8]">{dia.label}</span>
+                      <span className="w-20 text-sm text-white">{dia.label}</span>
                       {chatbotHorario[dia.key].ativo && (
                         <>
                           <select
                             value={chatbotHorario[dia.key].abertura}
                             onChange={(e) => updateHorarioDia(dia.key, 'abertura', e.target.value)}
-                            className="bg-[#121212] border border-[#333333] rounded-lg px-2 py-1 text-sm text-[#E8E8E8] focus:outline-none focus:border-purple-500"
+                            className="bg-zinc-800 border border-zinc-700 rounded-lg px-2 py-1 text-sm text-white focus:outline-none focus:border-purple-500"
                           >
                             {HORARIOS.map((h) => (
                               <option key={h} value={h}>{h}</option>
                             ))}
                           </select>
-                          <span className="text-[#6B7280]">às</span>
+                          <span className="text-zinc-500">as</span>
                           <select
                             value={chatbotHorario[dia.key].fechamento}
                             onChange={(e) => updateHorarioDia(dia.key, 'fechamento', e.target.value)}
-                            className="bg-[#121212] border border-[#333333] rounded-lg px-2 py-1 text-sm text-[#E8E8E8] focus:outline-none focus:border-purple-500"
+                            className="bg-zinc-800 border border-zinc-700 rounded-lg px-2 py-1 text-sm text-white focus:outline-none focus:border-purple-500"
                           >
                             {HORARIOS.map((h) => (
                               <option key={h} value={h}>{h}</option>
@@ -938,34 +946,34 @@ export default function ConfiguracoesPage() {
                         </>
                       )}
                       {!chatbotHorario[dia.key].ativo && (
-                        <span className="text-sm text-[#6B7280]">Fechado</span>
+                        <span className="text-sm text-zinc-500">Fechado</span>
                       )}
                     </div>
                   ))}
                 </div>
-                <p className="mt-2 text-xs text-[#9E9E9E]">
+                <p className="mt-2 text-xs text-zinc-400">
                   Resumo: {horarioParaString(chatbotHorario) || 'Nenhum dia selecionado'}
                 </p>
               </div>
 
               {/* Servicos do Sistema */}
               <div>
-                <label className="block text-sm font-medium text-[#9E9E9E] mb-2">
+                <label className="block text-sm font-medium text-zinc-400 mb-2">
                   Servicos que a LoopIA conhece
                 </label>
-                <div className="bg-[#121212] border border-[#333333] rounded-xl p-4">
+                <div className="bg-zinc-900/50 border border-zinc-800/50 rounded-xl p-4">
                   {servicos.length > 0 ? (
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
                       {servicos.map((servico) => (
                         <div
                           key={servico.id}
-                          className="flex items-center justify-between p-2 bg-[#1E1E1E] rounded-lg"
+                          className="flex items-center justify-between p-3 bg-zinc-800/50 rounded-lg border border-zinc-700/50"
                         >
                           <div className="flex items-center gap-2">
                             <Wrench size={14} className="text-purple-400" />
-                            <span className="text-sm text-[#E8E8E8]">{servico.nome}</span>
+                            <span className="text-sm text-white">{servico.nome}</span>
                           </div>
-                          <span className="text-sm text-[#43A047] font-medium">
+                          <span className="text-sm text-[#43A047] font-semibold">
                             R$ {Number(servico.precoBase).toFixed(2).replace('.', ',')}
                           </span>
                         </div>
@@ -973,28 +981,28 @@ export default function ConfiguracoesPage() {
                     </div>
                   ) : (
                     <div className="text-center py-4">
-                      <Wrench size={24} className="text-[#6B7280] mx-auto mb-2" />
-                      <p className="text-sm text-[#6B7280]">Nenhum servico cadastrado</p>
-                      <p className="text-xs text-[#6B7280] mt-1">
+                      <Wrench size={24} className="text-zinc-500 mx-auto mb-2" />
+                      <p className="text-sm text-zinc-400">Nenhum servico cadastrado</p>
+                      <p className="text-xs text-zinc-500 mt-1">
                         Cadastre servicos em Servicos para a LoopIA poder informar precos
                       </p>
                     </div>
                   )}
                 </div>
-                <p className="mt-2 text-xs text-[#6B7280] flex items-center gap-1">
+                <p className="mt-2 text-xs text-zinc-500 flex items-center gap-1">
                   <DollarSign size={12} />
                   A LoopIA usa automaticamente os servicos e precos cadastrados no sistema
                 </p>
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-[#9E9E9E] mb-2">Mensagem de Boas-Vindas</label>
+                <label className="block text-sm font-medium text-zinc-400 mb-2">Mensagem de Boas-Vindas</label>
                 <textarea
                   value={chatbotBoasVindas}
                   onChange={(e) => setChatbotBoasVindas(e.target.value)}
                   placeholder="Ola! Sou a LoopIA, assistente virtual da oficina..."
                   rows={2}
-                  className="w-full bg-[#121212] border border-[#333333] rounded-xl px-4 py-3 text-[#E8E8E8] placeholder-gray-500 focus:outline-none focus:border-purple-500 resize-none"
+                  className="w-full bg-zinc-900/50 border border-zinc-800/50 rounded-xl px-4 py-3 text-white placeholder-zinc-500 focus:outline-none focus:border-purple-500/50 focus:ring-2 focus:ring-purple-500/20 transition-all resize-none"
                 />
               </div>
 
@@ -1002,8 +1010,8 @@ export default function ConfiguracoesPage() {
                 <div className="flex items-start gap-3">
                   <Bot size={20} className="text-purple-400 mt-0.5" />
                   <div>
-                    <p className="text-sm text-[#E8E8E8] font-medium">Como funciona</p>
-                    <p className="text-xs text-[#9E9E9E] mt-1">
+                    <p className="text-sm text-white font-medium">Como funciona</p>
+                    <p className="text-xs text-zinc-400 mt-1">
                       A LoopIA responde automaticamente as mensagens recebidas no WhatsApp usando inteligencia artificial (Gemini).
                       Ela conhece os servicos da oficina, precos, e dados dos clientes cadastrados.
                     </p>
@@ -1015,9 +1023,11 @@ export default function ConfiguracoesPage() {
 
           {!chatbotEnabled && (
             <div className="p-6 text-center">
-              <Power size={32} className="text-[#6B7280] mx-auto mb-3" />
-              <p className="text-[#9E9E9E]">Chatbot desativado</p>
-              <p className="text-xs text-[#6B7280] mt-1">Ative para responder mensagens automaticamente</p>
+              <div className="p-4 bg-zinc-800/50 rounded-2xl w-fit mx-auto mb-4">
+                <Power size={28} className="text-zinc-500" />
+              </div>
+              <p className="text-white font-medium">Chatbot desativado</p>
+              <p className="text-sm text-zinc-400 mt-1">Ative para responder mensagens automaticamente</p>
             </div>
           )}
         </div>
@@ -1027,7 +1037,7 @@ export default function ConfiguracoesPage() {
           <button
             onClick={handleSaveConfig}
             disabled={saving}
-            className="flex items-center gap-2 px-8 py-3 bg-gradient-to-r from-[#43A047] to-[#1B5E20] rounded-xl text-white font-medium hover:opacity-90 disabled:opacity-50 transition-opacity"
+            className="flex items-center gap-2 px-8 py-3 bg-gradient-to-r from-[#43A047] to-[#2E7D32] hover:from-[#2E7D32] hover:to-[#43A047] rounded-xl text-white font-semibold transition-all duration-300 shadow-lg shadow-[#43A047]/25 hover:shadow-[#43A047]/40 disabled:opacity-50"
           >
             {saving ? (
               <Loader2 className="animate-spin" size={20} />
@@ -1039,18 +1049,18 @@ export default function ConfiguracoesPage() {
         </div>
 
         {/* Versao */}
-        <div className="bg-[#1E1E1E] border border-[#333333] rounded-2xl p-6">
+        <div className="bg-[#1a1a1a] border border-zinc-800/50 rounded-2xl p-6">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
-              <div className="p-3 bg-[#2A2A2A] rounded-xl">
-                <Settings size={24} className="text-[#6B7280]" />
+              <div className="p-3 bg-zinc-800/50 rounded-xl border border-zinc-700/50">
+                <Settings size={24} className="text-zinc-400" />
               </div>
               <div>
-                <h3 className="font-semibold text-[#E8E8E8]">Sobre o LubIA</h3>
-                <p className="text-sm text-[#6B7280]">Versao 1.0.0 - Sistema de Gestao Inteligente para Oficinas</p>
+                <h3 className="font-bold text-white">Sobre o LubIA</h3>
+                <p className="text-sm text-zinc-400">Versao 1.0.0 - Sistema de Gestao Inteligente para Oficinas</p>
               </div>
             </div>
-            <span className="px-3 py-1 bg-green-500/10 text-[#43A047] text-xs font-medium rounded-full ring-1 ring-[#43A047]/20">
+            <span className="px-4 py-2 bg-emerald-500/10 text-emerald-400 text-xs font-semibold rounded-xl border border-emerald-500/20">
               Atualizado
             </span>
           </div>

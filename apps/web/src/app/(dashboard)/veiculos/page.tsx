@@ -1,7 +1,7 @@
 'use client';
 
 import Header from '@/components/Header';
-import { Plus, Search, Car, User, ClipboardList, X, Camera, Edit, Trash2, Loader2, Gauge } from 'lucide-react';
+import { Plus, Search, Car, User, ClipboardList, X, Camera, Edit, Trash2, Gauge, ArrowRight, Users } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import OCRScanner from '@/components/OCRScanner';
@@ -202,7 +202,6 @@ export default function VeiculosPage() {
     setShowOCR(false);
   };
 
-  // Formatação de placa durante digitação (limita caracteres)
   const formatPlateInput = (placa: string) => {
     const cleaned = placa.replace(/[^A-Za-z0-9]/g, '').toUpperCase();
     if (cleaned.length <= 3) return cleaned;
@@ -217,47 +216,69 @@ export default function VeiculosPage() {
     return limited.slice(0, 3) + '-' + limited.slice(3);
   };
 
-  return (
-    <div className="min-h-screen bg-[#121212]">
-      <Header title="Veículos" subtitle="Cadastro de veículos" />
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-[60vh]">
+        <div className="flex flex-col items-center gap-4">
+          <div className="relative">
+            <div className="w-16 h-16 border-4 border-purple-500/20 rounded-full"></div>
+            <div className="absolute top-0 left-0 w-16 h-16 border-4 border-transparent border-t-purple-500 rounded-full animate-spin"></div>
+          </div>
+          <p className="text-zinc-400 animate-pulse">Carregando veiculos...</p>
+        </div>
+      </div>
+    );
+  }
 
-      <div className="p-6 space-y-6 animate-fade-in">
-        {/* Stats */}
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-          <div className="group relative bg-[#1E1E1E] rounded-2xl p-5 border border-[#333333] hover:border-green-500/30 transition-all duration-300 hover:shadow-lg hover:shadow-[#43A047]/5">
-            <div className="absolute inset-0 bg-gradient-to-br from-[#43A047]/5 to-transparent rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-            <div className="relative flex items-center gap-3">
-              <div className="p-3 bg-gradient-to-br from-[#43A047]/20 to-[#43A047]/5 rounded-xl ring-1 ring-[#43A047]/20">
-                <Car size={20} className="text-[#43A047]" />
+  return (
+    <div className="space-y-8">
+      <Header title="Veiculos" subtitle="Cadastro de veiculos" />
+
+      <div className="px-4 lg:px-8 space-y-8">
+        {/* Stats Cards */}
+        <div className="grid grid-cols-2 xl:grid-cols-3 gap-8">
+          {/* Total Veiculos */}
+          <div className="group relative overflow-hidden bg-gradient-to-br from-purple-500/20 to-purple-500/5 rounded-2xl p-6 border border-purple-500/20 hover:border-purple-500/40 transition-all duration-300">
+            <div className="absolute top-0 right-0 w-32 h-32 bg-purple-500/10 rounded-full blur-3xl group-hover:scale-150 transition-transform duration-500"></div>
+            <div className="relative">
+              <div className="flex items-center justify-between mb-4">
+                <div className="p-3 bg-purple-500/20 rounded-xl">
+                  <Car className="h-6 w-6 text-purple-400" />
+                </div>
+                <span className="text-xs font-medium text-purple-400 bg-purple-500/10 px-2 py-1 rounded-full">Total</span>
               </div>
-              <div>
-                <p className="text-2xl font-bold text-[#E8E8E8]">{veiculos.length}</p>
-                <p className="text-xs text-[#9E9E9E]">Total Veículos</p>
-              </div>
+              <p className="text-4xl font-bold text-white mb-1">{veiculos.length}</p>
+              <p className="text-sm text-zinc-400">veiculos cadastrados</p>
             </div>
           </div>
-          <div className="group relative bg-[#1E1E1E] rounded-2xl p-5 border border-[#333333] hover:border-blue-500/30 transition-all duration-300 hover:shadow-lg hover:shadow-blue-500/5">
-            <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-transparent rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-            <div className="relative flex items-center gap-3">
-              <div className="p-3 bg-gradient-to-br from-blue-500/20 to-blue-500/5 rounded-xl ring-1 ring-blue-500/20">
-                <User size={20} className="text-blue-400" />
+
+          {/* Clientes */}
+          <div className="group relative overflow-hidden bg-gradient-to-br from-blue-500/20 to-blue-500/5 rounded-2xl p-6 border border-blue-500/20 hover:border-blue-500/40 transition-all duration-300">
+            <div className="absolute top-0 right-0 w-32 h-32 bg-blue-500/10 rounded-full blur-3xl group-hover:scale-150 transition-transform duration-500"></div>
+            <div className="relative">
+              <div className="flex items-center justify-between mb-4">
+                <div className="p-3 bg-blue-500/20 rounded-xl">
+                  <Users className="h-6 w-6 text-blue-400" />
+                </div>
+                <span className="text-xs font-medium text-blue-400 bg-blue-500/10 px-2 py-1 rounded-full">Clientes</span>
               </div>
-              <div>
-                <p className="text-2xl font-bold text-[#E8E8E8]">{clientes.length}</p>
-                <p className="text-xs text-[#9E9E9E]">Clientes</p>
-              </div>
+              <p className="text-4xl font-bold text-white mb-1">{clientes.length}</p>
+              <p className="text-sm text-zinc-400">proprietarios</p>
             </div>
           </div>
-          <div className="group relative bg-[#1E1E1E] rounded-2xl p-5 border border-[#333333] hover:border-amber-500/30 transition-all duration-300 hover:shadow-lg hover:shadow-amber-500/5 hidden md:block">
-            <div className="absolute inset-0 bg-gradient-to-br from-amber-500/5 to-transparent rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-            <div className="relative flex items-center gap-3">
-              <div className="p-3 bg-gradient-to-br from-amber-500/20 to-amber-500/5 rounded-xl ring-1 ring-amber-500/20">
-                <ClipboardList size={20} className="text-amber-400" />
+
+          {/* O.S. Abertas */}
+          <div className="group relative overflow-hidden bg-gradient-to-br from-amber-500/20 to-amber-500/5 rounded-2xl p-6 border border-amber-500/20 hover:border-amber-500/40 transition-all duration-300 hidden xl:block">
+            <div className="absolute top-0 right-0 w-32 h-32 bg-amber-500/10 rounded-full blur-3xl group-hover:scale-150 transition-transform duration-500"></div>
+            <div className="relative">
+              <div className="flex items-center justify-between mb-4">
+                <div className="p-3 bg-amber-500/20 rounded-xl">
+                  <ClipboardList className="h-6 w-6 text-amber-400" />
+                </div>
+                <span className="text-xs font-medium text-amber-400 bg-amber-500/10 px-2 py-1 rounded-full">O.S.</span>
               </div>
-              <div>
-                <p className="text-2xl font-bold text-[#E8E8E8]">0</p>
-                <p className="text-xs text-[#9E9E9E]">O.S. Abertas</p>
-              </div>
+              <p className="text-4xl font-bold text-white mb-1">0</p>
+              <p className="text-sm text-zinc-400">ordens abertas</p>
             </div>
           </div>
         </div>
@@ -265,13 +286,13 @@ export default function VeiculosPage() {
         {/* Toolbar */}
         <div className="flex flex-col md:flex-row gap-4 justify-between">
           <div className="relative flex-1 max-w-md">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-[#9E9E9E]" size={18} />
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-500" size={18} />
             <input
               type="text"
               placeholder="Buscar por placa, marca ou modelo..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full bg-[#1E1E1E] border border-[#333333] rounded-xl pl-11 pr-4 py-3 text-sm text-[#E8E8E8] placeholder-[#616161] focus:outline-none focus:border-[#43A047]/50 focus:ring-1 focus:ring-[#43A047]/20 transition-all duration-200"
+              className="w-full bg-[#1a1a1a] border border-zinc-800/50 rounded-xl pl-11 pr-4 py-3 text-sm text-white placeholder-zinc-500 focus:outline-none focus:border-purple-500/50 focus:ring-1 focus:ring-purple-500/20 transition-all duration-200"
             />
           </div>
           <button
@@ -279,64 +300,66 @@ export default function VeiculosPage() {
               resetForm();
               setShowModal(true);
             }}
-            className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-[#43A047] to-[#1B5E20] rounded-xl text-white font-medium hover:shadow-lg hover:shadow-green-500/10 transition-all duration-300 hover:scale-[1.02]"
+            className="flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-[#43A047] to-[#2E7D32] hover:from-[#2E7D32] hover:to-[#43A047] text-white font-semibold rounded-xl transition-all duration-300 shadow-lg shadow-[#43A047]/25 hover:shadow-[#43A047]/40 hover:scale-[1.02]"
           >
             <Plus size={18} />
-            Novo Veículo
+            Novo Veiculo
           </button>
         </div>
 
-        {/* Grid de Veículos */}
-        {loading ? (
-          <div className="flex items-center justify-center py-12">
-            <Loader2 className="animate-spin text-[#43A047]" size={32} />
-          </div>
-        ) : veiculos.length === 0 ? (
-          <div className="bg-[#1E1E1E] border border-[#333333] rounded-2xl p-12 text-center">
-            <div className="p-4 bg-gradient-to-br from-[#43A047]/10 to-transparent rounded-2xl w-fit mx-auto mb-4">
-              <Car size={48} className="text-[#9E9E9E]" />
+        {/* Grid de Veiculos */}
+        {veiculos.length === 0 ? (
+          <div className="bg-[#1a1a1a] rounded-2xl border border-zinc-800/50 p-12 text-center">
+            <div className="p-4 bg-zinc-800/50 rounded-full w-fit mx-auto mb-4">
+              <Car className="h-8 w-8 text-zinc-600" />
             </div>
-            <p className="text-[#9E9E9E]">Nenhum veículo encontrado</p>
-            <p className="text-sm text-[#66BB6A] mt-1">Cadastre o primeiro veículo clicando no botão acima</p>
+            <p className="text-zinc-400">Nenhum veiculo encontrado</p>
+            <button
+              onClick={() => setShowModal(true)}
+              className="inline-flex items-center gap-2 mt-4 text-[#43A047] hover:text-[#66BB6A] transition-colors"
+            >
+              Cadastrar veiculo
+              <ArrowRight className="h-4 w-4" />
+            </button>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
             {veiculos.map((veiculo) => (
-              <div key={veiculo.id} className="group bg-[#1E1E1E] border border-[#333333] rounded-2xl p-5 hover:border-green-500/30 transition-all duration-300 hover:shadow-lg hover:shadow-[#43A047]/5">
+              <div key={veiculo.id} className="group bg-[#1a1a1a] border border-zinc-800/50 rounded-2xl p-5 hover:border-purple-500/30 transition-all duration-300">
                 <div className="flex items-start justify-between mb-4">
                   <div className="flex items-center gap-3">
-                    <div className="p-3 rounded-xl bg-gradient-to-br from-[#43A047] to-[#1B5E20] ring-2 ring-[#43A047]/20 group-hover:ring-[#43A047]/40 transition-all duration-300">
+                    <div className="p-3 rounded-xl bg-gradient-to-br from-purple-500 to-purple-600 shadow-lg shadow-purple-500/25 group-hover:scale-110 transition-transform duration-300">
                       <Car size={20} className="text-white" />
                     </div>
                     <div>
-                      <h3 className="font-bold text-[#E8E8E8]">{capitalize(veiculo.marca)} {capitalize(veiculo.modelo)}</h3>
-                      <p className="text-sm text-[#9E9E9E]">{veiculo.ano || 'Ano não informado'}</p>
+                      <h3 className="font-bold text-white">{capitalize(veiculo.marca)} {capitalize(veiculo.modelo)}</h3>
+                      <p className="text-sm text-zinc-400">{veiculo.ano || 'Ano nao informado'}</p>
                     </div>
                   </div>
-                  <span className="px-3 py-1.5 bg-[#43A047]/10 text-[#43A047] rounded-lg text-sm font-mono font-bold ring-1 ring-[#43A047]/20">
+                  <span className="px-3 py-1.5 bg-emerald-500/10 text-emerald-400 rounded-lg text-sm font-mono font-bold border border-emerald-500/20">
                     {formatPlate(veiculo.placa)}
                   </span>
                 </div>
 
-                <div className="space-y-3 mb-4">
-                  <div className="flex items-center justify-between text-sm p-2 rounded-lg bg-[#121212]">
-                    <span className="text-[#9E9E9E] flex items-center gap-2">
-                      <User size={14} /> Proprietário
+                <div className="space-y-2 mb-4">
+                  <div className="flex items-center justify-between text-sm p-3 rounded-xl bg-zinc-900 border border-zinc-800">
+                    <span className="text-zinc-400 flex items-center gap-2">
+                      <User size={14} className="text-blue-400" /> Proprietario
                     </span>
-                    <span className="text-[#E8E8E8]">{capitalize(veiculo.cliente.nome)}</span>
+                    <span className="text-white">{capitalize(veiculo.cliente.nome)}</span>
                   </div>
                   {veiculo.kmAtual && (
-                    <div className="flex items-center justify-between text-sm p-2 rounded-lg bg-[#121212]">
-                      <span className="text-[#9E9E9E] flex items-center gap-2">
-                        <Gauge size={14} /> KM Atual
+                    <div className="flex items-center justify-between text-sm p-3 rounded-xl bg-zinc-900 border border-zinc-800">
+                      <span className="text-zinc-400 flex items-center gap-2">
+                        <Gauge size={14} className="text-amber-400" /> KM Atual
                       </span>
-                      <span className="text-[#E8E8E8]">{veiculo.kmAtual.toLocaleString('pt-BR')} km</span>
+                      <span className="text-white">{veiculo.kmAtual.toLocaleString('pt-BR')} km</span>
                     </div>
                   )}
                   {veiculo.cor && (
-                    <div className="flex items-center justify-between text-sm p-2 rounded-lg bg-[#121212]">
-                      <span className="text-[#9E9E9E]">Cor</span>
-                      <span className="text-[#E8E8E8]">{capitalize(veiculo.cor)}</span>
+                    <div className="flex items-center justify-between text-sm p-3 rounded-xl bg-zinc-900 border border-zinc-800">
+                      <span className="text-zinc-400">Cor</span>
+                      <span className="text-white">{capitalize(veiculo.cor)}</span>
                     </div>
                   )}
                 </div>
@@ -344,15 +367,15 @@ export default function VeiculosPage() {
                 <div className="flex gap-2">
                   <button
                     onClick={() => router.push(`/ordens?veiculoId=${veiculo.id}`)}
-                    className="flex-1 flex items-center justify-center gap-2 py-2.5 bg-gradient-to-r from-[#43A047] to-[#1B5E20] rounded-xl text-white text-sm font-medium hover:shadow-lg hover:shadow-green-500/10 transition-all duration-300"
+                    className="flex-1 flex items-center justify-center gap-2 py-2.5 bg-gradient-to-r from-[#43A047] to-[#2E7D32] rounded-xl text-white text-sm font-medium hover:shadow-lg hover:shadow-[#43A047]/25 transition-all duration-300"
                   >
                     <ClipboardList size={16} />
                     Nova O.S.
                   </button>
-                  <div className="flex gap-1 p-1 bg-[#121212] rounded-xl ring-1 ring-[#333333]">
+                  <div className="flex gap-1">
                     <button
                       onClick={() => openEditModal(veiculo)}
-                      className="p-2 hover:bg-[#121212] rounded-lg text-[#9E9E9E] hover:text-[#E8E8E8] transition-all duration-200"
+                      className="p-2.5 hover:bg-zinc-800 rounded-xl text-zinc-500 hover:text-white transition-all duration-200"
                       title="Editar"
                     >
                       <Edit size={16} />
@@ -362,7 +385,7 @@ export default function VeiculosPage() {
                         setSelectedVeiculo(veiculo);
                         setShowDeleteConfirm(true);
                       }}
-                      className="p-2 hover:bg-red-500/10 rounded-lg text-[#9E9E9E] hover:text-red-400 transition-all duration-200"
+                      className="p-2.5 hover:bg-red-500/10 rounded-xl text-zinc-500 hover:text-red-400 transition-all duration-200"
                       title="Excluir"
                     >
                       <Trash2 size={16} />
@@ -375,26 +398,26 @@ export default function VeiculosPage() {
         )}
       </div>
 
-      {/* Modal Novo Veículo */}
+      {/* Modal Novo Veiculo */}
       {showModal && (
-        <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-[#1E1E1E] border border-[#333333] rounded-2xl w-full max-w-md animate-fade-in max-h-[90vh] overflow-y-auto shadow-2xl">
-            <div className="p-6 border-b border-[#333333] flex items-center justify-between">
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="bg-[#1a1a1a] border border-zinc-800 rounded-2xl w-full max-w-md max-h-[90vh] overflow-y-auto shadow-2xl shadow-black/50">
+            <div className="p-6 border-b border-zinc-800 flex items-center justify-between">
               <div>
-                <h2 className="text-xl font-semibold text-[#E8E8E8]">Novo Veículo</h2>
-                <p className="text-sm text-[#9E9E9E] mt-1">Cadastre um novo veículo</p>
+                <h2 className="text-xl font-semibold text-white">Novo Veiculo</h2>
+                <p className="text-sm text-zinc-400 mt-1">Cadastre um novo veiculo</p>
               </div>
-              <button onClick={() => setShowModal(false)} className="p-2 hover:bg-[#121212] rounded-lg text-[#9E9E9E] hover:text-[#E8E8E8] transition-all duration-200">
+              <button onClick={() => setShowModal(false)} className="p-2 hover:bg-zinc-800 rounded-xl text-zinc-400 hover:text-white transition-all duration-200">
                 <X size={20} />
               </button>
             </div>
             <div className="p-6 space-y-4">
               <div>
-                <label className="block text-sm font-medium text-[#94a3b8] mb-2">Cliente *</label>
+                <label className="block text-sm font-medium text-zinc-400 mb-2">Cliente *</label>
                 <select
                   value={form.clienteId}
                   onChange={(e) => setForm({ ...form, clienteId: e.target.value })}
-                  className="w-full bg-[#121212] border border-[#333333] rounded-xl px-4 py-3 text-[#E8E8E8] focus:outline-none focus:border-[#43A047]/50 focus:ring-1 focus:ring-[#43A047]/20 transition-all duration-200"
+                  className="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-purple-500/50 focus:ring-1 focus:ring-purple-500/20 transition-all duration-200"
                 >
                   <option value="">Selecione o cliente</option>
                   {clientes.map((cliente) => (
@@ -403,20 +426,20 @@ export default function VeiculosPage() {
                 </select>
               </div>
               <div>
-                <label className="block text-sm font-medium text-[#94a3b8] mb-2">Placa *</label>
+                <label className="block text-sm font-medium text-zinc-400 mb-2">Placa *</label>
                 <div className="flex gap-2">
                   <input
                     type="text"
                     placeholder="ABC1D23 ou ABC1234"
                     value={form.placa}
                     onChange={(e) => setForm({ ...form, placa: formatPlateInput(e.target.value) })}
-                    className="flex-1 bg-[#121212] border border-[#333333] rounded-xl px-4 py-3 text-[#E8E8E8] placeholder-[#616161] focus:outline-none focus:border-[#43A047]/50 focus:ring-1 focus:ring-[#43A047]/20 uppercase font-mono transition-all duration-200"
+                    className="flex-1 bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-3 text-white placeholder-zinc-600 focus:outline-none focus:border-purple-500/50 focus:ring-1 focus:ring-purple-500/20 uppercase font-mono transition-all duration-200"
                   />
                   <button
                     type="button"
                     onClick={() => setShowOCR(true)}
-                    className="px-4 py-3 bg-gradient-to-r from-[#43A047] to-[#1B5E20] rounded-xl text-white hover:shadow-lg hover:shadow-green-500/10 transition-all duration-300"
-                    title="Ler placa com câmera"
+                    className="px-4 py-3 bg-gradient-to-r from-purple-500 to-purple-600 rounded-xl text-white hover:shadow-lg hover:shadow-purple-500/25 transition-all duration-300"
+                    title="Ler placa com camera"
                   >
                     <Camera size={20} />
                   </button>
@@ -424,75 +447,75 @@ export default function VeiculosPage() {
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-[#94a3b8] mb-2">Marca *</label>
+                  <label className="block text-sm font-medium text-zinc-400 mb-2">Marca *</label>
                   <input
                     type="text"
                     placeholder="Ex: Honda"
                     value={form.marca}
                     onChange={(e) => setForm({ ...form, marca: e.target.value })}
                     maxLength={50}
-                    className="w-full bg-[#121212] border border-[#333333] rounded-xl px-4 py-3 text-[#E8E8E8] placeholder-[#616161] focus:outline-none focus:border-[#43A047]/50 focus:ring-1 focus:ring-[#43A047]/20 transition-all duration-200"
+                    className="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-3 text-white placeholder-zinc-600 focus:outline-none focus:border-purple-500/50 focus:ring-1 focus:ring-purple-500/20 transition-all duration-200"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-[#94a3b8] mb-2">Ano</label>
+                  <label className="block text-sm font-medium text-zinc-400 mb-2">Ano</label>
                   <input
                     type="text"
                     placeholder="2020"
                     value={form.ano}
                     onChange={(e) => setForm({ ...form, ano: e.target.value })}
                     maxLength={4}
-                    className="w-full bg-[#121212] border border-[#333333] rounded-xl px-4 py-3 text-[#E8E8E8] placeholder-[#616161] focus:outline-none focus:border-[#43A047]/50 focus:ring-1 focus:ring-[#43A047]/20 transition-all duration-200"
+                    className="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-3 text-white placeholder-zinc-600 focus:outline-none focus:border-purple-500/50 focus:ring-1 focus:ring-purple-500/20 transition-all duration-200"
                   />
                 </div>
               </div>
               <div>
-                <label className="block text-sm font-medium text-[#94a3b8] mb-2">Modelo *</label>
+                <label className="block text-sm font-medium text-zinc-400 mb-2">Modelo *</label>
                 <input
                   type="text"
                   placeholder="Ex: Civic EXL"
                   value={form.modelo}
                   onChange={(e) => setForm({ ...form, modelo: e.target.value })}
                   maxLength={50}
-                  className="w-full bg-[#121212] border border-[#333333] rounded-xl px-4 py-3 text-[#E8E8E8] placeholder-[#616161] focus:outline-none focus:border-[#43A047]/50 focus:ring-1 focus:ring-[#43A047]/20 transition-all duration-200"
+                  className="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-3 text-white placeholder-zinc-600 focus:outline-none focus:border-purple-500/50 focus:ring-1 focus:ring-purple-500/20 transition-all duration-200"
                 />
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-[#94a3b8] mb-2">Cor</label>
+                  <label className="block text-sm font-medium text-zinc-400 mb-2">Cor</label>
                   <input
                     type="text"
                     placeholder="Ex: Prata"
                     value={form.cor}
                     onChange={(e) => setForm({ ...form, cor: e.target.value })}
                     maxLength={30}
-                    className="w-full bg-[#121212] border border-[#333333] rounded-xl px-4 py-3 text-[#E8E8E8] placeholder-[#616161] focus:outline-none focus:border-[#43A047]/50 focus:ring-1 focus:ring-[#43A047]/20 transition-all duration-200"
+                    className="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-3 text-white placeholder-zinc-600 focus:outline-none focus:border-purple-500/50 focus:ring-1 focus:ring-purple-500/20 transition-all duration-200"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-[#94a3b8] mb-2">KM Atual</label>
+                  <label className="block text-sm font-medium text-zinc-400 mb-2">KM Atual</label>
                   <input
                     type="text"
                     placeholder="45000"
                     value={form.kmAtual}
                     onChange={(e) => setForm({ ...form, kmAtual: e.target.value })}
                     maxLength={10}
-                    className="w-full bg-[#121212] border border-[#333333] rounded-xl px-4 py-3 text-[#E8E8E8] placeholder-[#616161] focus:outline-none focus:border-[#43A047]/50 focus:ring-1 focus:ring-[#43A047]/20 transition-all duration-200"
+                    className="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-3 text-white placeholder-zinc-600 focus:outline-none focus:border-purple-500/50 focus:ring-1 focus:ring-purple-500/20 transition-all duration-200"
                   />
                 </div>
               </div>
             </div>
-            <div className="p-6 border-t border-[#333333] flex gap-3 justify-end">
+            <div className="p-6 border-t border-zinc-800 flex gap-3 justify-end">
               <button
                 onClick={() => setShowModal(false)}
-                className="px-6 py-3 border border-[#333333] rounded-xl text-[#94a3b8] hover:bg-[#121212] transition-all duration-200"
+                className="px-6 py-3 border border-zinc-700 rounded-xl text-zinc-400 hover:bg-zinc-800 transition-all duration-200"
               >
                 Cancelar
               </button>
               <button
                 onClick={handleSubmit}
                 disabled={saving}
-                className="px-6 py-3 bg-gradient-to-r from-[#43A047] to-[#1B5E20] rounded-xl text-white font-medium hover:shadow-lg hover:shadow-green-500/10 transition-all duration-300 disabled:opacity-50"
+                className="px-6 py-3 bg-gradient-to-r from-[#43A047] to-[#2E7D32] rounded-xl text-white font-medium hover:shadow-lg hover:shadow-[#43A047]/25 transition-all duration-300 disabled:opacity-50"
               >
                 {saving ? 'Salvando...' : 'Cadastrar'}
               </button>
@@ -501,26 +524,26 @@ export default function VeiculosPage() {
         </div>
       )}
 
-      {/* Modal Editar Veículo */}
+      {/* Modal Editar Veiculo */}
       {showEditModal && selectedVeiculo && (
-        <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-[#1E1E1E] border border-[#333333] rounded-2xl w-full max-w-md animate-fade-in max-h-[90vh] overflow-y-auto shadow-2xl">
-            <div className="p-6 border-b border-[#333333] flex items-center justify-between">
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="bg-[#1a1a1a] border border-zinc-800 rounded-2xl w-full max-w-md max-h-[90vh] overflow-y-auto shadow-2xl shadow-black/50">
+            <div className="p-6 border-b border-zinc-800 flex items-center justify-between">
               <div>
-                <h2 className="text-xl font-semibold text-[#E8E8E8]">Editar Veículo</h2>
-                <p className="text-sm text-[#9E9E9E] mt-1">Atualize as informações do veículo</p>
+                <h2 className="text-xl font-semibold text-white">Editar Veiculo</h2>
+                <p className="text-sm text-zinc-400 mt-1">Atualize as informacoes do veiculo</p>
               </div>
-              <button onClick={() => setShowEditModal(false)} className="p-2 hover:bg-[#121212] rounded-lg text-[#9E9E9E] hover:text-[#E8E8E8] transition-all duration-200">
+              <button onClick={() => setShowEditModal(false)} className="p-2 hover:bg-zinc-800 rounded-xl text-zinc-400 hover:text-white transition-all duration-200">
                 <X size={20} />
               </button>
             </div>
             <div className="p-6 space-y-4">
               <div>
-                <label className="block text-sm font-medium text-[#94a3b8] mb-2">Cliente *</label>
+                <label className="block text-sm font-medium text-zinc-400 mb-2">Cliente *</label>
                 <select
                   value={form.clienteId}
                   onChange={(e) => setForm({ ...form, clienteId: e.target.value })}
-                  className="w-full bg-[#121212] border border-[#333333] rounded-xl px-4 py-3 text-[#E8E8E8] focus:outline-none focus:border-[#43A047]/50 focus:ring-1 focus:ring-[#43A047]/20 transition-all duration-200"
+                  className="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-purple-500/50 focus:ring-1 focus:ring-purple-500/20 transition-all duration-200"
                 >
                   <option value="">Selecione o cliente</option>
                   {clientes.map((cliente) => (
@@ -529,121 +552,121 @@ export default function VeiculosPage() {
                 </select>
               </div>
               <div>
-                <label className="block text-sm font-medium text-[#94a3b8] mb-2">Placa *</label>
+                <label className="block text-sm font-medium text-zinc-400 mb-2">Placa *</label>
                 <input
                   type="text"
                   placeholder="ABC1D23 ou ABC1234"
                   value={form.placa}
                   onChange={(e) => setForm({ ...form, placa: formatPlateInput(e.target.value) })}
-                  className="w-full bg-[#121212] border border-[#333333] rounded-xl px-4 py-3 text-[#E8E8E8] placeholder-[#616161] focus:outline-none focus:border-[#43A047]/50 focus:ring-1 focus:ring-[#43A047]/20 uppercase font-mono transition-all duration-200"
+                  className="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-3 text-white placeholder-zinc-600 focus:outline-none focus:border-purple-500/50 focus:ring-1 focus:ring-purple-500/20 uppercase font-mono transition-all duration-200"
                 />
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-[#94a3b8] mb-2">Marca *</label>
+                  <label className="block text-sm font-medium text-zinc-400 mb-2">Marca *</label>
                   <input
                     type="text"
                     value={form.marca}
                     onChange={(e) => setForm({ ...form, marca: e.target.value })}
-                    className="w-full bg-[#121212] border border-[#333333] rounded-xl px-4 py-3 text-[#E8E8E8] focus:outline-none focus:border-[#43A047]/50 focus:ring-1 focus:ring-[#43A047]/20 transition-all duration-200"
+                    className="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-purple-500/50 focus:ring-1 focus:ring-purple-500/20 transition-all duration-200"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-[#94a3b8] mb-2">Ano</label>
+                  <label className="block text-sm font-medium text-zinc-400 mb-2">Ano</label>
                   <input
                     type="text"
                     value={form.ano}
                     onChange={(e) => setForm({ ...form, ano: e.target.value })}
-                    className="w-full bg-[#121212] border border-[#333333] rounded-xl px-4 py-3 text-[#E8E8E8] focus:outline-none focus:border-[#43A047]/50 focus:ring-1 focus:ring-[#43A047]/20 transition-all duration-200"
+                    className="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-purple-500/50 focus:ring-1 focus:ring-purple-500/20 transition-all duration-200"
                   />
                 </div>
               </div>
               <div>
-                <label className="block text-sm font-medium text-[#94a3b8] mb-2">Modelo *</label>
+                <label className="block text-sm font-medium text-zinc-400 mb-2">Modelo *</label>
                 <input
                   type="text"
                   value={form.modelo}
                   onChange={(e) => setForm({ ...form, modelo: e.target.value })}
-                  className="w-full bg-[#121212] border border-[#333333] rounded-xl px-4 py-3 text-[#E8E8E8] focus:outline-none focus:border-[#43A047]/50 focus:ring-1 focus:ring-[#43A047]/20 transition-all duration-200"
+                  className="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-purple-500/50 focus:ring-1 focus:ring-purple-500/20 transition-all duration-200"
                 />
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-[#94a3b8] mb-2">Cor</label>
+                  <label className="block text-sm font-medium text-zinc-400 mb-2">Cor</label>
                   <input
                     type="text"
                     value={form.cor}
                     onChange={(e) => setForm({ ...form, cor: e.target.value })}
-                    className="w-full bg-[#121212] border border-[#333333] rounded-xl px-4 py-3 text-[#E8E8E8] focus:outline-none focus:border-[#43A047]/50 focus:ring-1 focus:ring-[#43A047]/20 transition-all duration-200"
+                    className="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-purple-500/50 focus:ring-1 focus:ring-purple-500/20 transition-all duration-200"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-[#94a3b8] mb-2">KM Atual</label>
+                  <label className="block text-sm font-medium text-zinc-400 mb-2">KM Atual</label>
                   <input
                     type="text"
                     value={form.kmAtual}
                     onChange={(e) => setForm({ ...form, kmAtual: e.target.value })}
-                    className="w-full bg-[#121212] border border-[#333333] rounded-xl px-4 py-3 text-[#E8E8E8] focus:outline-none focus:border-[#43A047]/50 focus:ring-1 focus:ring-[#43A047]/20 transition-all duration-200"
+                    className="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-purple-500/50 focus:ring-1 focus:ring-purple-500/20 transition-all duration-200"
                   />
                 </div>
               </div>
             </div>
-            <div className="p-6 border-t border-[#333333] flex gap-3 justify-end">
+            <div className="p-6 border-t border-zinc-800 flex gap-3 justify-end">
               <button
                 onClick={() => setShowEditModal(false)}
-                className="px-6 py-3 border border-[#333333] rounded-xl text-[#94a3b8] hover:bg-[#121212] transition-all duration-200"
+                className="px-6 py-3 border border-zinc-700 rounded-xl text-zinc-400 hover:bg-zinc-800 transition-all duration-200"
               >
                 Cancelar
               </button>
               <button
                 onClick={handleEditSubmit}
                 disabled={saving}
-                className="px-6 py-3 bg-gradient-to-r from-[#43A047] to-[#1B5E20] rounded-xl text-white font-medium hover:shadow-lg hover:shadow-green-500/10 transition-all duration-300 disabled:opacity-50"
+                className="px-6 py-3 bg-gradient-to-r from-[#43A047] to-[#2E7D32] rounded-xl text-white font-medium hover:shadow-lg hover:shadow-[#43A047]/25 transition-all duration-300 disabled:opacity-50"
               >
-                {saving ? 'Salvando...' : 'Salvar Alterações'}
+                {saving ? 'Salvando...' : 'Salvar Alteracoes'}
               </button>
             </div>
           </div>
         </div>
       )}
 
-      {/* Modal Confirmar Exclusão */}
+      {/* Modal Confirmar Exclusao */}
       {showDeleteConfirm && selectedVeiculo && (
-        <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-[#1E1E1E] border border-[#333333] rounded-2xl w-full max-w-md animate-fade-in shadow-2xl">
-            <div className="p-6 border-b border-[#333333]">
-              <h2 className="text-xl font-semibold text-[#E8E8E8]">Confirmar Exclusão</h2>
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="bg-[#1a1a1a] border border-zinc-800 rounded-2xl w-full max-w-md shadow-2xl shadow-black/50">
+            <div className="p-6 border-b border-zinc-800">
+              <h2 className="text-xl font-semibold text-white">Confirmar Exclusao</h2>
             </div>
             <div className="p-6">
               <div className="flex items-center gap-4 mb-4">
-                <div className="p-3 bg-red-500/10 rounded-xl ring-1 ring-red-500/20">
+                <div className="p-3 bg-red-500/10 rounded-xl border border-red-500/20">
                   <Trash2 size={24} className="text-red-400" />
                 </div>
                 <div>
-                  <p className="text-[#E8E8E8] font-medium">{capitalize(selectedVeiculo.marca)} {capitalize(selectedVeiculo.modelo)}</p>
-                  <p className="text-sm text-[#43A047] font-mono">{formatPlate(selectedVeiculo.placa)}</p>
+                  <p className="text-white font-medium">{capitalize(selectedVeiculo.marca)} {capitalize(selectedVeiculo.modelo)}</p>
+                  <p className="text-sm text-emerald-400 font-mono">{formatPlate(selectedVeiculo.placa)}</p>
                 </div>
               </div>
-              <p className="text-[#94a3b8] text-sm">
-                Tem certeza que deseja excluir este veículo? Esta ação não pode ser desfeita.
+              <p className="text-zinc-400 text-sm">
+                Tem certeza que deseja excluir este veiculo? Esta acao nao pode ser desfeita.
               </p>
             </div>
-            <div className="p-6 border-t border-[#333333] flex gap-3 justify-end">
+            <div className="p-6 border-t border-zinc-800 flex gap-3 justify-end">
               <button
                 onClick={() => {
                   setShowDeleteConfirm(false);
                   setSelectedVeiculo(null);
                 }}
-                className="px-6 py-3 border border-[#333333] rounded-xl text-[#94a3b8] hover:bg-[#121212] transition-all duration-200"
+                className="px-6 py-3 border border-zinc-700 rounded-xl text-zinc-400 hover:bg-zinc-800 transition-all duration-200"
               >
                 Cancelar
               </button>
               <button
                 onClick={handleDelete}
                 disabled={saving}
-                className="px-6 py-3 bg-gradient-to-r from-red-500 to-red-700 rounded-xl text-white font-medium hover:shadow-lg hover:shadow-red-500/20 transition-all duration-300 disabled:opacity-50"
+                className="px-6 py-3 bg-gradient-to-r from-red-500 to-red-700 rounded-xl text-white font-medium hover:shadow-lg hover:shadow-red-500/25 transition-all duration-300 disabled:opacity-50"
               >
-                {saving ? 'Excluindo...' : 'Excluir Veículo'}
+                {saving ? 'Excluindo...' : 'Excluir Veiculo'}
               </button>
             </div>
           </div>

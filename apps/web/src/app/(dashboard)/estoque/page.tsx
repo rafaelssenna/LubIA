@@ -759,78 +759,105 @@ export default function EstoquePage() {
   const totalItens = produtos.reduce((acc, p) => acc + p.quantidade, 0);
   const valorTotal = produtos.reduce((acc, p) => acc + (p.quantidade * p.precoCompraAtual), 0);
 
-  return (
-    <div className="min-h-screen bg-[#121212] w-full max-w-full overflow-x-hidden">
-      <Header title="Controle de Estoque" subtitle="Gerencie produtos e movimentações" />
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-[60vh]">
+        <div className="flex flex-col items-center gap-4">
+          <div className="relative">
+            <div className="w-16 h-16 border-4 border-amber-500/20 rounded-full"></div>
+            <div className="absolute top-0 left-0 w-16 h-16 border-4 border-transparent border-t-amber-500 rounded-full animate-spin"></div>
+          </div>
+          <p className="text-zinc-400 animate-pulse">Carregando estoque...</p>
+        </div>
+      </div>
+    );
+  }
 
-      <div className="p-4 md:p-6 space-y-6 animate-fade-in">
-        {/* Stats */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <div className="bg-[#1E1E1E] border border-[#333333] rounded-xl p-4 hover:border-green-500/30 hover:shadow-lg hover:shadow-green-500/10 transition-all duration-300">
-            <div className="flex items-center gap-3">
-              <div className="p-2.5 bg-[#43A047]/20 rounded-xl ring-1 ring-[#43A047]/20">
-                <Package size={20} className="text-[#43A047]" />
+  return (
+    <div className="space-y-8">
+      <Header title="Controle de Estoque" subtitle="Gerencie produtos e movimentacoes" />
+
+      <div className="px-4 lg:px-8 space-y-8">
+        {/* Stats Cards */}
+        <div className="grid grid-cols-2 xl:grid-cols-4 gap-8">
+          {/* Produtos */}
+          <div className="group relative overflow-hidden bg-gradient-to-br from-emerald-500/20 to-emerald-500/5 rounded-2xl p-6 border border-emerald-500/20 hover:border-emerald-500/40 transition-all duration-300">
+            <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-500/10 rounded-full blur-3xl group-hover:scale-150 transition-transform duration-500"></div>
+            <div className="relative">
+              <div className="flex items-center justify-between mb-4">
+                <div className="p-3 bg-emerald-500/20 rounded-xl">
+                  <Package className="h-6 w-6 text-emerald-400" />
+                </div>
+                <span className="text-xs font-medium text-emerald-400 bg-emerald-500/10 px-2 py-1 rounded-full">Produtos</span>
               </div>
-              <div>
-                <p className="text-2xl font-bold text-[#E8E8E8]">{produtos.length}</p>
-                <p className="text-xs text-[#6B7280]">Produtos</p>
-              </div>
+              <p className="text-4xl font-bold text-white mb-1">{produtos.length}</p>
+              <p className="text-sm text-zinc-400">cadastrados</p>
             </div>
           </div>
-          <div className="bg-[#1E1E1E] border border-[#333333] rounded-xl p-4 hover:border-blue-500/30 hover:shadow-lg hover:shadow-blue-500/5 transition-all duration-300">
-            <div className="flex items-center gap-3">
-              <div className="p-2.5 bg-blue-500/10 rounded-xl ring-1 ring-blue-500/20">
-                <Droplets size={20} className="text-blue-400" />
+
+          {/* Itens em Estoque */}
+          <div className="group relative overflow-hidden bg-gradient-to-br from-blue-500/20 to-blue-500/5 rounded-2xl p-6 border border-blue-500/20 hover:border-blue-500/40 transition-all duration-300">
+            <div className="absolute top-0 right-0 w-32 h-32 bg-blue-500/10 rounded-full blur-3xl group-hover:scale-150 transition-transform duration-500"></div>
+            <div className="relative">
+              <div className="flex items-center justify-between mb-4">
+                <div className="p-3 bg-blue-500/20 rounded-xl">
+                  <Droplets className="h-6 w-6 text-blue-400" />
+                </div>
+                <span className="text-xs font-medium text-blue-400 bg-blue-500/10 px-2 py-1 rounded-full">Itens</span>
               </div>
-              <div>
-                <p className="text-2xl font-bold text-[#E8E8E8]">{totalItens.toFixed(0)}</p>
-                <p className="text-xs text-[#6B7280]">Itens em Estoque</p>
-              </div>
+              <p className="text-4xl font-bold text-white mb-1">{totalItens.toFixed(0)}</p>
+              <p className="text-sm text-zinc-400">em estoque</p>
             </div>
           </div>
-          <div className="bg-[#1E1E1E] border border-[#333333] rounded-xl p-4 hover:border-amber-500/30 hover:shadow-lg hover:shadow-amber-500/5 transition-all duration-300">
-            <div className="flex items-center gap-3">
-              <div className="p-2.5 bg-amber-500/10 rounded-xl ring-1 ring-amber-500/20">
-                <DollarSign size={20} className="text-amber-400" />
+
+          {/* Valor Total */}
+          <div className="group relative overflow-hidden bg-gradient-to-br from-amber-500/20 to-amber-500/5 rounded-2xl p-6 border border-amber-500/20 hover:border-amber-500/40 transition-all duration-300">
+            <div className="absolute top-0 right-0 w-32 h-32 bg-amber-500/10 rounded-full blur-3xl group-hover:scale-150 transition-transform duration-500"></div>
+            <div className="relative">
+              <div className="flex items-center justify-between mb-4">
+                <div className="p-3 bg-amber-500/20 rounded-xl">
+                  <DollarSign className="h-6 w-6 text-amber-400" />
+                </div>
+                <span className="text-xs font-medium text-amber-400 bg-amber-500/10 px-2 py-1 rounded-full">Valor</span>
               </div>
-              <div>
-                <p className="text-2xl font-bold text-[#E8E8E8]">
-                  {valorTotal.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
-                </p>
-                <p className="text-xs text-[#6B7280]">Valor Total</p>
-              </div>
+              <p className="text-3xl font-bold text-white mb-1">{valorTotal.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</p>
+              <p className="text-sm text-zinc-400">valor total</p>
             </div>
           </div>
-          <div className="bg-[#1E1E1E] border border-[#333333] rounded-xl p-4 hover:border-red-500/30 hover:shadow-lg hover:shadow-red-500/5 transition-all duration-300">
-            <div className="flex items-center gap-3">
-              <div className={`p-2.5 rounded-xl ring-1 ${estoqueBaixoCount > 0 ? 'bg-red-500/10 ring-red-500/20' : 'bg-[#43A047]/20 ring-[#43A047]/20'}`}>
-                <AlertTriangle size={20} className={estoqueBaixoCount > 0 ? 'text-red-400' : 'text-[#43A047]'} />
+
+          {/* Estoque Baixo */}
+          <div className={`group relative overflow-hidden bg-gradient-to-br ${estoqueBaixoCount > 0 ? 'from-red-500/20 to-red-500/5 border-red-500/20 hover:border-red-500/40' : 'from-emerald-500/20 to-emerald-500/5 border-emerald-500/20 hover:border-emerald-500/40'} rounded-2xl p-6 border transition-all duration-300`}>
+            <div className={`absolute top-0 right-0 w-32 h-32 ${estoqueBaixoCount > 0 ? 'bg-red-500/10' : 'bg-emerald-500/10'} rounded-full blur-3xl group-hover:scale-150 transition-transform duration-500`}></div>
+            <div className="relative">
+              <div className="flex items-center justify-between mb-4">
+                <div className={`p-3 ${estoqueBaixoCount > 0 ? 'bg-red-500/20' : 'bg-emerald-500/20'} rounded-xl`}>
+                  <AlertTriangle className={`h-6 w-6 ${estoqueBaixoCount > 0 ? 'text-red-400' : 'text-emerald-400'}`} />
+                </div>
+                <span className={`text-xs font-medium ${estoqueBaixoCount > 0 ? 'text-red-400 bg-red-500/10' : 'text-emerald-400 bg-emerald-500/10'} px-2 py-1 rounded-full`}>Alerta</span>
               </div>
-              <div>
-                <p className="text-2xl font-bold text-[#E8E8E8]">{estoqueBaixoCount}</p>
-                <p className="text-xs text-[#6B7280]">Estoque Baixo</p>
-              </div>
+              <p className="text-4xl font-bold text-white mb-1">{estoqueBaixoCount}</p>
+              <p className="text-sm text-zinc-400">estoque baixo</p>
             </div>
           </div>
         </div>
 
         {/* Low Stock Alert Banner */}
         {estoqueBaixoCount > 0 && !showOnlyLowStock && (
-          <div className="bg-gradient-to-r from-red-500/10 to-red-500/5 border border-red-500/20 rounded-xl p-4 flex items-center justify-between animate-fade-in">
+          <div className="bg-gradient-to-r from-red-500/10 to-red-500/5 border border-red-500/20 rounded-2xl p-4 flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="p-2.5 bg-red-500/10 rounded-xl ring-1 ring-red-500/20">
+              <div className="p-3 bg-red-500/10 rounded-xl border border-red-500/20">
                 <AlertTriangle size={20} className="text-red-400" />
               </div>
               <div>
-                <p className="text-[#E8E8E8] font-medium">
-                  {estoqueBaixoCount} {estoqueBaixoCount === 1 ? 'produto está' : 'produtos estão'} com estoque baixo
+                <p className="text-white font-medium">
+                  {estoqueBaixoCount} {estoqueBaixoCount === 1 ? 'produto esta' : 'produtos estao'} com estoque baixo
                 </p>
-                <p className="text-sm text-red-400">Verifique os itens que precisam de reposição</p>
+                <p className="text-sm text-red-400">Verifique os itens que precisam de reposicao</p>
               </div>
             </div>
             <button
               onClick={() => setShowOnlyLowStock(true)}
-              className="px-4 py-2 bg-red-500/10 hover:bg-red-500/20 border border-red-500/20 rounded-lg text-red-400 text-sm font-medium hover:scale-[1.02] active:scale-[0.98] transition-all duration-200"
+              className="px-4 py-2 bg-red-500/10 hover:bg-red-500/20 border border-red-500/20 rounded-xl text-red-400 text-sm font-medium transition-all duration-200"
             >
               Ver produtos
             </button>
@@ -840,20 +867,20 @@ export default function EstoquePage() {
         {/* Toolbar */}
         <div className="flex flex-col md:flex-row gap-4 justify-between">
           <div className="flex gap-3 flex-1">
-            <div className="relative flex-1 max-w-md group">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-[#6B7280] group-focus-within:text-[#43A047] transition-colors" size={18} />
+            <div className="relative flex-1 max-w-md">
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-500" size={18} />
               <input
                 type="text"
                 placeholder="Buscar produto..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full bg-[#121212] border border-[#333333] rounded-xl pl-10 pr-4 py-3 text-sm text-[#E8E8E8] placeholder-[#616161] focus:outline-none focus:border-[#43A047]/50 focus:ring-1 focus:ring-[#43A047]/20 transition-all duration-200"
+                className="w-full bg-[#1a1a1a] border border-zinc-800/50 rounded-xl pl-11 pr-4 py-3 text-sm text-white placeholder-zinc-500 focus:outline-none focus:border-amber-500/50 focus:ring-1 focus:ring-amber-500/20 transition-all duration-200"
               />
             </div>
             <select
               value={categoriaFilter}
               onChange={(e) => setCategoriaFilter(e.target.value)}
-              className="bg-[#121212] border border-[#333333] rounded-xl px-4 py-3 text-[#9E9E9E] focus:outline-none focus:border-[#43A047]/50 focus:ring-1 focus:ring-[#43A047]/20 transition-all duration-200"
+              className="bg-[#1a1a1a] border border-zinc-800/50 rounded-xl px-4 py-3 text-zinc-400 focus:outline-none focus:border-amber-500/50 focus:ring-1 focus:ring-amber-500/20 transition-all duration-200"
             >
               {categorias.map((cat) => (
                 <option key={cat.value} value={cat.value}>{cat.label}</option>
@@ -864,7 +891,7 @@ export default function EstoquePage() {
               className={`flex items-center gap-2 px-4 py-3 rounded-xl transition-all duration-200 ${
                 showOnlyLowStock
                   ? 'bg-red-500/10 border border-red-500/50 text-red-400'
-                  : 'border border-[#333333] text-[#9E9E9E] hover:bg-[#121212] hover:text-[#E8E8E8]'
+                  : 'border border-zinc-800/50 text-zinc-500 hover:bg-zinc-800 hover:text-white'
               }`}
               title="Filtrar estoque baixo"
             >

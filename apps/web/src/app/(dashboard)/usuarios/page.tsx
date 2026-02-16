@@ -193,155 +193,164 @@ function UsuariosPageContent() {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-[60vh]">
-        <Loader2 className="h-8 w-8 animate-spin text-[#E85D04]" />
+        <div className="flex flex-col items-center gap-4">
+          <div className="relative">
+            <div className="w-16 h-16 border-4 border-purple-500/20 rounded-full"></div>
+            <div className="absolute top-0 left-0 w-16 h-16 border-4 border-transparent border-t-purple-500 rounded-full animate-spin"></div>
+          </div>
+          <p className="text-zinc-400 animate-pulse">Carregando usuarios...</p>
+        </div>
       </div>
     );
   }
 
   return (
-    <div>
+    <div className="space-y-8">
       <Header
-        title="Usuários"
-        subtitle="Gerencie os usuários da sua empresa"
+        title="Usuarios"
+        subtitle="Gerencie os usuarios da sua empresa"
       />
 
-      {/* Search and Actions */}
-      <div className="flex flex-col md:flex-row gap-4 mb-6">
-        <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-400" />
-          <input
-            type="text"
-            placeholder="Buscar por nome ou email..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full pl-10 pr-4 py-2 bg-[#232323] border border-zinc-700 rounded-lg text-white placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-[#E85D04] focus:border-transparent"
-          />
+      <div className="px-4 lg:px-8 space-y-8">
+        {/* Search and Actions */}
+        <div className="flex flex-col md:flex-row gap-4">
+          <div className="relative flex-1 max-w-md group">
+            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-5 w-5 text-zinc-500 group-focus-within:text-purple-400 transition-colors" />
+            <input
+              type="text"
+              placeholder="Buscar por nome ou email..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="w-full pl-10 pr-4 py-3 bg-[#1a1a1a] border border-zinc-800/50 rounded-xl text-white placeholder-zinc-500 focus:outline-none focus:border-purple-500/50 focus:ring-2 focus:ring-purple-500/20 transition-all"
+            />
+          </div>
+          <button
+            onClick={openNewModal}
+            className="flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-[#43A047] to-[#2E7D32] hover:from-[#2E7D32] hover:to-[#43A047] text-white font-semibold rounded-xl transition-all duration-300 shadow-lg shadow-[#43A047]/25 hover:shadow-[#43A047]/40 hover:scale-[1.02]"
+          >
+            <Plus className="h-5 w-5" />
+            <span>Novo Usuario</span>
+          </button>
         </div>
-        <button
-          onClick={openNewModal}
-          className="flex items-center gap-2 px-4 py-2 bg-[#E85D04] hover:bg-[#E85D04]/90 text-white font-medium rounded-lg transition-colors"
-        >
-          <Plus className="h-4 w-4" />
-          <span>Novo Usuário</span>
-        </button>
-      </div>
 
-      {/* Users List */}
-      <div className="bg-[#232323] rounded-lg overflow-hidden">
-        {filteredUsuarios.length === 0 ? (
-          <div className="text-center py-12">
-            <User className="h-12 w-12 text-zinc-600 mx-auto mb-4" />
-            <p className="text-zinc-400">Nenhum usuário encontrado</p>
-            <button
-              onClick={openNewModal}
-              className="mt-4 text-[#E85D04] hover:underline"
-            >
-              Criar primeiro usuário
-            </button>
-          </div>
-        ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead className="bg-[#1a1a1a]">
-                <tr>
-                  <th className="text-left px-4 py-3 text-xs font-medium text-zinc-400 uppercase tracking-wider">Usuário</th>
-                  <th className="text-left px-4 py-3 text-xs font-medium text-zinc-400 uppercase tracking-wider">Nível</th>
-                  <th className="text-left px-4 py-3 text-xs font-medium text-zinc-400 uppercase tracking-wider">Status</th>
-                  <th className="text-left px-4 py-3 text-xs font-medium text-zinc-400 uppercase tracking-wider">Último Login</th>
-                  <th className="text-right px-4 py-3 text-xs font-medium text-zinc-400 uppercase tracking-wider">Ações</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-zinc-800">
-                {filteredUsuarios.map((usuario) => {
-                  const roleInfo = roleConfig[usuario.role];
+        {/* Users List */}
+        <div className="bg-[#1a1a1a] rounded-2xl border border-zinc-800/50 overflow-hidden">
+          {filteredUsuarios.length === 0 ? (
+            <div className="text-center py-12">
+              <div className="p-4 bg-purple-500/10 rounded-2xl w-fit mx-auto mb-4 border border-purple-500/20">
+                <User className="h-8 w-8 text-purple-400" />
+              </div>
+              <p className="text-white font-medium">Nenhum usuario encontrado</p>
+              <button
+                onClick={openNewModal}
+                className="mt-4 text-[#43A047] hover:text-[#66BB6A] transition-colors"
+              >
+                Criar primeiro usuario
+              </button>
+            </div>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead className="bg-zinc-900/50 border-b border-zinc-800/50">
+                  <tr>
+                    <th className="text-left px-6 py-4 text-xs font-semibold text-zinc-400 uppercase tracking-wider">Usuario</th>
+                    <th className="text-left px-6 py-4 text-xs font-semibold text-zinc-400 uppercase tracking-wider">Nivel</th>
+                    <th className="text-left px-6 py-4 text-xs font-semibold text-zinc-400 uppercase tracking-wider">Status</th>
+                    <th className="text-left px-6 py-4 text-xs font-semibold text-zinc-400 uppercase tracking-wider">Ultimo Login</th>
+                    <th className="text-right px-6 py-4 text-xs font-semibold text-zinc-400 uppercase tracking-wider">Acoes</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-zinc-800/50">
+                  {filteredUsuarios.map((usuario) => {
+                    const roleInfo = roleConfig[usuario.role];
 
-                  return (
-                    <tr key={usuario.id} className="hover:bg-zinc-800/50 transition-colors">
-                      <td className="px-4 py-3">
-                        <div className="flex items-center gap-3">
-                          <div className="p-2 bg-zinc-700 rounded-full">
-                            <User className="h-4 w-4 text-zinc-400" />
+                    return (
+                      <tr key={usuario.id} className="hover:bg-zinc-800/30 transition-colors group">
+                        <td className="px-6 py-4">
+                          <div className="flex items-center gap-4">
+                            <div className="p-2.5 bg-purple-500/10 rounded-xl border border-purple-500/20">
+                              <User className="h-5 w-5 text-purple-400" />
+                            </div>
+                            <div>
+                              <p className="text-white font-semibold">{usuario.nome}</p>
+                              <p className="text-sm text-zinc-400">{usuario.email}</p>
+                            </div>
                           </div>
-                          <div>
-                            <p className="text-white font-medium">{usuario.nome}</p>
-                            <p className="text-xs text-zinc-400">{usuario.email}</p>
+                        </td>
+                        <td className="px-6 py-4">
+                          <span className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium border ${roleInfo.bg} ${roleInfo.color} border-current/20`}>
+                            <Shield className="h-3.5 w-3.5" />
+                            {roleInfo.label}
+                          </span>
+                        </td>
+                        <td className="px-6 py-4">
+                          {usuario.ativo ? (
+                            <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                              <CheckCircle className="h-4 w-4" />
+                              Ativo
+                            </span>
+                          ) : (
+                            <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm bg-red-500/10 text-red-400 border border-red-500/20">
+                              <XCircle className="h-4 w-4" />
+                              Inativo
+                            </span>
+                          )}
+                        </td>
+                        <td className="px-6 py-4">
+                          <span className="text-zinc-400 text-sm">
+                            {formatDate(usuario.lastLoginAt)}
+                          </span>
+                        </td>
+                        <td className="px-6 py-4">
+                          <div className="flex items-center justify-end gap-1.5">
+                            <button
+                              onClick={() => openEditModal(usuario)}
+                              className="p-2 text-zinc-400 hover:text-blue-400 hover:bg-blue-500/10 rounded-lg transition-all"
+                              title="Editar"
+                            >
+                              <Edit className="h-4 w-4" />
+                            </button>
+                            <button
+                              onClick={() => {
+                                setSelectedUsuario(usuario);
+                                setShowDeleteConfirm(true);
+                              }}
+                              className="p-2 text-zinc-400 hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-all"
+                              title="Excluir"
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </button>
                           </div>
-                        </div>
-                      </td>
-                      <td className="px-4 py-3">
-                        <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium ${roleInfo.bg} ${roleInfo.color}`}>
-                          <Shield className="h-3 w-3" />
-                          {roleInfo.label}
-                        </span>
-                      </td>
-                      <td className="px-4 py-3">
-                        {usuario.ativo ? (
-                          <span className="inline-flex items-center gap-1.5 text-green-400 text-sm">
-                            <CheckCircle className="h-4 w-4" />
-                            Ativo
-                          </span>
-                        ) : (
-                          <span className="inline-flex items-center gap-1.5 text-red-400 text-sm">
-                            <XCircle className="h-4 w-4" />
-                            Inativo
-                          </span>
-                        )}
-                      </td>
-                      <td className="px-4 py-3">
-                        <span className="text-zinc-400 text-sm">
-                          {formatDate(usuario.lastLoginAt)}
-                        </span>
-                      </td>
-                      <td className="px-4 py-3">
-                        <div className="flex items-center justify-end gap-1">
-                          <button
-                            onClick={() => openEditModal(usuario)}
-                            className="p-1.5 text-zinc-400 hover:text-blue-400 hover:bg-zinc-700 rounded transition-colors"
-                            title="Editar"
-                          >
-                            <Edit className="h-4 w-4" />
-                          </button>
-                          <button
-                            onClick={() => {
-                              setSelectedUsuario(usuario);
-                              setShowDeleteConfirm(true);
-                            }}
-                            className="p-1.5 text-zinc-400 hover:text-red-400 hover:bg-zinc-700 rounded transition-colors"
-                            title="Excluir"
-                          >
-                            <Trash2 className="h-4 w-4" />
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
-        )}
-      </div>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </div>
 
       {/* Create/Edit Modal */}
       {showModal && (
-        <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4">
-          <div className="bg-[#1a1a1a] rounded-xl w-full max-w-md overflow-hidden">
-            <div className="flex items-center justify-between p-4 border-b border-zinc-800">
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="bg-[#1a1a1a] border border-zinc-800/50 rounded-2xl w-full max-w-md overflow-hidden shadow-2xl shadow-black/50 max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between p-6 border-b border-zinc-800/50 sticky top-0 bg-[#1a1a1a]">
               <h2 className="text-xl font-bold text-white">
-                {editingUsuario ? 'Editar Usuário' : 'Novo Usuário'}
+                {editingUsuario ? 'Editar Usuario' : 'Novo Usuario'}
               </h2>
               <button
                 onClick={() => setShowModal(false)}
-                className="p-2 hover:bg-zinc-800 rounded-lg transition-colors"
+                className="p-2 hover:bg-zinc-800 rounded-lg text-zinc-400 hover:text-white transition-colors"
               >
-                <X className="h-5 w-5 text-zinc-400" />
+                <X className="h-5 w-5" />
               </button>
             </div>
 
-            <div className="p-4 space-y-4">
+            <div className="p-6 space-y-4">
               {/* Nome */}
               <div>
-                <label className="block text-sm font-medium text-zinc-300 mb-2">
+                <label className="block text-sm font-medium text-zinc-400 mb-2">
                   Nome
                 </label>
                 <input
@@ -349,30 +358,30 @@ function UsuariosPageContent() {
                   value={nome}
                   onChange={(e) => setNome(e.target.value)}
                   placeholder="Nome completo"
-                  className="w-full px-4 py-2 bg-[#232323] border border-zinc-700 rounded-lg text-white placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-[#E85D04]"
+                  className="w-full px-4 py-3 bg-zinc-900/50 border border-zinc-800/50 rounded-xl text-white placeholder-zinc-500 focus:outline-none focus:border-purple-500/50 focus:ring-2 focus:ring-purple-500/20 transition-all"
                 />
               </div>
 
               {/* Email */}
               <div>
-                <label className="block text-sm font-medium text-zinc-300 mb-2">
+                <label className="block text-sm font-medium text-zinc-400 mb-2">
                   Email
                 </label>
                 <div className="relative">
-                  <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-400" />
+                  <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-500" />
                   <input
                     type="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="email@exemplo.com"
-                    className="w-full pl-10 pr-4 py-2 bg-[#232323] border border-zinc-700 rounded-lg text-white placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-[#E85D04]"
+                    className="w-full pl-10 pr-4 py-3 bg-zinc-900/50 border border-zinc-800/50 rounded-xl text-white placeholder-zinc-500 focus:outline-none focus:border-purple-500/50 focus:ring-2 focus:ring-purple-500/20 transition-all"
                   />
                 </div>
               </div>
 
               {/* Senha */}
               <div>
-                <label className="block text-sm font-medium text-zinc-300 mb-2">
+                <label className="block text-sm font-medium text-zinc-400 mb-2">
                   {editingUsuario ? 'Nova Senha (deixe em branco para manter)' : 'Senha'}
                 </label>
                 <div className="relative">
@@ -380,13 +389,13 @@ function UsuariosPageContent() {
                     type={showPassword ? 'text' : 'password'}
                     value={senha}
                     onChange={(e) => setSenha(e.target.value)}
-                    placeholder={editingUsuario ? '••••••••' : 'Mínimo 6 caracteres'}
-                    className="w-full px-4 py-2 pr-10 bg-[#232323] border border-zinc-700 rounded-lg text-white placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-[#E85D04]"
+                    placeholder={editingUsuario ? '........' : 'Minimo 6 caracteres'}
+                    className="w-full px-4 py-3 pr-10 bg-zinc-900/50 border border-zinc-800/50 rounded-xl text-white placeholder-zinc-500 focus:outline-none focus:border-purple-500/50 focus:ring-2 focus:ring-purple-500/20 transition-all"
                   />
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-white"
+                    className="absolute right-3.5 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-white transition-colors"
                   >
                     {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                   </button>
@@ -395,16 +404,16 @@ function UsuariosPageContent() {
 
               {/* Role */}
               <div>
-                <label className="block text-sm font-medium text-zinc-300 mb-3">
-                  Nível de Acesso
+                <label className="block text-sm font-medium text-zinc-400 mb-3">
+                  Nivel de Acesso
                 </label>
                 <div className="space-y-2">
                   {/* VENDEDOR */}
                   <label
-                    className={`flex items-start gap-3 p-3 rounded-lg border cursor-pointer transition-all ${
+                    className={`flex items-start gap-3 p-3 rounded-xl border cursor-pointer transition-all ${
                       role === 'VENDEDOR'
                         ? 'bg-orange-500/10 border-orange-500/50'
-                        : 'bg-[#232323] border-zinc-700 hover:border-zinc-600'
+                        : 'bg-zinc-900/50 border-zinc-800/50 hover:border-zinc-700'
                     }`}
                   >
                     <input
@@ -413,23 +422,23 @@ function UsuariosPageContent() {
                       value="VENDEDOR"
                       checked={role === 'VENDEDOR'}
                       onChange={(e) => setRole(e.target.value as any)}
-                      className="mt-1 w-4 h-4 text-[#E85D04] bg-zinc-700 border-zinc-600 focus:ring-[#E85D04]"
+                      className="mt-1 w-4 h-4 text-orange-500 bg-zinc-700 border-zinc-600 focus:ring-orange-500"
                     />
                     <div className="flex-1">
                       <div className="flex items-center gap-2">
                         <span className="font-medium text-white">Vendedor</span>
-                        <span className="text-xs px-2 py-0.5 rounded-full bg-orange-500/20 text-orange-400">VENDEDOR</span>
+                        <span className="text-xs px-2 py-0.5 rounded-lg bg-orange-500/20 text-orange-400">VENDEDOR</span>
                       </div>
-                      <p className="text-xs text-zinc-400 mt-1">Clientes, Veículos, Orçamentos, WhatsApp</p>
+                      <p className="text-xs text-zinc-400 mt-1">Clientes, Veiculos, Orcamentos, WhatsApp</p>
                     </div>
                   </label>
 
                   {/* ATENDENTE */}
                   <label
-                    className={`flex items-start gap-3 p-3 rounded-lg border cursor-pointer transition-all ${
+                    className={`flex items-start gap-3 p-3 rounded-xl border cursor-pointer transition-all ${
                       role === 'ATENDENTE'
-                        ? 'bg-green-500/10 border-green-500/50'
-                        : 'bg-[#232323] border-zinc-700 hover:border-zinc-600'
+                        ? 'bg-emerald-500/10 border-emerald-500/50'
+                        : 'bg-zinc-900/50 border-zinc-800/50 hover:border-zinc-700'
                     }`}
                   >
                     <input
@@ -438,23 +447,23 @@ function UsuariosPageContent() {
                       value="ATENDENTE"
                       checked={role === 'ATENDENTE'}
                       onChange={(e) => setRole(e.target.value as any)}
-                      className="mt-1 w-4 h-4 text-[#E85D04] bg-zinc-700 border-zinc-600 focus:ring-[#E85D04]"
+                      className="mt-1 w-4 h-4 text-emerald-500 bg-zinc-700 border-zinc-600 focus:ring-emerald-500"
                     />
                     <div className="flex-1">
                       <div className="flex items-center gap-2">
                         <span className="font-medium text-white">Atendente</span>
-                        <span className="text-xs px-2 py-0.5 rounded-full bg-green-500/20 text-green-400">ATENDENTE</span>
+                        <span className="text-xs px-2 py-0.5 rounded-lg bg-emerald-500/20 text-emerald-400">ATENDENTE</span>
                       </div>
-                      <p className="text-xs text-zinc-400 mt-1">Dashboard, Clientes, Veículos, Ordens, Orçamentos, WhatsApp</p>
+                      <p className="text-xs text-zinc-400 mt-1">Dashboard, Clientes, Veiculos, Ordens, Orcamentos, WhatsApp</p>
                     </div>
                   </label>
 
                   {/* GERENTE */}
                   <label
-                    className={`flex items-start gap-3 p-3 rounded-lg border cursor-pointer transition-all ${
+                    className={`flex items-start gap-3 p-3 rounded-xl border cursor-pointer transition-all ${
                       role === 'GERENTE'
                         ? 'bg-blue-500/10 border-blue-500/50'
-                        : 'bg-[#232323] border-zinc-700 hover:border-zinc-600'
+                        : 'bg-zinc-900/50 border-zinc-800/50 hover:border-zinc-700'
                     }`}
                   >
                     <input
@@ -463,23 +472,23 @@ function UsuariosPageContent() {
                       value="GERENTE"
                       checked={role === 'GERENTE'}
                       onChange={(e) => setRole(e.target.value as any)}
-                      className="mt-1 w-4 h-4 text-[#E85D04] bg-zinc-700 border-zinc-600 focus:ring-[#E85D04]"
+                      className="mt-1 w-4 h-4 text-blue-500 bg-zinc-700 border-zinc-600 focus:ring-blue-500"
                     />
                     <div className="flex-1">
                       <div className="flex items-center gap-2">
                         <span className="font-medium text-white">Gerente</span>
-                        <span className="text-xs px-2 py-0.5 rounded-full bg-blue-500/20 text-blue-400">GERENTE</span>
+                        <span className="text-xs px-2 py-0.5 rounded-lg bg-blue-500/20 text-blue-400">GERENTE</span>
                       </div>
-                      <p className="text-xs text-zinc-400 mt-1">Tudo exceto Usuários e Configurações</p>
+                      <p className="text-xs text-zinc-400 mt-1">Tudo exceto Usuarios e Configuracoes</p>
                     </div>
                   </label>
 
                   {/* ADMIN */}
                   <label
-                    className={`flex items-start gap-3 p-3 rounded-lg border cursor-pointer transition-all ${
+                    className={`flex items-start gap-3 p-3 rounded-xl border cursor-pointer transition-all ${
                       role === 'ADMIN'
                         ? 'bg-purple-500/10 border-purple-500/50'
-                        : 'bg-[#232323] border-zinc-700 hover:border-zinc-600'
+                        : 'bg-zinc-900/50 border-zinc-800/50 hover:border-zinc-700'
                     }`}
                   >
                     <input
@@ -488,12 +497,12 @@ function UsuariosPageContent() {
                       value="ADMIN"
                       checked={role === 'ADMIN'}
                       onChange={(e) => setRole(e.target.value as any)}
-                      className="mt-1 w-4 h-4 text-[#E85D04] bg-zinc-700 border-zinc-600 focus:ring-[#E85D04]"
+                      className="mt-1 w-4 h-4 text-purple-500 bg-zinc-700 border-zinc-600 focus:ring-purple-500"
                     />
                     <div className="flex-1">
                       <div className="flex items-center gap-2">
                         <span className="font-medium text-white">Administrador</span>
-                        <span className="text-xs px-2 py-0.5 rounded-full bg-purple-500/20 text-purple-400">ADMIN</span>
+                        <span className="text-xs px-2 py-0.5 rounded-lg bg-purple-500/20 text-purple-400">ADMIN</span>
                       </div>
                       <p className="text-xs text-zinc-400 mt-1">Acesso total ao sistema</p>
                     </div>
@@ -503,35 +512,35 @@ function UsuariosPageContent() {
 
               {/* Ativo */}
               {editingUsuario && (
-                <div className="flex items-center gap-3">
+                <div className="flex items-center gap-3 p-3 bg-zinc-900/50 rounded-xl border border-zinc-800/50">
                   <input
                     type="checkbox"
                     id="ativo"
                     checked={ativo}
                     onChange={(e) => setAtivo(e.target.checked)}
-                    className="w-4 h-4 text-[#E85D04] bg-zinc-700 border-zinc-600 rounded focus:ring-[#E85D04]"
+                    className="w-4 h-4 text-emerald-500 bg-zinc-700 border-zinc-600 rounded focus:ring-emerald-500"
                   />
                   <label htmlFor="ativo" className="text-sm text-zinc-300">
-                    Usuário ativo
+                    Usuario ativo
                   </label>
                 </div>
               )}
             </div>
 
-            <div className="p-4 border-t border-zinc-800 flex justify-between">
+            <div className="p-6 border-t border-zinc-800/50 flex justify-end gap-3 sticky bottom-0 bg-[#1a1a1a]">
               <button
                 onClick={() => setShowModal(false)}
-                className="px-4 py-2 text-zinc-400 hover:text-white transition-colors"
+                className="px-6 py-3 border border-zinc-700 rounded-xl text-zinc-300 hover:bg-zinc-800 transition-colors"
               >
                 Cancelar
               </button>
               <button
                 onClick={handleSubmit}
                 disabled={saving}
-                className="flex items-center gap-2 px-6 py-2 bg-[#E85D04] hover:bg-[#E85D04]/90 text-white font-medium rounded-lg transition-colors disabled:opacity-50"
+                className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-[#43A047] to-[#2E7D32] hover:from-[#2E7D32] hover:to-[#43A047] text-white font-semibold rounded-xl transition-all duration-300 shadow-lg shadow-[#43A047]/25 disabled:opacity-50"
               >
                 {saving && <Loader2 className="h-4 w-4 animate-spin" />}
-                {editingUsuario ? 'Salvar' : 'Criar Usuário'}
+                {editingUsuario ? 'Salvar' : 'Criar Usuario'}
               </button>
             </div>
           </div>
@@ -540,34 +549,32 @@ function UsuariosPageContent() {
 
       {/* Delete Confirmation Modal */}
       {showDeleteConfirm && selectedUsuario && (
-        <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4">
-          <div className="bg-[#1a1a1a] rounded-xl w-full max-w-sm p-6">
-            <div className="flex items-center gap-3 mb-4">
-              <div className="p-3 bg-red-500/10 rounded-full">
-                <Trash2 className="h-6 w-6 text-red-500" />
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="bg-[#1a1a1a] border border-zinc-800/50 rounded-2xl w-full max-w-sm shadow-2xl shadow-black/50">
+            <div className="p-6">
+              <div className="w-14 h-14 mx-auto mb-4 bg-red-500/10 rounded-2xl flex items-center justify-center border border-red-500/20">
+                <Trash2 className="h-7 w-7 text-red-400" />
               </div>
-              <div>
-                <h3 className="text-lg font-bold text-white">Excluir Usuário</h3>
-                <p className="text-sm text-zinc-400">{selectedUsuario.nome}</p>
-              </div>
+              <h3 className="text-xl font-bold text-white text-center mb-2">Excluir Usuario</h3>
+              <p className="text-zinc-400 text-center text-sm mb-1">{selectedUsuario.nome}</p>
+              <p className="text-zinc-500 text-center text-sm">
+                Tem certeza que deseja excluir este usuario? Esta acao nao pode ser desfeita.
+              </p>
             </div>
-            <p className="text-zinc-300 mb-6">
-              Tem certeza que deseja excluir este usuário? Esta ação não pode ser desfeita.
-            </p>
-            <div className="flex gap-3">
+            <div className="p-6 border-t border-zinc-800/50 flex gap-3">
               <button
                 onClick={() => {
                   setShowDeleteConfirm(false);
                   setSelectedUsuario(null);
                 }}
-                className="flex-1 px-4 py-2 border border-zinc-700 text-white rounded-lg hover:bg-zinc-800 transition-colors"
+                className="flex-1 px-6 py-3 border border-zinc-700 text-zinc-300 rounded-xl hover:bg-zinc-800 transition-colors"
               >
                 Cancelar
               </button>
               <button
                 onClick={handleDelete}
                 disabled={saving}
-                className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors disabled:opacity-50"
+                className="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-600 text-white font-semibold rounded-xl transition-all duration-300 shadow-lg shadow-red-500/25 disabled:opacity-50"
               >
                 {saving && <Loader2 className="h-4 w-4 animate-spin" />}
                 Excluir
@@ -576,6 +583,7 @@ function UsuariosPageContent() {
           </div>
         </div>
       )}
+      </div>
     </div>
   );
 }
@@ -584,7 +592,13 @@ export default function UsuariosPage() {
   return (
     <Suspense fallback={
       <div className="flex items-center justify-center h-[60vh]">
-        <Loader2 className="h-8 w-8 animate-spin text-[#E85D04]" />
+        <div className="flex flex-col items-center gap-4">
+          <div className="relative">
+            <div className="w-16 h-16 border-4 border-purple-500/20 rounded-full"></div>
+            <div className="absolute top-0 left-0 w-16 h-16 border-4 border-transparent border-t-purple-500 rounded-full animate-spin"></div>
+          </div>
+          <p className="text-zinc-400 animate-pulse">Carregando...</p>
+        </div>
       </div>
     }>
       <UsuariosPageContent />

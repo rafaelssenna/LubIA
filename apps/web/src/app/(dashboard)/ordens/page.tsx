@@ -504,59 +504,84 @@ function OrdensPageContent() {
     return date.toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' });
   };
 
-  return (
-    <div className="min-h-screen bg-[#121212]/50">
-      <Header title="Ordens de Serviço" subtitle="Gerencie suas O.S." />
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-[60vh]">
+        <div className="flex flex-col items-center gap-4">
+          <div className="relative">
+            <div className="w-16 h-16 border-4 border-emerald-500/20 rounded-full"></div>
+            <div className="absolute top-0 left-0 w-16 h-16 border-4 border-transparent border-t-emerald-500 rounded-full animate-spin"></div>
+          </div>
+          <p className="text-zinc-400 animate-pulse">Carregando ordens...</p>
+        </div>
+      </div>
+    );
+  }
 
-      <div className="p-6 space-y-6 animate-fade-in">
-        {/* Stats */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <div className="group relative bg-[#1E1E1E] rounded-2xl p-5 border border-[#333333] hover:border-green-500/30 transition-all duration-300 hover:shadow-lg hover:shadow-green-500/5">
-            <div className="absolute inset-0 bg-gradient-to-br from-[#43A047]/5 to-transparent rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-            <div className="relative flex items-center gap-4">
-              <div className="p-3 bg-gradient-to-br from-[#43A047]/20 to-[#43A047]/5 rounded-xl ring-1 ring-[#43A047]/20">
-                <ClipboardList size={22} className="text-[#43A047]" />
+  return (
+    <div className="space-y-8">
+      <Header title="Ordens de Servico" subtitle="Gerencie suas O.S." />
+
+      <div className="px-4 lg:px-8 space-y-8">
+        {/* Stats Cards */}
+        <div className="grid grid-cols-2 xl:grid-cols-4 gap-8">
+          {/* Total O.S. */}
+          <div className="group relative overflow-hidden bg-gradient-to-br from-emerald-500/20 to-emerald-500/5 rounded-2xl p-6 border border-emerald-500/20 hover:border-emerald-500/40 transition-all duration-300">
+            <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-500/10 rounded-full blur-3xl group-hover:scale-150 transition-transform duration-500"></div>
+            <div className="relative">
+              <div className="flex items-center justify-between mb-4">
+                <div className="p-3 bg-emerald-500/20 rounded-xl">
+                  <ClipboardList className="h-6 w-6 text-emerald-400" />
+                </div>
+                <span className="text-xs font-medium text-emerald-400 bg-emerald-500/10 px-2 py-1 rounded-full">Total</span>
               </div>
-              <div>
-                <p className="text-3xl font-bold text-[#E8E8E8] tracking-tight">{stats.total}</p>
-                <p className="text-sm text-[#9E9E9E] font-medium">Total O.S.</p>
-              </div>
+              <p className="text-4xl font-bold text-white mb-1">{stats.total}</p>
+              <p className="text-sm text-zinc-400">ordens de servico</p>
             </div>
           </div>
-          <div className="group relative bg-[#1E1E1E] rounded-2xl p-5 border border-[#333333] hover:border-purple-500/30 transition-all duration-300 hover:shadow-lg hover:shadow-purple-500/5">
-            <div className="absolute inset-0 bg-gradient-to-br from-purple-500/5 to-transparent rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-            <div className="relative flex items-center gap-4">
-              <div className="p-3 bg-gradient-to-br from-purple-500/20 to-purple-500/5 rounded-xl ring-1 ring-purple-500/20">
-                <Play size={22} className="text-purple-400" />
+
+          {/* Em Aberto */}
+          <div className="group relative overflow-hidden bg-gradient-to-br from-purple-500/20 to-purple-500/5 rounded-2xl p-6 border border-purple-500/20 hover:border-purple-500/40 transition-all duration-300">
+            <div className="absolute top-0 right-0 w-32 h-32 bg-purple-500/10 rounded-full blur-3xl group-hover:scale-150 transition-transform duration-500"></div>
+            <div className="relative">
+              <div className="flex items-center justify-between mb-4">
+                <div className="p-3 bg-purple-500/20 rounded-xl">
+                  <Play className="h-6 w-6 text-purple-400" />
+                </div>
+                <span className="text-xs font-medium text-purple-400 bg-purple-500/10 px-2 py-1 rounded-full">Abertas</span>
               </div>
-              <div>
-                <p className="text-3xl font-bold text-[#E8E8E8] tracking-tight">{stats.abertas}</p>
-                <p className="text-sm text-[#9E9E9E] font-medium">Em Aberto</p>
-              </div>
+              <p className="text-4xl font-bold text-white mb-1">{stats.abertas}</p>
+              <p className="text-sm text-zinc-400">em andamento</p>
             </div>
           </div>
-          <div className="group relative bg-[#1E1E1E] rounded-2xl p-5 border border-[#333333] hover:border-cyan-500/30 transition-all duration-300 hover:shadow-lg hover:shadow-cyan-500/5">
-            <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/5 to-transparent rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-            <div className="relative flex items-center gap-4">
-              <div className="p-3 bg-gradient-to-br from-cyan-500/20 to-cyan-500/5 rounded-xl ring-1 ring-cyan-500/20">
-                <CheckCircle size={22} className="text-cyan-400" />
+
+          {/* Concluidas */}
+          <div className="group relative overflow-hidden bg-gradient-to-br from-cyan-500/20 to-cyan-500/5 rounded-2xl p-6 border border-cyan-500/20 hover:border-cyan-500/40 transition-all duration-300">
+            <div className="absolute top-0 right-0 w-32 h-32 bg-cyan-500/10 rounded-full blur-3xl group-hover:scale-150 transition-transform duration-500"></div>
+            <div className="relative">
+              <div className="flex items-center justify-between mb-4">
+                <div className="p-3 bg-cyan-500/20 rounded-xl">
+                  <CheckCircle className="h-6 w-6 text-cyan-400" />
+                </div>
+                <span className="text-xs font-medium text-cyan-400 bg-cyan-500/10 px-2 py-1 rounded-full">Finalizadas</span>
               </div>
-              <div>
-                <p className="text-3xl font-bold text-[#E8E8E8] tracking-tight">{stats.concluidas}</p>
-                <p className="text-sm text-[#9E9E9E] font-medium">Concluídas</p>
-              </div>
+              <p className="text-4xl font-bold text-white mb-1">{stats.concluidas}</p>
+              <p className="text-sm text-zinc-400">concluidas</p>
             </div>
           </div>
-          <div className="group relative bg-[#1E1E1E] rounded-2xl p-5 border border-[#333333] hover:border-blue-500/30 transition-all duration-300 hover:shadow-lg hover:shadow-blue-500/5">
-            <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-transparent rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-            <div className="relative flex items-center gap-4">
-              <div className="p-3 bg-gradient-to-br from-blue-500/20 to-blue-500/5 rounded-xl ring-1 ring-blue-500/20">
-                <Calendar size={22} className="text-blue-400" />
+
+          {/* Hoje */}
+          <div className="group relative overflow-hidden bg-gradient-to-br from-blue-500/20 to-blue-500/5 rounded-2xl p-6 border border-blue-500/20 hover:border-blue-500/40 transition-all duration-300">
+            <div className="absolute top-0 right-0 w-32 h-32 bg-blue-500/10 rounded-full blur-3xl group-hover:scale-150 transition-transform duration-500"></div>
+            <div className="relative">
+              <div className="flex items-center justify-between mb-4">
+                <div className="p-3 bg-blue-500/20 rounded-xl">
+                  <Calendar className="h-6 w-6 text-blue-400" />
+                </div>
+                <span className="text-xs font-medium text-blue-400 bg-blue-500/10 px-2 py-1 rounded-full">Hoje</span>
               </div>
-              <div>
-                <p className="text-3xl font-bold text-[#E8E8E8] tracking-tight">{stats.hoje}</p>
-                <p className="text-sm text-[#9E9E9E] font-medium">Hoje</p>
-              </div>
+              <p className="text-4xl font-bold text-white mb-1">{stats.hoje}</p>
+              <p className="text-sm text-zinc-400">agendadas hoje</p>
             </div>
           </div>
         </div>
@@ -565,13 +590,13 @@ function OrdensPageContent() {
         <div className="flex flex-col md:flex-row gap-4 justify-between">
           <div className="flex flex-1 gap-4 items-center">
             {/* View Mode Toggle */}
-            <div className="flex items-center gap-1 bg-[#1E1E1E] border border-[#333333] rounded-xl p-1">
+            <div className="flex items-center gap-1 bg-[#1a1a1a] border border-zinc-800/50 rounded-xl p-1">
               <button
                 onClick={() => setViewMode('lista')}
                 className={`p-2.5 rounded-lg transition-all duration-200 ${
                   viewMode === 'lista'
-                    ? 'bg-gradient-to-r from-[#43A047] to-[#1B5E20] text-white shadow-lg shadow-green-500/10'
-                    : 'text-[#9E9E9E] hover:text-[#E8E8E8] hover:bg-[#121212]'
+                    ? 'bg-gradient-to-r from-[#43A047] to-[#2E7D32] text-white shadow-lg shadow-[#43A047]/25'
+                    : 'text-zinc-500 hover:text-white hover:bg-zinc-800'
                 }`}
                 title="Lista"
               >
@@ -581,10 +606,10 @@ function OrdensPageContent() {
                 onClick={() => setViewMode('calendario')}
                 className={`p-2.5 rounded-lg transition-all duration-200 ${
                   viewMode === 'calendario'
-                    ? 'bg-gradient-to-r from-[#43A047] to-[#1B5E20] text-white shadow-lg shadow-green-500/10'
-                    : 'text-[#9E9E9E] hover:text-[#E8E8E8] hover:bg-[#121212]'
+                    ? 'bg-gradient-to-r from-[#43A047] to-[#2E7D32] text-white shadow-lg shadow-[#43A047]/25'
+                    : 'text-zinc-500 hover:text-white hover:bg-zinc-800'
                 }`}
-                title="Calendário"
+                title="Calendario"
               >
                 <CalendarDays size={18} />
               </button>
@@ -592,20 +617,20 @@ function OrdensPageContent() {
 
             {viewMode === 'lista' ? (
               <>
-                <div className="relative flex-1 max-w-md group">
-                  <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-[#9E9E9E] group-focus-within:text-[#43A047] transition-colors" size={18} />
+                <div className="relative flex-1 max-w-md">
+                  <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-500" size={18} />
                   <input
                     type="text"
-                    placeholder="Buscar por número, placa ou cliente..."
+                    placeholder="Buscar por numero, placa ou cliente..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="w-full bg-[#1E1E1E] border border-[#333333] rounded-xl pl-11 pr-4 py-3.5 text-sm text-[#E8E8E8] placeholder-gray-400 focus:outline-none focus:border-[#43A047]/50 focus:ring-2 focus:ring-[#43A047]/10 transition-all duration-200"
+                    className="w-full bg-[#1a1a1a] border border-zinc-800/50 rounded-xl pl-11 pr-4 py-3 text-sm text-white placeholder-zinc-500 focus:outline-none focus:border-emerald-500/50 focus:ring-1 focus:ring-emerald-500/20 transition-all duration-200"
                   />
                 </div>
                 <select
                   value={statusFilter}
                   onChange={(e) => setStatusFilter(e.target.value)}
-                  className="bg-[#1E1E1E] border border-[#333333] rounded-xl px-4 py-3.5 text-sm text-[#E8E8E8] focus:outline-none focus:border-[#43A047]/50 focus:ring-2 focus:ring-[#43A047]/10 transition-all duration-200 cursor-pointer"
+                  className="bg-[#1a1a1a] border border-zinc-800/50 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-emerald-500/50 focus:ring-1 focus:ring-emerald-500/20 transition-all duration-200 cursor-pointer"
                 >
                   <option value="">Todos os Status</option>
                   {Object.entries(statusConfig).map(([key, config]) => (
@@ -617,22 +642,22 @@ function OrdensPageContent() {
               <div className="flex items-center gap-2">
                 <button
                   onClick={() => navigateWeek(-1)}
-                  className="p-2.5 bg-[#1E1E1E] border border-[#333333] rounded-lg text-[#9E9E9E] hover:text-[#E8E8E8] hover:border-green-500/30 transition-all duration-200"
+                  className="p-2.5 bg-[#1a1a1a] border border-zinc-800/50 rounded-lg text-zinc-500 hover:text-white hover:border-emerald-500/30 transition-all duration-200"
                 >
                   <ChevronLeft size={18} />
                 </button>
-                <span className="text-[#E8E8E8] font-medium px-4 min-w-[160px] text-center capitalize">
+                <span className="text-white font-medium px-4 min-w-[160px] text-center capitalize">
                   {formatMonthYear(currentDate)}
                 </span>
                 <button
                   onClick={() => navigateWeek(1)}
-                  className="p-2.5 bg-[#1E1E1E] border border-[#333333] rounded-lg text-[#9E9E9E] hover:text-[#E8E8E8] hover:border-green-500/30 transition-all duration-200"
+                  className="p-2.5 bg-[#1a1a1a] border border-zinc-800/50 rounded-lg text-zinc-500 hover:text-white hover:border-emerald-500/30 transition-all duration-200"
                 >
                   <ChevronRight size={18} />
                 </button>
                 <button
                   onClick={() => setCurrentDate(new Date())}
-                  className="px-4 py-2.5 bg-[#1E1E1E] border border-[#333333] rounded-lg text-[#9E9E9E] hover:text-[#43A047] hover:border-green-500/30 transition-all duration-200 text-sm font-medium"
+                  className="px-4 py-2.5 bg-[#1a1a1a] border border-zinc-800/50 rounded-lg text-zinc-500 hover:text-[#43A047] hover:border-emerald-500/30 transition-all duration-200 text-sm font-medium"
                 >
                   Hoje
                 </button>
@@ -641,28 +666,28 @@ function OrdensPageContent() {
           </div>
           <button
             onClick={() => openNewModal()}
-            className="flex items-center gap-2 px-6 py-3.5 bg-gradient-to-r from-[#43A047] to-[#16a34a] rounded-xl text-white font-semibold shadow-lg shadow-green-500/10 hover:shadow-xl hover:shadow-green-500/10 hover:scale-[1.02] active:scale-[0.98] transition-all duration-200"
+            className="flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-[#43A047] to-[#2E7D32] hover:from-[#2E7D32] hover:to-[#43A047] text-white font-semibold rounded-xl transition-all duration-300 shadow-lg shadow-[#43A047]/25 hover:shadow-[#43A047]/40 hover:scale-[1.02]"
           >
-            <Plus size={18} strokeWidth={2.5} />
+            <Plus size={18} />
             Nova O.S.
           </button>
         </div>
 
         {/* Calendar View */}
         {viewMode === 'calendario' && (
-          <div className="bg-[#1E1E1E] border border-[#333333] rounded-2xl overflow-hidden">
+          <div className="bg-[#1a1a1a] border border-zinc-800/50 rounded-2xl overflow-hidden">
             {/* Calendar Header */}
-            <div className="grid grid-cols-8 border-b border-[#333333]">
-              <div className="p-4 text-[#9E9E9E] text-sm font-medium">Horario</div>
+            <div className="grid grid-cols-8 border-b border-zinc-800/50">
+              <div className="p-4 text-zinc-500 text-sm font-medium">Horario</div>
               {weekDays.map((date, idx) => {
                 const isTodayDate = isToday(date);
                 return (
                   <div
                     key={idx}
-                    className={`p-4 text-center border-l border-[#333333] ${isTodayDate ? 'bg-green-500/10' : ''}`}
+                    className={`p-4 text-center border-l border-zinc-800/50 ${isTodayDate ? 'bg-emerald-500/10' : ''}`}
                   >
-                    <p className="text-[#9E9E9E] text-xs">{diasSemana[idx]}</p>
-                    <p className={`text-lg font-bold ${isTodayDate ? 'text-[#43A047]' : 'text-[#E8E8E8]'}`}>
+                    <p className="text-zinc-500 text-xs">{diasSemana[idx]}</p>
+                    <p className={`text-lg font-bold ${isTodayDate ? 'text-emerald-400' : 'text-white'}`}>
                       {date.getDate()}
                     </p>
                   </div>
@@ -673,8 +698,8 @@ function OrdensPageContent() {
             {/* Calendar Body */}
             <div className="max-h-[600px] overflow-y-auto">
               {horasTrabalho.map((hora) => (
-                <div key={hora} className="grid grid-cols-8 border-b border-[#333333]/50 min-h-[80px]">
-                  <div className="p-3 text-[#9E9E9E] text-sm border-r border-[#333333]/50">
+                <div key={hora} className="grid grid-cols-8 border-b border-zinc-800/30 min-h-[80px]">
+                  <div className="p-3 text-zinc-500 text-sm border-r border-zinc-800/30">
                     {hora}
                   </div>
                   {weekDays.map((date, idx) => {
@@ -689,7 +714,7 @@ function OrdensPageContent() {
                             openNewModalFromCalendar(date, hora);
                           }
                         }}
-                        className={`p-1 border-l border-[#333333]/50 relative ${isTodayDate ? 'bg-green-500/10/50' : ''} hover:bg-[#121212] transition-all duration-200 ${diaOrdens.length === 0 ? 'cursor-pointer group' : ''}`}
+                        className={`p-1 border-l border-zinc-800/30 relative ${isTodayDate ? 'bg-emerald-500/5' : ''} hover:bg-zinc-800/30 transition-all duration-200 ${diaOrdens.length === 0 ? 'cursor-pointer group' : ''}`}
                       >
                         {diaOrdens.length === 0 && (
                           <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
@@ -705,7 +730,7 @@ function OrdensPageContent() {
                                 setSelectedOrdem(ordem);
                                 setShowDetailModal(true);
                               }}
-                              className={`p-2 rounded-lg text-xs ${status.bg} ${status.color} border border-[#333333] mb-1 hover:scale-[1.02] transition-transform duration-200 cursor-pointer`}
+                              className={`p-2 rounded-lg text-xs ${status.bg} ${status.color} border border-zinc-800/50 mb-1 hover:scale-[1.02] transition-transform duration-200 cursor-pointer`}
                             >
                               <p className="font-semibold truncate">{capitalize(ordem.veiculo.cliente.nome)}</p>
                               <p className="truncate opacity-90">{formatPlate(ordem.veiculo.placa)}</p>
@@ -725,19 +750,19 @@ function OrdensPageContent() {
         {/* Lista de O.S. */}
         {viewMode === 'lista' && (
         <>
-        <div className="space-y-3">
-          {loading ? (
-            <div className="bg-[#1E1E1E] border border-[#333333] rounded-2xl p-12 text-center">
-              <Loader2 className="animate-spin mx-auto mb-3 text-[#43A047]" size={36} />
-              <p className="text-[#9E9E9E]">Carregando...</p>
-            </div>
-          ) : ordens.length === 0 ? (
-            <div className="bg-[#1E1E1E] border border-[#333333] rounded-2xl p-12 text-center">
-              <div className="w-16 h-16 mx-auto mb-4 bg-[#2A2A2A] rounded-2xl flex items-center justify-center">
-                <ClipboardList className="text-[#66BB6A]" size={32} />
+        <div className="space-y-4">
+          {ordens.length === 0 ? (
+            <div className="bg-[#1a1a1a] border border-zinc-800/50 rounded-2xl p-12 text-center">
+              <div className="p-4 bg-zinc-800/50 rounded-full w-fit mx-auto mb-4">
+                <ClipboardList className="h-8 w-8 text-zinc-600" />
               </div>
-              <p className="text-[#9E9E9E] font-medium">Nenhuma O.S. encontrada</p>
-              <p className="text-[#66BB6A] text-sm mt-1">Crie uma nova ordem de servico</p>
+              <p className="text-zinc-400">Nenhuma O.S. encontrada</p>
+              <button
+                onClick={() => openNewModal()}
+                className="inline-flex items-center gap-2 mt-4 text-[#43A047] hover:text-[#66BB6A] transition-colors"
+              >
+                Criar nova ordem de servico
+              </button>
             </div>
           ) : (
             ordens.map((ordem) => {
@@ -746,25 +771,25 @@ function OrdensPageContent() {
               return (
                 <div
                   key={ordem.id}
-                  className="group relative bg-[#1E1E1E] border border-[#333333] rounded-2xl p-5 hover:border-[#66BB6A] hover:shadow-xl hover:shadow-[#333333]/20 transition-all duration-300"
+                  className="group bg-[#1a1a1a] border border-zinc-800/50 rounded-2xl p-5 hover:border-emerald-500/30 transition-all duration-300"
                 >
                   <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                     <div className="flex items-start gap-4">
-                      <div className={`p-3.5 ${statusCfg.bg} rounded-xl ring-1 ring-[#333333]`}>
+                      <div className={`p-3 ${statusCfg.bg} rounded-xl border border-zinc-800/50`}>
                         <StatusIcon size={24} className={statusCfg.color} />
                       </div>
                       <div className="space-y-1.5">
                         <div className="flex items-center gap-3">
-                          <span className="text-lg font-bold text-[#E8E8E8] tracking-tight">#{ordem.numero.slice(-8).toUpperCase()}</span>
-                          <span className={`px-2.5 py-1 ${statusCfg.bg} rounded-lg text-xs font-semibold ${statusCfg.color} ring-1 ring-[#333333]`}>
+                          <span className="text-lg font-bold text-white">#{ordem.numero.slice(-8).toUpperCase()}</span>
+                          <span className={`px-2.5 py-1 ${statusCfg.bg} rounded-lg text-xs font-semibold ${statusCfg.color} border border-zinc-800/50`}>
                             {statusCfg.label}
                           </span>
                         </div>
-                        <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-[#9E9E9E]">
+                        <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-zinc-400">
                           <span className="flex items-center gap-1.5">
-                            <Car size={14} className="text-[#43A047]" />
-                            <span className="font-medium text-[#9E9E9E]">{formatPlate(ordem.veiculo.placa)}</span>
-                            <span className="text-[#66BB6A]">•</span>
+                            <Car size={14} className="text-emerald-400" />
+                            <span className="font-medium text-emerald-400">{formatPlate(ordem.veiculo.placa)}</span>
+                            <span className="text-zinc-600">-</span>
                             {capitalize(ordem.veiculo.marca)} {capitalize(ordem.veiculo.modelo)}
                           </span>
                           <span className="flex items-center gap-1.5">
@@ -772,15 +797,15 @@ function OrdensPageContent() {
                             {capitalize(ordem.veiculo.cliente.nome)}
                           </span>
                         </div>
-                        <div className="flex items-center gap-4 text-xs text-[#9E9E9E]">
+                        <div className="flex items-center gap-4 text-xs text-zinc-500">
                           <span>{formatDateTime(ordem.createdAt)}</span>
                           {ordem.dataAgendada && (
                             <>
-                              <span className="text-[#333333]">•</span>
+                              <span className="text-zinc-700">|</span>
                               <span>Agendada: {formatDate(ordem.dataAgendada)}</span>
                             </>
                           )}
-                          <span className="text-[#43A047] font-bold text-sm">{formatCurrency(ordem.total)}</span>
+                          <span className="text-emerald-400 font-bold text-sm">{formatCurrency(ordem.total)}</span>
                         </div>
                       </div>
                     </div>
@@ -789,7 +814,7 @@ function OrdensPageContent() {
                       {ordem.status === 'AGENDADO' && (
                         <button
                           onClick={() => handleStatusChange(ordem, 'EM_ANDAMENTO')}
-                          className="px-4 py-2 bg-purple-500/10 text-purple-400 rounded-lg text-sm font-medium hover:bg-purple-500/20 ring-1 ring-purple-500/20 hover:ring-purple-500/30 transition-all duration-200"
+                          className="px-4 py-2 bg-purple-500/10 text-purple-400 rounded-xl text-sm font-medium hover:bg-purple-500/20 border border-purple-500/20 transition-all duration-200"
                         >
                           Iniciar
                         </button>
@@ -797,7 +822,7 @@ function OrdensPageContent() {
                       {ordem.status === 'EM_ANDAMENTO' && (
                         <button
                           onClick={() => handleStatusChange(ordem, 'CONCLUIDO')}
-                          className="px-4 py-2 bg-green-500/10 text-[#43A047] rounded-lg text-sm font-medium hover:bg-green-500/20 ring-1 ring-green-500/20 hover:ring-green-500/30 transition-all duration-200"
+                          className="px-4 py-2 bg-emerald-500/10 text-emerald-400 rounded-xl text-sm font-medium hover:bg-emerald-500/20 border border-emerald-500/20 transition-all duration-200"
                         >
                           Concluir
                         </button>
@@ -805,15 +830,15 @@ function OrdensPageContent() {
                       {ordem.status === 'CONCLUIDO' && (
                         <button
                           onClick={() => handleStatusChange(ordem, 'ENTREGUE')}
-                          className="px-4 py-2 bg-cyan-500/10 text-cyan-400 rounded-lg text-sm font-medium hover:bg-cyan-500/20 ring-1 ring-cyan-500/20 hover:ring-cyan-500/30 transition-all duration-200"
+                          className="px-4 py-2 bg-cyan-500/10 text-cyan-400 rounded-xl text-sm font-medium hover:bg-cyan-500/20 border border-cyan-500/20 transition-all duration-200"
                         >
                           Entregar
                         </button>
                       )}
-                      <div className="flex items-center gap-1 ml-2 p-1 bg-[#121212] rounded-lg ring-1 ring-[#333333]">
+                      <div className="flex items-center gap-1">
                         <button
                           onClick={() => downloadOrdemPDF(ordem, empresaConfig || undefined)}
-                          className="p-2 hover:bg-green-500/10 rounded-md text-[#9E9E9E] hover:text-[#43A047] transition-all duration-200"
+                          className="p-2 hover:bg-emerald-500/10 rounded-xl text-zinc-500 hover:text-emerald-400 transition-all duration-200"
                           title="Baixar PDF"
                         >
                           <FileDown size={18} />
@@ -823,7 +848,7 @@ function OrdensPageContent() {
                             setSelectedOrdem(ordem);
                             setShowDetailModal(true);
                           }}
-                          className="p-2 hover:bg-blue-500/10 rounded-md text-[#9E9E9E] hover:text-blue-400 transition-all duration-200"
+                          className="p-2 hover:bg-blue-500/10 rounded-xl text-zinc-500 hover:text-blue-400 transition-all duration-200"
                           title="Ver detalhes"
                         >
                           <Eye size={18} />
@@ -831,7 +856,7 @@ function OrdensPageContent() {
                         {(ordem.status === 'AGENDADO' || ordem.status === 'EM_ANDAMENTO') && (
                           <button
                             onClick={() => openEditModal(ordem)}
-                            className="p-2 hover:bg-amber-500/10 rounded-md text-[#9E9E9E] hover:text-amber-400 transition-all duration-200"
+                            className="p-2 hover:bg-amber-500/10 rounded-xl text-zinc-500 hover:text-amber-400 transition-all duration-200"
                             title="Editar"
                           >
                             <Edit size={18} />
@@ -843,7 +868,7 @@ function OrdensPageContent() {
                               setSelectedOrdem(ordem);
                               setShowDeleteConfirm(true);
                             }}
-                            className="p-2 hover:bg-red-500/10 rounded-md text-[#9E9E9E] hover:text-red-500 transition-all duration-200"
+                            className="p-2 hover:bg-red-500/10 rounded-xl text-zinc-500 hover:text-red-400 transition-all duration-200"
                             title="Excluir"
                           >
                             <Trash2 size={18} />
@@ -858,27 +883,27 @@ function OrdensPageContent() {
           )}
         </div>
 
-          {/* Paginação */}
+          {/* Paginacao */}
           {totalPages > 1 && (
-            <div className="flex items-center justify-between bg-[#1E1E1E] border border-[#333333] rounded-2xl px-6 py-4">
-              <p className="text-sm text-[#9E9E9E]">
+            <div className="flex items-center justify-between bg-[#1a1a1a] border border-zinc-800/50 rounded-2xl px-6 py-4">
+              <p className="text-sm text-zinc-400">
                 Mostrando {((currentPage - 1) * itemsPerPage) + 1} - {Math.min(currentPage * itemsPerPage, totalItems)} de {totalItems} ordens
               </p>
               <div className="flex items-center gap-2">
                 <button
                   onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
                   disabled={currentPage === 1}
-                  className="p-2 bg-[#121212] border border-[#333333] rounded-lg text-[#9E9E9E] hover:text-[#E8E8E8] hover:border-green-500/30 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="p-2 bg-zinc-900 border border-zinc-800 rounded-lg text-zinc-500 hover:text-white hover:border-emerald-500/30 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   <ChevronLeft size={18} />
                 </button>
-                <span className="px-4 py-2 text-[#E8E8E8] font-medium">
+                <span className="px-4 py-2 text-white font-medium">
                   {currentPage} / {totalPages}
                 </span>
                 <button
                   onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
                   disabled={currentPage === totalPages}
-                  className="p-2 bg-[#121212] border border-[#333333] rounded-lg text-[#9E9E9E] hover:text-[#E8E8E8] hover:border-green-500/30 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="p-2 bg-zinc-900 border border-zinc-800 rounded-lg text-zinc-500 hover:text-white hover:border-emerald-500/30 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   <ChevronRight size={18} />
                 </button>
@@ -891,14 +916,14 @@ function OrdensPageContent() {
 
       {/* Modal Nova O.S. */}
       {showModal && (
-        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4">
-          <div className="bg-[#1E1E1E] border border-[#333333] rounded-2xl w-full max-w-2xl max-h-[90vh] overflow-hidden animate-fade-in flex flex-col">
-            <div className="p-6 border-b border-[#333333] flex items-center justify-between">
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="bg-[#1a1a1a] border border-zinc-800 rounded-2xl w-full max-w-2xl max-h-[90vh] overflow-hidden flex flex-col shadow-2xl shadow-black/50">
+            <div className="p-6 border-b border-zinc-800 flex items-center justify-between">
               <div>
-                <h2 className="text-xl font-semibold text-[#E8E8E8]">{editingOrdem ? 'Editar Ordem de Servico' : 'Nova Ordem de Servico'}</h2>
-                <p className="text-sm text-[#9E9E9E] mt-1">Passo {step} de 3</p>
+                <h2 className="text-xl font-semibold text-white">{editingOrdem ? 'Editar Ordem de Servico' : 'Nova Ordem de Servico'}</h2>
+                <p className="text-sm text-zinc-400 mt-1">Passo {step} de 3</p>
               </div>
-              <button onClick={() => { setShowModal(false); setEditingOrdem(null); }} className="p-2 hover:bg-[#2A2A2A] rounded-lg text-[#9E9E9E] hover:text-[#E8E8E8] transition-colors">
+              <button onClick={() => { setShowModal(false); setEditingOrdem(null); }} className="p-2 hover:bg-zinc-800 rounded-xl text-zinc-400 hover:text-white transition-all duration-200">
                 <X size={20} />
               </button>
             </div>
@@ -1224,11 +1249,11 @@ function OrdensPageContent() {
 
       {/* Modal Detalhes */}
       {showDetailModal && selectedOrdem && (
-        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4">
-          <div className="bg-[#1E1E1E] border border-[#333333] rounded-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto animate-fade-in">
-            <div className="p-6 border-b border-[#333333] flex items-center justify-between">
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="bg-[#1a1a1a] border border-zinc-800 rounded-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto shadow-2xl shadow-black/50">
+            <div className="p-6 border-b border-zinc-800 flex items-center justify-between">
               <div>
-                <h2 className="text-xl font-semibold text-[#E8E8E8]">O.S. #{selectedOrdem.numero.slice(-8).toUpperCase()}</h2>
+                <h2 className="text-xl font-semibold text-white">O.S. #{selectedOrdem.numero.slice(-8).toUpperCase()}</h2>
                 <div className="flex items-center gap-2 mt-1">
                   {(() => {
                     const status = statusConfig[selectedOrdem.status];
@@ -1374,41 +1399,41 @@ function OrdensPageContent() {
         </div>
       )}
 
-      {/* Modal Confirmar Exclusão */}
+      {/* Modal Confirmar Exclusao */}
       {showDeleteConfirm && selectedOrdem && (
-        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4">
-          <div className="bg-[#1E1E1E] border border-[#333333] rounded-2xl w-full max-w-md animate-fade-in">
-            <div className="p-6 border-b border-[#333333]">
-              <h2 className="text-xl font-semibold text-[#E8E8E8]">Confirmar Exclusao</h2>
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="bg-[#1a1a1a] border border-zinc-800 rounded-2xl w-full max-w-md shadow-2xl shadow-black/50">
+            <div className="p-6 border-b border-zinc-800">
+              <h2 className="text-xl font-semibold text-white">Confirmar Exclusao</h2>
             </div>
             <div className="p-6">
               <div className="flex items-center gap-4 mb-4">
-                <div className="p-3 bg-red-500/10 rounded-xl">
-                  <Trash2 size={24} className="text-red-500" />
+                <div className="p-3 bg-red-500/10 rounded-xl border border-red-500/20">
+                  <Trash2 size={24} className="text-red-400" />
                 </div>
                 <div>
-                  <p className="text-[#E8E8E8] font-medium">O.S. #{selectedOrdem.numero.slice(-8).toUpperCase()}</p>
-                  <p className="text-sm text-[#9E9E9E]">{formatPlate(selectedOrdem.veiculo.placa)} - {capitalize(selectedOrdem.veiculo.cliente.nome)}</p>
+                  <p className="text-white font-medium">O.S. #{selectedOrdem.numero.slice(-8).toUpperCase()}</p>
+                  <p className="text-sm text-zinc-400">{formatPlate(selectedOrdem.veiculo.placa)} - {capitalize(selectedOrdem.veiculo.cliente.nome)}</p>
                 </div>
               </div>
-              <p className="text-[#9E9E9E] text-sm">
+              <p className="text-zinc-400 text-sm">
                 Tem certeza que deseja excluir esta O.S.? Esta acao nao pode ser desfeita.
               </p>
             </div>
-            <div className="p-6 border-t border-[#333333] flex gap-3 justify-end">
+            <div className="p-6 border-t border-zinc-800 flex gap-3 justify-end">
               <button
                 onClick={() => {
                   setShowDeleteConfirm(false);
                   setSelectedOrdem(null);
                 }}
-                className="px-6 py-3 border border-[#333333] rounded-xl text-[#9E9E9E] hover:bg-[#121212] transition-colors"
+                className="px-6 py-3 border border-zinc-700 rounded-xl text-zinc-400 hover:bg-zinc-800 transition-all duration-200"
               >
                 Cancelar
               </button>
               <button
                 onClick={handleDelete}
                 disabled={saving}
-                className="px-6 py-3 bg-gradient-to-r from-red-500 to-red-700 rounded-xl text-white font-medium hover:opacity-90 transition-opacity disabled:opacity-50"
+                className="px-6 py-3 bg-gradient-to-r from-red-500 to-red-700 rounded-xl text-white font-medium hover:shadow-lg hover:shadow-red-500/25 transition-all duration-300 disabled:opacity-50"
               >
                 {saving ? 'Excluindo...' : 'Excluir O.S.'}
               </button>
@@ -1423,10 +1448,13 @@ function OrdensPageContent() {
 export default function OrdensPage() {
   return (
     <Suspense fallback={
-      <div className="min-h-screen bg-[#121212]">
-        <Header title="Ordens de Servico" subtitle="Gerencie suas O.S." />
-        <div className="p-6 flex items-center justify-center">
-          <Loader2 className="animate-spin text-[#43A047]" size={32} />
+      <div className="flex items-center justify-center h-[60vh]">
+        <div className="flex flex-col items-center gap-4">
+          <div className="relative">
+            <div className="w-16 h-16 border-4 border-emerald-500/20 rounded-full"></div>
+            <div className="absolute top-0 left-0 w-16 h-16 border-4 border-transparent border-t-emerald-500 rounded-full animate-spin"></div>
+          </div>
+          <p className="text-zinc-400 animate-pulse">Carregando ordens...</p>
         </div>
       </div>
     }>

@@ -352,75 +352,104 @@ export default function LembretesPage() {
     return `em ${dias} dias`;
   };
 
+  if (loading && lembretes.length === 0) {
+    return (
+      <div className="flex items-center justify-center h-[60vh]">
+        <div className="flex flex-col items-center gap-4">
+          <div className="relative">
+            <div className="w-16 h-16 border-4 border-cyan-500/20 rounded-full"></div>
+            <div className="absolute top-0 left-0 w-16 h-16 border-4 border-transparent border-t-cyan-500 rounded-full animate-spin"></div>
+          </div>
+          <p className="text-zinc-400 animate-pulse">Carregando lembretes...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className="min-h-screen bg-[#121212]">
+    <div className="space-y-8">
       <Header title="Lembretes" subtitle="Gerencie lembretes de manutencao" />
 
-      <div className="p-6 space-y-6 animate-fade-in">
+      <div className="px-4 lg:px-8 space-y-8">
         {/* Stats */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 xl:grid-cols-4 gap-8">
+          {/* Vencidos */}
           <div
             onClick={() => setFilterStatus(filterStatus === 'vencido' ? '' : 'vencido')}
-            className={`bg-[#1E1E1E] border rounded-xl p-4 cursor-pointer transition-all duration-300 ${
-              filterStatus === 'vencido' ? 'border-red-500 ring-1 ring-red-500/30' : 'border-[#333333] hover:border-red-500/30'
+            className={`group relative overflow-hidden bg-gradient-to-br from-red-500/20 to-red-500/5 rounded-2xl p-6 border cursor-pointer transition-all duration-300 ${
+              filterStatus === 'vencido' ? 'border-red-500 ring-2 ring-red-500/30' : 'border-red-500/20 hover:border-red-500/40'
             }`}
           >
-            <div className="flex items-center gap-3">
-              <div className="p-2.5 bg-red-500/10 rounded-xl ring-1 ring-red-500/20">
-                <AlertCircle size={20} className="text-red-400" />
+            <div className="absolute top-0 right-0 w-32 h-32 bg-red-500/10 rounded-full blur-3xl group-hover:scale-150 transition-transform duration-500"></div>
+            <div className="relative">
+              <div className="flex items-center justify-between mb-4">
+                <div className="p-3 bg-red-500/20 rounded-xl">
+                  <AlertCircle className="h-6 w-6 text-red-400" />
+                </div>
+                <span className="text-xs font-medium text-red-400 bg-red-500/10 px-2 py-1 rounded-full">Vencidos</span>
               </div>
-              <div>
-                <p className="text-2xl font-bold text-[#E8E8E8]">{stats.vencidos}</p>
-                <p className="text-xs text-[#6B7280]">Vencidos</p>
-              </div>
+              <p className="text-4xl font-bold text-white mb-1">{stats.vencidos}</p>
+              <p className="text-sm text-zinc-400">atrasados</p>
             </div>
           </div>
+
+          {/* Pendentes */}
           <div
             onClick={() => setFilterStatus(filterStatus === 'pendente' ? '' : 'pendente')}
-            className={`bg-[#1E1E1E] border rounded-xl p-4 cursor-pointer transition-all duration-300 ${
-              filterStatus === 'pendente' ? 'border-amber-500 ring-1 ring-amber-500/30' : 'border-[#333333] hover:border-amber-500/30'
+            className={`group relative overflow-hidden bg-gradient-to-br from-amber-500/20 to-amber-500/5 rounded-2xl p-6 border cursor-pointer transition-all duration-300 ${
+              filterStatus === 'pendente' ? 'border-amber-500 ring-2 ring-amber-500/30' : 'border-amber-500/20 hover:border-amber-500/40'
             }`}
           >
-            <div className="flex items-center gap-3">
-              <div className="p-2.5 bg-amber-500/10 rounded-xl ring-1 ring-amber-500/20">
-                <Clock size={20} className="text-amber-400" />
+            <div className="absolute top-0 right-0 w-32 h-32 bg-amber-500/10 rounded-full blur-3xl group-hover:scale-150 transition-transform duration-500"></div>
+            <div className="relative">
+              <div className="flex items-center justify-between mb-4">
+                <div className="p-3 bg-amber-500/20 rounded-xl">
+                  <Clock className="h-6 w-6 text-amber-400" />
+                </div>
+                <span className="text-xs font-medium text-amber-400 bg-amber-500/10 px-2 py-1 rounded-full">Pendentes</span>
               </div>
-              <div>
-                <p className="text-2xl font-bold text-[#E8E8E8]">{stats.pendentes}</p>
-                <p className="text-xs text-[#6B7280]">Pendentes</p>
-              </div>
+              <p className="text-4xl font-bold text-white mb-1">{stats.pendentes}</p>
+              <p className="text-sm text-zinc-400">aguardando</p>
             </div>
           </div>
+
+          {/* Urgentes */}
           <div
             onClick={() => setFilterStatus('')}
-            className={`bg-[#1E1E1E] border rounded-xl p-4 cursor-pointer transition-all duration-300 ${
-              !filterStatus ? 'border-blue-500 ring-1 ring-blue-500/30' : 'border-[#333333] hover:border-blue-500/30'
+            className={`group relative overflow-hidden bg-gradient-to-br from-cyan-500/20 to-cyan-500/5 rounded-2xl p-6 border cursor-pointer transition-all duration-300 ${
+              !filterStatus ? 'border-cyan-500 ring-2 ring-cyan-500/30' : 'border-cyan-500/20 hover:border-cyan-500/40'
             }`}
           >
-            <div className="flex items-center gap-3">
-              <div className="p-2.5 bg-blue-500/10 rounded-xl ring-1 ring-blue-500/20">
-                <Bell size={20} className="text-blue-400" />
+            <div className="absolute top-0 right-0 w-32 h-32 bg-cyan-500/10 rounded-full blur-3xl group-hover:scale-150 transition-transform duration-500"></div>
+            <div className="relative">
+              <div className="flex items-center justify-between mb-4">
+                <div className="p-3 bg-cyan-500/20 rounded-xl">
+                  <Bell className="h-6 w-6 text-cyan-400" />
+                </div>
+                <span className="text-xs font-medium text-cyan-400 bg-cyan-500/10 px-2 py-1 rounded-full">Urgentes</span>
               </div>
-              <div>
-                <p className="text-2xl font-bold text-[#E8E8E8]">{stats.urgentes}</p>
-                <p className="text-xs text-[#6B7280]">Urgentes (3 dias)</p>
-              </div>
+              <p className="text-4xl font-bold text-white mb-1">{stats.urgentes}</p>
+              <p className="text-sm text-zinc-400">proximos 3 dias</p>
             </div>
           </div>
+
+          {/* Enviados */}
           <div
             onClick={() => setFilterStatus(filterStatus === 'enviado' ? '' : 'enviado')}
-            className={`bg-[#1E1E1E] border rounded-xl p-4 cursor-pointer transition-all duration-300 ${
-              filterStatus === 'enviado' ? 'border-green-500 ring-1 ring-green-500/30' : 'border-[#333333] hover:border-green-500/30'
+            className={`group relative overflow-hidden bg-gradient-to-br from-emerald-500/20 to-emerald-500/5 rounded-2xl p-6 border cursor-pointer transition-all duration-300 ${
+              filterStatus === 'enviado' ? 'border-emerald-500 ring-2 ring-emerald-500/30' : 'border-emerald-500/20 hover:border-emerald-500/40'
             }`}
           >
-            <div className="flex items-center gap-3">
-              <div className="p-2.5 bg-green-500/10 rounded-xl ring-1 ring-green-500/20">
-                <CheckCircle size={20} className="text-green-400" />
+            <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-500/10 rounded-full blur-3xl group-hover:scale-150 transition-transform duration-500"></div>
+            <div className="relative">
+              <div className="flex items-center justify-between mb-4">
+                <div className="p-3 bg-emerald-500/20 rounded-xl">
+                  <CheckCircle className="h-6 w-6 text-emerald-400" />
+                </div>
+                <span className="text-xs font-medium text-emerald-400 bg-emerald-500/10 px-2 py-1 rounded-full">Enviados</span>
               </div>
-              <div>
-                <p className="text-2xl font-bold text-[#E8E8E8]">{stats.enviados}</p>
-                <p className="text-xs text-[#6B7280]">Enviados</p>
-              </div>
+              <p className="text-4xl font-bold text-white mb-1">{stats.enviados}</p>
+              <p className="text-sm text-zinc-400">notificados</p>
             </div>
           </div>
         </div>
@@ -429,28 +458,28 @@ export default function LembretesPage() {
         <div className="flex flex-col md:flex-row gap-4 justify-between">
           <div className="flex gap-3 flex-1">
             <div className="relative flex-1 max-w-md group">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-[#6B7280] group-focus-within:text-[#43A047] transition-colors" size={18} />
+              <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 text-zinc-500 group-focus-within:text-cyan-400 transition-colors" size={18} />
               <input
                 type="text"
                 placeholder="Buscar por cliente ou placa..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full bg-[#121212] border border-[#333333] rounded-xl pl-10 pr-4 py-3 text-sm text-[#E8E8E8] placeholder-[#6B7280] focus:outline-none focus:border-[#43A047]/50 focus:ring-1 focus:ring-[#43A047]/20 transition-all duration-200"
+                className="w-full bg-[#1a1a1a] border border-zinc-800/50 rounded-xl pl-10 pr-4 py-3 text-sm text-white placeholder-zinc-500 focus:outline-none focus:border-cyan-500/50 focus:ring-2 focus:ring-cyan-500/20 transition-all duration-200"
               />
             </div>
             <button
               onClick={() => { setLoading(true); fetchLembretes(); }}
-              className="p-3 bg-[#1E1E1E] border border-[#333333] rounded-xl text-[#9E9E9E] hover:border-[#43A047]/40 hover:text-[#E8E8E8] transition-all duration-200"
+              className="p-3 bg-[#1a1a1a] border border-zinc-800/50 rounded-xl text-zinc-400 hover:border-cyan-500/40 hover:text-cyan-400 transition-all duration-200"
               title="Atualizar"
             >
               <RefreshCw size={20} className={loading ? 'animate-spin' : ''} />
             </button>
           </div>
-          <div className="flex gap-2">
+          <div className="flex gap-3">
             <button
               onClick={handleGerarLembretes}
               disabled={generating}
-              className="flex items-center gap-2 px-4 py-3 bg-purple-600/20 border border-purple-500/30 rounded-xl text-purple-400 font-medium hover:bg-purple-600/30 hover:border-purple-500/50 disabled:opacity-50 transition-all duration-200"
+              className="flex items-center gap-2 px-4 py-3 bg-purple-500/10 border border-purple-500/30 rounded-xl text-purple-400 font-medium hover:bg-purple-500/20 hover:border-purple-500/50 disabled:opacity-50 transition-all duration-200"
               title="Gerar lembretes automaticos baseado no km dos veiculos"
             >
               {generating ? <Loader2 size={18} className="animate-spin" /> : <RefreshCw size={18} />}
@@ -459,7 +488,7 @@ export default function LembretesPage() {
             <button
               onClick={handleEnviarTodos}
               disabled={sending || stats.vencidos + stats.pendentes === 0}
-              className="flex items-center gap-2 px-4 py-3 bg-[#25D366]/20 border border-[#25D366]/30 rounded-xl text-[#25D366] font-medium hover:bg-[#25D366]/30 hover:border-[#25D366]/50 disabled:opacity-50 transition-all duration-200"
+              className="flex items-center gap-2 px-4 py-3 bg-[#25D366]/10 border border-[#25D366]/30 rounded-xl text-[#25D366] font-medium hover:bg-[#25D366]/20 hover:border-[#25D366]/50 disabled:opacity-50 transition-all duration-200"
               title="Enviar todos os lembretes pendentes via WhatsApp"
             >
               {sending ? <Loader2 size={18} className="animate-spin" /> : <Send size={18} />}
@@ -467,7 +496,7 @@ export default function LembretesPage() {
             </button>
             <button
               onClick={openNewModal}
-              className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-[#43A047] to-[#1B5E20] rounded-xl text-white font-medium hover:shadow-lg hover:shadow-green-500/10 hover:scale-[1.02] active:scale-[0.98] transition-all duration-200"
+              className="flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-[#43A047] to-[#2E7D32] hover:from-[#2E7D32] hover:to-[#43A047] text-white font-semibold rounded-xl transition-all duration-300 shadow-lg shadow-[#43A047]/25 hover:shadow-[#43A047]/40 hover:scale-[1.02]"
             >
               <Plus size={20} />
               <span className="hidden md:inline">Novo Lembrete</span>
@@ -476,67 +505,70 @@ export default function LembretesPage() {
         </div>
 
         {/* Lista de Lembretes */}
-        <div className="bg-[#1E1E1E] border border-[#333333] rounded-2xl overflow-hidden">
+        <div className="bg-[#1a1a1a] rounded-2xl border border-zinc-800/50 overflow-hidden">
           {loading ? (
             <div className="p-12 text-center">
-              <Loader2 className="animate-spin mx-auto mb-3 text-[#43A047]" size={36} />
-              <p className="text-[#9E9E9E]">Carregando...</p>
+              <div className="relative w-12 h-12 mx-auto mb-4">
+                <div className="w-12 h-12 border-4 border-cyan-500/20 rounded-full"></div>
+                <div className="absolute top-0 left-0 w-12 h-12 border-4 border-transparent border-t-cyan-500 rounded-full animate-spin"></div>
+              </div>
+              <p className="text-zinc-400">Carregando lembretes...</p>
             </div>
           ) : lembretes.length === 0 ? (
             <div className="p-12 text-center">
-              <div className="w-16 h-16 mx-auto mb-4 bg-[#2A2A2A] rounded-2xl flex items-center justify-center">
-                <Bell className="text-[#66BB6A]" size={32} />
+              <div className="p-4 bg-cyan-500/10 rounded-2xl w-fit mx-auto mb-4 border border-cyan-500/20">
+                <Bell className="h-8 w-8 text-cyan-400" />
               </div>
-              <p className="text-[#9E9E9E] font-medium">Nenhum lembrete encontrado</p>
-              <p className="text-[#66BB6A] text-sm mt-1">Crie um novo lembrete de manutencao</p>
+              <p className="text-white font-medium">Nenhum lembrete encontrado</p>
+              <p className="text-zinc-400 text-sm mt-1">Crie um novo lembrete de manutencao</p>
             </div>
           ) : (
-            <div className="divide-y divide-[#333333]">
+            <div className="divide-y divide-zinc-800/50">
               {lembretes.map((lembrete) => {
                 const urgenciaConfig = getUrgenciaConfig(lembrete.urgencia);
 
                 return (
                   <div
                     key={lembrete.id}
-                    className="p-4 hover:bg-[#121212] transition-all duration-200"
+                    className="p-4 hover:bg-zinc-800/30 transition-all duration-200 group"
                   >
                     <div className="flex items-center gap-4">
-                      <div className={`w-1 h-16 rounded-full ${urgenciaConfig.barColor}`}></div>
+                      <div className={`w-1.5 h-16 rounded-full ${urgenciaConfig.barColor}`}></div>
 
-                      <div className="flex-1">
-                        <div className="flex items-center gap-3 mb-1">
-                          <User size={16} className="text-[#6B7280]" />
-                          <span className="font-medium text-[#E8E8E8]">{capitalize(lembrete.veiculo.cliente.nome)}</span>
-                          <span className="text-[#6B7280]">-</span>
-                          <span className="text-[#9E9E9E] text-sm">{formatPhone(lembrete.veiculo.cliente.telefone)}</span>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-3 mb-1.5">
+                          <User size={16} className="text-zinc-500 flex-shrink-0" />
+                          <span className="font-semibold text-white truncate">{capitalize(lembrete.veiculo.cliente.nome)}</span>
+                          <span className="text-zinc-600 hidden sm:inline">-</span>
+                          <span className="text-zinc-400 text-sm hidden sm:inline">{formatPhone(lembrete.veiculo.cliente.telefone)}</span>
                         </div>
-                        <div className="flex items-center gap-3 mb-1">
-                          <Car size={16} className="text-[#6B7280]" />
-                          <span className="text-[#9E9E9E] text-sm">
+                        <div className="flex items-center gap-3 mb-1.5">
+                          <Car size={16} className="text-zinc-500 flex-shrink-0" />
+                          <span className="text-zinc-400 text-sm truncate">
                             {capitalize(lembrete.veiculo.marca)} {capitalize(lembrete.veiculo.modelo)} {lembrete.veiculo.ano}
                           </span>
-                          <span className="px-2 py-0.5 bg-[#121212] rounded text-xs text-[#43A047] ring-1 ring-[#43A047]/20">
+                          <span className="px-2 py-0.5 bg-[#43A047]/10 rounded-lg text-xs text-[#43A047] border border-[#43A047]/20 flex-shrink-0">
                             {formatPlate(lembrete.veiculo.placa)}
                           </span>
                         </div>
                         <div className="flex items-center gap-3">
-                          <Calendar size={16} className="text-[#6B7280]" />
-                          <span className="text-[#6B7280] text-sm">
+                          <Calendar size={16} className="text-zinc-500 flex-shrink-0" />
+                          <span className="text-zinc-500 text-sm truncate">
                             {tipoLabels[lembrete.tipo] || lembrete.tipo} - {formatDate(lembrete.dataLembrete)}
                             {lembrete.kmLembrete && ` ou ${lembrete.kmLembrete.toLocaleString()} km`}
                           </span>
                         </div>
                       </div>
 
-                      <div className="text-right space-y-2">
-                        <div className={`inline-flex items-center gap-2 px-3 py-1 rounded-full border ${urgenciaConfig.color}`}>
+                      <div className="text-right space-y-2 hidden sm:block">
+                        <div className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-xl border ${urgenciaConfig.color}`}>
                           <AlertCircle size={14} />
-                          <span className="text-xs font-medium">
+                          <span className="text-xs font-medium whitespace-nowrap">
                             {getDiasLabel(lembrete.diasRestantes)}
                           </span>
                         </div>
                         {lembrete.enviado ? (
-                          <div className="flex items-center justify-end gap-2 text-green-400">
+                          <div className="flex items-center justify-end gap-2 text-emerald-400">
                             <CheckCircle size={14} />
                             <span className="text-xs">Enviado</span>
                           </div>
@@ -548,10 +580,10 @@ export default function LembretesPage() {
                         )}
                       </div>
 
-                      <div className="flex gap-2 bg-[#121212] rounded-xl p-1.5">
+                      <div className="flex gap-1.5 bg-zinc-900/50 rounded-xl p-1.5 border border-zinc-800/50">
                         <button
                           onClick={() => sendWhatsApp(lembrete)}
-                          className="p-2.5 bg-[#25D366]/20 rounded-lg text-[#25D366] hover:bg-[#25D366]/30 transition-all duration-200"
+                          className="p-2.5 bg-[#25D366]/10 rounded-lg text-[#25D366] hover:bg-[#25D366]/20 transition-all duration-200"
                           title="Enviar WhatsApp"
                         >
                           <MessageCircle size={18} />
@@ -561,7 +593,7 @@ export default function LembretesPage() {
                             const tel = lembrete.veiculo.cliente.telefone.replace(/\D/g, '');
                             window.open(`tel:${tel}`, '_blank');
                           }}
-                          className="p-2.5 bg-blue-500/10 rounded-lg text-blue-400 hover:bg-blue-500/30 transition-all duration-200"
+                          className="p-2.5 bg-blue-500/10 rounded-lg text-blue-400 hover:bg-blue-500/20 transition-all duration-200"
                           title="Ligar"
                         >
                           <Phone size={18} />
@@ -569,7 +601,7 @@ export default function LembretesPage() {
                         {!lembrete.enviado && (
                           <button
                             onClick={() => handleMarkAsSent(lembrete)}
-                            className="p-2.5 bg-green-500/10 rounded-lg text-[#43A047] hover:bg-[#43A047]/30 transition-all duration-200"
+                            className="p-2.5 bg-emerald-500/10 rounded-lg text-emerald-400 hover:bg-emerald-500/20 transition-all duration-200"
                             title="Marcar como enviado"
                           >
                             <Send size={18} />
@@ -580,7 +612,7 @@ export default function LembretesPage() {
                             setDeletingLembrete(lembrete);
                             setShowDeleteConfirm(true);
                           }}
-                          className="p-2.5 bg-red-500/10 rounded-lg text-red-400 hover:bg-red-500/30 transition-all duration-200"
+                          className="p-2.5 bg-red-500/10 rounded-lg text-red-400 hover:bg-red-500/20 transition-all duration-200"
                           title="Excluir"
                         >
                           <Trash2 size={18} />
@@ -597,11 +629,11 @@ export default function LembretesPage() {
 
       {/* Modal Novo Lembrete */}
       {showModal && (
-        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4">
-          <div className="bg-[#1E1E1E] border border-[#333333] rounded-2xl w-full max-w-lg animate-fade-in">
-            <div className="p-6 border-b border-[#333333] flex items-center justify-between">
-              <h2 className="text-xl font-semibold text-[#E8E8E8]">Novo Lembrete</h2>
-              <button onClick={() => setShowModal(false)} className="p-2 hover:bg-[#2A2A2A] rounded-lg text-[#9E9E9E] hover:text-[#E8E8E8] transition-colors">
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="bg-[#1a1a1a] border border-zinc-800/50 rounded-2xl w-full max-w-lg shadow-2xl shadow-black/50">
+            <div className="p-6 border-b border-zinc-800/50 flex items-center justify-between">
+              <h2 className="text-xl font-bold text-white">Novo Lembrete</h2>
+              <button onClick={() => setShowModal(false)} className="p-2 hover:bg-zinc-800 rounded-lg text-zinc-400 hover:text-white transition-colors">
                 <X size={20} />
               </button>
             </div>
@@ -609,11 +641,11 @@ export default function LembretesPage() {
             <div className="p-6 space-y-4">
               {/* Veiculo */}
               <div>
-                <label className="block text-sm font-medium text-[#9E9E9E] mb-2">Veiculo *</label>
+                <label className="block text-sm font-medium text-zinc-400 mb-2">Veiculo *</label>
                 <select
                   value={selectedVeiculoId || ''}
                   onChange={(e) => setSelectedVeiculoId(parseInt(e.target.value))}
-                  className="w-full bg-[#121212] border border-[#333333] rounded-xl px-4 py-3 text-[#E8E8E8] focus:outline-none focus:border-[#43A047]"
+                  className="w-full bg-zinc-900/50 border border-zinc-800/50 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-cyan-500/50 focus:ring-2 focus:ring-cyan-500/20 transition-all"
                 >
                   <option value="">Selecione um veiculo</option>
                   {veiculos.map((v) => (
@@ -626,11 +658,11 @@ export default function LembretesPage() {
 
               {/* Tipo */}
               <div>
-                <label className="block text-sm font-medium text-[#9E9E9E] mb-2">Tipo de Lembrete *</label>
+                <label className="block text-sm font-medium text-zinc-400 mb-2">Tipo de Lembrete *</label>
                 <select
                   value={tipo}
                   onChange={(e) => setTipo(e.target.value)}
-                  className="w-full bg-[#121212] border border-[#333333] rounded-xl px-4 py-3 text-[#E8E8E8] focus:outline-none focus:border-[#43A047]"
+                  className="w-full bg-zinc-900/50 border border-zinc-800/50 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-cyan-500/50 focus:ring-2 focus:ring-cyan-500/20 transition-all"
                 >
                   {Object.entries(tipoLabels).map(([key, label]) => (
                     <option key={key} value={key}>{label}</option>
@@ -640,52 +672,52 @@ export default function LembretesPage() {
 
               {/* Data */}
               <div>
-                <label className="block text-sm font-medium text-[#9E9E9E] mb-2">Data do Lembrete *</label>
+                <label className="block text-sm font-medium text-zinc-400 mb-2">Data do Lembrete *</label>
                 <input
                   type="date"
                   value={dataLembrete}
                   onChange={(e) => setDataLembrete(e.target.value)}
-                  className="w-full bg-[#121212] border border-[#333333] rounded-xl px-4 py-3 text-[#E8E8E8] focus:outline-none focus:border-[#43A047] [color-scheme:dark]"
+                  className="w-full bg-zinc-900/50 border border-zinc-800/50 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-cyan-500/50 focus:ring-2 focus:ring-cyan-500/20 transition-all [color-scheme:dark]"
                 />
               </div>
 
               {/* KM */}
               <div>
-                <label className="block text-sm font-medium text-[#9E9E9E] mb-2">KM do Lembrete (opcional)</label>
+                <label className="block text-sm font-medium text-zinc-400 mb-2">KM do Lembrete (opcional)</label>
                 <input
                   type="number"
                   value={kmLembrete}
                   onChange={(e) => setKmLembrete(e.target.value)}
                   placeholder="Ex: 60000"
                   max={9999999}
-                  className="w-full bg-[#121212] border border-[#333333] rounded-xl px-4 py-3 text-[#E8E8E8] placeholder-gray-500 focus:outline-none focus:border-[#43A047]"
+                  className="w-full bg-zinc-900/50 border border-zinc-800/50 rounded-xl px-4 py-3 text-white placeholder-zinc-500 focus:outline-none focus:border-cyan-500/50 focus:ring-2 focus:ring-cyan-500/20 transition-all"
                 />
               </div>
 
               {/* Mensagem */}
               <div>
-                <label className="block text-sm font-medium text-[#9E9E9E] mb-2">Observacao (opcional)</label>
+                <label className="block text-sm font-medium text-zinc-400 mb-2">Observacao (opcional)</label>
                 <textarea
                   value={mensagem}
                   onChange={(e) => setMensagem(e.target.value)}
                   rows={2}
                   placeholder="Anotacoes sobre este lembrete..."
-                  className="w-full bg-[#121212] border border-[#333333] rounded-xl px-4 py-3 text-[#E8E8E8] placeholder-gray-500 focus:outline-none focus:border-[#43A047] resize-none"
+                  className="w-full bg-zinc-900/50 border border-zinc-800/50 rounded-xl px-4 py-3 text-white placeholder-zinc-500 focus:outline-none focus:border-cyan-500/50 focus:ring-2 focus:ring-cyan-500/20 transition-all resize-none"
                 />
               </div>
             </div>
 
-            <div className="p-6 border-t border-[#333333] flex gap-3 justify-end">
+            <div className="p-6 border-t border-zinc-800/50 flex gap-3 justify-end">
               <button
                 onClick={() => setShowModal(false)}
-                className="px-6 py-3 border border-[#333333] rounded-xl text-[#9E9E9E] hover:bg-[#121212] transition-colors"
+                className="px-6 py-3 border border-zinc-700 rounded-xl text-zinc-300 hover:bg-zinc-800 transition-colors"
               >
                 Cancelar
               </button>
               <button
                 onClick={handleSubmit}
                 disabled={saving}
-                className="px-6 py-3 bg-gradient-to-r from-[#43A047] to-[#1B5E20] rounded-xl text-white font-medium hover:opacity-90 transition-opacity disabled:opacity-50"
+                className="px-6 py-3 bg-gradient-to-r from-[#43A047] to-[#2E7D32] hover:from-[#2E7D32] hover:to-[#43A047] rounded-xl text-white font-semibold transition-all duration-300 shadow-lg shadow-[#43A047]/25 disabled:opacity-50"
               >
                 {saving ? 'Salvando...' : 'Criar Lembrete'}
               </button>
@@ -696,28 +728,28 @@ export default function LembretesPage() {
 
       {/* Modal Confirmar Exclusao */}
       {showDeleteConfirm && deletingLembrete && (
-        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4">
-          <div className="bg-[#1E1E1E] border border-[#333333] rounded-2xl w-full max-w-md animate-fade-in">
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="bg-[#1a1a1a] border border-zinc-800/50 rounded-2xl w-full max-w-md shadow-2xl shadow-black/50">
             <div className="p-6">
-              <div className="w-12 h-12 mx-auto mb-4 bg-red-500/10 rounded-xl flex items-center justify-center">
-                <Trash2 className="text-red-500" size={24} />
+              <div className="w-14 h-14 mx-auto mb-4 bg-red-500/10 rounded-2xl flex items-center justify-center border border-red-500/20">
+                <Trash2 className="text-red-400" size={28} />
               </div>
-              <h3 className="text-lg font-semibold text-[#E8E8E8] text-center mb-2">Excluir Lembrete?</h3>
-              <p className="text-[#9E9E9E] text-center text-sm">
+              <h3 className="text-xl font-bold text-white text-center mb-2">Excluir Lembrete?</h3>
+              <p className="text-zinc-400 text-center text-sm">
                 O lembrete de {tipoLabels[deletingLembrete.tipo] || deletingLembrete.tipo} para{' '}
-                <strong>{formatPlate(deletingLembrete.veiculo.placa)}</strong> sera excluido permanentemente.
+                <strong className="text-white">{formatPlate(deletingLembrete.veiculo.placa)}</strong> sera excluido permanentemente.
               </p>
             </div>
-            <div className="p-6 border-t border-[#333333] flex gap-3">
+            <div className="p-6 border-t border-zinc-800/50 flex gap-3">
               <button
                 onClick={() => { setShowDeleteConfirm(false); setDeletingLembrete(null); }}
-                className="flex-1 px-6 py-3 border border-[#333333] rounded-xl text-[#9E9E9E] hover:bg-[#121212] transition-colors"
+                className="flex-1 px-6 py-3 border border-zinc-700 rounded-xl text-zinc-300 hover:bg-zinc-800 transition-colors"
               >
                 Cancelar
               </button>
               <button
                 onClick={handleDelete}
-                className="flex-1 px-6 py-3 bg-red-600 rounded-xl text-white font-medium hover:bg-red-700 transition-colors"
+                className="flex-1 px-6 py-3 bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-600 rounded-xl text-white font-semibold transition-all duration-300 shadow-lg shadow-red-500/25"
               >
                 Excluir
               </button>
