@@ -390,8 +390,8 @@ function OrcamentosPageContent() {
       />
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-8 mb-10">
-        <div className="bg-[#232323] rounded-xl p-6 border border-zinc-800">
+      <div className="flex flex-wrap gap-6 mb-10">
+        <div className="flex-1 min-w-[200px] bg-[#232323] rounded-xl p-6 border border-zinc-800">
           <div className="flex items-center gap-4">
             <div className="p-3 bg-[#E85D04]/10 rounded-xl">
               <FileText className="h-6 w-6 text-[#E85D04]" />
@@ -402,7 +402,7 @@ function OrcamentosPageContent() {
             </div>
           </div>
         </div>
-        <div className="bg-[#232323] rounded-xl p-6 border border-zinc-800">
+        <div className="flex-1 min-w-[200px] bg-[#232323] rounded-xl p-6 border border-zinc-800">
           <div className="flex items-center gap-4">
             <div className="p-3 bg-amber-500/10 rounded-xl">
               <Clock className="h-6 w-6 text-amber-400" />
@@ -413,7 +413,7 @@ function OrcamentosPageContent() {
             </div>
           </div>
         </div>
-        <div className="bg-[#232323] rounded-xl p-6 border border-zinc-800">
+        <div className="flex-1 min-w-[200px] bg-[#232323] rounded-xl p-6 border border-zinc-800">
           <div className="flex items-center gap-4">
             <div className="p-3 bg-green-500/10 rounded-xl">
               <CheckCircle className="h-6 w-6 text-[#43A047]" />
@@ -424,7 +424,7 @@ function OrcamentosPageContent() {
             </div>
           </div>
         </div>
-        <div className="bg-[#232323] rounded-xl p-6 border border-zinc-800">
+        <div className="flex-1 min-w-[200px] bg-[#232323] rounded-xl p-6 border border-zinc-800">
           <div className="flex items-center gap-4">
             <div className="p-3 bg-blue-500/10 rounded-xl">
               <CheckCircle className="h-6 w-6 text-blue-400" />
