@@ -386,13 +386,14 @@ function OrcamentosPageContent() {
   }
 
   return (
-    <div className="space-y-8 px-4 lg:px-8">
+    <div className="space-y-8">
       <Header
         title="Orçamentos"
         subtitle="Crie e gerencie orçamentos para seus clientes"
       />
 
       {/* Stats Banner */}
+      <div className="px-4 lg:px-8 space-y-8">
       <div className="grid grid-cols-2 xl:grid-cols-4 gap-8">
         <div className="group relative overflow-hidden bg-gradient-to-br from-[#E85D04]/20 to-[#E85D04]/5 rounded-2xl p-6 border border-[#E85D04]/20 hover:border-[#E85D04]/40 transition-all duration-300">
           <div className="absolute top-0 right-0 w-32 h-32 bg-[#E85D04]/10 rounded-full blur-3xl group-hover:scale-150 transition-transform duration-500"></div>
@@ -673,6 +674,7 @@ function OrcamentosPageContent() {
           </div>
         </div>
       )}
+      </div>
 
       {/* Create/Edit Modal */}
       {showModal && (
