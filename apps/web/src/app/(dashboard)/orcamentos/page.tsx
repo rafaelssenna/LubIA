@@ -390,48 +390,48 @@ function OrcamentosPageContent() {
       />
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-        <div className="bg-[#232323] rounded-lg p-4">
-          <div className="flex items-center gap-3">
-            <div className="p-2 bg-[#E85D04]/10 rounded-lg">
-              <FileText className="h-5 w-5 text-[#E85D04]" />
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-8">
+        <div className="bg-[#232323] rounded-xl p-5">
+          <div className="flex items-center gap-4">
+            <div className="p-3 bg-[#E85D04]/10 rounded-xl">
+              <FileText className="h-6 w-6 text-[#E85D04]" />
             </div>
             <div>
-              <p className="text-2xl font-bold text-white">{stats.total}</p>
-              <p className="text-xs text-zinc-400">Total</p>
+              <p className="text-3xl font-bold text-white">{stats.total}</p>
+              <p className="text-sm text-zinc-400">Total</p>
             </div>
           </div>
         </div>
-        <div className="bg-[#232323] rounded-lg p-4">
-          <div className="flex items-center gap-3">
-            <div className="p-2 bg-amber-500/10 rounded-lg">
-              <Clock className="h-5 w-5 text-amber-400" />
+        <div className="bg-[#232323] rounded-xl p-5">
+          <div className="flex items-center gap-4">
+            <div className="p-3 bg-amber-500/10 rounded-xl">
+              <Clock className="h-6 w-6 text-amber-400" />
             </div>
             <div>
-              <p className="text-2xl font-bold text-white">{stats.pendentes}</p>
-              <p className="text-xs text-zinc-400">Pendentes</p>
+              <p className="text-3xl font-bold text-white">{stats.pendentes}</p>
+              <p className="text-sm text-zinc-400">Pendentes</p>
             </div>
           </div>
         </div>
-        <div className="bg-[#232323] rounded-lg p-4">
-          <div className="flex items-center gap-3">
-            <div className="p-2 bg-green-500/10 rounded-lg">
-              <CheckCircle className="h-5 w-5 text-[#43A047]" />
+        <div className="bg-[#232323] rounded-xl p-5">
+          <div className="flex items-center gap-4">
+            <div className="p-3 bg-green-500/10 rounded-xl">
+              <CheckCircle className="h-6 w-6 text-[#43A047]" />
             </div>
             <div>
-              <p className="text-2xl font-bold text-white">{stats.aprovados}</p>
-              <p className="text-xs text-zinc-400">Aprovados</p>
+              <p className="text-3xl font-bold text-white">{stats.aprovados}</p>
+              <p className="text-sm text-zinc-400">Aprovados</p>
             </div>
           </div>
         </div>
-        <div className="bg-[#232323] rounded-lg p-4">
-          <div className="flex items-center gap-3">
-            <div className="p-2 bg-blue-500/10 rounded-lg">
-              <CheckCircle className="h-5 w-5 text-blue-400" />
+        <div className="bg-[#232323] rounded-xl p-5">
+          <div className="flex items-center gap-4">
+            <div className="p-3 bg-blue-500/10 rounded-xl">
+              <CheckCircle className="h-6 w-6 text-blue-400" />
             </div>
             <div>
-              <p className="text-2xl font-bold text-white">{stats.convertidos}</p>
-              <p className="text-xs text-zinc-400">Convertidos</p>
+              <p className="text-3xl font-bold text-white">{stats.convertidos}</p>
+              <p className="text-sm text-zinc-400">Convertidos</p>
             </div>
           </div>
         </div>
