@@ -103,6 +103,7 @@ model Veiculo {
   modelo       String
   ano          Int?
   cor          String?
+  cilindrada   String?  // Ex: "1.0", "1.4", "2.0 Turbo"
   kmAtual      Int?
   clienteId    Int
   createdAt    DateTime @default(now())

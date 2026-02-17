@@ -96,6 +96,7 @@ export async function PUT(
         modelo: body.modelo,
         ano: body.ano ? parseInt(body.ano) : null,
         cor: body.cor || null,
+        cilindrada: body.cilindrada !== undefined ? (body.cilindrada || null) : undefined,
         kmAtual: body.kmAtual ? parseInt(body.kmAtual) : null,
         clienteId: body.clienteId ? parseInt(body.clienteId) : undefined,
       },

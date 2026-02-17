@@ -88,6 +88,7 @@ export async function POST(request: NextRequest) {
         modelo: body.modelo,
         ano: body.ano ? parseInt(body.ano) : null,
         cor: body.cor || null,
+        cilindrada: body.cilindrada || null,
         kmAtual: body.kmAtual ? parseInt(body.kmAtual) : null,
         clienteId: parseInt(body.clienteId),
         empresaId: session.empresaId,

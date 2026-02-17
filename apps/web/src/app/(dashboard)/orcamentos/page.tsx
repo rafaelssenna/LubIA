@@ -109,6 +109,7 @@ function OrcamentosPageContent() {
   const [quickPlaca, setQuickPlaca] = useState('');
   const [quickMarca, setQuickMarca] = useState('');
   const [quickModelo, setQuickModelo] = useState('');
+  const [quickCilindrada, setQuickCilindrada] = useState('');
   const [creatingQuick, setCreatingQuick] = useState(false);
 
   const fetchOrcamentos = async () => {
@@ -189,6 +190,7 @@ function OrcamentosPageContent() {
     setQuickPlaca('');
     setQuickMarca('');
     setQuickModelo('');
+    setQuickCilindrada('');
     setShowQuickRegister(false);
     fetchVeiculos();
     setShowConvertModal(true);
@@ -273,6 +275,7 @@ function OrcamentosPageContent() {
           placa: quickPlaca.trim().toUpperCase(),
           marca: quickMarca.trim(),
           modelo: quickModelo.trim(),
+          cilindrada: quickCilindrada.trim() || null,
         }),
       });
 
@@ -1390,7 +1393,7 @@ function OrcamentosPageContent() {
                       <Package className="h-4 w-4" />
                       Dados do Veículo
                     </h4>
-                    <div className="grid grid-cols-3 gap-3">
+                    <div className="grid grid-cols-4 gap-3">
                       <div>
                         <label className="block text-xs text-zinc-500 mb-1">Placa *</label>
                         <input
@@ -1419,6 +1422,17 @@ function OrcamentosPageContent() {
                           value={quickModelo}
                           onChange={(e) => setQuickModelo(e.target.value)}
                           placeholder="Uno"
+                          className="w-full px-4 py-2.5 bg-[#232323] border border-zinc-700 rounded-xl text-white placeholder-zinc-500 focus:outline-none focus:border-emerald-500"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-xs text-zinc-500 mb-1">Cilindrada</label>
+                        <input
+                          type="text"
+                          value={quickCilindrada}
+                          onChange={(e) => setQuickCilindrada(e.target.value)}
+                          placeholder="1.0"
+                          maxLength={20}
                           className="w-full px-4 py-2.5 bg-[#232323] border border-zinc-700 rounded-xl text-white placeholder-zinc-500 focus:outline-none focus:border-emerald-500"
                         />
                       </div>

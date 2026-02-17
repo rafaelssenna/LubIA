@@ -21,6 +21,7 @@ interface Veiculo {
   modelo: string;
   ano: number | null;
   cor: string | null;
+  cilindrada: string | null;
   kmAtual: number | null;
   clienteId: number;
   cliente: Cliente;
@@ -46,6 +47,7 @@ export default function VeiculosPage() {
     modelo: '',
     ano: '',
     cor: '',
+    cilindrada: '',
     kmAtual: '',
     clienteId: '',
   });
@@ -87,6 +89,7 @@ export default function VeiculosPage() {
       modelo: '',
       ano: '',
       cor: '',
+      cilindrada: '',
       kmAtual: '',
       clienteId: '',
     });
@@ -132,6 +135,7 @@ export default function VeiculosPage() {
       modelo: veiculo.modelo,
       ano: veiculo.ano?.toString() || '',
       cor: veiculo.cor || '',
+      cilindrada: veiculo.cilindrada || '',
       kmAtual: veiculo.kmAtual?.toString() || '',
       clienteId: veiculo.clienteId.toString(),
     });
@@ -480,7 +484,7 @@ export default function VeiculosPage() {
                   className="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-3 text-white placeholder-zinc-600 focus:outline-none focus:border-purple-500/50 focus:ring-1 focus:ring-purple-500/20 transition-all duration-200"
                 />
               </div>
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-3 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-zinc-400 mb-2">Cor</label>
                   <input
@@ -489,6 +493,17 @@ export default function VeiculosPage() {
                     value={form.cor}
                     onChange={(e) => setForm({ ...form, cor: e.target.value })}
                     maxLength={30}
+                    className="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-3 text-white placeholder-zinc-600 focus:outline-none focus:border-purple-500/50 focus:ring-1 focus:ring-purple-500/20 transition-all duration-200"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-zinc-400 mb-2">Cilindrada</label>
+                  <input
+                    type="text"
+                    placeholder="Ex: 1.0, 1.4, 2.0"
+                    value={form.cilindrada}
+                    onChange={(e) => setForm({ ...form, cilindrada: e.target.value })}
+                    maxLength={20}
                     className="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-3 text-white placeholder-zinc-600 focus:outline-none focus:border-purple-500/50 focus:ring-1 focus:ring-purple-500/20 transition-all duration-200"
                   />
                 </div>
@@ -590,13 +605,23 @@ export default function VeiculosPage() {
                   className="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-purple-500/50 focus:ring-1 focus:ring-purple-500/20 transition-all duration-200"
                 />
               </div>
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-3 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-zinc-400 mb-2">Cor</label>
                   <input
                     type="text"
                     value={form.cor}
                     onChange={(e) => setForm({ ...form, cor: e.target.value })}
+                    className="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-purple-500/50 focus:ring-1 focus:ring-purple-500/20 transition-all duration-200"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-zinc-400 mb-2">Cilindrada</label>
+                  <input
+                    type="text"
+                    placeholder="Ex: 1.0, 1.4, 2.0"
+                    value={form.cilindrada}
+                    onChange={(e) => setForm({ ...form, cilindrada: e.target.value })}
                     className="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-purple-500/50 focus:ring-1 focus:ring-purple-500/20 transition-all duration-200"
                   />
                 </div>
