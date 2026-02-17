@@ -88,7 +88,7 @@ export async function GET(request: NextRequest) {
         where: { empresaId: session.empresaId, status: { in: ['AGENDADO', 'EM_ANDAMENTO', 'AGUARDANDO_PECAS'] } },
       }),
       prisma.ordemServico.count({
-        where: { empresaId: session.empresaId, status: { in: ['CONCLUIDO', 'ENTREGUE'] } },
+        where: { empresaId: session.empresaId, status: 'CONCLUIDO' },
       }),
       prisma.ordemServico.count({
         where: { empresaId: session.empresaId, createdAt: { gte: hoje } },
