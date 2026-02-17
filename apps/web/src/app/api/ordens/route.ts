@@ -14,6 +14,7 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url);
     const busca = searchParams.get('busca') || '';
     const status = searchParams.get('status') || '';
+    const clienteId = searchParams.get('clienteId');
     const dataInicio = searchParams.get('dataInicio');
     const dataFim = searchParams.get('dataFim');
     const page = Math.max(1, parseInt(searchParams.get('page') || '1'));
@@ -33,6 +34,13 @@ export async function GET(request: NextRequest) {
 
     if (status) {
       where.status = status;
+    }
+
+    if (clienteId) {
+      where.veiculo = {
+        ...where.veiculo,
+        clienteId: parseInt(clienteId),
+      };
     }
 
     if (dataInicio && dataFim) {

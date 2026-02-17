@@ -91,6 +91,8 @@ function OrdensPageContent() {
   const [statusFilter, setStatusFilter] = useState('');
   const [dataInicio, setDataInicio] = useState('');
   const [dataFim, setDataFim] = useState('');
+  const [clienteFilter, setClienteFilter] = useState('');
+  const [clientes, setClientes] = useState<{ id: number; nome: string }[]>([]);
   const [stats, setStats] = useState({ total: 0, abertas: 0, concluidas: 0, hoje: 0 });
   const [viewMode, setViewMode] = useState<'lista' | 'calendario'>('calendario');
   const [currentDate, setCurrentDate] = useState(new Date());
@@ -131,6 +133,7 @@ function OrdensPageContent() {
       const params = new URLSearchParams();
       if (searchTerm) params.append('busca', searchTerm);
       if (statusFilter) params.append('status', statusFilter);
+      if (clienteFilter) params.append('clienteId', clienteFilter);
       if (dataInicio) params.append('dataInicio', dataInicio);
       if (dataFim) params.append('dataFim', dataFim);
       params.append('page', currentPage.toString());
@@ -188,15 +191,26 @@ function OrdensPageContent() {
     }
   };
 
+  const fetchClientes = async () => {
+    try {
+      const res = await fetch('/api/clientes');
+      const data = await res.json();
+      setClientes(data.data || []);
+    } catch (error) {
+      console.error('Erro ao buscar clientes:', error);
+    }
+  };
+
   useEffect(() => {
     fetchOrdens();
     fetchEmpresaConfig();
-  }, [searchTerm, statusFilter, dataInicio, dataFim, currentPage]);
+    fetchClientes();
+  }, [searchTerm, statusFilter, clienteFilter, dataInicio, dataFim, currentPage]);
 
   // Reset para página 1 ao mudar filtros
   useEffect(() => {
     setCurrentPage(1);
-  }, [searchTerm, statusFilter, dataInicio, dataFim]);
+  }, [searchTerm, statusFilter, clienteFilter, dataInicio, dataFim]);
 
   // Check for veiculoId in URL to auto-open modal
   useEffect(() => {
@@ -641,6 +655,16 @@ function OrdensPageContent() {
                     <option key={key} value={key}>{config.label}</option>
                   ))}
                 </select>
+                <select
+                  value={clienteFilter}
+                  onChange={(e) => setClienteFilter(e.target.value)}
+                  className="bg-[#1a1a1a] border border-zinc-800/50 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-emerald-500/50 focus:ring-1 focus:ring-emerald-500/20 transition-all duration-200 cursor-pointer max-w-[200px]"
+                >
+                  <option value="">Todos os Clientes</option>
+                  {clientes.map((cliente) => (
+                    <option key={cliente.id} value={cliente.id}>{cliente.nome}</option>
+                  ))}
+                </select>
                 <div className="flex items-center gap-2">
                   <input
                     type="date"
@@ -657,11 +681,11 @@ function OrdensPageContent() {
                     className="bg-[#1a1a1a] border border-zinc-800/50 rounded-xl px-3 py-3 text-sm text-white focus:outline-none focus:border-emerald-500/50 focus:ring-1 focus:ring-emerald-500/20 transition-all duration-200 [color-scheme:dark]"
                     title="Data final"
                   />
-                  {(dataInicio || dataFim) && (
+                  {(dataInicio || dataFim || clienteFilter) && (
                     <button
-                      onClick={() => { setDataInicio(''); setDataFim(''); }}
+                      onClick={() => { setDataInicio(''); setDataFim(''); setClienteFilter(''); }}
                       className="p-2 hover:bg-red-500/10 rounded-lg text-zinc-500 hover:text-red-400 transition-all duration-200"
-                      title="Limpar filtro de data"
+                      title="Limpar filtros"
                     >
                       <X size={18} />
                     </button>
