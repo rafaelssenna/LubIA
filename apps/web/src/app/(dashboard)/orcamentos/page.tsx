@@ -94,6 +94,14 @@ function OrcamentosPageContent() {
   // Empresa config for PDF
   const [empresaConfig, setEmpresaConfig] = useState<EmpresaConfig | null>(null);
 
+  // Convert to O.S. states
+  const [showConvertModal, setShowConvertModal] = useState(false);
+  const [convertingOrcamento, setConvertingOrcamento] = useState<Orcamento | null>(null);
+  const [veiculos, setVeiculos] = useState<{ id: number; placa: string; marca: string; modelo: string; cliente: { nome: string } }[]>([]);
+  const [selectedVeiculoId, setSelectedVeiculoId] = useState<number | null>(null);
+  const [converting, setConverting] = useState(false);
+  const [searchVeiculo, setSearchVeiculo] = useState('');
+
   const fetchOrcamentos = async () => {
     try {
       const params = new URLSearchParams();
@@ -141,6 +149,65 @@ function OrcamentosPageContent() {
       }
     } catch (error) {
       console.error('Erro ao buscar config da empresa:', error);
+    }
+  };
+
+  const fetchVeiculos = async () => {
+    try {
+      const res = await fetch('/api/veiculos?limit=1000');
+      const data = await res.json();
+      setVeiculos(data.data || []);
+    } catch (error) {
+      console.error('Erro ao buscar veículos:', error);
+    }
+  };
+
+  const openConvertModal = (orcamento: Orcamento) => {
+    if (orcamento.status === 'CONVERTIDO') {
+      toast.warning('Este orçamento já foi convertido em O.S.');
+      return;
+    }
+    if (orcamento.status === 'RECUSADO') {
+      toast.warning('Não é possível converter um orçamento recusado');
+      return;
+    }
+    setConvertingOrcamento(orcamento);
+    setSelectedVeiculoId(null);
+    setSearchVeiculo('');
+    fetchVeiculos();
+    setShowConvertModal(true);
+  };
+
+  const handleConvert = async () => {
+    if (!convertingOrcamento) return;
+    if (!selectedVeiculoId) {
+      toast.warning('Selecione um veículo para criar a O.S.');
+      return;
+    }
+
+    setConverting(true);
+    try {
+      const res = await fetch(`/api/orcamentos/${convertingOrcamento.id}/converter`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ veiculoId: selectedVeiculoId }),
+      });
+
+      const data = await res.json();
+
+      if (res.ok) {
+        toast.success(`Orçamento convertido em O.S. #${data.data.numero}!`);
+        setShowConvertModal(false);
+        setConvertingOrcamento(null);
+        fetchOrcamentos();
+      } else {
+        toast.error(data.error || 'Erro ao converter orçamento');
+      }
+    } catch (error) {
+      console.error('Erro ao converter orçamento:', error);
+      toast.error('Erro ao converter orçamento');
+    } finally {
+      setConverting(false);
     }
   };
 
@@ -591,6 +658,15 @@ function OrcamentosPageContent() {
                       >
                         <FileDown className="h-5 w-5" />
                       </button>
+                      {orcamento.status !== 'CONVERTIDO' && orcamento.status !== 'RECUSADO' && (
+                        <button
+                          onClick={() => openConvertModal(orcamento)}
+                          className="p-2.5 text-zinc-400 hover:text-purple-400 hover:bg-purple-500/10 rounded-xl transition-all"
+                          title="Converter em O.S."
+                        >
+                          <ArrowRight className="h-5 w-5" />
+                        </button>
+                      )}
                       {orcamento.status !== 'CONVERTIDO' && (
                         <>
                           <button
@@ -1013,6 +1089,20 @@ function OrcamentosPageContent() {
                   </button>
                 )}
               </div>
+
+              {/* Convert Button */}
+              {selectedOrcamento.status !== 'CONVERTIDO' && selectedOrcamento.status !== 'RECUSADO' && (
+                <button
+                  onClick={() => {
+                    setShowDetailModal(false);
+                    openConvertModal(selectedOrcamento);
+                  }}
+                  className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-purple-600 hover:bg-purple-700 text-white font-medium rounded-xl transition-colors"
+                >
+                  <ArrowRight className="h-5 w-5" />
+                  Converter em O.S.
+                </button>
+              )}
             </div>
           </div>
         </div>
@@ -1052,6 +1142,132 @@ function OrcamentosPageContent() {
                 {saving && <Loader2 className="h-5 w-5 animate-spin" />}
                 Excluir
               </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Convert to O.S. Modal */}
+      {showConvertModal && convertingOrcamento && (
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="bg-[#1a1a1a] rounded-2xl w-full max-w-lg max-h-[90vh] overflow-hidden flex flex-col border border-zinc-800">
+            <div className="flex items-center justify-between p-6 border-b border-zinc-800">
+              <div>
+                <h2 className="text-2xl font-bold text-white">Converter em O.S.</h2>
+                <p className="text-sm text-zinc-400 mt-1">
+                  {convertingOrcamento.numero} - {convertingOrcamento.nomeCliente || 'Cliente não informado'}
+                </p>
+              </div>
+              <button
+                onClick={() => {
+                  setShowConvertModal(false);
+                  setConvertingOrcamento(null);
+                }}
+                className="p-2 hover:bg-zinc-800 rounded-xl transition-colors"
+              >
+                <X className="h-6 w-6 text-zinc-400" />
+              </button>
+            </div>
+
+            <div className="flex-1 overflow-y-auto p-6 space-y-6">
+              {/* Info */}
+              <div className="p-4 bg-purple-500/10 border border-purple-500/30 rounded-xl">
+                <p className="text-purple-300 text-sm">
+                  Selecione o veículo do cliente para criar a Ordem de Serviço. Os produtos e serviços serão copiados automaticamente.
+                </p>
+              </div>
+
+              {/* Vehicle Search */}
+              <div>
+                <label className="block text-sm font-medium text-zinc-400 mb-2">
+                  Buscar Veículo
+                </label>
+                <div className="relative">
+                  <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-zinc-500" />
+                  <input
+                    type="text"
+                    placeholder="Buscar por placa, modelo ou cliente..."
+                    value={searchVeiculo}
+                    onChange={(e) => setSearchVeiculo(e.target.value)}
+                    className="w-full pl-12 pr-4 py-3 bg-[#232323] border border-zinc-700 rounded-xl text-white placeholder-zinc-500 focus:outline-none focus:border-purple-500"
+                  />
+                </div>
+              </div>
+
+              {/* Vehicle List */}
+              <div className="space-y-2 max-h-[300px] overflow-y-auto">
+                {veiculos
+                  .filter(v => {
+                    const search = searchVeiculo.toLowerCase();
+                    return !search ||
+                      v.placa.toLowerCase().includes(search) ||
+                      v.modelo.toLowerCase().includes(search) ||
+                      v.marca.toLowerCase().includes(search) ||
+                      v.cliente.nome.toLowerCase().includes(search);
+                  })
+                  .map((veiculo) => (
+                    <button
+                      key={veiculo.id}
+                      onClick={() => setSelectedVeiculoId(veiculo.id)}
+                      className={`w-full p-4 rounded-xl border transition-all text-left ${
+                        selectedVeiculoId === veiculo.id
+                          ? 'bg-purple-500/20 border-purple-500'
+                          : 'bg-[#232323] border-zinc-700 hover:border-zinc-600'
+                      }`}
+                    >
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <p className="font-semibold text-white">{veiculo.placa}</p>
+                          <p className="text-sm text-zinc-400">{veiculo.marca} {veiculo.modelo}</p>
+                          <p className="text-xs text-zinc-500">{veiculo.cliente.nome}</p>
+                        </div>
+                        {selectedVeiculoId === veiculo.id && (
+                          <CheckCircle className="h-6 w-6 text-purple-400" />
+                        )}
+                      </div>
+                    </button>
+                  ))}
+                {veiculos.length === 0 && (
+                  <p className="text-center text-zinc-500 py-8">Nenhum veículo cadastrado</p>
+                )}
+              </div>
+
+              {/* Total */}
+              <div className="p-4 bg-[#232323] rounded-xl">
+                <div className="flex justify-between items-center">
+                  <span className="text-zinc-400">Total do Orçamento:</span>
+                  <span className="text-2xl font-bold text-[#E85D04]">
+                    R$ {convertingOrcamento.total.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            {/* Actions */}
+            <div className="p-6 border-t border-zinc-800">
+              <div className="flex gap-3">
+                <button
+                  onClick={() => {
+                    setShowConvertModal(false);
+                    setConvertingOrcamento(null);
+                  }}
+                  className="flex-1 px-4 py-3 border border-zinc-700 text-white rounded-xl hover:bg-zinc-800 transition-colors font-medium"
+                >
+                  Cancelar
+                </button>
+                <button
+                  onClick={handleConvert}
+                  disabled={converting || !selectedVeiculoId}
+                  className="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-purple-600 hover:bg-purple-700 text-white rounded-xl transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {converting ? (
+                    <Loader2 className="h-5 w-5 animate-spin" />
+                  ) : (
+                    <ArrowRight className="h-5 w-5" />
+                  )}
+                  Converter em O.S.
+                </button>
+              </div>
             </div>
           </div>
         </div>
