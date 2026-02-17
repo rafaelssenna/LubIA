@@ -213,6 +213,18 @@ function OrdensPageContent() {
     setCurrentPage(1);
   }, [searchTerm, statusFilter, clienteFilter, dataInicio, dataFim]);
 
+  // Check for status filter in URL (from sidebar submenu)
+  useEffect(() => {
+    const statusParam = searchParams.get('status');
+    if (statusParam === 'ativas') {
+      setStatusFilter('ATIVAS');
+      setViewMode('lista');
+    } else if (statusParam === 'historico') {
+      setStatusFilter('HISTORICO');
+      setViewMode('lista');
+    }
+  }, [searchParams]);
+
   // Check for veiculoId in URL to auto-open modal
   useEffect(() => {
     const veiculoIdParam = searchParams.get('veiculoId');
@@ -674,6 +686,9 @@ function OrdensPageContent() {
                   className="bg-[#1a1a1a] border border-zinc-800/50 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-emerald-500/50 focus:ring-1 focus:ring-emerald-500/20 transition-all duration-200 cursor-pointer"
                 >
                   <option value="">Todos os Status</option>
+                  <option value="ATIVAS">Em Andamento</option>
+                  <option value="HISTORICO">Histórico</option>
+                  <option disabled className="text-zinc-600">──────────</option>
                   {Object.entries(statusConfig).map(([key, config]) => (
                     <option key={key} value={key}>{config.label}</option>
                   ))}

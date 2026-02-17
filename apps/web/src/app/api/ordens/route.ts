@@ -33,7 +33,15 @@ export async function GET(request: NextRequest) {
     }
 
     if (status) {
-      where.status = status;
+      if (status === 'ATIVAS') {
+        // Em Andamento: AGENDADO, EM_ANDAMENTO, AGUARDANDO_PECAS
+        where.status = { in: ['AGENDADO', 'EM_ANDAMENTO', 'AGUARDANDO_PECAS'] };
+      } else if (status === 'HISTORICO') {
+        // Histórico: CONCLUIDO, ENTREGUE, CANCELADO
+        where.status = { in: ['CONCLUIDO', 'ENTREGUE', 'CANCELADO'] };
+      } else {
+        where.status = status;
+      }
     }
 
     if (clienteId) {

@@ -13,12 +13,15 @@ import {
   LogOut,
   ChevronLeft,
   ChevronRight,
+  ChevronDown,
   MessageCircle,
   Package,
   ClipboardList,
   FileText,
   AlertCircle,
   UserCog,
+  Play,
+  Archive,
 } from 'lucide-react';
 import { useSidebar } from '@/contexts/SidebarContext';
 import { useAuth } from '@/contexts/AuthContext';
@@ -33,11 +36,34 @@ const ROLE_PERMISSIONS: Record<RoleUsuario, string[]> = {
   VENDEDOR: ['clientes', 'veiculos', 'orcamentos', 'whatsapp'],
 };
 
-const menuItems = [
+interface SubMenuItem {
+  icon: any;
+  label: string;
+  href: string;
+}
+
+interface MenuItem {
+  icon: any;
+  label: string;
+  href: string;
+  permission: string;
+  subItems?: SubMenuItem[];
+}
+
+const menuItems: MenuItem[] = [
   { icon: LayoutDashboard, label: 'Dashboard', href: '/', permission: 'dashboard' },
   { icon: Users, label: 'Clientes', href: '/clientes', permission: 'clientes' },
   { icon: Car, label: 'Veículos', href: '/veiculos', permission: 'veiculos' },
-  { icon: ClipboardList, label: 'Ordens', href: '/ordens', permission: 'ordens' },
+  {
+    icon: ClipboardList,
+    label: 'Ordens',
+    href: '/ordens',
+    permission: 'ordens',
+    subItems: [
+      { icon: Play, label: 'Em Andamento', href: '/ordens?status=ativas' },
+      { icon: Archive, label: 'Histórico', href: '/ordens?status=historico' },
+    ]
+  },
   { icon: FileText, label: 'Orçamentos', href: '/orcamentos', permission: 'orcamentos' },
   { icon: Package, label: 'Estoque', href: '/estoque', permission: 'estoque' },
   { icon: Bell, label: 'Lembretes', href: '/lembretes', permission: 'lembretes' },
@@ -49,6 +75,7 @@ export default function Sidebar() {
   const { collapsed, toggleCollapsed } = useSidebar();
   const { logout, isAdmin, user } = useAuth();
   const [configIncomplete, setConfigIncomplete] = useState(false);
+  const [expandedMenu, setExpandedMenu] = useState<string | null>(null);
 
   // Filtrar menu baseado nas permissões do role
   const userRole = (user?.role || 'ATENDENTE') as RoleUsuario;
@@ -112,7 +139,75 @@ export default function Sidebar() {
       {/* Menu */}
       <nav className="flex-1 p-4 space-y-1.5 overflow-y-auto custom-scrollbar">
         {filteredMenuItems.map((item, index) => {
-          const isActive = pathname === item.href;
+          const isActive = pathname === item.href || (item.subItems && pathname.startsWith(item.href));
+          const hasSubItems = item.subItems && item.subItems.length > 0;
+          const isExpanded = expandedMenu === item.label;
+
+          if (hasSubItems) {
+            return (
+              <div key={item.href}>
+                <button
+                  onClick={() => {
+                    if (collapsed) {
+                      // Se colapsado, navegar direto
+                      window.location.href = item.href;
+                    } else {
+                      setExpandedMenu(isExpanded ? null : item.label);
+                    }
+                  }}
+                  className={`flex items-center gap-3 px-4 py-3.5 rounded-xl transition-all duration-300 group relative overflow-hidden w-full ${
+                    isActive
+                      ? 'bg-white/20 text-white shadow-lg shadow-black/10 ring-1 ring-white/20'
+                      : 'text-white/70 hover:bg-white/10 hover:text-white'
+                  } ${collapsed ? 'justify-center px-3' : ''}`}
+                  title={collapsed ? item.label : undefined}
+                  style={{ animationDelay: `${index * 0.05}s` }}
+                >
+                  {isActive && (
+                    <div className="absolute inset-0 bg-gradient-to-r from-white/10 to-transparent"></div>
+                  )}
+                  <item.icon
+                    size={20}
+                    className={`relative z-10 transition-all duration-300 ${
+                      isActive ? 'drop-shadow-lg' : 'group-hover:scale-110'
+                    }`}
+                  />
+                  {!collapsed && (
+                    <>
+                      <span className="font-medium relative z-10">{item.label}</span>
+                      <ChevronDown
+                        size={16}
+                        className={`ml-auto relative z-10 transition-transform duration-300 ${isExpanded ? 'rotate-180' : ''}`}
+                      />
+                    </>
+                  )}
+                </button>
+                {/* Subitems */}
+                {!collapsed && isExpanded && (
+                  <div className="ml-4 mt-1 space-y-1 border-l-2 border-white/10 pl-3">
+                    {item.subItems!.map((subItem) => {
+                      const isSubActive = pathname + window.location.search === subItem.href;
+                      return (
+                        <Link
+                          key={subItem.href}
+                          href={subItem.href}
+                          className={`flex items-center gap-2 px-3 py-2.5 rounded-lg transition-all duration-200 text-sm ${
+                            isSubActive
+                              ? 'bg-white/15 text-white'
+                              : 'text-white/60 hover:bg-white/10 hover:text-white'
+                          }`}
+                        >
+                          <subItem.icon size={16} />
+                          <span>{subItem.label}</span>
+                        </Link>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
+            );
+          }
+
           return (
             <Link
               key={item.href}
