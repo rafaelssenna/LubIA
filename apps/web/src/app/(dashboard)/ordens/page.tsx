@@ -89,6 +89,8 @@ function OrdensPageContent() {
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
+  const [dataInicio, setDataInicio] = useState('');
+  const [dataFim, setDataFim] = useState('');
   const [stats, setStats] = useState({ total: 0, abertas: 0, concluidas: 0, hoje: 0 });
   const [viewMode, setViewMode] = useState<'lista' | 'calendario'>('calendario');
   const [currentDate, setCurrentDate] = useState(new Date());
@@ -129,6 +131,8 @@ function OrdensPageContent() {
       const params = new URLSearchParams();
       if (searchTerm) params.append('busca', searchTerm);
       if (statusFilter) params.append('status', statusFilter);
+      if (dataInicio) params.append('dataInicio', dataInicio);
+      if (dataFim) params.append('dataFim', dataFim);
       params.append('page', currentPage.toString());
       params.append('limit', itemsPerPage.toString());
 
@@ -187,12 +191,12 @@ function OrdensPageContent() {
   useEffect(() => {
     fetchOrdens();
     fetchEmpresaConfig();
-  }, [searchTerm, statusFilter, currentPage]);
+  }, [searchTerm, statusFilter, dataInicio, dataFim, currentPage]);
 
   // Reset para página 1 ao mudar filtros
   useEffect(() => {
     setCurrentPage(1);
-  }, [searchTerm, statusFilter]);
+  }, [searchTerm, statusFilter, dataInicio, dataFim]);
 
   // Check for veiculoId in URL to auto-open modal
   useEffect(() => {
@@ -637,6 +641,32 @@ function OrdensPageContent() {
                     <option key={key} value={key}>{config.label}</option>
                   ))}
                 </select>
+                <div className="flex items-center gap-2">
+                  <input
+                    type="date"
+                    value={dataInicio}
+                    onChange={(e) => setDataInicio(e.target.value)}
+                    className="bg-[#1a1a1a] border border-zinc-800/50 rounded-xl px-3 py-3 text-sm text-white focus:outline-none focus:border-emerald-500/50 focus:ring-1 focus:ring-emerald-500/20 transition-all duration-200 [color-scheme:dark]"
+                    title="Data inicial"
+                  />
+                  <span className="text-zinc-500">até</span>
+                  <input
+                    type="date"
+                    value={dataFim}
+                    onChange={(e) => setDataFim(e.target.value)}
+                    className="bg-[#1a1a1a] border border-zinc-800/50 rounded-xl px-3 py-3 text-sm text-white focus:outline-none focus:border-emerald-500/50 focus:ring-1 focus:ring-emerald-500/20 transition-all duration-200 [color-scheme:dark]"
+                    title="Data final"
+                  />
+                  {(dataInicio || dataFim) && (
+                    <button
+                      onClick={() => { setDataInicio(''); setDataFim(''); }}
+                      className="p-2 hover:bg-red-500/10 rounded-lg text-zinc-500 hover:text-red-400 transition-all duration-200"
+                      title="Limpar filtro de data"
+                    >
+                      <X size={18} />
+                    </button>
+                  )}
+                </div>
               </>
             ) : (
               <div className="flex items-center gap-2">
