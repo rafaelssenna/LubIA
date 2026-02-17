@@ -102,6 +102,15 @@ function OrcamentosPageContent() {
   const [converting, setConverting] = useState(false);
   const [searchVeiculo, setSearchVeiculo] = useState('');
 
+  // Quick registration states
+  const [showQuickRegister, setShowQuickRegister] = useState(false);
+  const [quickNome, setQuickNome] = useState('');
+  const [quickTelefone, setQuickTelefone] = useState('');
+  const [quickPlaca, setQuickPlaca] = useState('');
+  const [quickMarca, setQuickMarca] = useState('');
+  const [quickModelo, setQuickModelo] = useState('');
+  const [creatingQuick, setCreatingQuick] = useState(false);
+
   const fetchOrcamentos = async () => {
     try {
       const params = new URLSearchParams();
@@ -174,6 +183,13 @@ function OrcamentosPageContent() {
     setConvertingOrcamento(orcamento);
     setSelectedVeiculoId(null);
     setSearchVeiculo('');
+    // Pre-fill quick registration with quote data
+    setQuickNome(orcamento.nomeCliente || '');
+    setQuickTelefone(orcamento.telefoneCliente || '');
+    setQuickPlaca('');
+    setQuickMarca('');
+    setQuickModelo('');
+    setShowQuickRegister(false);
     fetchVeiculos();
     setShowConvertModal(true);
   };
@@ -208,6 +224,77 @@ function OrcamentosPageContent() {
       toast.error('Erro ao converter orçamento');
     } finally {
       setConverting(false);
+    }
+  };
+
+  const handleQuickRegister = async () => {
+    if (!quickNome.trim()) {
+      toast.warning('Informe o nome do cliente');
+      return;
+    }
+    if (!quickTelefone.trim()) {
+      toast.warning('Informe o telefone do cliente');
+      return;
+    }
+    if (!quickPlaca.trim()) {
+      toast.warning('Informe a placa do veículo');
+      return;
+    }
+    if (!quickMarca.trim() || !quickModelo.trim()) {
+      toast.warning('Informe a marca e modelo do veículo');
+      return;
+    }
+
+    setCreatingQuick(true);
+    try {
+      // 1. Create customer
+      const clienteRes = await fetch('/api/clientes', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          nome: quickNome.trim(),
+          telefone: quickTelefone.trim(),
+        }),
+      });
+
+      const clienteData = await clienteRes.json();
+
+      if (!clienteRes.ok) {
+        toast.error(clienteData.error || 'Erro ao criar cliente');
+        return;
+      }
+
+      // 2. Create vehicle
+      const veiculoRes = await fetch('/api/veiculos', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          clienteId: clienteData.data.id,
+          placa: quickPlaca.trim().toUpperCase(),
+          marca: quickMarca.trim(),
+          modelo: quickModelo.trim(),
+        }),
+      });
+
+      const veiculoData = await veiculoRes.json();
+
+      if (!veiculoRes.ok) {
+        toast.error(veiculoData.error || 'Erro ao criar veículo');
+        return;
+      }
+
+      toast.success('Cliente e veículo cadastrados!');
+
+      // 3. Select the new vehicle and refresh list
+      setSelectedVeiculoId(veiculoData.data.id);
+      setShowQuickRegister(false);
+      fetchVeiculos();
+
+    } catch (error) {
+      console.error('Erro ao cadastrar:', error);
+      toast.error('Erro ao cadastrar cliente/veículo');
+    } finally {
+      setCreatingQuick(false);
     }
   };
 
@@ -1170,67 +1257,189 @@ function OrcamentosPageContent() {
             </div>
 
             <div className="flex-1 overflow-y-auto p-6 space-y-6">
-              {/* Info */}
-              <div className="p-4 bg-purple-500/10 border border-purple-500/30 rounded-xl">
-                <p className="text-purple-300 text-sm">
-                  Selecione o veículo do cliente para criar a Ordem de Serviço. Os produtos e serviços serão copiados automaticamente.
-                </p>
+              {/* Toggle Tabs */}
+              <div className="flex gap-2 p-1 bg-[#232323] rounded-xl">
+                <button
+                  onClick={() => setShowQuickRegister(false)}
+                  className={`flex-1 py-2.5 px-4 rounded-lg text-sm font-medium transition-colors ${
+                    !showQuickRegister
+                      ? 'bg-purple-600 text-white'
+                      : 'text-zinc-400 hover:text-white'
+                  }`}
+                >
+                  Selecionar Veículo
+                </button>
+                <button
+                  onClick={() => setShowQuickRegister(true)}
+                  className={`flex-1 py-2.5 px-4 rounded-lg text-sm font-medium transition-colors ${
+                    showQuickRegister
+                      ? 'bg-purple-600 text-white'
+                      : 'text-zinc-400 hover:text-white'
+                  }`}
+                >
+                  + Cadastro Rápido
+                </button>
               </div>
 
-              {/* Vehicle Search */}
-              <div>
-                <label className="block text-sm font-medium text-zinc-400 mb-2">
-                  Buscar Veículo
-                </label>
-                <div className="relative">
-                  <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-zinc-500" />
-                  <input
-                    type="text"
-                    placeholder="Buscar por placa, modelo ou cliente..."
-                    value={searchVeiculo}
-                    onChange={(e) => setSearchVeiculo(e.target.value)}
-                    className="w-full pl-12 pr-4 py-3 bg-[#232323] border border-zinc-700 rounded-xl text-white placeholder-zinc-500 focus:outline-none focus:border-purple-500"
-                  />
-                </div>
-              </div>
+              {!showQuickRegister ? (
+                <>
+                  {/* Info */}
+                  <div className="p-4 bg-purple-500/10 border border-purple-500/30 rounded-xl">
+                    <p className="text-purple-300 text-sm">
+                      Selecione o veículo do cliente para criar a Ordem de Serviço. Os produtos e serviços serão copiados automaticamente.
+                    </p>
+                  </div>
 
-              {/* Vehicle List */}
-              <div className="space-y-2 max-h-[300px] overflow-y-auto">
-                {veiculos
-                  .filter(v => {
-                    const search = searchVeiculo.toLowerCase();
-                    return !search ||
-                      v.placa.toLowerCase().includes(search) ||
-                      v.modelo.toLowerCase().includes(search) ||
-                      v.marca.toLowerCase().includes(search) ||
-                      v.cliente.nome.toLowerCase().includes(search);
-                  })
-                  .map((veiculo) => (
-                    <button
-                      key={veiculo.id}
-                      onClick={() => setSelectedVeiculoId(veiculo.id)}
-                      className={`w-full p-4 rounded-xl border transition-all text-left ${
-                        selectedVeiculoId === veiculo.id
-                          ? 'bg-purple-500/20 border-purple-500'
-                          : 'bg-[#232323] border-zinc-700 hover:border-zinc-600'
-                      }`}
-                    >
-                      <div className="flex items-center justify-between">
-                        <div>
-                          <p className="font-semibold text-white">{veiculo.placa}</p>
-                          <p className="text-sm text-zinc-400">{veiculo.marca} {veiculo.modelo}</p>
-                          <p className="text-xs text-zinc-500">{veiculo.cliente.nome}</p>
-                        </div>
-                        {selectedVeiculoId === veiculo.id && (
-                          <CheckCircle className="h-6 w-6 text-purple-400" />
-                        )}
+                  {/* Vehicle Search */}
+                  <div>
+                    <label className="block text-sm font-medium text-zinc-400 mb-2">
+                      Buscar Veículo
+                    </label>
+                    <div className="relative">
+                      <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-zinc-500" />
+                      <input
+                        type="text"
+                        placeholder="Buscar por placa, modelo ou cliente..."
+                        value={searchVeiculo}
+                        onChange={(e) => setSearchVeiculo(e.target.value)}
+                        className="w-full pl-12 pr-4 py-3 bg-[#232323] border border-zinc-700 rounded-xl text-white placeholder-zinc-500 focus:outline-none focus:border-purple-500"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Vehicle List */}
+                  <div className="space-y-2 max-h-[300px] overflow-y-auto">
+                    {veiculos
+                      .filter(v => {
+                        const search = searchVeiculo.toLowerCase();
+                        return !search ||
+                          v.placa.toLowerCase().includes(search) ||
+                          v.modelo.toLowerCase().includes(search) ||
+                          v.marca.toLowerCase().includes(search) ||
+                          v.cliente.nome.toLowerCase().includes(search);
+                      })
+                      .map((veiculo) => (
+                        <button
+                          key={veiculo.id}
+                          onClick={() => setSelectedVeiculoId(veiculo.id)}
+                          className={`w-full p-4 rounded-xl border transition-all text-left ${
+                            selectedVeiculoId === veiculo.id
+                              ? 'bg-purple-500/20 border-purple-500'
+                              : 'bg-[#232323] border-zinc-700 hover:border-zinc-600'
+                          }`}
+                        >
+                          <div className="flex items-center justify-between">
+                            <div>
+                              <p className="font-semibold text-white">{veiculo.placa}</p>
+                              <p className="text-sm text-zinc-400">{veiculo.marca} {veiculo.modelo}</p>
+                              <p className="text-xs text-zinc-500">{veiculo.cliente.nome}</p>
+                            </div>
+                            {selectedVeiculoId === veiculo.id && (
+                              <CheckCircle className="h-6 w-6 text-purple-400" />
+                            )}
+                          </div>
+                        </button>
+                      ))}
+                    {veiculos.length === 0 && (
+                      <p className="text-center text-zinc-500 py-8">Nenhum veículo cadastrado</p>
+                    )}
+                  </div>
+                </>
+              ) : (
+                <>
+                  {/* Quick Registration Form */}
+                  <div className="p-4 bg-emerald-500/10 border border-emerald-500/30 rounded-xl">
+                    <p className="text-emerald-300 text-sm">
+                      Cadastre rapidamente o cliente e veículo. Os dados do orçamento foram preenchidos automaticamente.
+                    </p>
+                  </div>
+
+                  {/* Customer Fields */}
+                  <div className="space-y-4">
+                    <h4 className="text-sm font-medium text-zinc-300 flex items-center gap-2">
+                      <User className="h-4 w-4" />
+                      Dados do Cliente
+                    </h4>
+                    <div className="grid grid-cols-2 gap-3">
+                      <div>
+                        <label className="block text-xs text-zinc-500 mb-1">Nome *</label>
+                        <input
+                          type="text"
+                          value={quickNome}
+                          onChange={(e) => setQuickNome(e.target.value)}
+                          placeholder="Nome do cliente"
+                          className="w-full px-4 py-2.5 bg-[#232323] border border-zinc-700 rounded-xl text-white placeholder-zinc-500 focus:outline-none focus:border-emerald-500"
+                        />
                       </div>
-                    </button>
-                  ))}
-                {veiculos.length === 0 && (
-                  <p className="text-center text-zinc-500 py-8">Nenhum veículo cadastrado</p>
-                )}
-              </div>
+                      <div>
+                        <label className="block text-xs text-zinc-500 mb-1">Telefone *</label>
+                        <input
+                          type="text"
+                          value={quickTelefone}
+                          onChange={(e) => setQuickTelefone(e.target.value)}
+                          placeholder="(00) 00000-0000"
+                          className="w-full px-4 py-2.5 bg-[#232323] border border-zinc-700 rounded-xl text-white placeholder-zinc-500 focus:outline-none focus:border-emerald-500"
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Vehicle Fields */}
+                  <div className="space-y-4">
+                    <h4 className="text-sm font-medium text-zinc-300 flex items-center gap-2">
+                      <Package className="h-4 w-4" />
+                      Dados do Veículo
+                    </h4>
+                    <div className="grid grid-cols-3 gap-3">
+                      <div>
+                        <label className="block text-xs text-zinc-500 mb-1">Placa *</label>
+                        <input
+                          type="text"
+                          value={quickPlaca}
+                          onChange={(e) => setQuickPlaca(e.target.value.toUpperCase())}
+                          placeholder="ABC1234"
+                          maxLength={7}
+                          className="w-full px-4 py-2.5 bg-[#232323] border border-zinc-700 rounded-xl text-white placeholder-zinc-500 focus:outline-none focus:border-emerald-500 uppercase"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-xs text-zinc-500 mb-1">Marca *</label>
+                        <input
+                          type="text"
+                          value={quickMarca}
+                          onChange={(e) => setQuickMarca(e.target.value)}
+                          placeholder="Fiat"
+                          className="w-full px-4 py-2.5 bg-[#232323] border border-zinc-700 rounded-xl text-white placeholder-zinc-500 focus:outline-none focus:border-emerald-500"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-xs text-zinc-500 mb-1">Modelo *</label>
+                        <input
+                          type="text"
+                          value={quickModelo}
+                          onChange={(e) => setQuickModelo(e.target.value)}
+                          placeholder="Uno"
+                          className="w-full px-4 py-2.5 bg-[#232323] border border-zinc-700 rounded-xl text-white placeholder-zinc-500 focus:outline-none focus:border-emerald-500"
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Register Button */}
+                  <button
+                    onClick={handleQuickRegister}
+                    disabled={creatingQuick}
+                    className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-medium rounded-xl transition-colors disabled:opacity-50"
+                  >
+                    {creatingQuick ? (
+                      <Loader2 className="h-5 w-5 animate-spin" />
+                    ) : (
+                      <Plus className="h-5 w-5" />
+                    )}
+                    Cadastrar e Selecionar
+                  </button>
+                </>
+              )}
 
               {/* Total */}
               <div className="p-4 bg-[#232323] rounded-xl">
