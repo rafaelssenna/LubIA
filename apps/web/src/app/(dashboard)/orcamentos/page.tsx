@@ -8,6 +8,7 @@ import {
   AlertCircle, Send, TrendingUp, ArrowRight
 } from 'lucide-react';
 import { useState, useEffect, Suspense } from 'react';
+import { useRouter } from 'next/navigation';
 import { useToast } from '@/components/Toast';
 import { downloadOrcamentoPDF, generateOrcamentoPDF, EmpresaConfig } from '@/lib/pdfGenerator';
 
@@ -58,6 +59,7 @@ const statusConfig: Record<string, { label: string; color: string; icon: any; bg
 
 function OrcamentosPageContent() {
   const toast = useToast();
+  const router = useRouter();
   const [orcamentos, setOrcamentos] = useState<Orcamento[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
@@ -217,7 +219,8 @@ function OrcamentosPageContent() {
         toast.success(`Orçamento convertido em O.S. #${data.data.numero}!`);
         setShowConvertModal(false);
         setConvertingOrcamento(null);
-        fetchOrcamentos();
+        // Redirect to orders page with the new order
+        router.push(`/ordens?highlight=${data.data.id}`);
       } else {
         toast.error(data.error || 'Erro ao converter orçamento');
       }
