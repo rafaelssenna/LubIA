@@ -101,6 +101,7 @@ function OrdensPageContent() {
   const [showModal, setShowModal] = useState(false);
   const [showDetailModal, setShowDetailModal] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [showConcluirConfirm, setShowConcluirConfirm] = useState(false);
   const [selectedOrdem, setSelectedOrdem] = useState<OrdemServico | null>(null);
   const [saving, setSaving] = useState(false);
 
@@ -887,17 +888,12 @@ function OrdensPageContent() {
                     </div>
                     <div className="flex items-center gap-2">
                       {/* Quick Status Change */}
-                      {ordem.status === 'AGENDADO' && (
+                      {(ordem.status === 'AGENDADO' || ordem.status === 'EM_ANDAMENTO') && (
                         <button
-                          onClick={() => handleStatusChange(ordem, 'EM_ANDAMENTO')}
-                          className="px-4 py-2 bg-purple-500/10 text-purple-400 rounded-xl text-sm font-medium hover:bg-purple-500/20 border border-purple-500/20 transition-all duration-200"
-                        >
-                          Iniciar
-                        </button>
-                      )}
-                      {ordem.status === 'EM_ANDAMENTO' && (
-                        <button
-                          onClick={() => handleStatusChange(ordem, 'CONCLUIDO')}
+                          onClick={() => {
+                            setSelectedOrdem(ordem);
+                            setShowConcluirConfirm(true);
+                          }}
                           className="px-4 py-2 bg-emerald-500/10 text-emerald-400 rounded-xl text-sm font-medium hover:bg-emerald-500/20 border border-emerald-500/20 transition-all duration-200"
                         >
                           Concluir
@@ -1512,6 +1508,84 @@ function OrdensPageContent() {
                 className="px-6 py-3 bg-gradient-to-r from-red-500 to-red-700 rounded-xl text-white font-medium hover:shadow-lg hover:shadow-red-500/25 transition-all duration-300 disabled:opacity-50"
               >
                 {saving ? 'Excluindo...' : 'Excluir O.S.'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Modal Confirmar Conclusao */}
+      {showConcluirConfirm && selectedOrdem && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="bg-[#1a1a1a] border border-zinc-800 rounded-2xl w-full max-w-md shadow-2xl shadow-black/50">
+            <div className="p-6 border-b border-zinc-800">
+              <h2 className="text-xl font-semibold text-white">Concluir O.S.</h2>
+            </div>
+            <div className="p-6">
+              <div className="flex items-center gap-4 mb-4">
+                <div className="p-3 bg-emerald-500/10 rounded-xl border border-emerald-500/20">
+                  <CheckCircle size={24} className="text-emerald-400" />
+                </div>
+                <div>
+                  <p className="text-white font-medium">O.S. #{selectedOrdem.numero.slice(-8).toUpperCase()}</p>
+                  <p className="text-sm text-zinc-400">{formatPlate(selectedOrdem.veiculo.placa)} - {capitalize(selectedOrdem.veiculo.cliente.nome)}</p>
+                </div>
+              </div>
+
+              {/* Resumo dos itens */}
+              <div className="bg-[#121212] rounded-xl p-4 mb-4 space-y-2">
+                {selectedOrdem.itensProduto.length > 0 && (
+                  <div>
+                    <p className="text-xs text-zinc-500 mb-1">Produtos</p>
+                    {selectedOrdem.itensProduto.map((item) => (
+                      <p key={item.id} className="text-sm text-zinc-300">
+                        {item.produtoNome} x{item.quantidade} - {formatCurrency(item.subtotal)}
+                      </p>
+                    ))}
+                  </div>
+                )}
+                {selectedOrdem.servicosExtras.length > 0 && (
+                  <div>
+                    <p className="text-xs text-zinc-500 mb-1">Servicos</p>
+                    {selectedOrdem.servicosExtras.map((s, i) => (
+                      <p key={i} className="text-sm text-zinc-300">
+                        {s.descricao} - {formatCurrency(s.valor)}
+                      </p>
+                    ))}
+                  </div>
+                )}
+                <div className="pt-2 border-t border-zinc-800">
+                  <div className="flex justify-between">
+                    <span className="text-zinc-400 font-medium">Total</span>
+                    <span className="text-emerald-400 font-bold">{formatCurrency(selectedOrdem.total)}</span>
+                  </div>
+                </div>
+              </div>
+
+              <p className="text-zinc-400 text-sm">
+                Confirma a conclusao desta ordem de servico?
+              </p>
+            </div>
+            <div className="p-6 border-t border-zinc-800 flex gap-3 justify-end">
+              <button
+                onClick={() => {
+                  setShowConcluirConfirm(false);
+                  setSelectedOrdem(null);
+                }}
+                className="px-6 py-3 border border-zinc-700 rounded-xl text-zinc-400 hover:bg-zinc-800 transition-all duration-200"
+              >
+                Cancelar
+              </button>
+              <button
+                onClick={async () => {
+                  await handleStatusChange(selectedOrdem, 'CONCLUIDO');
+                  setShowConcluirConfirm(false);
+                  setSelectedOrdem(null);
+                }}
+                disabled={saving}
+                className="px-6 py-3 bg-gradient-to-r from-emerald-500 to-emerald-700 rounded-xl text-white font-medium hover:shadow-lg hover:shadow-emerald-500/25 transition-all duration-300 disabled:opacity-50"
+              >
+                Confirmar
               </button>
             </div>
           </div>
