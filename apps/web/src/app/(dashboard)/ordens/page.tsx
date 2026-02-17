@@ -544,7 +544,10 @@ function OrdensPageContent() {
         {/* Stats Cards */}
         <div className="grid grid-cols-2 xl:grid-cols-4 gap-8">
           {/* Total O.S. */}
-          <div className="group relative overflow-hidden bg-gradient-to-br from-emerald-500/20 to-emerald-500/5 rounded-2xl p-6 border border-emerald-500/20 hover:border-emerald-500/40 transition-all duration-300">
+          <button
+            onClick={() => { setStatusFilter(''); setViewMode('lista'); }}
+            className="group relative overflow-hidden bg-gradient-to-br from-emerald-500/20 to-emerald-500/5 rounded-2xl p-6 border border-emerald-500/20 hover:border-emerald-500/40 transition-all duration-300 text-left cursor-pointer"
+          >
             <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-500/10 rounded-full blur-3xl group-hover:scale-150 transition-transform duration-500"></div>
             <div className="relative">
               <div className="flex items-center justify-between mb-4">
@@ -556,10 +559,13 @@ function OrdensPageContent() {
               <p className="text-4xl font-bold text-white mb-1">{stats.total}</p>
               <p className="text-sm text-zinc-400">ordens de servico</p>
             </div>
-          </div>
+          </button>
 
           {/* Em Aberto */}
-          <div className="group relative overflow-hidden bg-gradient-to-br from-purple-500/20 to-purple-500/5 rounded-2xl p-6 border border-purple-500/20 hover:border-purple-500/40 transition-all duration-300">
+          <button
+            onClick={() => { setStatusFilter('EM_ANDAMENTO'); setViewMode('lista'); }}
+            className="group relative overflow-hidden bg-gradient-to-br from-purple-500/20 to-purple-500/5 rounded-2xl p-6 border border-purple-500/20 hover:border-purple-500/40 transition-all duration-300 text-left cursor-pointer"
+          >
             <div className="absolute top-0 right-0 w-32 h-32 bg-purple-500/10 rounded-full blur-3xl group-hover:scale-150 transition-transform duration-500"></div>
             <div className="relative">
               <div className="flex items-center justify-between mb-4">
@@ -571,10 +577,13 @@ function OrdensPageContent() {
               <p className="text-4xl font-bold text-white mb-1">{stats.abertas}</p>
               <p className="text-sm text-zinc-400">em andamento</p>
             </div>
-          </div>
+          </button>
 
           {/* Concluidas */}
-          <div className="group relative overflow-hidden bg-gradient-to-br from-cyan-500/20 to-cyan-500/5 rounded-2xl p-6 border border-cyan-500/20 hover:border-cyan-500/40 transition-all duration-300">
+          <button
+            onClick={() => { setStatusFilter('CONCLUIDO'); setViewMode('lista'); }}
+            className="group relative overflow-hidden bg-gradient-to-br from-cyan-500/20 to-cyan-500/5 rounded-2xl p-6 border border-cyan-500/20 hover:border-cyan-500/40 transition-all duration-300 text-left cursor-pointer"
+          >
             <div className="absolute top-0 right-0 w-32 h-32 bg-cyan-500/10 rounded-full blur-3xl group-hover:scale-150 transition-transform duration-500"></div>
             <div className="relative">
               <div className="flex items-center justify-between mb-4">
@@ -586,10 +595,23 @@ function OrdensPageContent() {
               <p className="text-4xl font-bold text-white mb-1">{stats.concluidas}</p>
               <p className="text-sm text-zinc-400">concluidas</p>
             </div>
-          </div>
+          </button>
 
           {/* Hoje */}
-          <div className="group relative overflow-hidden bg-gradient-to-br from-blue-500/20 to-blue-500/5 rounded-2xl p-6 border border-blue-500/20 hover:border-blue-500/40 transition-all duration-300">
+          <button
+            onClick={() => {
+              const today = new Date();
+              const yyyy = today.getFullYear();
+              const mm = String(today.getMonth() + 1).padStart(2, '0');
+              const dd = String(today.getDate()).padStart(2, '0');
+              const todayStr = `${yyyy}-${mm}-${dd}`;
+              setDataInicio(todayStr);
+              setDataFim(todayStr);
+              setStatusFilter('');
+              setViewMode('lista');
+            }}
+            className="group relative overflow-hidden bg-gradient-to-br from-blue-500/20 to-blue-500/5 rounded-2xl p-6 border border-blue-500/20 hover:border-blue-500/40 transition-all duration-300 text-left cursor-pointer"
+          >
             <div className="absolute top-0 right-0 w-32 h-32 bg-blue-500/10 rounded-full blur-3xl group-hover:scale-150 transition-transform duration-500"></div>
             <div className="relative">
               <div className="flex items-center justify-between mb-4">
@@ -601,7 +623,7 @@ function OrdensPageContent() {
               <p className="text-4xl font-bold text-white mb-1">{stats.hoje}</p>
               <p className="text-sm text-zinc-400">agendadas hoje</p>
             </div>
-          </div>
+          </button>
         </div>
 
         {/* Toolbar */}
