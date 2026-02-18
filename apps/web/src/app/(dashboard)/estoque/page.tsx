@@ -236,19 +236,27 @@ const detectCategoria = (descricao: string, codigo?: string): string => {
 const detectUnidade = (descricao: string, unidadeOCR?: string): string => {
   const texto = descricao.toLowerCase();
 
-  // Check OCR unit first
+  // PRIMEIRO: Detecta óleo lubrificante pelo padrão de viscosidade (5W30, 15W40, etc.)
+  // Óleos são SEMPRE vendidos em litros
+  if (texto.match(/\d+w[-]?\d+/i)) {
+    return 'LITRO';
+  }
+
+  // Detecta padrões de litros na descrição
+  if (texto.match(/\d+\s*l\b/) || texto.includes('litro')) {
+    return 'LITRO';
+  }
+
+  // Check OCR unit
   if (unidadeOCR) {
     const un = unidadeOCR.toUpperCase();
     if (un === 'LT' || un === 'L' || un.includes('LITRO')) return 'LITRO';
-    if (un === 'UN' || un.includes('UNID')) return 'UNIDADE';
     if (un === 'KG' || un.includes('QUILO')) return 'KG';
+    if (un === 'UN' || un.includes('UNID')) return 'UNIDADE';
     if (un === 'PC' || un.includes('PECA') || un.includes('PEÇA')) return 'UNIDADE';
   }
 
-  // Detect from description
-  if (texto.match(/\d+\s*l\b/) || texto.includes('litro') || texto.match(/\d+w\d+/)) {
-    return 'LITRO';
-  }
+  // Outros padrões
   if (texto.includes('kg') || texto.includes('quilo')) {
     return 'KG';
   }
@@ -1655,34 +1663,53 @@ export default function EstoquePage() {
                             <option value="METRO">Metro</option>
                           </select>
                         </div>
-                        {['LITRO', 'KG', 'METRO'].includes(item.unidade) && (
-                          <div>
-                            <label className={`block text-xs mb-1 ${
-                              item.selected && !item.volumeUnidade
-                                ? 'text-amber-400'
-                                : 'text-[#6B7280]'
-                            }`}>
-                              Volume {item.unidade === 'LITRO' ? '(L)' : item.unidade === 'KG' ? '(kg)' : '(m)'}
-                            </label>
-                            <input
-                              type="number"
-                              step="0.1"
-                              min="0.1"
-                              value={item.volumeUnidade || ''}
-                              onChange={(e) => {
+                        <div>
+                          <label className="block text-xs text-[#6B7280] mb-1">
+                            Volume (L/kg/un)
+                          </label>
+                          {item.semVolume ? (
+                            <button
+                              type="button"
+                              onClick={() => {
                                 const newItems = [...ocrItems];
-                                newItems[index].volumeUnidade = parseFloat(e.target.value) || null;
+                                newItems[index].semVolume = false;
                                 setOcrItems(newItems);
                               }}
-                              placeholder="Ex: 5"
-                              className={`w-full bg-[#1E1E1E] rounded-lg px-3 py-2 text-[#E8E8E8] text-sm focus:outline-none ${
-                                item.selected && !item.volumeUnidade
-                                  ? 'border border-amber-500/50 focus:border-amber-500'
-                                  : 'border border-[#333333] focus:border-[#43A047]'
-                              }`}
-                            />
-                          </div>
-                        )}
+                              className="w-full bg-[#1E1E1E] border border-[#333333] rounded-lg px-3 py-2 text-[#6B7280] text-sm hover:border-[#43A047]/50 transition-colors text-left"
+                            >
+                              Sem volume
+                            </button>
+                          ) : (
+                            <div className="flex gap-1">
+                              <input
+                                type="number"
+                                step="0.1"
+                                min="0.1"
+                                value={item.volumeUnidade || ''}
+                                onChange={(e) => {
+                                  const newItems = [...ocrItems];
+                                  newItems[index].volumeUnidade = parseFloat(e.target.value) || null;
+                                  setOcrItems(newItems);
+                                }}
+                                placeholder="Ex: 1"
+                                className="flex-1 bg-[#1E1E1E] border border-[#333333] rounded-lg px-3 py-2 text-[#E8E8E8] text-sm focus:outline-none focus:border-[#43A047]/50"
+                              />
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  const newItems = [...ocrItems];
+                                  newItems[index].semVolume = true;
+                                  newItems[index].volumeUnidade = null;
+                                  setOcrItems(newItems);
+                                }}
+                                title="Produto sem volume"
+                                className="px-2 bg-[#1E1E1E] border border-[#333333] rounded-lg text-[#6B7280] text-xs hover:border-amber-500/50 hover:text-amber-400 transition-colors"
+                              >
+                                N/A
+                              </button>
+                            </div>
+                          )}
+                        </div>
                         <div>
                           <label className="block text-xs text-[#6B7280] mb-1">Código</label>
                           <input
