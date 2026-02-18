@@ -89,6 +89,7 @@ export async function PUT(
         marca: body.marca,
         categoria: categoria,
         unidade: unidade,
+        volumeUnidade: body.volumeUnidade !== undefined ? body.volumeUnidade : existingProduto.volumeUnidade,
         quantidade: body.quantidade,
         estoqueMinimo: body.estoqueMinimo,
         precoCompra: body.precoCompra,
