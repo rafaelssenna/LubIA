@@ -360,6 +360,7 @@ export default function EstoquePage() {
     marca: '',
     categoria: 'OLEO_LUBRIFICANTE',
     unidade: 'LITRO',
+    volumeUnidade: '',
     quantidade: '',
     estoqueMinimo: '',
     precoCompra: '',
@@ -501,6 +502,7 @@ export default function EstoquePage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           ...form,
+          volumeUnidade: form.volumeUnidade ? parseFloat(form.volumeUnidade) : null,
           quantidade: parseFloat(form.quantidade) || 0,
           estoqueMinimo: parseFloat(form.estoqueMinimo) || 0,
           precoCompra: parseFloat(form.precoCompra) || 0,
@@ -521,6 +523,7 @@ export default function EstoquePage() {
           marca: '',
           categoria: 'OLEO_LUBRIFICANTE',
           unidade: 'LITRO',
+          volumeUnidade: '',
           quantidade: '',
           estoqueMinimo: '',
           precoCompra: '',
@@ -1300,6 +1303,25 @@ export default function EstoquePage() {
                   </select>
                 </div>
               </div>
+              {['LITRO', 'KG', 'METRO'].includes(form.unidade) && (
+                <div>
+                  <label className="block text-sm font-medium text-[#9E9E9E] mb-2">
+                    Volume por Unidade {form.unidade === 'LITRO' ? '(Litros)' : form.unidade === 'KG' ? '(Kg)' : '(Metros)'}
+                  </label>
+                  <input
+                    type="number"
+                    step="0.1"
+                    min="0.1"
+                    value={form.volumeUnidade}
+                    onChange={(e) => setForm({ ...form, volumeUnidade: e.target.value })}
+                    placeholder="Ex: 5 para galão de 5L"
+                    className="w-full bg-[#121212] border border-[#333333] rounded-xl px-4 py-3 text-[#E8E8E8] placeholder-[#616161] focus:outline-none focus:border-[#43A047]/50 focus:ring-1 focus:ring-[#43A047]/20 transition-all duration-200"
+                  />
+                  <p className="text-xs text-[#6B7280] mt-1">
+                    Usado para calcular preço proporcional na venda a granel
+                  </p>
+                </div>
+              )}
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-[#9E9E9E] mb-2">Quantidade Inicial</label>
