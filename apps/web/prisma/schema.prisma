@@ -37,6 +37,7 @@ model Empresa {
   mensagens     Mensagem[]
   configuracao  Configuracao?
   filiais       Filial[]
+  vendasRapidas VendaRapida[]
 
   @@map("empresas")
 }
@@ -315,6 +316,7 @@ model Produto {
   marca             String
   categoria         CategoriaProduto
   unidade           UnidadeMedida    @default(UNIDADE)
+  volumeUnidade     Decimal?         @db.Decimal(10, 2) // Volume por unidade (ex: 5 para galão de 5L)
   quantidade        Decimal          @db.Decimal(10, 2) @default(0)
   estoqueMinimo     Decimal          @db.Decimal(10, 2) @default(0)
   precoCompra       Decimal          @db.Decimal(10, 2) @default(0)
@@ -333,6 +335,7 @@ model Produto {
   movimentacoes     MovimentacaoEstoque[]
   itensOrdem        ItemOrdemProduto[]
   itensOrcamento    ItemOrcamentoProduto[]
+  itensVendaRapida  ItemVendaRapida[]
 
   @@unique([codigo, empresaId])
   @@index([empresaId])
@@ -561,4 +564,43 @@ model ItemOrcamentoProduto {
   produto       Produto   @relation(fields: [produtoId], references: [id])
 
   @@map("itens_orcamento_produto")
+}
+
+// =============================================
+// VENDAS RÁPIDAS (Balcão)
+// =============================================
+
+// Venda rápida - sem necessidade de cliente cadastrado
+model VendaRapida {
+  id          Int      @id @default(autoincrement())
+  empresaId   Int
+  numero      String   // VR-0001
+  nomeCliente String?  // Opcional - apenas para identificação
+  observacoes String?
+  total       Decimal  @db.Decimal(10, 2) @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  empresa Empresa           @relation(fields: [empresaId], references: [id], onDelete: Cascade)
+  itens   ItemVendaRapida[]
+
+  @@unique([numero, empresaId])
+  @@index([empresaId])
+  @@map("vendas_rapidas")
+}
+
+// Itens da venda rápida
+model ItemVendaRapida {
+  id            Int         @id @default(autoincrement())
+  vendaId       Int
+  produtoId     Int
+  quantidade    Decimal     @db.Decimal(10, 2)
+  precoUnitario Decimal     @db.Decimal(10, 2)
+  desconto      Decimal     @db.Decimal(10, 2) @default(0)
+  subtotal      Decimal     @db.Decimal(10, 2)
+
+  venda   VendaRapida @relation(fields: [vendaId], references: [id], onDelete: Cascade)
+  produto Produto     @relation(fields: [produtoId], references: [id])
+
+  @@map("itens_venda_rapida")
 }

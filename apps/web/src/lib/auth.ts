@@ -24,9 +24,9 @@ export interface SessionPayload {
 // Permissões por role
 const ROLE_PERMISSIONS: Record<RoleUsuario, string[]> = {
   ADMIN: ['*'], // Acesso total
-  GERENTE: ['dashboard', 'clientes', 'veiculos', 'ordens', 'orcamentos', 'estoque', 'lembretes', 'whatsapp'],
-  ATENDENTE: ['dashboard', 'clientes', 'veiculos', 'ordens', 'orcamentos', 'whatsapp'],
-  VENDEDOR: ['clientes', 'veiculos', 'orcamentos', 'whatsapp'],
+  GERENTE: ['dashboard', 'clientes', 'veiculos', 'ordens', 'orcamentos', 'estoque', 'vendas-rapidas', 'lembretes', 'whatsapp'],
+  ATENDENTE: ['dashboard', 'clientes', 'veiculos', 'ordens', 'orcamentos', 'vendas-rapidas', 'whatsapp'],
+  VENDEDOR: ['clientes', 'veiculos', 'orcamentos', 'vendas-rapidas', 'whatsapp'],
 };
 
 // Verificar se role tem permissão

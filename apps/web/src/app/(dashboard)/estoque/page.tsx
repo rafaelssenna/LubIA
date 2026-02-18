@@ -36,6 +36,7 @@ interface Produto {
   marca: string;
   categoria: string;
   unidade: string;
+  volumeUnidade: number | null; // Volume por unidade (ex: 5 para galão de 5L)
   quantidade: number;
   estoqueMinimo: number;
   precoCompra: number;
@@ -253,6 +254,41 @@ const detectUnidade = (descricao: string, unidadeOCR?: string): string => {
   }
 
   return 'UNIDADE';
+};
+
+// Auto-detect volume from product description (ex: "5L", "1L", "500ml")
+const detectVolume = (descricao: string): number | null => {
+  const texto = descricao.toLowerCase();
+
+  // Detecta padrões como "5L", "5 L", "5 litros", "5litros"
+  const matchLitros = texto.match(/(\d+(?:[.,]\d+)?)\s*(?:l|lt|litro|litros)\b/i);
+  if (matchLitros) {
+    return parseFloat(matchLitros[1].replace(',', '.'));
+  }
+
+  // Detecta padrões como "500ml", "500 ml"
+  const matchMl = texto.match(/(\d+)\s*ml\b/i);
+  if (matchMl) {
+    return parseFloat(matchMl[1]) / 1000; // Converte ml para litros
+  }
+
+  // Detecta padrões como "1kg", "5 kg", "500g"
+  const matchKg = texto.match(/(\d+(?:[.,]\d+)?)\s*kg\b/i);
+  if (matchKg) {
+    return parseFloat(matchKg[1].replace(',', '.'));
+  }
+
+  const matchG = texto.match(/(\d+)\s*g\b/i);
+  if (matchG) {
+    return parseFloat(matchG[1]) / 1000; // Converte g para kg
+  }
+
+  // Se é óleo (tem viscosidade) mas não tem volume, assume 1L
+  if (texto.match(/\d+w[-]?\d+/i)) {
+    return 1;
+  }
+
+  return null;
 };
 
 export default function EstoquePage() {
@@ -1428,11 +1464,12 @@ export default function EstoquePage() {
             setOcrResult(data);
             setShowOCR(false);
             if (data.itens?.length > 0) {
-              // Prepara os itens para revisão com detecção automática de categoria e unidade
+              // Prepara os itens para revisão com detecção automática de categoria, unidade e volume
               const items = await Promise.all(data.itens.map(async (item: any, index: number) => {
                 const descricao = item.descricao || '';
                 const categoriaDetectada = detectCategoria(descricao);
                 const unidadeDetectada = detectUnidade(descricao, item.unidade);
+                const volumeDetectado = detectVolume(descricao);
 
                 // Check if product already exists
                 let existingProduct = null;
@@ -1456,6 +1493,7 @@ export default function EstoquePage() {
                   codigo: item.codigo || `NF-${data.numeroNF || 'AUTO'}-${index + 1}`,
                   categoria: categoriaDetectada,
                   unidade: unidadeDetectada,
+                  volumeUnidade: volumeDetectado,
                   quantidade: item.quantidade || 1,
                   estoqueMinimo: 5,
                   precoCompra: Math.round((item.valorUnitario || 0) * 100) / 100,
@@ -1591,6 +1629,34 @@ export default function EstoquePage() {
                             <option value="METRO">Metro</option>
                           </select>
                         </div>
+                        {['LITRO', 'KG', 'METRO'].includes(item.unidade) && (
+                          <div>
+                            <label className={`block text-xs mb-1 ${
+                              item.selected && !item.volumeUnidade
+                                ? 'text-amber-400'
+                                : 'text-[#6B7280]'
+                            }`}>
+                              Volume {item.unidade === 'LITRO' ? '(L)' : item.unidade === 'KG' ? '(kg)' : '(m)'}
+                            </label>
+                            <input
+                              type="number"
+                              step="0.1"
+                              min="0.1"
+                              value={item.volumeUnidade || ''}
+                              onChange={(e) => {
+                                const newItems = [...ocrItems];
+                                newItems[index].volumeUnidade = parseFloat(e.target.value) || null;
+                                setOcrItems(newItems);
+                              }}
+                              placeholder="Ex: 5"
+                              className={`w-full bg-[#1E1E1E] rounded-lg px-3 py-2 text-[#E8E8E8] text-sm focus:outline-none ${
+                                item.selected && !item.volumeUnidade
+                                  ? 'border border-amber-500/50 focus:border-amber-500'
+                                  : 'border border-[#333333] focus:border-[#43A047]'
+                              }`}
+                            />
+                          </div>
+                        )}
                         <div>
                           <label className="block text-xs text-[#6B7280] mb-1">Código</label>
                           <input
@@ -1729,6 +1795,7 @@ export default function EstoquePage() {
                             marca: ocrResult?.fornecedor || 'NF Import',
                             categoria: item.categoria,
                             unidade: item.unidade,
+                            volumeUnidade: item.volumeUnidade || null,
                             quantidade: item.quantidade,
                             estoqueMinimo: item.estoqueMinimo,
                             precoCompra: item.precoCompra,

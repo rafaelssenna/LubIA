@@ -22,6 +22,7 @@ import {
   UserCog,
   Play,
   Archive,
+  ShoppingCart,
 } from 'lucide-react';
 import { useSidebar } from '@/contexts/SidebarContext';
 import { useAuth } from '@/contexts/AuthContext';
@@ -31,9 +32,9 @@ type RoleUsuario = 'ADMIN' | 'GERENTE' | 'ATENDENTE' | 'VENDEDOR';
 // Permissões por role
 const ROLE_PERMISSIONS: Record<RoleUsuario, string[]> = {
   ADMIN: ['*'],
-  GERENTE: ['dashboard', 'clientes', 'veiculos', 'ordens', 'orcamentos', 'estoque', 'lembretes', 'whatsapp'],
-  ATENDENTE: ['dashboard', 'clientes', 'veiculos', 'ordens', 'orcamentos', 'whatsapp'],
-  VENDEDOR: ['clientes', 'veiculos', 'orcamentos', 'whatsapp'],
+  GERENTE: ['dashboard', 'clientes', 'veiculos', 'ordens', 'orcamentos', 'estoque', 'vendas-rapidas', 'lembretes', 'whatsapp'],
+  ATENDENTE: ['dashboard', 'clientes', 'veiculos', 'ordens', 'orcamentos', 'vendas-rapidas', 'whatsapp'],
+  VENDEDOR: ['clientes', 'veiculos', 'orcamentos', 'vendas-rapidas', 'whatsapp'],
 };
 
 interface SubMenuItem {
@@ -65,6 +66,7 @@ const menuItems: MenuItem[] = [
     ]
   },
   { icon: FileText, label: 'Orçamentos', href: '/orcamentos', permission: 'orcamentos' },
+  { icon: ShoppingCart, label: 'Vendas Rápidas', href: '/vendas-rapidas', permission: 'vendas-rapidas' },
   { icon: Package, label: 'Estoque', href: '/estoque', permission: 'estoque' },
   { icon: Bell, label: 'Lembretes', href: '/lembretes', permission: 'lembretes' },
   { icon: MessageCircle, label: 'WhatsApp', href: '/whatsapp', permission: 'whatsapp' },
