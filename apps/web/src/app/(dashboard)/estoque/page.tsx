@@ -1097,13 +1097,20 @@ export default function EstoquePage() {
                         {produto.filialNome || '-'}
                       </td>
                       <td className="px-6 py-4 text-right">
-                        <div className="flex items-center justify-end gap-2">
-                          <span className={`font-bold ${produto.estoqueBaixo ? 'text-red-400' : 'text-[#E8E8E8]'}`}>
-                            {produto.quantidade}
-                          </span>
-                          <span className="text-xs text-[#6B7280]">{produto.unidade}</span>
-                          {produto.estoqueBaixo && (
-                            <AlertTriangle size={14} className="text-red-400" />
+                        <div className="flex flex-col items-end gap-0.5">
+                          <div className="flex items-center gap-2">
+                            <span className={`font-bold ${produto.estoqueBaixo ? 'text-red-400' : 'text-[#E8E8E8]'}`}>
+                              {produto.quantidade}
+                            </span>
+                            <span className="text-xs text-[#6B7280]">{produto.unidade === 'UNIDADE' ? 'un' : produto.unidade}</span>
+                            {produto.estoqueBaixo && (
+                              <AlertTriangle size={14} className="text-red-400" />
+                            )}
+                          </div>
+                          {produto.volumeUnidade && ['LITRO', 'KG', 'METRO'].includes(produto.unidade) && (
+                            <span className="text-xs text-amber-400">
+                              ({(produto.quantidade * produto.volumeUnidade).toFixed(1)}{produto.unidade === 'LITRO' ? 'L' : produto.unidade === 'KG' ? 'kg' : 'm'} total)
+                            </span>
                           )}
                         </div>
                       </td>
