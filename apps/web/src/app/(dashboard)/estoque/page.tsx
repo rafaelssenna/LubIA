@@ -1303,7 +1303,12 @@ export default function EstoquePage() {
                   <label className="block text-sm font-medium text-[#9E9E9E] mb-2">Unidade</label>
                   <select
                     value={form.unidade}
-                    onChange={(e) => setForm({ ...form, unidade: e.target.value })}
+                    onChange={(e) => {
+                      const newUnidade = e.target.value;
+                      // Auto-preenche volume com 1 para LITRO/KG/METRO
+                      const autoVolume = ['LITRO', 'KG', 'METRO'].includes(newUnidade) ? '1' : '';
+                      setForm({ ...form, unidade: newUnidade, volumeUnidade: autoVolume });
+                    }}
                     className="w-full bg-[#121212] border border-[#333333] rounded-xl px-4 py-3 text-[#E8E8E8] focus:outline-none focus:border-[#43A047]/50 focus:ring-1 focus:ring-[#43A047]/20 transition-all duration-200"
                   >
                     <option value="LITRO">Litro</option>
@@ -1323,12 +1328,7 @@ export default function EstoquePage() {
                     step="0.1"
                     min="0.1"
                     value={form.volumeUnidade}
-                    onChange={(e) => {
-                      const volume = parseFloat(e.target.value) || 0;
-                      const preco = parseFloat(form.precoVenda) || 0;
-                      const precoGranelCalc = volume > 0 && preco > 0 ? (preco / volume).toFixed(2) : '';
-                      setForm({ ...form, volumeUnidade: e.target.value, precoGranel: precoGranelCalc });
-                    }}
+                    onChange={(e) => setForm({ ...form, volumeUnidade: e.target.value })}
                     placeholder="Ex: 5 para galão de 5L"
                     className="w-full bg-[#121212] border border-[#333333] rounded-xl px-4 py-3 text-[#E8E8E8] placeholder-[#616161] focus:outline-none focus:border-[#43A047]/50 focus:ring-1 focus:ring-[#43A047]/20 transition-all duration-200"
                   />
@@ -1377,24 +1377,8 @@ export default function EstoquePage() {
                     type="number"
                     step="0.01"
                     value={form.precoVenda}
-                    onChange={(e) => {
-                      const preco = parseFloat(e.target.value) || 0;
-                      const volume = parseFloat(form.volumeUnidade) || 0;
-                      const precoGranelCalc = volume > 0 && preco > 0 ? (preco / volume).toFixed(2) : form.precoGranel;
-                      setForm({ ...form, precoVenda: e.target.value, precoGranel: precoGranelCalc });
-                    }}
+                    onChange={(e) => setForm({ ...form, precoVenda: e.target.value })}
                     placeholder="0.00"
-                    className="w-full bg-[#121212] border border-[#333333] rounded-xl px-4 py-3 text-[#E8E8E8] placeholder-[#616161] focus:outline-none focus:border-[#43A047]/50 focus:ring-1 focus:ring-[#43A047]/20 transition-all duration-200"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-[#9E9E9E] mb-2">Preço Granel (auto)</label>
-                  <input
-                    type="number"
-                    step="0.01"
-                    value={form.precoGranel}
-                    onChange={(e) => setForm({ ...form, precoGranel: e.target.value })}
-                    placeholder="Por litro"
                     className="w-full bg-[#121212] border border-[#333333] rounded-xl px-4 py-3 text-[#E8E8E8] placeholder-[#616161] focus:outline-none focus:border-[#43A047]/50 focus:ring-1 focus:ring-[#43A047]/20 transition-all duration-200"
                   />
                 </div>
@@ -1939,7 +1923,12 @@ export default function EstoquePage() {
                   <label className="block text-sm font-medium text-[#9E9E9E] mb-2">Unidade</label>
                   <select
                     value={editingForm.unidade}
-                    onChange={(e) => setEditingForm({ ...editingForm, unidade: e.target.value })}
+                    onChange={(e) => {
+                      const newUnidade = e.target.value;
+                      // Auto-preenche volume com 1 para LITRO/KG/METRO se estiver vazio
+                      const autoVolume = ['LITRO', 'KG', 'METRO'].includes(newUnidade) && !editingForm.volumeUnidade ? '1' : editingForm.volumeUnidade;
+                      setEditingForm({ ...editingForm, unidade: newUnidade, volumeUnidade: autoVolume });
+                    }}
                     className="w-full bg-[#121212] border border-[#333333] rounded-xl px-4 py-3 text-[#E8E8E8] focus:outline-none focus:border-[#43A047]/50 focus:ring-1 focus:ring-[#43A047]/20 transition-all duration-200"
                   >
                     <option value="LITRO">Litro</option>
@@ -1959,12 +1948,7 @@ export default function EstoquePage() {
                     step="0.1"
                     min="0.1"
                     value={editingForm.volumeUnidade}
-                    onChange={(e) => {
-                      const volume = parseFloat(e.target.value) || 0;
-                      const preco = parseFloat(editingForm.precoVenda) || 0;
-                      const precoGranelCalc = volume > 0 && preco > 0 ? (preco / volume).toFixed(2) : editingForm.precoGranel;
-                      setEditingForm({ ...editingForm, volumeUnidade: e.target.value, precoGranel: precoGranelCalc });
-                    }}
+                    onChange={(e) => setEditingForm({ ...editingForm, volumeUnidade: e.target.value })}
                     placeholder="Ex: 5 para galão de 5L"
                     className="w-full bg-[#121212] border border-[#333333] rounded-xl px-4 py-3 text-[#E8E8E8] placeholder-[#616161] focus:outline-none focus:border-[#43A047]/50 focus:ring-1 focus:ring-[#43A047]/20 transition-all duration-200"
                   />
@@ -2007,23 +1991,7 @@ export default function EstoquePage() {
                     type="number"
                     step="0.01"
                     value={editingForm.precoVenda}
-                    onChange={(e) => {
-                      const preco = parseFloat(e.target.value) || 0;
-                      const volume = parseFloat(editingForm.volumeUnidade) || 0;
-                      const precoGranelCalc = volume > 0 && preco > 0 ? (preco / volume).toFixed(2) : editingForm.precoGranel;
-                      setEditingForm({ ...editingForm, precoVenda: e.target.value, precoGranel: precoGranelCalc });
-                    }}
-                    className="w-full bg-[#121212] border border-[#333333] rounded-xl px-4 py-3 text-[#E8E8E8] placeholder-[#616161] focus:outline-none focus:border-[#43A047]/50 focus:ring-1 focus:ring-[#43A047]/20 transition-all duration-200"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-[#9E9E9E] mb-2">Preço Granel (auto)</label>
-                  <input
-                    type="number"
-                    step="0.01"
-                    value={editingForm.precoGranel}
-                    onChange={(e) => setEditingForm({ ...editingForm, precoGranel: e.target.value })}
-                    placeholder="Por litro"
+                    onChange={(e) => setEditingForm({ ...editingForm, precoVenda: e.target.value })}
                     className="w-full bg-[#121212] border border-[#333333] rounded-xl px-4 py-3 text-[#E8E8E8] placeholder-[#616161] focus:outline-none focus:border-[#43A047]/50 focus:ring-1 focus:ring-[#43A047]/20 transition-all duration-200"
                   />
                 </div>
