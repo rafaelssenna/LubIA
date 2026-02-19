@@ -30,7 +30,7 @@ export async function transcribeAudio(audioUrl: string, token: string): Promise<
     console.log('[CHATBOT] Áudio baixado, tipo:', contentType, 'tamanho:', audioBuffer.byteLength);
 
     // Usar Gemini para transcrever
-    const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' });
+    const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' });
 
     const result = await model.generateContent([
       {
@@ -1674,7 +1674,7 @@ Mensagem atual: "${userMessage}"`;
 
     // Chamar Gemini com function calling
     const model = genAI.getGenerativeModel({
-      model: 'gemini-2.0-flash',
+      model: 'gemini-2.5-flash',
       tools: chatbotTools,
     });
 
