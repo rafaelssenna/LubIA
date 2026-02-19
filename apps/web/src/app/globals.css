@@ -45,61 +45,61 @@
   --sidebar-active: rgba(255, 255, 255, 0.2);
 }
 
-/* ===== LIGHT THEME (branco com texto escuro) ===== */
+/* ===== LIGHT THEME (estilo dashboard limpo) ===== */
 .light {
-  /* Backgrounds - branco/cinza claro */
-  --background: #F5F5F5;
-  --background-secondary: #EBEBEB;
-  --background-tertiary: #E0E0E0;
-  /* Foregrounds - PRETO para boa leitura */
-  --foreground: #000000;
-  --foreground-secondary: #1A1A1A;
-  --foreground-muted: #333333;
-  /* Cards - branco sólido */
+  /* Backgrounds - cinza bem claro */
+  --background: #F0F2F5;
+  --background-secondary: #E4E6EB;
+  --background-tertiary: #D8DADF;
+  /* Foregrounds - preto/cinza escuro para boa leitura */
+  --foreground: #1C1E21;
+  --foreground-secondary: #3A3B3C;
+  --foreground-muted: #65676B;
+  /* Cards - branco puro com sombra */
   --card: #FFFFFF;
-  --card-hover: #F8F8F8;
+  --card-hover: #FAFAFA;
   --card-elevated: #FFFFFF;
-  /* Borders - cinza visível */
-  --border: #CCCCCC;
-  --border-light: #DDDDDD;
-  --border-hover: #AAAAAA;
+  /* Borders - cinza suave */
+  --border: #E4E6EB;
+  --border-light: #F0F2F5;
+  --border-hover: #CED0D4;
   /* Primary: verde da marca */
-  --primary: #2E7D32;
-  --primary-dark: #1B5E20;
-  --primary-light: #43A047;
+  --primary: #43A047;
+  --primary-dark: #2E7D32;
+  --primary-light: #66BB6A;
   --primary-foreground: #FFFFFF;
   /* Secondary */
-  --secondary: #1976D2;
+  --secondary: #1877F2;
   --secondary-foreground: #FFFFFF;
   /* Accent */
-  --accent: #00C853;
-  /* Muted - cinza escuro legível */
-  --muted: #555555;
-  --muted-foreground: #444444;
+  --accent: #42B72A;
+  /* Muted - cinza médio legível */
+  --muted: #65676B;
+  --muted-foreground: #8A8D91;
   /* Feedback */
-  --danger: #D32F2F;
+  --danger: #FA383E;
   --danger-foreground: #FFFFFF;
-  --warning: #F9A825;
-  --warning-foreground: #000000;
-  --success: #388E3C;
+  --warning: #F7B928;
+  --warning-foreground: #1C1E21;
+  --success: #42B72A;
   --success-foreground: #FFFFFF;
-  --info: #1976D2;
+  --info: #1877F2;
   --info-foreground: #FFFFFF;
-  /* Glass - branco sólido */
+  /* Glass - branco */
   --glass-bg: #FFFFFF;
-  --glass-border: #CCCCCC;
+  --glass-border: #E4E6EB;
   /* Input - branco com borda */
   --input-bg: #FFFFFF;
-  --input-border: #CCCCCC;
+  --input-border: #E4E6EB;
   /* Scrollbar */
-  --scrollbar-thumb: #AAAAAA;
-  --scrollbar-thumb-hover: #2E7D32;
-  /* Sidebar - branco */
+  --scrollbar-thumb: #BCC0C4;
+  --scrollbar-thumb-hover: #43A047;
+  /* Sidebar - branco limpo */
   --sidebar-bg: #FFFFFF;
-  --sidebar-text: #333333;
-  --sidebar-text-active: #000000;
-  --sidebar-hover: #F0F0F0;
-  --sidebar-active: #E8F5E9;
+  --sidebar-text: #65676B;
+  --sidebar-text-active: #1C1E21;
+  --sidebar-hover: #F0F2F5;
+  --sidebar-active: #E7F3E8;
 }
 
 @theme inline {
@@ -212,20 +212,21 @@ body {
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -2px rgba(0, 0, 0, 0.2);
 }
 
-/* Light Mode - branco sólido */
+/* Light Mode - branco limpo com sombra suave */
 .light .glass {
   background: #FFFFFF;
   backdrop-filter: none;
   -webkit-backdrop-filter: none;
-  border: 1px solid #CCCCCC;
+  border: 1px solid #E4E6EB;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
 }
 
 .light .glass-card {
   background: #FFFFFF;
   backdrop-filter: none;
   -webkit-backdrop-filter: none;
-  border: 1px solid #CCCCCC;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  border: 1px solid #E4E6EB;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.08);
 }
 
 /* Button Styles */
@@ -261,8 +262,9 @@ body {
 }
 
 .light .card-hover:hover {
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
-  border-color: #43A047;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  border-color: #E4E6EB;
+  transform: translateY(-2px);
 }
 
 /* Input Focus Effects */
