@@ -29,6 +29,7 @@ import {
 } from 'lucide-react';
 import { useSidebar } from '@/contexts/SidebarContext';
 import { useAuth } from '@/contexts/AuthContext';
+import { useTheme } from '@/contexts/ThemeContext';
 import ThemeToggle from './ThemeToggle';
 
 type RoleUsuario = 'ADMIN' | 'GERENTE' | 'ATENDENTE' | 'VENDEDOR';
@@ -98,6 +99,7 @@ export default function Sidebar() {
   const pathname = usePathname();
   const { collapsed, toggleCollapsed } = useSidebar();
   const { logout, isAdmin, user } = useAuth();
+  const { theme } = useTheme();
   const [configIncomplete, setConfigIncomplete] = useState(false);
   const [expandedMenu, setExpandedMenu] = useState<string | null>(null);
 
@@ -158,7 +160,7 @@ export default function Sidebar() {
       <div className="p-4 border-b border-border">
         <div className="flex items-center justify-center">
           <Image
-            src="/logo.png"
+            src={theme === 'light' ? '/logo.tema.claro.png' : '/logo.png'}
             alt="LoopIA Logo"
             width={collapsed ? 60 : 240}
             height={collapsed ? 60 : 72}
