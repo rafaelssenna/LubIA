@@ -164,7 +164,7 @@ export default function Sidebar() {
             alt="LoopIA Logo"
             width={collapsed ? 60 : 240}
             height={collapsed ? 60 : 72}
-            className="object-contain transition-all duration-300 brightness-0 invert"
+            className="object-contain transition-all duration-300"
             priority
           />
         </div>
