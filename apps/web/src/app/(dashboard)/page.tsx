@@ -24,6 +24,8 @@ import {
   ShoppingCart,
   AlertCircle,
   Package,
+  Bell,
+  MessageCircle,
 } from 'lucide-react';
 
 interface DashboardStats {
@@ -79,6 +81,23 @@ interface AReceberData {
   count: number;
 }
 
+interface LembreteItem {
+  id: number;
+  tipo: string;
+  cliente: string;
+  telefone: string | null;
+  veiculo: string;
+  placa: string;
+  kmLembrete: number | null;
+  diasRestantes: number;
+  urgencia: 'vencido' | 'alta' | 'media' | 'baixa';
+}
+
+interface LembretesData {
+  itens: LembreteItem[];
+  count: number;
+}
+
 const getStatusConfig = (status: string) => {
   switch (status) {
     case 'EM_ANDAMENTO':
@@ -117,6 +136,7 @@ export default function Dashboard() {
   const [servicosHoje, setServicosHoje] = useState<ServicoHoje[]>([]);
   const [vendasHoje, setVendasHoje] = useState<VendasHojeData | null>(null);
   const [aReceber, setAReceber] = useState<AReceberData | null>(null);
+  const [lembretes, setLembretes] = useState<LembretesData | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -127,6 +147,7 @@ export default function Dashboard() {
         setServicosHoje(data.servicosHoje || []);
         setVendasHoje(data.vendasHoje || null);
         setAReceber(data.aReceber || null);
+        setLembretes(data.lembretes || null);
       })
       .catch(() => {})
       .finally(() => setLoading(false));
@@ -434,6 +455,81 @@ export default function Dashboard() {
             </div>
           </div>
         </div>
+
+        {/* Lembretes - Barra horizontal */}
+        {lembretes && lembretes.count > 0 && (
+          <div className="bg-[#1a1a1a] rounded-2xl border border-cyan-500/20 overflow-hidden">
+            <div className="p-3 border-b border-zinc-800 flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="p-2 bg-cyan-500/10 rounded-lg">
+                  <Bell className="h-4 w-4 text-cyan-400" />
+                </div>
+                <div>
+                  <h3 className="text-sm font-semibold text-white">Lembretes Pendentes</h3>
+                  <p className="text-xs text-zinc-500">{lembretes.count} cliente{lembretes.count !== 1 ? 's' : ''} para contatar</p>
+                </div>
+              </div>
+              <Link
+                href="/lembretes"
+                className="flex items-center gap-1.5 px-3 py-1.5 bg-cyan-500/10 rounded-lg text-cyan-400 text-xs font-medium hover:bg-cyan-500/20 transition-all"
+              >
+                Ver todos
+                <ArrowRight className="h-3 w-3" />
+              </Link>
+            </div>
+            <div className="p-3">
+              <div className="flex gap-3 overflow-x-auto custom-scrollbar pb-1">
+                {lembretes.itens.map((lembrete) => {
+                  const urgenciaColors = {
+                    vencido: 'border-red-500/30 bg-red-500/5',
+                    alta: 'border-amber-500/30 bg-amber-500/5',
+                    media: 'border-yellow-500/30 bg-yellow-500/5',
+                    baixa: 'border-cyan-500/30 bg-cyan-500/5',
+                  };
+                  const urgenciaBadge = {
+                    vencido: 'bg-red-500/20 text-red-400',
+                    alta: 'bg-amber-500/20 text-amber-400',
+                    media: 'bg-yellow-500/20 text-yellow-400',
+                    baixa: 'bg-cyan-500/20 text-cyan-400',
+                  };
+                  const diasLabel = lembrete.diasRestantes < 0
+                    ? `${Math.abs(lembrete.diasRestantes)}d atrasado`
+                    : lembrete.diasRestantes === 0
+                      ? 'Hoje'
+                      : `${lembrete.diasRestantes}d`;
+
+                  return (
+                    <div
+                      key={lembrete.id}
+                      className={`flex-shrink-0 p-3 rounded-xl border ${urgenciaColors[lembrete.urgencia]} min-w-[200px] max-w-[220px]`}
+                    >
+                      <div className="flex items-start justify-between gap-2 mb-2">
+                        <p className="text-sm font-medium text-white truncate">{lembrete.cliente}</p>
+                        <span className={`px-1.5 py-0.5 rounded text-[10px] font-medium whitespace-nowrap ${urgenciaBadge[lembrete.urgencia]}`}>
+                          {diasLabel}
+                        </span>
+                      </div>
+                      <p className="text-xs text-zinc-400 truncate">{lembrete.veiculo}</p>
+                      <p className="text-xs text-zinc-500">{lembrete.placa}</p>
+                      {lembrete.telefone && (
+                        <a
+                          href={`https://wa.me/55${lembrete.telefone.replace(/\D/g, '')}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="mt-2 flex items-center gap-1.5 text-xs text-[#25D366] hover:underline"
+                          onClick={(e) => e.stopPropagation()}
+                        >
+                          <MessageCircle className="h-3 w-3" />
+                          Enviar WhatsApp
+                        </a>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

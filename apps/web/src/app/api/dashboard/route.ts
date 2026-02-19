@@ -28,6 +28,7 @@ export async function GET() {
       vendasHoje,
       ordensAReceber,
       vendasAReceber,
+      lembretesPendentes,
     ] = await Promise.all([
       prisma.cliente.count({ where: { empresaId: session.empresaId } }),
       prisma.veiculo.count({ where: { empresaId: session.empresaId } }),
@@ -118,6 +119,22 @@ export async function GET() {
         orderBy: { dataPagamentoPrevista: 'asc' },
         take: 5,
       }),
+      // Lembretes pendentes
+      prisma.lembrete.findMany({
+        where: {
+          empresaId: session.empresaId,
+          enviado: false,
+        },
+        include: {
+          veiculo: {
+            include: {
+              cliente: { select: { nome: true, telefone: true } },
+            },
+          },
+        },
+        orderBy: { dataLembrete: 'asc' },
+        take: 5,
+      }),
     ]);
 
     // Soma O.S. concluídas + Vendas Rápidas
@@ -183,6 +200,24 @@ export async function GET() {
 
     const totalAReceber = [...ordensAReceber, ...vendasAReceber].reduce((acc, item) => acc + Number(item.total), 0);
 
+    // Lembretes formatados
+    const lembretesFormatados = lembretesPendentes.map(l => {
+      const diasRestantes = Math.ceil(
+        (new Date(l.dataLembrete).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24)
+      );
+      return {
+        id: l.id,
+        tipo: l.tipo,
+        cliente: l.veiculo.cliente.nome,
+        telefone: l.veiculo.cliente.telefone,
+        veiculo: `${l.veiculo.marca} ${l.veiculo.modelo}`,
+        placa: l.veiculo.placa,
+        kmLembrete: l.kmLembrete,
+        diasRestantes,
+        urgencia: diasRestantes < 0 ? 'vencido' : diasRestantes <= 3 ? 'alta' : diasRestantes <= 7 ? 'media' : 'baixa',
+      };
+    });
+
     return NextResponse.json({
       stats: {
         clientes: totalClientes,
@@ -201,6 +236,10 @@ export async function GET() {
         itens: pendenciasAReceber,
         total: totalAReceber,
         count: ordensAReceber.length + vendasAReceber.length,
+      },
+      lembretes: {
+        itens: lembretesFormatados,
+        count: lembretesPendentes.length,
       },
     });
   } catch (error: any) {
