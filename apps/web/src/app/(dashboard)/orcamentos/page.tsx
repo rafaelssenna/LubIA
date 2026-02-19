@@ -47,7 +47,10 @@ interface Produto {
   codigo: string;
   precoVenda: number;
   quantidade: number;
+  unidade: string;
 }
+
+const UNIDADES_GRANEL = ['LITRO', 'KG', 'METRO'];
 
 const statusConfig: Record<string, { label: string; color: string; icon: any; bg: string; border: string }> = {
   PENDENTE: { label: 'Pendente', color: 'text-amber-400', icon: Clock, bg: 'bg-amber-500/10', border: 'border-amber-500/30' },
@@ -944,16 +947,21 @@ function OrcamentosPageContent() {
                   <div className="space-y-2">
                     {selectedProdutos.map((sp) => {
                       const produto = produtos.find(p => p.id === sp.produtoId);
+                      const isGranel = produto && UNIDADES_GRANEL.includes(produto.unidade);
                       return (
                         <div key={sp.produtoId} className="flex items-center gap-3 p-3 bg-[#232323] rounded-xl border border-zinc-700/50">
                           <Package className="h-5 w-5 text-[#E85D04]" />
-                          <span className="flex-1 text-white font-medium">{produto?.nome}</span>
+                          <span className="flex-1 text-white font-medium">
+                            {produto?.nome}
+                            {isGranel && <span className="ml-2 text-xs text-amber-400">(Granel)</span>}
+                          </span>
                           <input
                             type="number"
-                            min="1"
+                            min={isGranel ? "0.1" : "1"}
+                            step={isGranel ? "0.1" : "1"}
                             value={sp.quantidade}
                             onChange={(e) => {
-                              const newQtd = parseInt(e.target.value) || 1;
+                              const newQtd = parseFloat(e.target.value) || (isGranel ? 0.1 : 1);
                               setSelectedProdutos(selectedProdutos.map(p =>
                                 p.produtoId === sp.produtoId ? { ...p, quantidade: newQtd } : p
                               ));
