@@ -357,7 +357,7 @@ export default function VendasRapidasPage() {
                         <span className="text-[#43A047] font-mono font-medium">{venda.numero}</span>
                       </td>
                       <td className="p-4 text-white">
-                        {venda.nomeCliente || <span className="text-white/40">-</span>}
+                        {venda.nomeCliente || <span className="text-white/40">Balcão</span>}
                       </td>
                       <td className="p-4">
                         <span className="text-white/80">{venda.itens.length} produto(s)</span>
