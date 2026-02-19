@@ -119,14 +119,9 @@ export default function AReceberPage() {
 
   return (
     <div className="min-h-screen bg-[#0a0a0a]">
-      <Header />
+      <Header title="A Receber" subtitle="Gerencie os pagamentos pendentes" />
       <main className="p-6">
         <div className="max-w-7xl mx-auto">
-          {/* Header */}
-          <div className="mb-8">
-            <h1 className="text-2xl font-bold text-white mb-2">A Receber</h1>
-            <p className="text-zinc-400">Gerencie os pagamentos pendentes</p>
-          </div>
 
           {/* Stats Cards */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
