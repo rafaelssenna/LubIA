@@ -71,6 +71,7 @@ export default function VendasRapidasPage() {
   const [nomeCliente, setNomeCliente] = useState('');
   const [observacoes, setObservacoes] = useState('');
   const [formaPagamento, setFormaPagamento] = useState('');
+  const [desconto, setDesconto] = useState('');
   const [itensVenda, setItensVenda] = useState<ItemVenda[]>([]);
   const [saving, setSaving] = useState(false);
 
@@ -188,7 +189,10 @@ export default function VendasRapidasPage() {
   };
 
   // Calcular total
-  const totalVenda = itensVenda.reduce((acc, item) => acc + item.subtotal, 0);
+  const subtotalVenda = itensVenda.reduce((acc, item) => acc + item.subtotal, 0);
+  const descontoPercent = parseFloat(desconto.replace(',', '.')) || 0;
+  const descontoValor = subtotalVenda * (descontoPercent / 100);
+  const totalVenda = subtotalVenda - descontoValor;
 
   // Finalizar venda
   const finalizarVenda = async () => {
@@ -211,6 +215,7 @@ export default function VendasRapidasPage() {
           nomeCliente: nomeCliente || null,
           observacoes: observacoes || null,
           formaPagamento,
+          desconto: descontoPercent,
           itens: itensVenda.map(i => ({
             produtoId: i.produtoId,
             quantidade: i.quantidade,
@@ -241,6 +246,7 @@ export default function VendasRapidasPage() {
     setNomeCliente('');
     setObservacoes('');
     setFormaPagamento('');
+    setDesconto('');
     setItensVenda([]);
     setBuscaProduto('');
     setProdutos([]);
@@ -602,14 +608,56 @@ export default function VendasRapidasPage() {
                   ))}
                 </div>
               </div>
+
+              {/* Desconto */}
+              <div>
+                <label className="block text-sm text-white/60 mb-2">Desconto (%)</label>
+                <div className="flex items-center gap-3">
+                  <input
+                    type="text"
+                    value={desconto}
+                    onChange={(e) => {
+                      const val = e.target.value.replace(/[^0-9,]/g, '');
+                      setDesconto(val);
+                    }}
+                    placeholder="0"
+                    className="w-24 px-4 py-3 bg-[#121212] rounded-xl border border-white/10 text-white text-center placeholder:text-white/40 focus:outline-none focus:border-amber-500/50"
+                  />
+                  <span className="text-white/40">%</span>
+                  {descontoPercent > 0 && (
+                    <span className="text-amber-400 text-sm">
+                      - {formatCurrency(descontoValor)}
+                    </span>
+                  )}
+                </div>
+              </div>
             </div>
 
             {/* Footer */}
             <div className="p-6 border-t border-white/10 bg-[#121212]">
               <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-white/60 text-sm">Total da Venda</p>
-                  <p className="text-2xl font-bold text-emerald-400">{formatCurrency(totalVenda)}</p>
+                <div className="space-y-1">
+                  {descontoPercent > 0 ? (
+                    <>
+                      <div className="flex items-center gap-4 text-sm">
+                        <span className="text-white/40">Subtotal:</span>
+                        <span className="text-white/60">{formatCurrency(subtotalVenda)}</span>
+                      </div>
+                      <div className="flex items-center gap-4 text-sm">
+                        <span className="text-amber-400">Desconto ({descontoPercent}%):</span>
+                        <span className="text-amber-400">- {formatCurrency(descontoValor)}</span>
+                      </div>
+                      <div className="flex items-center gap-4">
+                        <span className="text-white/60 text-sm">Total:</span>
+                        <span className="text-2xl font-bold text-emerald-400">{formatCurrency(totalVenda)}</span>
+                      </div>
+                    </>
+                  ) : (
+                    <>
+                      <p className="text-white/60 text-sm">Total da Venda</p>
+                      <p className="text-2xl font-bold text-emerald-400">{formatCurrency(totalVenda)}</p>
+                    </>
+                  )}
                 </div>
                 <div className="flex gap-3">
                   <button

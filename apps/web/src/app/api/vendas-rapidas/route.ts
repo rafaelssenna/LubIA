@@ -117,14 +117,15 @@ export async function POST(request: NextRequest) {
 
   try {
     const body = await request.json();
-    const { nomeCliente, observacoes, formaPagamento, itens } = body;
+    const { nomeCliente, observacoes, formaPagamento, desconto, itens } = body;
+    const descontoPercent = parseFloat(desconto) || 0;
 
     if (!itens || itens.length === 0) {
       return NextResponse.json({ error: 'Adicione pelo menos um produto' }, { status: 400 });
     }
 
     // Calculate total from products
-    let totalVenda = 0;
+    let subtotalVenda = 0;
     const itensData: any[] = [];
 
     for (const item of itens) {
@@ -136,7 +137,7 @@ export async function POST(request: NextRequest) {
         const qtd = item.quantidade || 1;
         const desc = item.desconto || 0;
         const subtotal = (precoUnit * qtd) - desc;
-        totalVenda += subtotal;
+        subtotalVenda += subtotal;
         itensData.push({
           produtoId: item.produtoId,
           quantidade: qtd,
@@ -146,6 +147,10 @@ export async function POST(request: NextRequest) {
         });
       }
     }
+
+    // Aplicar desconto percentual
+    const descontoValor = subtotalVenda * (descontoPercent / 100);
+    const totalVenda = subtotalVenda - descontoValor;
 
     // Validar estoque antes de criar
     const stockOps: StockOperation[] = itensData.map(item => ({
@@ -186,6 +191,7 @@ export async function POST(request: NextRequest) {
           nomeCliente: nomeCliente || null,
           observacoes: observacoes || null,
           formaPagamento: formaPagamento || null,
+          desconto: descontoPercent,
           total: totalVenda,
           empresaId: session.empresaId,
           itens: {

@@ -134,7 +134,7 @@ export async function PUT(
     }
 
     const body = await request.json();
-    const { status, veiculoId, dataAgendada, dataInicio, dataConclusao, kmEntrada, observacoes, itens, itensProduto, servicosExtras, formaPagamento } = body;
+    const { status, veiculoId, dataAgendada, dataInicio, dataConclusao, kmEntrada, observacoes, itens, itensProduto, servicosExtras, formaPagamento, desconto } = body;
 
     // Verify order exists and belongs to this empresa
     const existing = await prisma.ordemServico.findFirst({
@@ -177,6 +177,13 @@ export async function PUT(
     if (kmEntrada !== undefined) updateData.kmEntrada = kmEntrada;
     if (observacoes !== undefined) updateData.observacoes = observacoes;
     if (formaPagamento !== undefined) updateData.formaPagamento = formaPagamento;
+    if (desconto !== undefined) updateData.desconto = desconto;
+
+    // If desconto is being applied, recalculate total
+    if (desconto !== undefined && desconto > 0) {
+      const descontoValor = Number(existing.total) * (desconto / 100);
+      updateData.total = Number(existing.total) - descontoValor;
+    }
 
     // If items are being updated, recalculate total and handle stock
     if (itens !== undefined || itensProduto !== undefined || servicosExtras !== undefined) {

@@ -103,6 +103,7 @@ function OrdensPageContent() {
   const [showConcluirConfirm, setShowConcluirConfirm] = useState(false);
   const [selectedOrdem, setSelectedOrdem] = useState<OrdemServico | null>(null);
   const [formaPagamento, setFormaPagamento] = useState<string>('');
+  const [descontoConcluir, setDescontoConcluir] = useState<string>('');
   const [saving, setSaving] = useState(false);
 
   // Form states for new O.S.
@@ -388,14 +389,15 @@ function OrdensPageContent() {
     }
   };
 
-  const handleStatusChange = async (ordem: OrdemServico, newStatus: string, pagamento?: string) => {
+  const handleStatusChange = async (ordem: OrdemServico, newStatus: string, pagamento?: string, desconto?: number) => {
     try {
       const res = await fetch(`/api/ordens/${ordem.id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           status: newStatus,
-          ...(pagamento && { formaPagamento: pagamento })
+          ...(pagamento && { formaPagamento: pagamento }),
+          ...(desconto !== undefined && { desconto })
         }),
       });
 
@@ -1751,6 +1753,45 @@ function OrdensPageContent() {
                 </div>
               </div>
 
+              {/* Desconto */}
+              <div className="mb-4">
+                <label className="block text-sm text-zinc-400 mb-2">Desconto (%)</label>
+                <div className="flex items-center gap-3">
+                  <input
+                    type="text"
+                    value={descontoConcluir}
+                    onChange={(e) => {
+                      const val = e.target.value.replace(/[^0-9,]/g, '');
+                      setDescontoConcluir(val);
+                    }}
+                    placeholder="0"
+                    className="w-24 px-4 py-3 bg-[#121212] rounded-xl border border-zinc-700 text-white text-center placeholder:text-zinc-500 focus:outline-none focus:border-amber-500/50"
+                  />
+                  <span className="text-zinc-500">%</span>
+                  {parseFloat(descontoConcluir.replace(',', '.')) > 0 && (
+                    <span className="text-amber-400 text-sm">
+                      - {formatCurrency(selectedOrdem.total * (parseFloat(descontoConcluir.replace(',', '.')) / 100))}
+                    </span>
+                  )}
+                </div>
+                {parseFloat(descontoConcluir.replace(',', '.')) > 0 && (
+                  <div className="mt-2 p-2 bg-amber-500/10 rounded-lg border border-amber-500/20">
+                    <div className="flex justify-between text-sm">
+                      <span className="text-zinc-400">Subtotal:</span>
+                      <span className="text-zinc-300">{formatCurrency(selectedOrdem.total)}</span>
+                    </div>
+                    <div className="flex justify-between text-sm">
+                      <span className="text-amber-400">Desconto:</span>
+                      <span className="text-amber-400">- {formatCurrency(selectedOrdem.total * (parseFloat(descontoConcluir.replace(',', '.')) / 100))}</span>
+                    </div>
+                    <div className="flex justify-between font-bold mt-1 pt-1 border-t border-amber-500/20">
+                      <span className="text-white">Total Final:</span>
+                      <span className="text-emerald-400">{formatCurrency(selectedOrdem.total * (1 - parseFloat(descontoConcluir.replace(',', '.')) / 100))}</span>
+                    </div>
+                  </div>
+                )}
+              </div>
+
               <p className="text-zinc-400 text-sm">
                 Confirma a conclusao desta ordem de servico?
               </p>
@@ -1761,6 +1802,7 @@ function OrdensPageContent() {
                   setShowConcluirConfirm(false);
                   setSelectedOrdem(null);
                   setFormaPagamento('');
+                  setDescontoConcluir('');
                 }}
                 className="px-6 py-3 border border-zinc-700 rounded-xl text-zinc-400 hover:bg-zinc-800 transition-all duration-200"
               >
@@ -1768,10 +1810,12 @@ function OrdensPageContent() {
               </button>
               <button
                 onClick={async () => {
-                  await handleStatusChange(selectedOrdem, 'CONCLUIDO', formaPagamento);
+                  const descontoPercent = parseFloat(descontoConcluir.replace(',', '.')) || 0;
+                  await handleStatusChange(selectedOrdem, 'CONCLUIDO', formaPagamento, descontoPercent);
                   setShowConcluirConfirm(false);
                   setSelectedOrdem(null);
                   setFormaPagamento('');
+                  setDescontoConcluir('');
                 }}
                 disabled={saving || !formaPagamento}
                 className="px-6 py-3 bg-gradient-to-r from-emerald-500 to-emerald-700 rounded-xl text-white font-medium hover:shadow-lg hover:shadow-emerald-500/25 transition-all duration-300 disabled:opacity-50"

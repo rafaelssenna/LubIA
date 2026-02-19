@@ -196,6 +196,7 @@ model OrdemServico {
   kmEntrada      Int?
   observacoes    String?
   total          Decimal        @db.Decimal(10, 2) @default(0)
+  desconto       Decimal        @db.Decimal(5, 2) @default(0) // Percentual de desconto
   formaPagamento FormaPagamento?
   createdAt      DateTime       @default(now())
   updatedAt      DateTime       @updatedAt
@@ -587,6 +588,7 @@ model VendaRapida {
   nomeCliente    String?         // Opcional - apenas para identificação
   observacoes    String?
   total          Decimal         @db.Decimal(10, 2) @default(0)
+  desconto       Decimal         @db.Decimal(5, 2) @default(0) // Percentual de desconto
   formaPagamento FormaPagamento?
   createdAt      DateTime        @default(now())
   updatedAt      DateTime        @updatedAt
