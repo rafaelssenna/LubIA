@@ -120,7 +120,7 @@ export default function VendasRapidasPage() {
 
     setLoadingProdutos(true);
     try {
-      const res = await fetch(`/api/estoque?busca=${encodeURIComponent(termo)}&limit=10`);
+      const res = await fetch(`/api/produtos?busca=${encodeURIComponent(termo)}&ativo=true`);
       const data = await res.json();
       if (data.data) {
         setProdutos(data.data.filter((p: Produto) => p.quantidade > 0));
