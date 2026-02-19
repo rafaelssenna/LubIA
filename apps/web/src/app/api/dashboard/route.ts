@@ -23,11 +23,22 @@ export async function GET() {
       totalClientes,
       totalVeiculos,
       ordensMes,
+      vendasMes,
       ordensHoje,
     ] = await Promise.all([
       prisma.cliente.count({ where: { empresaId: session.empresaId } }),
       prisma.veiculo.count({ where: { empresaId: session.empresaId } }),
+      // Apenas O.S. concluídas/entregues contam no faturamento
       prisma.ordemServico.findMany({
+        where: {
+          empresaId: session.empresaId,
+          createdAt: { gte: inicioMes, lte: fimMes },
+          status: { in: ['CONCLUIDO', 'ENTREGUE'] },
+        },
+        select: { total: true },
+      }),
+      // Vendas rápidas do mês
+      prisma.vendaRapida.findMany({
         where: {
           empresaId: session.empresaId,
           createdAt: { gte: inicioMes, lte: fimMes },
@@ -62,7 +73,10 @@ export async function GET() {
       }),
     ]);
 
-    const faturamentoMes = ordensMes.reduce((acc, o) => acc + Number(o.total), 0);
+    // Soma O.S. concluídas + Vendas Rápidas
+    const faturamentoOS = ordensMes.reduce((acc, o) => acc + Number(o.total), 0);
+    const faturamentoVendas = vendasMes.reduce((acc, v) => acc + Number(v.total), 0);
+    const faturamentoMes = faturamentoOS + faturamentoVendas;
 
     const servicosHoje = ordensHoje.map(o => ({
       id: o.id,
