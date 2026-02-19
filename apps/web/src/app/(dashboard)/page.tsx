@@ -21,6 +21,9 @@ import {
   Truck,
   TrendingUp,
   Zap,
+  ShoppingCart,
+  AlertCircle,
+  Package,
 } from 'lucide-react';
 
 interface DashboardStats {
@@ -41,6 +44,39 @@ interface ServicoHoje {
   status: string;
   formaPagamento: string | null;
   total: number;
+}
+
+interface VendaHoje {
+  id: number;
+  numero: string;
+  cliente: string;
+  hora: string;
+  total: number;
+  pago: boolean;
+  formaPagamento: string | null;
+  itensCount: number;
+}
+
+interface VendasHojeData {
+  itens: VendaHoje[];
+  total: number;
+  totalPago: number;
+  count: number;
+}
+
+interface PendenciaAReceber {
+  id: number;
+  tipo: 'ORDEM' | 'VENDA';
+  numero: string;
+  cliente: string;
+  total: number;
+  dataPagamentoPrevista: string | null;
+}
+
+interface AReceberData {
+  itens: PendenciaAReceber[];
+  total: number;
+  count: number;
 }
 
 const getStatusConfig = (status: string) => {
@@ -79,6 +115,8 @@ const formatFormaPagamento = (forma: string | null) => {
 export default function Dashboard() {
   const [stats, setStats] = useState<DashboardStats | null>(null);
   const [servicosHoje, setServicosHoje] = useState<ServicoHoje[]>([]);
+  const [vendasHoje, setVendasHoje] = useState<VendasHojeData | null>(null);
+  const [aReceber, setAReceber] = useState<AReceberData | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -87,10 +125,17 @@ export default function Dashboard() {
       .then(data => {
         setStats(data.stats);
         setServicosHoje(data.servicosHoje || []);
+        setVendasHoje(data.vendasHoje || null);
+        setAReceber(data.aReceber || null);
       })
       .catch(() => {})
       .finally(() => setLoading(false));
   }, []);
+
+  const isVencido = (data: string | null) => {
+    if (!data) return false;
+    return new Date(data) < new Date();
+  };
 
   if (loading) {
     return (
@@ -174,149 +219,219 @@ export default function Dashboard() {
           </div>
         </div>
 
-        {/* Serviços de Hoje */}
-        <div className="bg-[#1a1a1a] rounded-2xl border border-zinc-800/50 overflow-hidden">
-          <div className="p-6 border-b border-zinc-800 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-            <div>
-              <h2 className="text-xl font-bold text-white flex items-center gap-2">
-                <Calendar className="h-5 w-5 text-[#43A047]" />
-                Servicos de Hoje
-              </h2>
-              <p className="text-sm text-zinc-400 mt-1">
-                {servicosHoje.length} agendamento{servicosHoje.length !== 1 ? 's' : ''} para hoje
-              </p>
+        {/* Grid de 3 colunas: Serviços, Vendas, A Receber */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          {/* Serviços de Hoje */}
+          <div className="bg-[#1a1a1a] rounded-2xl border border-zinc-800/50 overflow-hidden">
+            <div className="p-4 border-b border-zinc-800 flex items-center justify-between">
+              <div>
+                <h2 className="text-lg font-bold text-white flex items-center gap-2">
+                  <Calendar className="h-5 w-5 text-emerald-400" />
+                  Servicos de Hoje
+                </h2>
+                <p className="text-xs text-zinc-500 mt-0.5">
+                  {servicosHoje.length} agendamento{servicosHoje.length !== 1 ? 's' : ''}
+                </p>
+              </div>
+              <Link
+                href="/ordens"
+                className="p-2 bg-emerald-500/10 rounded-lg text-emerald-400 hover:bg-emerald-500/20 transition-all"
+                title="Nova O.S."
+              >
+                <Plus className="h-5 w-5" />
+              </Link>
             </div>
-            <Link
-              href="/ordens"
-              className="flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-[#43A047] to-[#2E7D32] hover:from-[#2E7D32] hover:to-[#43A047] text-white font-semibold rounded-xl transition-all duration-300 shadow-lg shadow-[#43A047]/25 hover:shadow-[#43A047]/40 hover:scale-[1.02]"
-            >
-              <Plus className="h-5 w-5" />
-              Nova O.S.
-            </Link>
+
+            <div className="max-h-[300px] overflow-y-auto custom-scrollbar">
+              {servicosHoje.length === 0 ? (
+                <div className="p-8 text-center">
+                  <Calendar className="h-8 w-8 text-zinc-600 mx-auto mb-2" />
+                  <p className="text-sm text-zinc-500">Nenhum servico hoje</p>
+                </div>
+              ) : (
+                <div className="divide-y divide-zinc-800/50">
+                  {servicosHoje.map((servico) => {
+                    const statusCfg = getStatusConfig(servico.status);
+                    const StatusIcon = statusCfg.icon;
+                    return (
+                      <Link
+                        key={servico.id}
+                        href={`/ordens?detail=${servico.id}`}
+                        className="block p-3 hover:bg-zinc-800/30 transition-all duration-200 group"
+                      >
+                        <div className="flex items-center gap-3">
+                          <div className="text-center min-w-[50px] py-2 bg-[#232323] rounded-lg border border-zinc-700/50 group-hover:border-emerald-500/50 transition-all">
+                            <p className="text-sm font-bold text-white">{servico.hora}</p>
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <p className="font-medium text-white text-sm truncate">{servico.cliente}</p>
+                            <p className="text-xs text-zinc-500 truncate">{servico.placa}</p>
+                          </div>
+                          <span className={`p-1.5 rounded-lg ${statusCfg.bg}`}>
+                            <StatusIcon className={`h-4 w-4 ${statusCfg.text}`} />
+                          </span>
+                        </div>
+                      </Link>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+
+            <div className="p-3 border-t border-zinc-800/50 bg-[#161616]">
+              <Link
+                href="/ordens"
+                className="flex items-center justify-center gap-2 text-xs text-zinc-400 hover:text-emerald-400 transition-colors"
+              >
+                Ver todas as O.S.
+                <ArrowRight className="h-3 w-3" />
+              </Link>
+            </div>
           </div>
 
-          {servicosHoje.length === 0 ? (
-            <div className="p-12 text-center">
-              <div className="p-4 bg-zinc-800/50 rounded-full w-fit mx-auto mb-4">
-                <Calendar className="h-8 w-8 text-zinc-600" />
+          {/* Vendas de Hoje */}
+          <div className="bg-[#1a1a1a] rounded-2xl border border-zinc-800/50 overflow-hidden">
+            <div className="p-4 border-b border-zinc-800 flex items-center justify-between">
+              <div>
+                <h2 className="text-lg font-bold text-white flex items-center gap-2">
+                  <ShoppingCart className="h-5 w-5 text-blue-400" />
+                  Vendas de Hoje
+                </h2>
+                <p className="text-xs text-zinc-500 mt-0.5">
+                  {vendasHoje?.count || 0} venda{(vendasHoje?.count || 0) !== 1 ? 's' : ''} - {formatCurrency(vendasHoje?.total || 0)}
+                </p>
               </div>
-              <p className="text-zinc-400">Nenhum servico agendado para hoje</p>
               <Link
-                href="/ordens"
-                className="inline-flex items-center gap-2 mt-4 text-[#43A047] hover:text-[#66BB6A] transition-colors"
+                href="/vendas-rapidas"
+                className="p-2 bg-blue-500/10 rounded-lg text-blue-400 hover:bg-blue-500/20 transition-all"
+                title="Nova Venda"
               >
-                Agendar servico
-                <ArrowRight className="h-4 w-4" />
+                <Plus className="h-5 w-5" />
               </Link>
             </div>
-          ) : (
-            <div className="divide-y divide-zinc-800/50">
-              {servicosHoje.map((servico) => {
-                const statusCfg = getStatusConfig(servico.status);
-                const StatusIcon = statusCfg.icon;
-                return (
-                  <Link
-                    key={servico.id}
-                    href={`/ordens?detail=${servico.id}`}
-                    className="block p-4 hover:bg-zinc-800/30 transition-all duration-200 group"
-                  >
-                    <div className="flex items-center gap-4">
-                      <div className="text-center min-w-[80px] py-3 bg-[#232323] rounded-xl border border-zinc-700/50 group-hover:border-[#43A047]/50 transition-all">
-                        <p className="text-xl font-bold text-white">{servico.hora}</p>
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <p className="font-semibold text-white truncate">{servico.cliente}</p>
-                        <p className="text-sm text-zinc-400 truncate">{servico.veiculo} - {servico.placa}</p>
-                      </div>
-                      {(servico.status === 'CONCLUIDO' || servico.status === 'ENTREGUE') && servico.formaPagamento && (
-                        <div className="hidden md:flex flex-col items-end">
-                          <span className="text-sm font-semibold text-emerald-400">{formatCurrency(servico.total)}</span>
-                          <span className="text-xs text-zinc-400">{formatFormaPagamento(servico.formaPagamento)}</span>
+
+            <div className="max-h-[300px] overflow-y-auto custom-scrollbar">
+              {!vendasHoje || vendasHoje.itens.length === 0 ? (
+                <div className="p-8 text-center">
+                  <ShoppingCart className="h-8 w-8 text-zinc-600 mx-auto mb-2" />
+                  <p className="text-sm text-zinc-500">Nenhuma venda hoje</p>
+                </div>
+              ) : (
+                <div className="divide-y divide-zinc-800/50">
+                  {vendasHoje.itens.map((venda) => (
+                    <Link
+                      key={venda.id}
+                      href={`/vendas-rapidas`}
+                      className="block p-3 hover:bg-zinc-800/30 transition-all duration-200 group"
+                    >
+                      <div className="flex items-center gap-3">
+                        <div className="text-center min-w-[50px] py-2 bg-[#232323] rounded-lg border border-zinc-700/50 group-hover:border-blue-500/50 transition-all">
+                          <p className="text-sm font-bold text-white">{venda.hora}</p>
                         </div>
-                      )}
-                      <span className={`hidden sm:inline-flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium border ${statusCfg.bg} ${statusCfg.text} ${statusCfg.border}`}>
-                        <StatusIcon className="h-4 w-4" />
-                        {statusCfg.label}
-                      </span>
-                      <ArrowRight className="h-5 w-5 text-zinc-600 group-hover:text-[#43A047] group-hover:translate-x-1 transition-all" />
-                    </div>
-                  </Link>
-                );
-              })}
+                        <div className="flex-1 min-w-0">
+                          <p className="font-medium text-white text-sm truncate">{venda.cliente}</p>
+                          <p className="text-xs text-zinc-500">{venda.itensCount} {venda.itensCount === 1 ? 'item' : 'itens'}</p>
+                        </div>
+                        <div className="text-right">
+                          <p className={`text-sm font-semibold ${venda.pago ? 'text-emerald-400' : 'text-amber-400'}`}>
+                            {formatCurrency(venda.total)}
+                          </p>
+                          {!venda.pago && (
+                            <p className="text-xs text-amber-400">A receber</p>
+                          )}
+                        </div>
+                      </div>
+                    </Link>
+                  ))}
+                </div>
+              )}
             </div>
-          )}
 
-          {servicosHoje.length > 0 && (
-            <div className="p-4 border-t border-zinc-800/50 bg-[#161616]">
+            <div className="p-3 border-t border-zinc-800/50 bg-[#161616]">
               <Link
-                href="/ordens"
-                className="flex items-center justify-center gap-2 text-sm text-zinc-400 hover:text-[#43A047] transition-colors"
+                href="/vendas-rapidas"
+                className="flex items-center justify-center gap-2 text-xs text-zinc-400 hover:text-blue-400 transition-colors"
               >
-                Ver todas as ordens de servico
-                <ArrowRight className="h-4 w-4" />
+                Ver todas as vendas
+                <ArrowRight className="h-3 w-3" />
               </Link>
             </div>
-          )}
-        </div>
+          </div>
 
-        {/* Ações Rápidas */}
-        <div>
-          <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
-            <Zap className="h-5 w-5 text-amber-400" />
-            Acoes Rapidas
-          </h3>
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-            <Link
-              href="/ordens"
-              className="group relative overflow-hidden bg-[#1a1a1a] rounded-2xl p-6 border border-zinc-800/50 hover:border-emerald-500/50 transition-all duration-300"
-            >
-              <div className="absolute top-0 right-0 w-24 h-24 bg-emerald-500/5 rounded-full blur-2xl group-hover:scale-150 transition-transform duration-500"></div>
-              <div className="relative flex flex-col items-center gap-3">
-                <div className="p-4 bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-xl shadow-lg shadow-emerald-500/25 group-hover:scale-110 group-hover:rotate-3 transition-all duration-300">
-                  <ClipboardList className="h-6 w-6 text-white" />
-                </div>
-                <span className="font-medium text-zinc-300 group-hover:text-emerald-400 transition-colors">Nova O.S.</span>
+          {/* A Receber */}
+          <div className="bg-[#1a1a1a] rounded-2xl border border-zinc-800/50 overflow-hidden">
+            <div className="p-4 border-b border-zinc-800 flex items-center justify-between">
+              <div>
+                <h2 className="text-lg font-bold text-white flex items-center gap-2">
+                  <Clock className="h-5 w-5 text-amber-400" />
+                  A Receber
+                </h2>
+                <p className="text-xs text-zinc-500 mt-0.5">
+                  {aReceber?.count || 0} pendencia{(aReceber?.count || 0) !== 1 ? 's' : ''} - {formatCurrency(aReceber?.total || 0)}
+                </p>
               </div>
-            </Link>
+              <Link
+                href="/a-receber"
+                className="p-2 bg-amber-500/10 rounded-lg text-amber-400 hover:bg-amber-500/20 transition-all"
+                title="Ver Pendências"
+              >
+                <ArrowRight className="h-5 w-5" />
+              </Link>
+            </div>
 
-            <Link
-              href="/clientes"
-              className="group relative overflow-hidden bg-[#1a1a1a] rounded-2xl p-6 border border-zinc-800/50 hover:border-blue-500/50 transition-all duration-300"
-            >
-              <div className="absolute top-0 right-0 w-24 h-24 bg-blue-500/5 rounded-full blur-2xl group-hover:scale-150 transition-transform duration-500"></div>
-              <div className="relative flex flex-col items-center gap-3">
-                <div className="p-4 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl shadow-lg shadow-blue-500/25 group-hover:scale-110 group-hover:rotate-3 transition-all duration-300">
-                  <Users className="h-6 w-6 text-white" />
+            <div className="max-h-[300px] overflow-y-auto custom-scrollbar">
+              {!aReceber || aReceber.itens.length === 0 ? (
+                <div className="p-8 text-center">
+                  <CheckCircle className="h-8 w-8 text-emerald-500 mx-auto mb-2" />
+                  <p className="text-sm text-zinc-500">Nenhuma pendencia!</p>
                 </div>
-                <span className="font-medium text-zinc-300 group-hover:text-blue-400 transition-colors">Novo Cliente</span>
-              </div>
-            </Link>
+              ) : (
+                <div className="divide-y divide-zinc-800/50">
+                  {aReceber.itens.map((pendencia) => (
+                    <Link
+                      key={`${pendencia.tipo}-${pendencia.id}`}
+                      href={`/a-receber`}
+                      className="block p-3 hover:bg-zinc-800/30 transition-all duration-200 group"
+                    >
+                      <div className="flex items-center gap-3">
+                        <div className={`p-2 rounded-lg ${pendencia.tipo === 'ORDEM' ? 'bg-purple-500/10' : 'bg-blue-500/10'}`}>
+                          {pendencia.tipo === 'ORDEM' ? (
+                            <ClipboardList className="h-4 w-4 text-purple-400" />
+                          ) : (
+                            <Package className="h-4 w-4 text-blue-400" />
+                          )}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="font-medium text-white text-sm truncate">{pendencia.cliente}</p>
+                          <div className="flex items-center gap-2">
+                            <p className="text-xs text-zinc-500">{pendencia.numero}</p>
+                            {isVencido(pendencia.dataPagamentoPrevista) && (
+                              <span className="text-xs text-red-400 flex items-center gap-0.5">
+                                <AlertCircle className="h-3 w-3" />
+                                Vencido
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                        <p className="text-sm font-semibold text-amber-400">
+                          {formatCurrency(pendencia.total)}
+                        </p>
+                      </div>
+                    </Link>
+                  ))}
+                </div>
+              )}
+            </div>
 
-            <Link
-              href="/veiculos"
-              className="group relative overflow-hidden bg-[#1a1a1a] rounded-2xl p-6 border border-zinc-800/50 hover:border-purple-500/50 transition-all duration-300"
-            >
-              <div className="absolute top-0 right-0 w-24 h-24 bg-purple-500/5 rounded-full blur-2xl group-hover:scale-150 transition-transform duration-500"></div>
-              <div className="relative flex flex-col items-center gap-3">
-                <div className="p-4 bg-gradient-to-br from-purple-500 to-purple-600 rounded-xl shadow-lg shadow-purple-500/25 group-hover:scale-110 group-hover:rotate-3 transition-all duration-300">
-                  <Car className="h-6 w-6 text-white" />
-                </div>
-                <span className="font-medium text-zinc-300 group-hover:text-purple-400 transition-colors">Novo Veiculo</span>
-              </div>
-            </Link>
-
-            <Link
-              href="/orcamentos"
-              className="group relative overflow-hidden bg-[#1a1a1a] rounded-2xl p-6 border border-zinc-800/50 hover:border-orange-500/50 transition-all duration-300"
-            >
-              <div className="absolute top-0 right-0 w-24 h-24 bg-orange-500/5 rounded-full blur-2xl group-hover:scale-150 transition-transform duration-500"></div>
-              <div className="relative flex flex-col items-center gap-3">
-                <div className="p-4 bg-gradient-to-br from-orange-500 to-orange-600 rounded-xl shadow-lg shadow-orange-500/25 group-hover:scale-110 group-hover:rotate-3 transition-all duration-300">
-                  <TrendingUp className="h-6 w-6 text-white" />
-                </div>
-                <span className="font-medium text-zinc-300 group-hover:text-orange-400 transition-colors">Orcamento</span>
-              </div>
-            </Link>
+            <div className="p-3 border-t border-zinc-800/50 bg-[#161616]">
+              <Link
+                href="/a-receber"
+                className="flex items-center justify-center gap-2 text-xs text-zinc-400 hover:text-amber-400 transition-colors"
+              >
+                Gerenciar pendencias
+                <ArrowRight className="h-3 w-3" />
+              </Link>
+            </div>
           </div>
         </div>
       </div>
