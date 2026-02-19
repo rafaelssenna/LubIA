@@ -20,9 +20,8 @@ import {
   FileText,
   AlertCircle,
   UserCog,
-  Play,
-  Archive,
   ShoppingCart,
+  History,
 } from 'lucide-react';
 import { useSidebar } from '@/contexts/SidebarContext';
 import { useAuth } from '@/contexts/AuthContext';
@@ -32,9 +31,9 @@ type RoleUsuario = 'ADMIN' | 'GERENTE' | 'ATENDENTE' | 'VENDEDOR';
 // Permissões por role
 const ROLE_PERMISSIONS: Record<RoleUsuario, string[]> = {
   ADMIN: ['*'],
-  GERENTE: ['dashboard', 'clientes', 'veiculos', 'ordens', 'orcamentos', 'estoque', 'vendas-rapidas', 'lembretes', 'whatsapp'],
-  ATENDENTE: ['dashboard', 'clientes', 'veiculos', 'ordens', 'orcamentos', 'vendas-rapidas', 'whatsapp'],
-  VENDEDOR: ['clientes', 'veiculos', 'orcamentos', 'vendas-rapidas', 'whatsapp'],
+  GERENTE: ['dashboard', 'clientes', 'veiculos', 'ordens', 'orcamentos', 'estoque', 'vendas-rapidas', 'historico', 'lembretes', 'whatsapp'],
+  ATENDENTE: ['dashboard', 'clientes', 'veiculos', 'ordens', 'orcamentos', 'vendas-rapidas', 'historico', 'whatsapp'],
+  VENDEDOR: ['clientes', 'veiculos', 'orcamentos', 'vendas-rapidas', 'historico', 'whatsapp'],
 };
 
 interface SubMenuItem {
@@ -55,18 +54,10 @@ const menuItems: MenuItem[] = [
   { icon: LayoutDashboard, label: 'Dashboard', href: '/', permission: 'dashboard' },
   { icon: Users, label: 'Clientes', href: '/clientes', permission: 'clientes' },
   { icon: Car, label: 'Veículos', href: '/veiculos', permission: 'veiculos' },
-  {
-    icon: ClipboardList,
-    label: 'Ordens',
-    href: '/ordens',
-    permission: 'ordens',
-    subItems: [
-      { icon: Play, label: 'Em Andamento', href: '/ordens?status=ativas' },
-      { icon: Archive, label: 'Histórico', href: '/ordens?status=historico' },
-    ]
-  },
+  { icon: ClipboardList, label: 'Ordens', href: '/ordens', permission: 'ordens' },
   { icon: FileText, label: 'Orçamentos', href: '/orcamentos', permission: 'orcamentos' },
   { icon: ShoppingCart, label: 'Vendas Rápidas', href: '/vendas-rapidas', permission: 'vendas-rapidas' },
+  { icon: History, label: 'Histórico', href: '/historico', permission: 'historico' },
   { icon: Package, label: 'Estoque', href: '/estoque', permission: 'estoque' },
   { icon: Bell, label: 'Lembretes', href: '/lembretes', permission: 'lembretes' },
   { icon: MessageCircle, label: 'WhatsApp', href: '/whatsapp', permission: 'whatsapp' },

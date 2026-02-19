@@ -8,9 +8,8 @@ const VALID_TRANSITIONS: Record<string, string[]> = {
   AGENDADO: ['EM_ANDAMENTO', 'CONCLUIDO', 'CANCELADO'],
   EM_ANDAMENTO: ['CONCLUIDO', 'AGUARDANDO_PECAS', 'CANCELADO'],
   AGUARDANDO_PECAS: ['EM_ANDAMENTO', 'CONCLUIDO', 'CANCELADO'],
-  CONCLUIDO: ['ENTREGUE'],
+  CONCLUIDO: [],
   CANCELADO: [],
-  ENTREGUE: [],
 };
 
 // GET - Buscar ordem por ID
@@ -166,7 +165,7 @@ export async function PUT(
       if (status === 'EM_ANDAMENTO' && !existing.dataInicio) {
         updateData.dataInicio = new Date();
       }
-      if ((status === 'CONCLUIDO' || status === 'ENTREGUE') && !existing.dataConclusao) {
+      if (status === 'CONCLUIDO' && !existing.dataConclusao) {
         updateData.dataConclusao = new Date();
       }
     }
@@ -454,9 +453,9 @@ export async function DELETE(
     }
 
     // Only allow deletion of orders that are not completed
-    if (ordem.status === 'CONCLUIDO' || ordem.status === 'ENTREGUE') {
+    if (ordem.status === 'CONCLUIDO') {
       return NextResponse.json({
-        error: 'Não é possível excluir uma ordem já concluída ou entregue',
+        error: 'Não é possível excluir uma ordem já concluída',
       }, { status: 400 });
     }
 

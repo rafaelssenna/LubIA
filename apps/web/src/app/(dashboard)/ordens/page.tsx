@@ -75,7 +75,6 @@ const statusConfig: Record<string, { label: string; color: string; icon: any; bg
   EM_ANDAMENTO: { label: 'Em Andamento', color: 'text-purple-400', icon: Play, bg: 'bg-purple-500/10' },
   CONCLUIDO: { label: 'Concluído', color: 'text-[#43A047]', icon: CheckCircle, bg: 'bg-green-500/10' },
   CANCELADO: { label: 'Cancelado', color: 'text-red-500', icon: XCircle, bg: 'bg-red-500/10' },
-  ENTREGUE: { label: 'Entregue', color: 'text-cyan-400', icon: Truck, bg: 'bg-cyan-500/10' },
 };
 
 const diasSemana = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
@@ -924,14 +923,6 @@ function OrdensPageContent() {
                           Concluir
                         </button>
                       )}
-                      {ordem.status === 'CONCLUIDO' && (
-                        <button
-                          onClick={() => handleStatusChange(ordem, 'ENTREGUE')}
-                          className="px-4 py-2 bg-cyan-500/10 text-cyan-400 rounded-xl text-sm font-medium hover:bg-cyan-500/20 border border-cyan-500/20 transition-all duration-200"
-                        >
-                          Entregar
-                        </button>
-                      )}
                       <div className="flex items-center gap-1">
                         <button
                           onClick={() => downloadOrdemPDF(ordem, empresaConfig || undefined)}
@@ -959,7 +950,7 @@ function OrdensPageContent() {
                             <Edit size={18} />
                           </button>
                         )}
-                        {ordem.status !== 'CONCLUIDO' && ordem.status !== 'ENTREGUE' && (
+                        {ordem.status !== 'CONCLUIDO' && ordem.status !== 'CANCELADO' && (
                           <button
                             onClick={() => {
                               setSelectedOrdem(ordem);
