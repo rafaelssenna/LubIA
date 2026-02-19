@@ -1672,10 +1672,17 @@ EXEMPLOS DE INTERPRETAÇÃO:
 
 Mensagem atual: "${userMessage}"`;
 
-    // Chamar Gemini com function calling
+    // Chamar Gemini com function calling e thinking habilitado
     const model = genAI.getGenerativeModel({
       model: 'gemini-2.5-flash',
       tools: chatbotTools,
+      generationConfig: {
+        // Habilita thinking interno para melhor raciocínio
+        // O modelo "pensa" antes de responder, melhorando a qualidade
+        thinkingConfig: {
+          thinkingBudget: 1024, // Tokens para raciocínio interno
+        },
+      } as any, // Type assertion para suportar thinkingConfig
     });
 
     const result = await model.generateContent(systemPromptFC);
