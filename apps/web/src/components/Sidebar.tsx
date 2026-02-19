@@ -162,8 +162,8 @@ export default function Sidebar() {
           <Image
             src={theme === 'light' ? '/logo.tema.claro.png' : '/logo.png'}
             alt="LoopIA Logo"
-            width={theme === 'light' ? (collapsed ? 60 : 240) : (collapsed ? 30 : 120)}
-            height={theme === 'light' ? (collapsed ? 60 : 72) : (collapsed ? 30 : 36)}
+            width={theme === 'light' ? (collapsed ? 60 : 240) : (collapsed ? 36 : 144)}
+            height={theme === 'light' ? (collapsed ? 60 : 72) : (collapsed ? 36 : 43)}
             className="object-contain transition-all duration-300"
             priority
           />
