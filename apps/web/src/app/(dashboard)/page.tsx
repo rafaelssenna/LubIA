@@ -39,6 +39,8 @@ interface ServicoHoje {
   placa: string;
   servico: string;
   status: string;
+  formaPagamento: string | null;
+  total: number;
 }
 
 const getStatusConfig = (status: string) => {
@@ -61,6 +63,17 @@ const getStatusConfig = (status: string) => {
 
 const formatCurrency = (value: number) => {
   return value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+};
+
+const formatFormaPagamento = (forma: string | null) => {
+  if (!forma) return null;
+  const labels: Record<string, string> = {
+    DINHEIRO: 'Dinheiro',
+    PIX: 'PIX',
+    CREDITO: 'Crédito',
+    DEBITO: 'Débito',
+  };
+  return labels[forma] || forma;
 };
 
 export default function Dashboard() {
@@ -215,6 +228,12 @@ export default function Dashboard() {
                         <p className="font-semibold text-white truncate">{servico.cliente}</p>
                         <p className="text-sm text-zinc-400 truncate">{servico.veiculo} - {servico.placa}</p>
                       </div>
+                      {(servico.status === 'CONCLUIDO' || servico.status === 'ENTREGUE') && servico.formaPagamento && (
+                        <div className="hidden md:flex flex-col items-end">
+                          <span className="text-sm font-semibold text-emerald-400">{formatCurrency(servico.total)}</span>
+                          <span className="text-xs text-zinc-400">{formatFormaPagamento(servico.formaPagamento)}</span>
+                        </div>
+                      )}
                       <span className={`hidden sm:inline-flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium border ${statusCfg.bg} ${statusCfg.text} ${statusCfg.border}`}>
                         <StatusIcon className="h-4 w-4" />
                         {statusCfg.label}

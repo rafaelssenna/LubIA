@@ -75,6 +75,8 @@ export async function GET() {
       placa: o.veiculo.placa,
       servico: o.itens[0]?.servico.nome || 'Serviço',
       status: o.status,
+      formaPagamento: o.formaPagamento,
+      total: Number(o.total),
     }));
 
     return NextResponse.json({
