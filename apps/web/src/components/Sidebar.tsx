@@ -162,8 +162,8 @@ export default function Sidebar() {
           <Image
             src="/logo.png"
             alt="LoopIA Logo"
-            width={collapsed ? 40 : 160}
-            height={collapsed ? 40 : 48}
+            width={collapsed ? 60 : 240}
+            height={collapsed ? 60 : 72}
             className="object-contain transition-all duration-300 brightness-0 invert"
             priority
           />
