@@ -191,7 +191,7 @@ body {
   background: var(--scrollbar-thumb-hover);
 }
 
-/* Glass Effect */
+/* Glass Effect - Dark Mode */
 .glass {
   background: var(--glass-bg);
   backdrop-filter: blur(20px);
@@ -210,6 +210,22 @@ body {
 .dark .glass-card {
   background: linear-gradient(135deg, rgba(30, 30, 30, 0.95) 0%, rgba(18, 18, 18, 0.9) 100%);
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -2px rgba(0, 0, 0, 0.2);
+}
+
+/* Light Mode - SEM transparência, tudo sólido */
+.light .glass {
+  background: #C8C8C8;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  border: 1px solid #8A8A8A;
+}
+
+.light .glass-card {
+  background: #D5D5D5;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  border: 1px solid #8A8A8A;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 /* Button Styles */
@@ -242,6 +258,11 @@ body {
 
 .dark .card-hover:hover {
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3), 0 0 30px rgba(67, 160, 71, 0.1);
+}
+
+.light .card-hover:hover {
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+  border-color: #43A047;
 }
 
 /* Input Focus Effects */
@@ -316,7 +337,7 @@ input:focus, select:focus, textarea:focus {
 }
 
 .light .custom-scrollbar::-webkit-scrollbar-track {
-  background: rgba(0, 0, 0, 0.02);
+  background: #B0B0B0;
 }
 
 .custom-scrollbar::-webkit-scrollbar-thumb {
@@ -326,4 +347,12 @@ input:focus, select:focus, textarea:focus {
 
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
   background: rgba(67, 160, 71, 0.5);
+}
+
+.light .custom-scrollbar::-webkit-scrollbar-thumb {
+  background: #7A7A7A;
+}
+
+.light .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #43A047;
 }
