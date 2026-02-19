@@ -113,15 +113,6 @@ export default function Header({ title, subtitle }: HeaderProps) {
             {showProfile && (
               <div className="absolute right-0 top-full mt-3 w-56 glass-card rounded-2xl shadow-2xl z-50 animate-fade-in overflow-hidden">
                 <div className="p-2">
-                  <button className="w-full text-left px-4 py-3 text-sm text-[#9E9E9E] hover:bg-[#121212] hover:text-[#E8E8E8] rounded-xl transition-all duration-300 flex items-center gap-3">
-                    <User size={16} />
-                    Meu Perfil
-                  </button>
-                  <button className="w-full text-left px-4 py-3 text-sm text-[#9E9E9E] hover:bg-[#121212] hover:text-[#E8E8E8] rounded-xl transition-all duration-300 flex items-center gap-3">
-                    <Sparkles size={16} />
-                    Configurações
-                  </button>
-                  <hr className="my-2 border-[#333333]" />
                   <button
                     onClick={logout}
                     className="w-full text-left px-4 py-3 text-sm text-red-400 hover:bg-red-500/10 rounded-xl transition-all duration-300 flex items-center gap-3"
