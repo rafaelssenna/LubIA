@@ -45,48 +45,61 @@
   --sidebar-active: rgba(255, 255, 255, 0.2);
 }
 
-/* ===== LIGHT THEME ===== */
+/* ===== LIGHT THEME (contraste do escuro) ===== */
 .light {
-  --background: #F5F5F0;
-  --background-secondary: #FAF9F6;
-  --background-tertiary: #EEEDEA;
-  --foreground: #2D2D2A;
-  --foreground-secondary: #3C3C3C;
-  --foreground-muted: #7A7A7A;
-  --card: #FFFFFF;
-  --card-hover: #FAF9F6;
-  --card-elevated: #FFFFFF;
-  --border: #E0DED8;
-  --border-light: #E8E6E0;
-  --border-hover: #D9D7D0;
-  --primary: #5B9B7D;
-  --primary-dark: #4A8A6C;
-  --primary-light: #7EA87E;
+  /* Backgrounds invertidos: escuro #121212 → claro #EDEDED */
+  --background: #EDEDED;
+  --background-secondary: #E1E1E1;
+  --background-tertiary: #DADADA;
+  /* Foregrounds invertidos: claro #E8E8E8 → escuro #171717 */
+  --foreground: #171717;
+  --foreground-secondary: #424242;
+  --foreground-muted: #616161;
+  /* Cards invertidos: escuro #1E1E1E → claro #E1E1E1 */
+  --card: #E1E1E1;
+  --card-hover: #D5D5D5;
+  --card-elevated: #E5E5E5;
+  /* Borders invertidos: escuro #333333 → claro #CCCCCC */
+  --border: #CCCCCC;
+  --border-light: #BBBBBB;
+  --border-hover: #B5B5B5;
+  /* Primary: mesma cor verde da marca */
+  --primary: #43A047;
+  --primary-dark: #1B5E20;
+  --primary-light: #66BB6A;
   --primary-foreground: #FFFFFF;
-  --secondary: #5B8DB8;
+  /* Secondary */
+  --secondary: #42A5F5;
   --secondary-foreground: #FFFFFF;
-  --accent: #C4836A;
-  --muted: #7A7A7A;
-  --muted-foreground: #6B6B6B;
-  --danger: #D4645C;
+  /* Accent */
+  --accent: #00E676;
+  /* Muted invertido */
+  --muted: #9E9E9E;
+  --muted-foreground: #616161;
+  /* Feedback: mesmas cores */
+  --danger: #EF5350;
   --danger-foreground: #FFFFFF;
-  --warning: #D4A24C;
-  --warning-foreground: #2D2D2A;
-  --success: #5BA67A;
-  --success-foreground: #FFFFFF;
-  --info: #5B9BD5;
+  --warning: #FFD54F;
+  --warning-foreground: #171717;
+  --success: #66BB6A;
+  --success-foreground: #171717;
+  --info: #42A5F5;
   --info-foreground: #FFFFFF;
-  --glass-bg: rgba(255, 255, 255, 0.95);
-  --glass-border: rgba(45, 45, 42, 0.08);
-  --input-bg: #FFFFFF;
-  --input-border: #E0DED8;
-  --scrollbar-thumb: #D9D7D0;
-  --scrollbar-thumb-hover: #5B9B7D;
-  --sidebar-bg: #FFFFFF;
-  --sidebar-text: #3C3C3C;
-  --sidebar-text-active: #2D2D2A;
-  --sidebar-hover: rgba(45, 45, 42, 0.05);
-  --sidebar-active: rgba(91, 155, 125, 0.15);
+  /* Glass invertido */
+  --glass-bg: rgba(225, 225, 225, 0.88);
+  --glass-border: rgba(0, 0, 0, 0.05);
+  /* Input */
+  --input-bg: #E1E1E1;
+  --input-border: #CCCCCC;
+  /* Scrollbar */
+  --scrollbar-thumb: #BBBBBB;
+  --scrollbar-thumb-hover: #43A047;
+  /* Sidebar invertido */
+  --sidebar-bg: #E1E1E1;
+  --sidebar-text: rgba(0, 0, 0, 0.7);
+  --sidebar-text-active: #000000;
+  --sidebar-hover: rgba(0, 0, 0, 0.1);
+  --sidebar-active: rgba(0, 0, 0, 0.2);
 }
 
 @theme inline {
