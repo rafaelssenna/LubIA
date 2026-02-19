@@ -23,6 +23,9 @@ import {
   ShoppingCart,
   History,
   Clock,
+  FolderOpen,
+  Briefcase,
+  Wallet,
 } from 'lucide-react';
 import { useSidebar } from '@/contexts/SidebarContext';
 import { useAuth } from '@/contexts/AuthContext';
@@ -32,15 +35,16 @@ type RoleUsuario = 'ADMIN' | 'GERENTE' | 'ATENDENTE' | 'VENDEDOR';
 // Permissões por role
 const ROLE_PERMISSIONS: Record<RoleUsuario, string[]> = {
   ADMIN: ['*'],
-  GERENTE: ['dashboard', 'clientes', 'veiculos', 'ordens', 'orcamentos', 'estoque', 'vendas-rapidas', 'a-receber', 'historico', 'lembretes', 'whatsapp'],
-  ATENDENTE: ['dashboard', 'clientes', 'veiculos', 'ordens', 'orcamentos', 'vendas-rapidas', 'a-receber', 'historico', 'whatsapp'],
-  VENDEDOR: ['clientes', 'veiculos', 'orcamentos', 'vendas-rapidas', 'a-receber', 'historico', 'whatsapp'],
+  GERENTE: ['dashboard', 'cadastros', 'clientes', 'veiculos', 'operacoes', 'ordens', 'orcamentos', 'vendas-rapidas', 'financeiro', 'a-receber', 'historico', 'estoque', 'lembretes', 'whatsapp'],
+  ATENDENTE: ['dashboard', 'cadastros', 'clientes', 'veiculos', 'operacoes', 'ordens', 'orcamentos', 'vendas-rapidas', 'financeiro', 'a-receber', 'historico', 'whatsapp'],
+  VENDEDOR: ['cadastros', 'clientes', 'veiculos', 'operacoes', 'orcamentos', 'vendas-rapidas', 'financeiro', 'a-receber', 'historico', 'whatsapp'],
 };
 
 interface SubMenuItem {
   icon: any;
   label: string;
   href: string;
+  permission: string;
 }
 
 interface MenuItem {
@@ -53,13 +57,37 @@ interface MenuItem {
 
 const menuItems: MenuItem[] = [
   { icon: LayoutDashboard, label: 'Dashboard', href: '/', permission: 'dashboard' },
-  { icon: Users, label: 'Clientes', href: '/clientes', permission: 'clientes' },
-  { icon: Car, label: 'Veículos', href: '/veiculos', permission: 'veiculos' },
-  { icon: ClipboardList, label: 'Ordens', href: '/ordens', permission: 'ordens' },
-  { icon: FileText, label: 'Orçamentos', href: '/orcamentos', permission: 'orcamentos' },
-  { icon: ShoppingCart, label: 'Vendas Rápidas', href: '/vendas-rapidas', permission: 'vendas-rapidas' },
-  { icon: Clock, label: 'A Receber', href: '/a-receber', permission: 'a-receber' },
-  { icon: History, label: 'Histórico', href: '/historico', permission: 'historico' },
+  {
+    icon: FolderOpen,
+    label: 'Cadastros',
+    href: '/clientes',
+    permission: 'cadastros',
+    subItems: [
+      { icon: Users, label: 'Clientes', href: '/clientes', permission: 'clientes' },
+      { icon: Car, label: 'Veículos', href: '/veiculos', permission: 'veiculos' },
+    ],
+  },
+  {
+    icon: Briefcase,
+    label: 'Operações',
+    href: '/ordens',
+    permission: 'operacoes',
+    subItems: [
+      { icon: ClipboardList, label: 'Ordens', href: '/ordens', permission: 'ordens' },
+      { icon: FileText, label: 'Orçamentos', href: '/orcamentos', permission: 'orcamentos' },
+      { icon: ShoppingCart, label: 'Vendas Rápidas', href: '/vendas-rapidas', permission: 'vendas-rapidas' },
+    ],
+  },
+  {
+    icon: Wallet,
+    label: 'Financeiro',
+    href: '/a-receber',
+    permission: 'financeiro',
+    subItems: [
+      { icon: Clock, label: 'A Receber', href: '/a-receber', permission: 'a-receber' },
+      { icon: History, label: 'Histórico', href: '/historico', permission: 'historico' },
+    ],
+  },
   { icon: Package, label: 'Estoque', href: '/estoque', permission: 'estoque' },
   { icon: Bell, label: 'Lembretes', href: '/lembretes', permission: 'lembretes' },
   { icon: MessageCircle, label: 'WhatsApp', href: '/whatsapp', permission: 'whatsapp' },
@@ -75,9 +103,28 @@ export default function Sidebar() {
   // Filtrar menu baseado nas permissões do role
   const userRole = (user?.role || 'ATENDENTE') as RoleUsuario;
   const permissions = ROLE_PERMISSIONS[userRole];
-  const filteredMenuItems = menuItems.filter(item =>
-    permissions.includes('*') || permissions.includes(item.permission)
-  );
+
+  // Filtra itens e subitens baseado nas permissões
+  const filteredMenuItems = menuItems
+    .filter(item => permissions.includes('*') || permissions.includes(item.permission))
+    .map(item => {
+      if (item.subItems) {
+        return {
+          ...item,
+          subItems: item.subItems.filter(sub =>
+            permissions.includes('*') || permissions.includes(sub.permission)
+          ),
+        };
+      }
+      return item;
+    })
+    .filter(item => !item.subItems || item.subItems.length > 0); // Remove menus pai sem filhos
+
+  // Verifica se um submenu contém a rota atual
+  const isSubMenuActive = (item: MenuItem) => {
+    if (!item.subItems) return false;
+    return item.subItems.some(sub => pathname === sub.href);
+  };
 
   // Verificar se a configuração está completa
   useEffect(() => {
@@ -134,9 +181,9 @@ export default function Sidebar() {
       {/* Menu */}
       <nav className="flex-1 p-4 space-y-1.5 overflow-y-auto custom-scrollbar">
         {filteredMenuItems.map((item, index) => {
-          const isActive = pathname === item.href || (item.subItems && pathname.startsWith(item.href));
           const hasSubItems = item.subItems && item.subItems.length > 0;
-          const isExpanded = expandedMenu === item.label;
+          const isActive = hasSubItems ? isSubMenuActive(item) : pathname === item.href;
+          const isExpanded = expandedMenu === item.label || (hasSubItems && isSubMenuActive(item));
 
           if (hasSubItems) {
             return (
@@ -181,7 +228,7 @@ export default function Sidebar() {
                 {!collapsed && isExpanded && (
                   <div className="ml-4 mt-1 space-y-1 border-l-2 border-white/10 pl-3">
                     {item.subItems!.map((subItem) => {
-                      const isSubActive = pathname + window.location.search === subItem.href;
+                      const isSubActive = pathname === subItem.href;
                       return (
                         <Link
                           key={subItem.href}
