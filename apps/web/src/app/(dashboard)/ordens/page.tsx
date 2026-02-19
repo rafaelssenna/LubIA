@@ -117,6 +117,8 @@ function OrdensPageContent() {
   const [searchVeiculo, setSearchVeiculo] = useState('');
   const [searchProduto, setSearchProduto] = useState('');
   const [step, setStep] = useState(1);
+  const [modoNovoVeiculo, setModoNovoVeiculo] = useState(false);
+  const [novoVeiculo, setNovoVeiculo] = useState({ placa: '', marca: '', modelo: '', clienteNome: '', clienteTelefone: '' });
   const [dataAgendada, setDataAgendada] = useState('');
   const [editingOrdem, setEditingOrdem] = useState<OrdemServico | null>(null);
   const [novoServicoExtra, setNovoServicoExtra] = useState({ descricao: '', valor: '' });
@@ -280,6 +282,8 @@ function OrdensPageContent() {
     setSearchVeiculo('');
     setSearchProduto('');
     setNovoServicoExtra({ descricao: '', valor: '' });
+    setModoNovoVeiculo(false);
+    setNovoVeiculo({ placa: '', marca: '', modelo: '', clienteNome: '', clienteTelefone: '' });
     setStep(1);
     setShowModal(true);
   };
@@ -326,6 +330,8 @@ function OrdensPageContent() {
     setSearchVeiculo('');
     setSearchProduto('');
     setNovoServicoExtra({ descricao: '', valor: '' });
+    setModoNovoVeiculo(false);
+    setNovoVeiculo({ placa: '', marca: '', modelo: '', clienteNome: '', clienteTelefone: '' });
     setStep(1);
     setShowModal(true);
   };
@@ -1023,53 +1029,161 @@ function OrdensPageContent() {
               {/* Step 1: Select Vehicle */}
               {step === 1 && (
                 <div className="space-y-4">
-                  <div className="relative">
-                    <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-[#66BB6A]" size={18} />
-                    <input
-                      type="text"
-                      placeholder="Buscar veiculo por placa, cliente ou modelo..."
-                      value={searchVeiculo}
-                      onChange={(e) => setSearchVeiculo(e.target.value)}
-                      className="w-full bg-[#121212] border border-[#333333] rounded-xl pl-11 pr-4 py-3 text-sm text-[#E8E8E8] placeholder-gray-400 focus:outline-none focus:border-[#43A047]"
-                    />
+                  {/* Toggle entre buscar e criar */}
+                  <div className="flex items-center gap-2 bg-[#121212] border border-[#333333] rounded-xl p-1">
+                    <button
+                      onClick={() => { setModoNovoVeiculo(false); setSelectedVeiculoId(null); }}
+                      className={`flex-1 py-2.5 px-4 rounded-lg text-sm font-medium transition-all ${
+                        !modoNovoVeiculo
+                          ? 'bg-gradient-to-r from-[#43A047] to-[#2E7D32] text-white'
+                          : 'text-zinc-400 hover:text-white'
+                      }`}
+                    >
+                      Buscar Veículo
+                    </button>
+                    <button
+                      onClick={() => { setModoNovoVeiculo(true); setSelectedVeiculoId(null); }}
+                      className={`flex-1 py-2.5 px-4 rounded-lg text-sm font-medium transition-all ${
+                        modoNovoVeiculo
+                          ? 'bg-gradient-to-r from-[#43A047] to-[#2E7D32] text-white'
+                          : 'text-zinc-400 hover:text-white'
+                      }`}
+                    >
+                      <Plus size={16} className="inline mr-1" />
+                      Novo Veículo
+                    </button>
                   </div>
-                  <div className="space-y-2 max-h-[400px] overflow-y-auto">
-                    {filteredVeiculos.length === 0 ? (
-                      <p className="text-center text-[#9E9E9E] py-4">Nenhum veiculo encontrado</p>
-                    ) : (
-                      filteredVeiculos.map((veiculo) => (
-                        <button
-                          key={veiculo.id}
-                          onClick={() => {
-                            setSelectedVeiculoId(veiculo.id);
-                            // Preencher KM de entrada com o KM atual do veículo
-                            if (veiculo.kmAtual && !kmEntrada) {
-                              setKmEntrada(veiculo.kmAtual.toString());
-                            }
-                          }}
-                          className={`w-full p-4 rounded-xl text-left transition-colors ${
-                            selectedVeiculoId === veiculo.id
-                              ? 'bg-green-500/10 border-2 border-[#43A047]'
-                              : 'bg-[#121212] border border-[#333333] hover:border-[#66BB6A]'
-                          }`}
-                        >
-                          <div className="flex items-center gap-3">
-                            <div className="p-2 bg-blue-500/10 rounded-lg">
-                              <Car size={20} className="text-blue-400" />
-                            </div>
-                            <div>
-                              <div className="flex items-center gap-2">
-                                <span className="font-bold text-[#E8E8E8]">{formatPlate(veiculo.placa)}</span>
-                                <span className="text-[#9E9E9E]">{capitalize(veiculo.marca)} {capitalize(veiculo.modelo)}</span>
-                                {veiculo.ano && <span className="text-[#9E9E9E]">({veiculo.ano})</span>}
-                              </div>
-                              <p className="text-sm text-[#9E9E9E]">{capitalize(veiculo.cliente.nome)}</p>
-                            </div>
+
+                  {!modoNovoVeiculo ? (
+                    <>
+                      <div className="relative">
+                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-[#66BB6A]" size={18} />
+                        <input
+                          type="text"
+                          placeholder="Buscar veiculo por placa, cliente ou modelo..."
+                          value={searchVeiculo}
+                          onChange={(e) => setSearchVeiculo(e.target.value)}
+                          className="w-full bg-[#121212] border border-[#333333] rounded-xl pl-11 pr-4 py-3 text-sm text-[#E8E8E8] placeholder-gray-400 focus:outline-none focus:border-[#43A047]"
+                        />
+                      </div>
+                      <div className="space-y-2 max-h-[300px] overflow-y-auto">
+                        {filteredVeiculos.length === 0 ? (
+                          <div className="text-center py-8">
+                            <Car className="mx-auto h-10 w-10 text-zinc-600 mb-2" />
+                            <p className="text-[#9E9E9E]">Nenhum veículo encontrado</p>
+                            <button
+                              onClick={() => setModoNovoVeiculo(true)}
+                              className="text-[#43A047] text-sm mt-2 hover:underline"
+                            >
+                              Cadastrar novo veículo
+                            </button>
                           </div>
-                        </button>
-                      ))
-                    )}
-                  </div>
+                        ) : (
+                          filteredVeiculos.map((veiculo) => (
+                            <button
+                              key={veiculo.id}
+                              onClick={() => {
+                                setSelectedVeiculoId(veiculo.id);
+                                // Preencher KM de entrada com o KM atual do veículo
+                                if (veiculo.kmAtual && !kmEntrada) {
+                                  setKmEntrada(veiculo.kmAtual.toString());
+                                }
+                              }}
+                              className={`w-full p-4 rounded-xl text-left transition-colors ${
+                                selectedVeiculoId === veiculo.id
+                                  ? 'bg-green-500/10 border-2 border-[#43A047]'
+                                  : 'bg-[#121212] border border-[#333333] hover:border-[#66BB6A]'
+                              }`}
+                            >
+                              <div className="flex items-center gap-3">
+                                <div className="p-2 bg-blue-500/10 rounded-lg">
+                                  <Car size={20} className="text-blue-400" />
+                                </div>
+                                <div>
+                                  <div className="flex items-center gap-2">
+                                    <span className="font-bold text-[#E8E8E8]">{formatPlate(veiculo.placa)}</span>
+                                    <span className="text-[#9E9E9E]">{capitalize(veiculo.marca)} {capitalize(veiculo.modelo)}</span>
+                                    {veiculo.ano && <span className="text-[#9E9E9E]">({veiculo.ano})</span>}
+                                  </div>
+                                  <p className="text-sm text-[#9E9E9E]">{capitalize(veiculo.cliente.nome)}</p>
+                                </div>
+                              </div>
+                            </button>
+                          ))
+                        )}
+                      </div>
+                    </>
+                  ) : (
+                    /* Formulário de novo veículo */
+                    <div className="space-y-4 bg-[#121212] rounded-xl p-4 border border-[#333333]">
+                      <div className="grid grid-cols-2 gap-4">
+                        <div>
+                          <label className="block text-sm font-medium text-[#9E9E9E] mb-1.5">
+                            Nome do Cliente <span className="text-red-400">*</span>
+                          </label>
+                          <input
+                            type="text"
+                            value={novoVeiculo.clienteNome}
+                            onChange={(e) => setNovoVeiculo({ ...novoVeiculo, clienteNome: e.target.value })}
+                            placeholder="Ex: João Silva"
+                            className="w-full bg-[#1a1a1a] border border-[#333333] rounded-xl px-4 py-3 text-[#E8E8E8] placeholder-gray-500 focus:outline-none focus:border-[#43A047]"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium text-[#9E9E9E] mb-1.5">
+                            Telefone <span className="text-red-400">*</span>
+                          </label>
+                          <input
+                            type="tel"
+                            value={novoVeiculo.clienteTelefone}
+                            onChange={(e) => setNovoVeiculo({ ...novoVeiculo, clienteTelefone: e.target.value })}
+                            placeholder="(11) 99999-9999"
+                            className="w-full bg-[#1a1a1a] border border-[#333333] rounded-xl px-4 py-3 text-[#E8E8E8] placeholder-gray-500 focus:outline-none focus:border-[#43A047]"
+                          />
+                        </div>
+                      </div>
+                      <div className="border-t border-[#333333] pt-4">
+                        <div className="grid grid-cols-3 gap-4">
+                          <div>
+                            <label className="block text-sm font-medium text-[#9E9E9E] mb-1.5">
+                              Placa <span className="text-red-400">*</span>
+                            </label>
+                            <input
+                              type="text"
+                              value={novoVeiculo.placa}
+                              onChange={(e) => setNovoVeiculo({ ...novoVeiculo, placa: e.target.value.toUpperCase() })}
+                              placeholder="ABC1D23"
+                              maxLength={7}
+                              className="w-full bg-[#1a1a1a] border border-[#333333] rounded-xl px-4 py-3 text-[#E8E8E8] placeholder-gray-500 focus:outline-none focus:border-[#43A047] uppercase"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-sm font-medium text-[#9E9E9E] mb-1.5">Marca</label>
+                            <input
+                              type="text"
+                              value={novoVeiculo.marca}
+                              onChange={(e) => setNovoVeiculo({ ...novoVeiculo, marca: e.target.value })}
+                              placeholder="Ex: Honda"
+                              className="w-full bg-[#1a1a1a] border border-[#333333] rounded-xl px-4 py-3 text-[#E8E8E8] placeholder-gray-500 focus:outline-none focus:border-[#43A047]"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-sm font-medium text-[#9E9E9E] mb-1.5">Modelo</label>
+                            <input
+                              type="text"
+                              value={novoVeiculo.modelo}
+                              onChange={(e) => setNovoVeiculo({ ...novoVeiculo, modelo: e.target.value })}
+                              placeholder="Ex: Civic"
+                              className="w-full bg-[#1a1a1a] border border-[#333333] rounded-xl px-4 py-3 text-[#E8E8E8] placeholder-gray-500 focus:outline-none focus:border-[#43A047]"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                      <p className="text-xs text-zinc-500">
+                        <span className="text-red-400">*</span> Campos obrigatórios. Marca e modelo podem ser preenchidos depois.
+                      </p>
+                    </div>
+                  )}
                   {selectedVeiculoId && (
                     <div className="pt-4 border-t border-[#333333] space-y-4">
                       {/* Destaque para KM de Entrada */}
@@ -1310,16 +1424,59 @@ function OrdensPageContent() {
               </button>
               {step < 3 ? (
                 <button
-                  onClick={() => {
-                    if (step === 1 && !selectedVeiculoId) {
-                      toast.warning('Selecione um veículo');
-                      return;
+                  onClick={async () => {
+                    if (step === 1) {
+                      if (modoNovoVeiculo) {
+                        // Validar campos obrigatórios
+                        if (!novoVeiculo.clienteNome.trim() || !novoVeiculo.clienteTelefone.trim() || !novoVeiculo.placa.trim()) {
+                          toast.warning('Preencha nome, telefone e placa');
+                          return;
+                        }
+                        // Criar veículo + cliente
+                        setSaving(true);
+                        try {
+                          const res = await fetch('/api/veiculos', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                              placa: novoVeiculo.placa,
+                              marca: novoVeiculo.marca || undefined,
+                              modelo: novoVeiculo.modelo || undefined,
+                              clienteNome: novoVeiculo.clienteNome,
+                              clienteTelefone: novoVeiculo.clienteTelefone,
+                            }),
+                          });
+                          const data = await res.json();
+                          if (!res.ok) {
+                            toast.error(data.error || 'Erro ao criar veículo');
+                            return;
+                          }
+                          // Adicionar veículo à lista e selecionar
+                          if (data.existing) {
+                            toast.info('Veículo já cadastrado, selecionado automaticamente');
+                          } else {
+                            toast.success('Veículo cadastrado!');
+                          }
+                          setVeiculos([data.data, ...veiculos]);
+                          setSelectedVeiculoId(data.data.id);
+                          setModoNovoVeiculo(false);
+                        } catch (error) {
+                          toast.error('Erro ao criar veículo');
+                          return;
+                        } finally {
+                          setSaving(false);
+                        }
+                      } else if (!selectedVeiculoId) {
+                        toast.warning('Selecione um veículo');
+                        return;
+                      }
                     }
                     setStep(step + 1);
                   }}
-                  className="px-6 py-3 bg-gradient-to-r from-[#43A047] to-[#1B5E20] rounded-xl text-white font-medium hover:opacity-90 transition-opacity"
+                  disabled={saving}
+                  className="px-6 py-3 bg-gradient-to-r from-[#43A047] to-[#1B5E20] rounded-xl text-white font-medium hover:opacity-90 transition-opacity disabled:opacity-50"
                 >
-                  Próximo
+                  {saving ? 'Salvando...' : 'Próximo'}
                 </button>
               ) : (
                 <button

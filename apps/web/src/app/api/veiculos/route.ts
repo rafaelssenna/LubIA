@@ -57,9 +57,9 @@ export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
 
-    // Validate required fields
-    if (!body.placa || !body.marca || !body.modelo || !body.clienteId) {
-      return NextResponse.json({ error: 'Placa, marca, modelo e cliente são obrigatórios' }, { status: 400 });
+    // Placa é sempre obrigatória
+    if (!body.placa) {
+      return NextResponse.json({ error: 'Placa é obrigatória' }, { status: 400 });
     }
 
     // Format plate (remove non-alphanumeric and uppercase)
@@ -67,30 +67,62 @@ export async function POST(request: NextRequest) {
 
     // Check if plate already exists for this empresa
     const existing = await prisma.veiculo.findFirst({
-      where: { placa: placaFormatted, empresaId: session.empresaId }
+      where: { placa: placaFormatted, empresaId: session.empresaId },
+      include: { cliente: { select: { id: true, nome: true, telefone: true } } }
     });
     if (existing) {
-      return NextResponse.json({ error: 'Placa já cadastrada' }, { status: 400 });
+      // Se já existe, retorna o veículo existente
+      return NextResponse.json({ data: existing, existing: true }, { status: 200 });
     }
 
-    // Verify client exists and belongs to this empresa
-    const cliente = await prisma.cliente.findFirst({
-      where: { id: parseInt(body.clienteId), empresaId: session.empresaId }
-    });
-    if (!cliente) {
-      return NextResponse.json({ error: 'Cliente não encontrado' }, { status: 400 });
+    let clienteId: number;
+
+    // Modo rápido: criar cliente junto com veículo
+    if (body.clienteNome && body.clienteTelefone) {
+      // Verificar se já existe cliente com esse telefone
+      const clienteExistente = await prisma.cliente.findFirst({
+        where: {
+          telefone: body.clienteTelefone,
+          empresaId: session.empresaId
+        }
+      });
+
+      if (clienteExistente) {
+        clienteId = clienteExistente.id;
+      } else {
+        // Criar novo cliente
+        const novoCliente = await prisma.cliente.create({
+          data: {
+            nome: body.clienteNome,
+            telefone: body.clienteTelefone,
+            empresaId: session.empresaId,
+          }
+        });
+        clienteId = novoCliente.id;
+      }
+    } else if (body.clienteId) {
+      // Modo tradicional: usar clienteId existente
+      const cliente = await prisma.cliente.findFirst({
+        where: { id: parseInt(body.clienteId), empresaId: session.empresaId }
+      });
+      if (!cliente) {
+        return NextResponse.json({ error: 'Cliente não encontrado' }, { status: 400 });
+      }
+      clienteId = cliente.id;
+    } else {
+      return NextResponse.json({ error: 'Informe nome e telefone do cliente, ou selecione um cliente existente' }, { status: 400 });
     }
 
     const veiculo = await prisma.veiculo.create({
       data: {
         placa: placaFormatted,
-        marca: body.marca,
-        modelo: body.modelo,
+        marca: body.marca || 'N/I',
+        modelo: body.modelo || 'N/I',
         ano: body.ano ? parseInt(body.ano) : null,
         cor: body.cor || null,
         cilindrada: body.cilindrada || null,
         kmAtual: body.kmAtual ? parseInt(body.kmAtual) : null,
-        clienteId: parseInt(body.clienteId),
+        clienteId: clienteId,
         empresaId: session.empresaId,
       },
       include: {
