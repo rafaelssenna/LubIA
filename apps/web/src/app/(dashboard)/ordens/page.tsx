@@ -1116,72 +1116,55 @@ function OrdensPageContent() {
                   ) : (
                     /* Formulário de novo veículo */
                     <div className="space-y-4 bg-[#121212] rounded-xl p-4 border border-[#333333]">
-                      <div className="grid grid-cols-2 gap-4">
-                        <div>
-                          <label className="block text-sm font-medium text-[#9E9E9E] mb-1.5">
-                            Nome do Cliente <span className="text-red-400">*</span>
-                          </label>
+                      {/* Placa em destaque */}
+                      <div className="bg-gradient-to-r from-blue-500/10 to-cyan-500/10 border border-blue-500/30 rounded-xl p-4">
+                        <label className="block text-sm font-semibold text-blue-400 mb-2">
+                          Placa do Veículo
+                        </label>
+                        <input
+                          type="text"
+                          value={novoVeiculo.placa}
+                          onChange={(e) => setNovoVeiculo({ ...novoVeiculo, placa: e.target.value.toUpperCase() })}
+                          placeholder="ABC1D23"
+                          maxLength={7}
+                          className="w-full bg-[#1a1a1a] border-2 border-blue-500/30 rounded-xl px-4 py-3 text-lg font-bold text-[#E8E8E8] placeholder-gray-500 focus:outline-none focus:border-blue-500 uppercase tracking-wider"
+                        />
+                      </div>
+
+                      {/* Campos opcionais */}
+                      <div className="space-y-3">
+                        <p className="text-xs text-zinc-500 uppercase tracking-wider">Opcional</p>
+                        <div className="grid grid-cols-2 gap-3">
                           <input
                             type="text"
                             value={novoVeiculo.clienteNome}
                             onChange={(e) => setNovoVeiculo({ ...novoVeiculo, clienteNome: e.target.value })}
-                            placeholder="Ex: João Silva"
-                            className="w-full bg-[#1a1a1a] border border-[#333333] rounded-xl px-4 py-3 text-[#E8E8E8] placeholder-gray-500 focus:outline-none focus:border-[#43A047]"
+                            placeholder="Nome do cliente"
+                            className="bg-[#1a1a1a] border border-[#333333] rounded-xl px-4 py-2.5 text-[#E8E8E8] placeholder-gray-500 focus:outline-none focus:border-[#43A047]"
                           />
-                        </div>
-                        <div>
-                          <label className="block text-sm font-medium text-[#9E9E9E] mb-1.5">
-                            Telefone <span className="text-red-400">*</span>
-                          </label>
                           <input
                             type="tel"
                             value={novoVeiculo.clienteTelefone}
                             onChange={(e) => setNovoVeiculo({ ...novoVeiculo, clienteTelefone: e.target.value })}
-                            placeholder="(11) 99999-9999"
-                            className="w-full bg-[#1a1a1a] border border-[#333333] rounded-xl px-4 py-3 text-[#E8E8E8] placeholder-gray-500 focus:outline-none focus:border-[#43A047]"
+                            placeholder="Telefone"
+                            className="bg-[#1a1a1a] border border-[#333333] rounded-xl px-4 py-2.5 text-[#E8E8E8] placeholder-gray-500 focus:outline-none focus:border-[#43A047]"
+                          />
+                          <input
+                            type="text"
+                            value={novoVeiculo.marca}
+                            onChange={(e) => setNovoVeiculo({ ...novoVeiculo, marca: e.target.value })}
+                            placeholder="Marca"
+                            className="bg-[#1a1a1a] border border-[#333333] rounded-xl px-4 py-2.5 text-[#E8E8E8] placeholder-gray-500 focus:outline-none focus:border-[#43A047]"
+                          />
+                          <input
+                            type="text"
+                            value={novoVeiculo.modelo}
+                            onChange={(e) => setNovoVeiculo({ ...novoVeiculo, modelo: e.target.value })}
+                            placeholder="Modelo"
+                            className="bg-[#1a1a1a] border border-[#333333] rounded-xl px-4 py-2.5 text-[#E8E8E8] placeholder-gray-500 focus:outline-none focus:border-[#43A047]"
                           />
                         </div>
                       </div>
-                      <div className="border-t border-[#333333] pt-4">
-                        <div className="grid grid-cols-3 gap-4">
-                          <div>
-                            <label className="block text-sm font-medium text-[#9E9E9E] mb-1.5">
-                              Placa <span className="text-red-400">*</span>
-                            </label>
-                            <input
-                              type="text"
-                              value={novoVeiculo.placa}
-                              onChange={(e) => setNovoVeiculo({ ...novoVeiculo, placa: e.target.value.toUpperCase() })}
-                              placeholder="ABC1D23"
-                              maxLength={7}
-                              className="w-full bg-[#1a1a1a] border border-[#333333] rounded-xl px-4 py-3 text-[#E8E8E8] placeholder-gray-500 focus:outline-none focus:border-[#43A047] uppercase"
-                            />
-                          </div>
-                          <div>
-                            <label className="block text-sm font-medium text-[#9E9E9E] mb-1.5">Marca</label>
-                            <input
-                              type="text"
-                              value={novoVeiculo.marca}
-                              onChange={(e) => setNovoVeiculo({ ...novoVeiculo, marca: e.target.value })}
-                              placeholder="Ex: Honda"
-                              className="w-full bg-[#1a1a1a] border border-[#333333] rounded-xl px-4 py-3 text-[#E8E8E8] placeholder-gray-500 focus:outline-none focus:border-[#43A047]"
-                            />
-                          </div>
-                          <div>
-                            <label className="block text-sm font-medium text-[#9E9E9E] mb-1.5">Modelo</label>
-                            <input
-                              type="text"
-                              value={novoVeiculo.modelo}
-                              onChange={(e) => setNovoVeiculo({ ...novoVeiculo, modelo: e.target.value })}
-                              placeholder="Ex: Civic"
-                              className="w-full bg-[#1a1a1a] border border-[#333333] rounded-xl px-4 py-3 text-[#E8E8E8] placeholder-gray-500 focus:outline-none focus:border-[#43A047]"
-                            />
-                          </div>
-                        </div>
-                      </div>
-                      <p className="text-xs text-zinc-500">
-                        <span className="text-red-400">*</span> Campos obrigatórios. Marca e modelo podem ser preenchidos depois.
-                      </p>
                     </div>
                   )}
                   {selectedVeiculoId && (
@@ -1427,9 +1410,9 @@ function OrdensPageContent() {
                   onClick={async () => {
                     if (step === 1) {
                       if (modoNovoVeiculo) {
-                        // Validar campos obrigatórios
-                        if (!novoVeiculo.clienteNome.trim() || !novoVeiculo.clienteTelefone.trim() || !novoVeiculo.placa.trim()) {
-                          toast.warning('Preencha nome, telefone e placa');
+                        // Validar apenas placa
+                        if (!novoVeiculo.placa.trim()) {
+                          toast.warning('Informe a placa do veículo');
                           return;
                         }
                         // Criar veículo + cliente

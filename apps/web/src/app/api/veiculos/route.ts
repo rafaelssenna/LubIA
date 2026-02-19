@@ -77,31 +77,8 @@ export async function POST(request: NextRequest) {
 
     let clienteId: number;
 
-    // Modo rápido: criar cliente junto com veículo
-    if (body.clienteNome && body.clienteTelefone) {
-      // Verificar se já existe cliente com esse telefone
-      const clienteExistente = await prisma.cliente.findFirst({
-        where: {
-          telefone: body.clienteTelefone,
-          empresaId: session.empresaId
-        }
-      });
-
-      if (clienteExistente) {
-        clienteId = clienteExistente.id;
-      } else {
-        // Criar novo cliente
-        const novoCliente = await prisma.cliente.create({
-          data: {
-            nome: body.clienteNome,
-            telefone: body.clienteTelefone,
-            empresaId: session.empresaId,
-          }
-        });
-        clienteId = novoCliente.id;
-      }
-    } else if (body.clienteId) {
-      // Modo tradicional: usar clienteId existente
+    // Modo tradicional: usar clienteId existente
+    if (body.clienteId) {
       const cliente = await prisma.cliente.findFirst({
         where: { id: parseInt(body.clienteId), empresaId: session.empresaId }
       });
@@ -110,7 +87,41 @@ export async function POST(request: NextRequest) {
       }
       clienteId = cliente.id;
     } else {
-      return NextResponse.json({ error: 'Informe nome e telefone do cliente, ou selecione um cliente existente' }, { status: 400 });
+      // Modo rápido: criar/reutilizar cliente
+      const nomeCliente = body.clienteNome?.trim() || `Balcão - ${placaFormatted}`;
+      const telefoneCliente = body.clienteTelefone?.trim() || 'N/I';
+
+      // Se tem telefone válido, busca por telefone
+      if (telefoneCliente !== 'N/I') {
+        const clienteExistente = await prisma.cliente.findFirst({
+          where: {
+            telefone: telefoneCliente,
+            empresaId: session.empresaId
+          }
+        });
+        if (clienteExistente) {
+          clienteId = clienteExistente.id;
+        } else {
+          const novoCliente = await prisma.cliente.create({
+            data: {
+              nome: nomeCliente,
+              telefone: telefoneCliente,
+              empresaId: session.empresaId,
+            }
+          });
+          clienteId = novoCliente.id;
+        }
+      } else {
+        // Sem telefone - criar cliente com nome baseado na placa
+        const novoCliente = await prisma.cliente.create({
+          data: {
+            nome: nomeCliente,
+            telefone: telefoneCliente,
+            empresaId: session.empresaId,
+          }
+        });
+        clienteId = novoCliente.id;
+      }
     }
 
     const veiculo = await prisma.veiculo.create({
