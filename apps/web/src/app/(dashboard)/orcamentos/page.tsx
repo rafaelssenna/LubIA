@@ -616,7 +616,7 @@ function OrcamentosPageContent() {
       </div>
 
       {/* Actions Bar */}
-      <div className="flex flex-col lg:flex-row gap-4 items-start lg:items-center justify-between bg-card rounded-2xl p-4 border border-zinc-800/50">
+      <div className="flex flex-col lg:flex-row gap-4 items-start lg:items-center justify-between bg-card rounded-2xl p-4 border border-border">
         <div className="flex flex-col sm:flex-row gap-3 flex-1 w-full lg:w-auto">
           <div className="relative flex-1 min-w-[280px]">
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-zinc-500" />
@@ -625,13 +625,13 @@ function OrcamentosPageContent() {
               placeholder="Buscar por número, cliente ou telefone..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-12 pr-4 py-3 bg-[#232323] border border-zinc-700/50 rounded-xl text-white placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-[#E85D04]/50 focus:border-[#E85D04]/50 transition-all"
+              className="w-full pl-12 pr-4 py-3 bg-background-secondary border border-border/50 rounded-xl text-white placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-[#E85D04]/50 focus:border-[#E85D04]/50 transition-all"
             />
           </div>
           <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
-            className="px-4 py-3 bg-[#232323] border border-zinc-700/50 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-[#E85D04]/50 cursor-pointer min-w-[160px]"
+            className="px-4 py-3 bg-background-secondary border border-border/50 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-[#E85D04]/50 cursor-pointer min-w-[160px]"
           >
             <option value="">Todos os status</option>
             <option value="PENDENTE">Pendente</option>
@@ -651,7 +651,7 @@ function OrcamentosPageContent() {
 
       {/* Orçamentos List */}
       {orcamentos.length === 0 ? (
-        <div className="flex flex-col items-center justify-center py-20 bg-card rounded-2xl border border-zinc-800/50">
+        <div className="flex flex-col items-center justify-center py-20 bg-card rounded-2xl border border-border">
           <div className="p-6 bg-zinc-800/50 rounded-full mb-6">
             <FileText className="h-12 w-12 text-zinc-600" />
           </div>
@@ -674,7 +674,7 @@ function OrcamentosPageContent() {
             return (
               <div
                 key={orcamento.id}
-                className="group bg-card hover:bg-card rounded-2xl border border-zinc-800/50 hover:border-zinc-700/50 transition-all duration-300 overflow-hidden"
+                className="group bg-card hover:bg-card rounded-2xl border border-border hover:border-border/50 transition-all duration-300 overflow-hidden"
               >
                 <div className="p-6">
                   <div className="flex flex-col lg:flex-row lg:items-center gap-6">
@@ -722,7 +722,7 @@ function OrcamentosPageContent() {
                     </div>
 
                     {/* Actions */}
-                    <div className="flex items-center gap-2 pl-4 border-l border-zinc-800">
+                    <div className="flex items-center gap-2 pl-4 border-l border-border">
                       <button
                         onClick={() => {
                           setSelectedOrcamento(orcamento);
@@ -795,7 +795,7 @@ function OrcamentosPageContent() {
 
       {/* Pagination */}
       {totalPages > 1 && (
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-4 bg-card rounded-2xl p-4 border border-zinc-800/50">
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-4 bg-card rounded-2xl p-4 border border-border">
           <p className="text-sm text-zinc-400">
             Mostrando <span className="text-white font-medium">{((currentPage - 1) * itemsPerPage) + 1}</span> a{' '}
             <span className="text-white font-medium">{Math.min(currentPage * itemsPerPage, totalItems)}</span> de{' '}
@@ -851,8 +851,8 @@ function OrcamentosPageContent() {
       {/* Create/Edit Modal */}
       {showModal && (
         <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-card rounded-2xl w-full max-w-2xl max-h-[90vh] overflow-hidden flex flex-col border border-zinc-800">
-            <div className="flex items-center justify-between p-6 border-b border-zinc-800">
+          <div className="bg-card rounded-2xl w-full max-w-2xl max-h-[90vh] overflow-hidden flex flex-col border border-border">
+            <div className="flex items-center justify-between p-6 border-b border-border">
               <div>
                 <h2 className="text-2xl font-bold text-white">
                   {editingOrcamento ? 'Editar Orçamento' : 'Novo Orçamento'}
@@ -881,7 +881,7 @@ function OrcamentosPageContent() {
                     value={nomeCliente}
                     onChange={(e) => setNomeCliente(e.target.value)}
                     placeholder="Nome (opcional)"
-                    className="w-full px-4 py-3 bg-[#232323] border border-zinc-700/50 rounded-xl text-white placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-[#E85D04]/50 focus:border-[#E85D04]/50 transition-all"
+                    className="w-full px-4 py-3 bg-background-secondary border border-border/50 rounded-xl text-white placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-[#E85D04]/50 focus:border-[#E85D04]/50 transition-all"
                   />
                 </div>
                 <div>
@@ -894,7 +894,7 @@ function OrcamentosPageContent() {
                     value={telefoneCliente}
                     onChange={(e) => setTelefoneCliente(e.target.value)}
                     placeholder="(11) 99999-9999"
-                    className="w-full px-4 py-3 bg-[#232323] border border-zinc-700/50 rounded-xl text-white placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-[#E85D04]/50 focus:border-[#E85D04]/50 transition-all"
+                    className="w-full px-4 py-3 bg-background-secondary border border-border/50 rounded-xl text-white placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-[#E85D04]/50 focus:border-[#E85D04]/50 transition-all"
                   />
                 </div>
               </div>
@@ -911,11 +911,11 @@ function OrcamentosPageContent() {
                     placeholder="Buscar produto..."
                     value={searchProduto}
                     onChange={(e) => setSearchProduto(e.target.value)}
-                    className="w-full pl-11 pr-4 py-3 bg-[#232323] border border-zinc-700/50 rounded-xl text-white placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-[#E85D04]/50 focus:border-[#E85D04]/50 transition-all"
+                    className="w-full pl-11 pr-4 py-3 bg-background-secondary border border-border/50 rounded-xl text-white placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-[#E85D04]/50 focus:border-[#E85D04]/50 transition-all"
                   />
                 </div>
                 {searchProduto && (
-                  <div className="max-h-40 overflow-y-auto space-y-2 p-2 bg-[#232323] rounded-xl border border-zinc-700/50">
+                  <div className="max-h-40 overflow-y-auto space-y-2 p-2 bg-background-secondary rounded-xl border border-border/50">
                     {produtos
                       .filter(p =>
                         p.nome.toLowerCase().includes(searchProduto.toLowerCase()) ||
@@ -929,7 +929,7 @@ function OrcamentosPageContent() {
                             addProduto(produto);
                             setSearchProduto('');
                           }}
-                          className="w-full p-3 bg-card border border-zinc-700/50 rounded-xl text-left hover:border-[#E85D04]/50 hover:bg-[#E85D04]/5 transition-all"
+                          className="w-full p-3 bg-card border border-border/50 rounded-xl text-left hover:border-[#E85D04]/50 hover:bg-[#E85D04]/5 transition-all"
                         >
                           <div className="flex justify-between items-center">
                             <div>
@@ -949,7 +949,7 @@ function OrcamentosPageContent() {
                       const produto = produtos.find(p => p.id === sp.produtoId);
                       const isGranel = produto && UNIDADES_GRANEL.includes(produto.unidade);
                       return (
-                        <div key={sp.produtoId} className="flex items-center gap-3 p-3 bg-[#232323] rounded-xl border border-zinc-700/50">
+                        <div key={sp.produtoId} className="flex items-center gap-3 p-3 bg-background-secondary rounded-xl border border-border/50">
                           <Package className="h-5 w-5 text-[#E85D04]" />
                           <span className="flex-1 text-white font-medium">
                             {produto?.nome}
@@ -966,7 +966,7 @@ function OrcamentosPageContent() {
                                 p.produtoId === sp.produtoId ? { ...p, quantidade: newQtd } : p
                               ));
                             }}
-                            className="w-20 px-3 py-2 bg-card border border-zinc-700/50 rounded-lg text-white text-center focus:outline-none focus:ring-2 focus:ring-[#E85D04]/50"
+                            className="w-20 px-3 py-2 bg-card border border-border/50 rounded-lg text-white text-center focus:outline-none focus:ring-2 focus:ring-[#E85D04]/50"
                           />
                           <span className="text-zinc-300 font-medium min-w-[100px] text-right">{formatCurrency(sp.precoUnitario * sp.quantidade)}</span>
                           <button
@@ -993,14 +993,14 @@ function OrcamentosPageContent() {
                     placeholder="Descrição do serviço..."
                     value={novoServicoExtra.descricao}
                     onChange={(e) => setNovoServicoExtra({ ...novoServicoExtra, descricao: e.target.value })}
-                    className="flex-1 px-4 py-3 bg-[#232323] border border-zinc-700/50 rounded-xl text-white placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-[#E85D04]/50 focus:border-[#E85D04]/50 transition-all"
+                    className="flex-1 px-4 py-3 bg-background-secondary border border-border/50 rounded-xl text-white placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-[#E85D04]/50 focus:border-[#E85D04]/50 transition-all"
                   />
                   <input
                     type="number"
                     placeholder="Valor"
                     value={novoServicoExtra.valor}
                     onChange={(e) => setNovoServicoExtra({ ...novoServicoExtra, valor: e.target.value })}
-                    className="w-32 px-4 py-3 bg-[#232323] border border-zinc-700/50 rounded-xl text-white placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-[#E85D04]/50 focus:border-[#E85D04]/50 transition-all"
+                    className="w-32 px-4 py-3 bg-background-secondary border border-border/50 rounded-xl text-white placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-[#E85D04]/50 focus:border-[#E85D04]/50 transition-all"
                   />
                   <button
                     onClick={addServicoExtra}
@@ -1013,7 +1013,7 @@ function OrcamentosPageContent() {
                 {servicosExtras.length > 0 && (
                   <div className="space-y-2">
                     {servicosExtras.map((servico, index) => (
-                      <div key={index} className="flex items-center gap-3 p-3 bg-[#232323] rounded-xl border border-zinc-700/50">
+                      <div key={index} className="flex items-center gap-3 p-3 bg-background-secondary rounded-xl border border-border/50">
                         <DollarSign className="h-5 w-5 text-emerald-400" />
                         <span className="flex-1 text-white font-medium">{servico.descricao}</span>
                         <span className="text-zinc-300 font-medium">{formatCurrency(servico.valor)}</span>
@@ -1038,7 +1038,7 @@ function OrcamentosPageContent() {
                   value={observacoes}
                   onChange={(e) => setObservacoes(e.target.value)}
                   rows={3}
-                  className="w-full px-4 py-3 bg-[#232323] border border-zinc-700/50 rounded-xl text-white placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-[#E85D04]/50 focus:border-[#E85D04]/50 transition-all resize-none"
+                  className="w-full px-4 py-3 bg-background-secondary border border-border/50 rounded-xl text-white placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-[#E85D04]/50 focus:border-[#E85D04]/50 transition-all resize-none"
                   placeholder="Observações adicionais (opcional)..."
                 />
               </div>
@@ -1052,7 +1052,7 @@ function OrcamentosPageContent() {
               </div>
             </div>
 
-            <div className="p-6 border-t border-zinc-800 flex justify-between">
+            <div className="p-6 border-t border-border flex justify-between">
               <button
                 onClick={() => setShowModal(false)}
                 className="px-6 py-3 text-zinc-400 hover:text-white transition-colors"
@@ -1075,8 +1075,8 @@ function OrcamentosPageContent() {
       {/* Detail Modal */}
       {showDetailModal && selectedOrcamento && (
         <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-card rounded-2xl w-full max-w-lg max-h-[90vh] overflow-hidden flex flex-col border border-zinc-800">
-            <div className="flex items-center justify-between p-6 border-b border-zinc-800">
+          <div className="bg-card rounded-2xl w-full max-w-lg max-h-[90vh] overflow-hidden flex flex-col border border-border">
+            <div className="flex items-center justify-between p-6 border-b border-border">
               <div>
                 <h2 className="text-2xl font-bold text-white">
                   {selectedOrcamento.numero}
@@ -1096,7 +1096,7 @@ function OrcamentosPageContent() {
 
             <div className="flex-1 overflow-y-auto p-6 space-y-6">
               {/* Status */}
-              <div className="flex items-center justify-between p-4 bg-[#232323] rounded-xl">
+              <div className="flex items-center justify-between p-4 bg-background-secondary rounded-xl">
                 <span className="text-zinc-400">Status:</span>
                 <span className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-medium ${statusConfig[selectedOrcamento.status].bg} ${statusConfig[selectedOrcamento.status].color}`}>
                   {statusConfig[selectedOrcamento.status].label}
@@ -1104,7 +1104,7 @@ function OrcamentosPageContent() {
               </div>
 
               {/* Cliente */}
-              <div className="p-4 bg-[#232323] rounded-xl">
+              <div className="p-4 bg-background-secondary rounded-xl">
                 <div className="flex items-center gap-4">
                   <div className="p-3 bg-zinc-700 rounded-xl">
                     <User className="h-6 w-6 text-zinc-300" />
@@ -1128,7 +1128,7 @@ function OrcamentosPageContent() {
                   </h4>
                   <div className="space-y-2">
                     {selectedOrcamento.itensProduto.map((item) => (
-                      <div key={item.id} className="flex justify-between items-center p-4 bg-[#232323] rounded-xl">
+                      <div key={item.id} className="flex justify-between items-center p-4 bg-background-secondary rounded-xl">
                         <div>
                           <p className="text-white font-medium">{item.produtoNome}</p>
                           <p className="text-sm text-zinc-400">{item.quantidade}x {formatCurrency(item.precoUnitario)}</p>
@@ -1149,7 +1149,7 @@ function OrcamentosPageContent() {
                   </h4>
                   <div className="space-y-2">
                     {selectedOrcamento.servicosExtras.map((servico, idx) => (
-                      <div key={idx} className="flex justify-between items-center p-4 bg-[#232323] rounded-xl">
+                      <div key={idx} className="flex justify-between items-center p-4 bg-background-secondary rounded-xl">
                         <span className="text-white font-medium">{servico.descricao}</span>
                         <span className="text-white font-bold">{formatCurrency(servico.valor)}</span>
                       </div>
@@ -1212,7 +1212,7 @@ function OrcamentosPageContent() {
       {/* Delete Confirmation Modal */}
       {showDeleteConfirm && selectedOrcamento && (
         <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-card rounded-2xl w-full max-w-sm p-6 border border-zinc-800">
+          <div className="bg-card rounded-2xl w-full max-w-sm p-6 border border-border">
             <div className="flex items-center gap-4 mb-6">
               <div className="p-4 bg-red-500/10 rounded-full">
                 <Trash2 className="h-8 w-8 text-red-500" />
@@ -1231,7 +1231,7 @@ function OrcamentosPageContent() {
                   setShowDeleteConfirm(false);
                   setSelectedOrcamento(null);
                 }}
-                className="flex-1 px-4 py-3 border border-zinc-700 text-white rounded-xl hover:bg-zinc-800 transition-colors font-medium"
+                className="flex-1 px-4 py-3 border border-border text-white rounded-xl hover:bg-zinc-800 transition-colors font-medium"
               >
                 Cancelar
               </button>
@@ -1251,8 +1251,8 @@ function OrcamentosPageContent() {
       {/* Convert to O.S. Modal */}
       {showConvertModal && convertingOrcamento && (
         <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-card rounded-2xl w-full max-w-lg max-h-[90vh] overflow-hidden flex flex-col border border-zinc-800">
-            <div className="flex items-center justify-between p-6 border-b border-zinc-800">
+          <div className="bg-card rounded-2xl w-full max-w-lg max-h-[90vh] overflow-hidden flex flex-col border border-border">
+            <div className="flex items-center justify-between p-6 border-b border-border">
               <div>
                 <h2 className="text-2xl font-bold text-white">Converter em O.S.</h2>
                 <p className="text-sm text-zinc-400 mt-1">
@@ -1272,7 +1272,7 @@ function OrcamentosPageContent() {
 
             <div className="flex-1 overflow-y-auto p-6 space-y-6">
               {/* Toggle Tabs */}
-              <div className="flex gap-2 p-1 bg-[#232323] rounded-xl">
+              <div className="flex gap-2 p-1 bg-background-secondary rounded-xl">
                 <button
                   onClick={() => setShowQuickRegister(false)}
                   className={`flex-1 py-2.5 px-4 rounded-lg text-sm font-medium transition-colors ${
@@ -1316,7 +1316,7 @@ function OrcamentosPageContent() {
                         placeholder="Buscar por placa, modelo ou cliente..."
                         value={searchVeiculo}
                         onChange={(e) => setSearchVeiculo(e.target.value)}
-                        className="w-full pl-12 pr-4 py-3 bg-[#232323] border border-zinc-700 rounded-xl text-white placeholder-zinc-500 focus:outline-none focus:border-purple-500"
+                        className="w-full pl-12 pr-4 py-3 bg-background-secondary border border-border rounded-xl text-white placeholder-zinc-500 focus:outline-none focus:border-purple-500"
                       />
                     </div>
                   </div>
@@ -1339,7 +1339,7 @@ function OrcamentosPageContent() {
                           className={`w-full p-4 rounded-xl border transition-all text-left ${
                             selectedVeiculoId === veiculo.id
                               ? 'bg-purple-500/20 border-purple-500'
-                              : 'bg-[#232323] border-zinc-700 hover:border-zinc-600'
+                              : 'bg-background-secondary border-border hover:border-zinc-600'
                           }`}
                         >
                           <div className="flex items-center justify-between">
@@ -1382,7 +1382,7 @@ function OrcamentosPageContent() {
                           value={quickNome}
                           onChange={(e) => setQuickNome(e.target.value)}
                           placeholder="Nome do cliente"
-                          className="w-full px-4 py-2.5 bg-[#232323] border border-zinc-700 rounded-xl text-white placeholder-zinc-500 focus:outline-none focus:border-emerald-500"
+                          className="w-full px-4 py-2.5 bg-background-secondary border border-border rounded-xl text-white placeholder-zinc-500 focus:outline-none focus:border-emerald-500"
                         />
                       </div>
                       <div>
@@ -1392,7 +1392,7 @@ function OrcamentosPageContent() {
                           value={quickTelefone}
                           onChange={(e) => setQuickTelefone(e.target.value)}
                           placeholder="(00) 00000-0000"
-                          className="w-full px-4 py-2.5 bg-[#232323] border border-zinc-700 rounded-xl text-white placeholder-zinc-500 focus:outline-none focus:border-emerald-500"
+                          className="w-full px-4 py-2.5 bg-background-secondary border border-border rounded-xl text-white placeholder-zinc-500 focus:outline-none focus:border-emerald-500"
                         />
                       </div>
                     </div>
@@ -1413,7 +1413,7 @@ function OrcamentosPageContent() {
                           onChange={(e) => setQuickPlaca(e.target.value.toUpperCase())}
                           placeholder="ABC1234"
                           maxLength={7}
-                          className="w-full px-4 py-2.5 bg-[#232323] border border-zinc-700 rounded-xl text-white placeholder-zinc-500 focus:outline-none focus:border-emerald-500 uppercase"
+                          className="w-full px-4 py-2.5 bg-background-secondary border border-border rounded-xl text-white placeholder-zinc-500 focus:outline-none focus:border-emerald-500 uppercase"
                         />
                       </div>
                       <div>
@@ -1423,7 +1423,7 @@ function OrcamentosPageContent() {
                           value={quickMarca}
                           onChange={(e) => setQuickMarca(e.target.value)}
                           placeholder="Fiat"
-                          className="w-full px-4 py-2.5 bg-[#232323] border border-zinc-700 rounded-xl text-white placeholder-zinc-500 focus:outline-none focus:border-emerald-500"
+                          className="w-full px-4 py-2.5 bg-background-secondary border border-border rounded-xl text-white placeholder-zinc-500 focus:outline-none focus:border-emerald-500"
                         />
                       </div>
                       <div>
@@ -1433,7 +1433,7 @@ function OrcamentosPageContent() {
                           value={quickModelo}
                           onChange={(e) => setQuickModelo(e.target.value)}
                           placeholder="Uno"
-                          className="w-full px-4 py-2.5 bg-[#232323] border border-zinc-700 rounded-xl text-white placeholder-zinc-500 focus:outline-none focus:border-emerald-500"
+                          className="w-full px-4 py-2.5 bg-background-secondary border border-border rounded-xl text-white placeholder-zinc-500 focus:outline-none focus:border-emerald-500"
                         />
                       </div>
                       <div>
@@ -1444,7 +1444,7 @@ function OrcamentosPageContent() {
                           onChange={(e) => setQuickCilindrada(e.target.value)}
                           placeholder="1.0"
                           maxLength={20}
-                          className="w-full px-4 py-2.5 bg-[#232323] border border-zinc-700 rounded-xl text-white placeholder-zinc-500 focus:outline-none focus:border-emerald-500"
+                          className="w-full px-4 py-2.5 bg-background-secondary border border-border rounded-xl text-white placeholder-zinc-500 focus:outline-none focus:border-emerald-500"
                         />
                       </div>
                     </div>
@@ -1467,7 +1467,7 @@ function OrcamentosPageContent() {
               )}
 
               {/* Total */}
-              <div className="p-4 bg-[#232323] rounded-xl">
+              <div className="p-4 bg-background-secondary rounded-xl">
                 <div className="flex justify-between items-center">
                   <span className="text-zinc-400">Total do Orçamento:</span>
                   <span className="text-2xl font-bold text-[#E85D04]">
@@ -1478,14 +1478,14 @@ function OrcamentosPageContent() {
             </div>
 
             {/* Actions */}
-            <div className="p-6 border-t border-zinc-800">
+            <div className="p-6 border-t border-border">
               <div className="flex gap-3">
                 <button
                   onClick={() => {
                     setShowConvertModal(false);
                     setConvertingOrcamento(null);
                   }}
-                  className="flex-1 px-4 py-3 border border-zinc-700 text-white rounded-xl hover:bg-zinc-800 transition-colors font-medium"
+                  className="flex-1 px-4 py-3 border border-border text-white rounded-xl hover:bg-zinc-800 transition-colors font-medium"
                 >
                   Cancelar
                 </button>

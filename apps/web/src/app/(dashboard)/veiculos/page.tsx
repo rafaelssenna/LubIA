@@ -296,7 +296,7 @@ export default function VeiculosPage() {
               placeholder="Buscar por placa, marca ou modelo..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full bg-card border border-zinc-800/50 rounded-xl pl-11 pr-4 py-3 text-sm text-white placeholder-zinc-500 focus:outline-none focus:border-purple-500/50 focus:ring-1 focus:ring-purple-500/20 transition-all duration-200"
+              className="w-full bg-card border border-border rounded-xl pl-11 pr-4 py-3 text-sm text-white placeholder-zinc-500 focus:outline-none focus:border-purple-500/50 focus:ring-1 focus:ring-purple-500/20 transition-all duration-200"
             />
           </div>
           <button
@@ -313,7 +313,7 @@ export default function VeiculosPage() {
 
         {/* Grid de Veiculos */}
         {veiculos.length === 0 ? (
-          <div className="bg-card rounded-2xl border border-zinc-800/50 p-12 text-center">
+          <div className="bg-card rounded-2xl border border-border p-12 text-center">
             <div className="p-4 bg-zinc-800/50 rounded-full w-fit mx-auto mb-4">
               <Car className="h-8 w-8 text-zinc-600" />
             </div>
@@ -329,7 +329,7 @@ export default function VeiculosPage() {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
             {veiculos.map((veiculo) => (
-              <div key={veiculo.id} className="group bg-card border border-zinc-800/50 rounded-2xl p-5 hover:border-purple-500/30 transition-all duration-300">
+              <div key={veiculo.id} className="group bg-card border border-border rounded-2xl p-5 hover:border-purple-500/30 transition-all duration-300">
                 <div className="flex items-start justify-between mb-4">
                   <div className="flex items-center gap-3">
                     <div className="p-3 rounded-xl bg-gradient-to-br from-purple-500 to-purple-600 shadow-lg shadow-purple-500/25 group-hover:scale-110 transition-transform duration-300">
@@ -346,14 +346,14 @@ export default function VeiculosPage() {
                 </div>
 
                 <div className="space-y-2 mb-4">
-                  <div className="flex items-center justify-between text-sm p-3 rounded-xl bg-zinc-900 border border-zinc-800">
+                  <div className="flex items-center justify-between text-sm p-3 rounded-xl bg-zinc-900 border border-border">
                     <span className="text-zinc-400 flex items-center gap-2">
                       <User size={14} className="text-blue-400" /> Proprietario
                     </span>
                     <span className="text-white">{capitalize(veiculo.cliente.nome)}</span>
                   </div>
                   {veiculo.kmAtual && (
-                    <div className="flex items-center justify-between text-sm p-3 rounded-xl bg-zinc-900 border border-zinc-800">
+                    <div className="flex items-center justify-between text-sm p-3 rounded-xl bg-zinc-900 border border-border">
                       <span className="text-zinc-400 flex items-center gap-2">
                         <Gauge size={14} className="text-amber-400" /> KM Atual
                       </span>
@@ -361,7 +361,7 @@ export default function VeiculosPage() {
                     </div>
                   )}
                   {veiculo.cor && (
-                    <div className="flex items-center justify-between text-sm p-3 rounded-xl bg-zinc-900 border border-zinc-800">
+                    <div className="flex items-center justify-between text-sm p-3 rounded-xl bg-zinc-900 border border-border">
                       <span className="text-zinc-400">Cor</span>
                       <span className="text-white">{capitalize(veiculo.cor)}</span>
                     </div>
@@ -405,8 +405,8 @@ export default function VeiculosPage() {
       {/* Modal Novo Veiculo */}
       {showModal && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-card border border-zinc-800 rounded-2xl w-full max-w-md max-h-[90vh] overflow-y-auto shadow-2xl shadow-black/50">
-            <div className="p-6 border-b border-zinc-800 flex items-center justify-between">
+          <div className="bg-card border border-border rounded-2xl w-full max-w-md max-h-[90vh] overflow-y-auto shadow-2xl shadow-black/50">
+            <div className="p-6 border-b border-border flex items-center justify-between">
               <div>
                 <h2 className="text-xl font-semibold text-white">Novo Veiculo</h2>
                 <p className="text-sm text-zinc-400 mt-1">Cadastre um novo veiculo</p>
@@ -421,7 +421,7 @@ export default function VeiculosPage() {
                 <select
                   value={form.clienteId}
                   onChange={(e) => setForm({ ...form, clienteId: e.target.value })}
-                  className="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-purple-500/50 focus:ring-1 focus:ring-purple-500/20 transition-all duration-200"
+                  className="w-full bg-zinc-900 border border-border rounded-xl px-4 py-3 text-white focus:outline-none focus:border-purple-500/50 focus:ring-1 focus:ring-purple-500/20 transition-all duration-200"
                 >
                   <option value="">Selecione o cliente</option>
                   {clientes.map((cliente) => (
@@ -437,7 +437,7 @@ export default function VeiculosPage() {
                     placeholder="ABC1D23 ou ABC1234"
                     value={form.placa}
                     onChange={(e) => setForm({ ...form, placa: formatPlateInput(e.target.value) })}
-                    className="flex-1 bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-3 text-white placeholder-zinc-600 focus:outline-none focus:border-purple-500/50 focus:ring-1 focus:ring-purple-500/20 uppercase font-mono transition-all duration-200"
+                    className="flex-1 bg-zinc-900 border border-border rounded-xl px-4 py-3 text-white placeholder-zinc-600 focus:outline-none focus:border-purple-500/50 focus:ring-1 focus:ring-purple-500/20 uppercase font-mono transition-all duration-200"
                   />
                   <button
                     type="button"
@@ -458,7 +458,7 @@ export default function VeiculosPage() {
                     value={form.marca}
                     onChange={(e) => setForm({ ...form, marca: e.target.value })}
                     maxLength={50}
-                    className="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-3 text-white placeholder-zinc-600 focus:outline-none focus:border-purple-500/50 focus:ring-1 focus:ring-purple-500/20 transition-all duration-200"
+                    className="w-full bg-zinc-900 border border-border rounded-xl px-4 py-3 text-white placeholder-zinc-600 focus:outline-none focus:border-purple-500/50 focus:ring-1 focus:ring-purple-500/20 transition-all duration-200"
                   />
                 </div>
                 <div>
@@ -469,7 +469,7 @@ export default function VeiculosPage() {
                     value={form.ano}
                     onChange={(e) => setForm({ ...form, ano: e.target.value })}
                     maxLength={4}
-                    className="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-3 text-white placeholder-zinc-600 focus:outline-none focus:border-purple-500/50 focus:ring-1 focus:ring-purple-500/20 transition-all duration-200"
+                    className="w-full bg-zinc-900 border border-border rounded-xl px-4 py-3 text-white placeholder-zinc-600 focus:outline-none focus:border-purple-500/50 focus:ring-1 focus:ring-purple-500/20 transition-all duration-200"
                   />
                 </div>
               </div>
@@ -481,7 +481,7 @@ export default function VeiculosPage() {
                   value={form.modelo}
                   onChange={(e) => setForm({ ...form, modelo: e.target.value })}
                   maxLength={50}
-                  className="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-3 text-white placeholder-zinc-600 focus:outline-none focus:border-purple-500/50 focus:ring-1 focus:ring-purple-500/20 transition-all duration-200"
+                  className="w-full bg-zinc-900 border border-border rounded-xl px-4 py-3 text-white placeholder-zinc-600 focus:outline-none focus:border-purple-500/50 focus:ring-1 focus:ring-purple-500/20 transition-all duration-200"
                 />
               </div>
               <div className="grid grid-cols-3 gap-4">
@@ -493,7 +493,7 @@ export default function VeiculosPage() {
                     value={form.cor}
                     onChange={(e) => setForm({ ...form, cor: e.target.value })}
                     maxLength={30}
-                    className="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-3 text-white placeholder-zinc-600 focus:outline-none focus:border-purple-500/50 focus:ring-1 focus:ring-purple-500/20 transition-all duration-200"
+                    className="w-full bg-zinc-900 border border-border rounded-xl px-4 py-3 text-white placeholder-zinc-600 focus:outline-none focus:border-purple-500/50 focus:ring-1 focus:ring-purple-500/20 transition-all duration-200"
                   />
                 </div>
                 <div>
@@ -504,7 +504,7 @@ export default function VeiculosPage() {
                     value={form.cilindrada}
                     onChange={(e) => setForm({ ...form, cilindrada: e.target.value })}
                     maxLength={20}
-                    className="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-3 text-white placeholder-zinc-600 focus:outline-none focus:border-purple-500/50 focus:ring-1 focus:ring-purple-500/20 transition-all duration-200"
+                    className="w-full bg-zinc-900 border border-border rounded-xl px-4 py-3 text-white placeholder-zinc-600 focus:outline-none focus:border-purple-500/50 focus:ring-1 focus:ring-purple-500/20 transition-all duration-200"
                   />
                 </div>
                 <div>
@@ -515,15 +515,15 @@ export default function VeiculosPage() {
                     value={form.kmAtual}
                     onChange={(e) => setForm({ ...form, kmAtual: e.target.value })}
                     maxLength={10}
-                    className="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-3 text-white placeholder-zinc-600 focus:outline-none focus:border-purple-500/50 focus:ring-1 focus:ring-purple-500/20 transition-all duration-200"
+                    className="w-full bg-zinc-900 border border-border rounded-xl px-4 py-3 text-white placeholder-zinc-600 focus:outline-none focus:border-purple-500/50 focus:ring-1 focus:ring-purple-500/20 transition-all duration-200"
                   />
                 </div>
               </div>
             </div>
-            <div className="p-6 border-t border-zinc-800 flex gap-3 justify-end">
+            <div className="p-6 border-t border-border flex gap-3 justify-end">
               <button
                 onClick={() => setShowModal(false)}
-                className="px-6 py-3 border border-zinc-700 rounded-xl text-zinc-400 hover:bg-zinc-800 transition-all duration-200"
+                className="px-6 py-3 border border-border rounded-xl text-zinc-400 hover:bg-zinc-800 transition-all duration-200"
               >
                 Cancelar
               </button>
@@ -542,8 +542,8 @@ export default function VeiculosPage() {
       {/* Modal Editar Veiculo */}
       {showEditModal && selectedVeiculo && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-card border border-zinc-800 rounded-2xl w-full max-w-md max-h-[90vh] overflow-y-auto shadow-2xl shadow-black/50">
-            <div className="p-6 border-b border-zinc-800 flex items-center justify-between">
+          <div className="bg-card border border-border rounded-2xl w-full max-w-md max-h-[90vh] overflow-y-auto shadow-2xl shadow-black/50">
+            <div className="p-6 border-b border-border flex items-center justify-between">
               <div>
                 <h2 className="text-xl font-semibold text-white">Editar Veiculo</h2>
                 <p className="text-sm text-zinc-400 mt-1">Atualize as informacoes do veiculo</p>
@@ -558,7 +558,7 @@ export default function VeiculosPage() {
                 <select
                   value={form.clienteId}
                   onChange={(e) => setForm({ ...form, clienteId: e.target.value })}
-                  className="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-purple-500/50 focus:ring-1 focus:ring-purple-500/20 transition-all duration-200"
+                  className="w-full bg-zinc-900 border border-border rounded-xl px-4 py-3 text-white focus:outline-none focus:border-purple-500/50 focus:ring-1 focus:ring-purple-500/20 transition-all duration-200"
                 >
                   <option value="">Selecione o cliente</option>
                   {clientes.map((cliente) => (
@@ -573,7 +573,7 @@ export default function VeiculosPage() {
                   placeholder="ABC1D23 ou ABC1234"
                   value={form.placa}
                   onChange={(e) => setForm({ ...form, placa: formatPlateInput(e.target.value) })}
-                  className="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-3 text-white placeholder-zinc-600 focus:outline-none focus:border-purple-500/50 focus:ring-1 focus:ring-purple-500/20 uppercase font-mono transition-all duration-200"
+                  className="w-full bg-zinc-900 border border-border rounded-xl px-4 py-3 text-white placeholder-zinc-600 focus:outline-none focus:border-purple-500/50 focus:ring-1 focus:ring-purple-500/20 uppercase font-mono transition-all duration-200"
                 />
               </div>
               <div className="grid grid-cols-2 gap-4">
@@ -583,7 +583,7 @@ export default function VeiculosPage() {
                     type="text"
                     value={form.marca}
                     onChange={(e) => setForm({ ...form, marca: e.target.value })}
-                    className="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-purple-500/50 focus:ring-1 focus:ring-purple-500/20 transition-all duration-200"
+                    className="w-full bg-zinc-900 border border-border rounded-xl px-4 py-3 text-white focus:outline-none focus:border-purple-500/50 focus:ring-1 focus:ring-purple-500/20 transition-all duration-200"
                   />
                 </div>
                 <div>
@@ -592,7 +592,7 @@ export default function VeiculosPage() {
                     type="text"
                     value={form.ano}
                     onChange={(e) => setForm({ ...form, ano: e.target.value })}
-                    className="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-purple-500/50 focus:ring-1 focus:ring-purple-500/20 transition-all duration-200"
+                    className="w-full bg-zinc-900 border border-border rounded-xl px-4 py-3 text-white focus:outline-none focus:border-purple-500/50 focus:ring-1 focus:ring-purple-500/20 transition-all duration-200"
                   />
                 </div>
               </div>
@@ -602,7 +602,7 @@ export default function VeiculosPage() {
                   type="text"
                   value={form.modelo}
                   onChange={(e) => setForm({ ...form, modelo: e.target.value })}
-                  className="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-purple-500/50 focus:ring-1 focus:ring-purple-500/20 transition-all duration-200"
+                  className="w-full bg-zinc-900 border border-border rounded-xl px-4 py-3 text-white focus:outline-none focus:border-purple-500/50 focus:ring-1 focus:ring-purple-500/20 transition-all duration-200"
                 />
               </div>
               <div className="grid grid-cols-3 gap-4">
@@ -612,7 +612,7 @@ export default function VeiculosPage() {
                     type="text"
                     value={form.cor}
                     onChange={(e) => setForm({ ...form, cor: e.target.value })}
-                    className="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-purple-500/50 focus:ring-1 focus:ring-purple-500/20 transition-all duration-200"
+                    className="w-full bg-zinc-900 border border-border rounded-xl px-4 py-3 text-white focus:outline-none focus:border-purple-500/50 focus:ring-1 focus:ring-purple-500/20 transition-all duration-200"
                   />
                 </div>
                 <div>
@@ -622,7 +622,7 @@ export default function VeiculosPage() {
                     placeholder="Ex: 1.0, 1.4, 2.0"
                     value={form.cilindrada}
                     onChange={(e) => setForm({ ...form, cilindrada: e.target.value })}
-                    className="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-purple-500/50 focus:ring-1 focus:ring-purple-500/20 transition-all duration-200"
+                    className="w-full bg-zinc-900 border border-border rounded-xl px-4 py-3 text-white focus:outline-none focus:border-purple-500/50 focus:ring-1 focus:ring-purple-500/20 transition-all duration-200"
                   />
                 </div>
                 <div>
@@ -631,15 +631,15 @@ export default function VeiculosPage() {
                     type="text"
                     value={form.kmAtual}
                     onChange={(e) => setForm({ ...form, kmAtual: e.target.value })}
-                    className="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-purple-500/50 focus:ring-1 focus:ring-purple-500/20 transition-all duration-200"
+                    className="w-full bg-zinc-900 border border-border rounded-xl px-4 py-3 text-white focus:outline-none focus:border-purple-500/50 focus:ring-1 focus:ring-purple-500/20 transition-all duration-200"
                   />
                 </div>
               </div>
             </div>
-            <div className="p-6 border-t border-zinc-800 flex gap-3 justify-end">
+            <div className="p-6 border-t border-border flex gap-3 justify-end">
               <button
                 onClick={() => setShowEditModal(false)}
-                className="px-6 py-3 border border-zinc-700 rounded-xl text-zinc-400 hover:bg-zinc-800 transition-all duration-200"
+                className="px-6 py-3 border border-border rounded-xl text-zinc-400 hover:bg-zinc-800 transition-all duration-200"
               >
                 Cancelar
               </button>
@@ -658,8 +658,8 @@ export default function VeiculosPage() {
       {/* Modal Confirmar Exclusao */}
       {showDeleteConfirm && selectedVeiculo && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-card border border-zinc-800 rounded-2xl w-full max-w-md shadow-2xl shadow-black/50">
-            <div className="p-6 border-b border-zinc-800">
+          <div className="bg-card border border-border rounded-2xl w-full max-w-md shadow-2xl shadow-black/50">
+            <div className="p-6 border-b border-border">
               <h2 className="text-xl font-semibold text-white">Confirmar Exclusao</h2>
             </div>
             <div className="p-6">
@@ -676,13 +676,13 @@ export default function VeiculosPage() {
                 Tem certeza que deseja excluir este veiculo? Esta acao nao pode ser desfeita.
               </p>
             </div>
-            <div className="p-6 border-t border-zinc-800 flex gap-3 justify-end">
+            <div className="p-6 border-t border-border flex gap-3 justify-end">
               <button
                 onClick={() => {
                   setShowDeleteConfirm(false);
                   setSelectedVeiculo(null);
                 }}
-                className="px-6 py-3 border border-zinc-700 rounded-xl text-zinc-400 hover:bg-zinc-800 transition-all duration-200"
+                className="px-6 py-3 border border-border rounded-xl text-zinc-400 hover:bg-zinc-800 transition-all duration-200"
               >
                 Cancelar
               </button>

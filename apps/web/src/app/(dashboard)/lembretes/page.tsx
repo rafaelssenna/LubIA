@@ -464,12 +464,12 @@ export default function LembretesPage() {
                 placeholder="Buscar por cliente ou placa..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full bg-card border border-zinc-800/50 rounded-xl pl-10 pr-4 py-3 text-sm text-white placeholder-zinc-500 focus:outline-none focus:border-cyan-500/50 focus:ring-2 focus:ring-cyan-500/20 transition-all duration-200"
+                className="w-full bg-card border border-border rounded-xl pl-10 pr-4 py-3 text-sm text-white placeholder-zinc-500 focus:outline-none focus:border-cyan-500/50 focus:ring-2 focus:ring-cyan-500/20 transition-all duration-200"
               />
             </div>
             <button
               onClick={() => { setLoading(true); fetchLembretes(); }}
-              className="p-3 bg-card border border-zinc-800/50 rounded-xl text-zinc-400 hover:border-cyan-500/40 hover:text-cyan-400 transition-all duration-200"
+              className="p-3 bg-card border border-border rounded-xl text-zinc-400 hover:border-cyan-500/40 hover:text-cyan-400 transition-all duration-200"
               title="Atualizar"
             >
               <RefreshCw size={20} className={loading ? 'animate-spin' : ''} />
@@ -505,7 +505,7 @@ export default function LembretesPage() {
         </div>
 
         {/* Lista de Lembretes */}
-        <div className="bg-card rounded-2xl border border-zinc-800/50 overflow-hidden">
+        <div className="bg-card rounded-2xl border border-border overflow-hidden">
           {loading ? (
             <div className="p-12 text-center">
               <div className="relative w-12 h-12 mx-auto mb-4">
@@ -580,7 +580,7 @@ export default function LembretesPage() {
                         )}
                       </div>
 
-                      <div className="flex gap-1.5 bg-zinc-900/50 rounded-xl p-1.5 border border-zinc-800/50">
+                      <div className="flex gap-1.5 bg-zinc-900/50 rounded-xl p-1.5 border border-border">
                         <button
                           onClick={() => sendWhatsApp(lembrete)}
                           className="p-2.5 bg-[#25D366]/10 rounded-lg text-[#25D366] hover:bg-[#25D366]/20 transition-all duration-200"
@@ -630,8 +630,8 @@ export default function LembretesPage() {
       {/* Modal Novo Lembrete */}
       {showModal && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-card border border-zinc-800/50 rounded-2xl w-full max-w-lg shadow-2xl shadow-black/50">
-            <div className="p-6 border-b border-zinc-800/50 flex items-center justify-between">
+          <div className="bg-card border border-border rounded-2xl w-full max-w-lg shadow-2xl shadow-black/50">
+            <div className="p-6 border-b border-border flex items-center justify-between">
               <h2 className="text-xl font-bold text-white">Novo Lembrete</h2>
               <button onClick={() => setShowModal(false)} className="p-2 hover:bg-zinc-800 rounded-lg text-zinc-400 hover:text-white transition-colors">
                 <X size={20} />
@@ -645,7 +645,7 @@ export default function LembretesPage() {
                 <select
                   value={selectedVeiculoId || ''}
                   onChange={(e) => setSelectedVeiculoId(parseInt(e.target.value))}
-                  className="w-full bg-zinc-900/50 border border-zinc-800/50 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-cyan-500/50 focus:ring-2 focus:ring-cyan-500/20 transition-all"
+                  className="w-full bg-zinc-900/50 border border-border rounded-xl px-4 py-3 text-white focus:outline-none focus:border-cyan-500/50 focus:ring-2 focus:ring-cyan-500/20 transition-all"
                 >
                   <option value="">Selecione um veiculo</option>
                   {veiculos.map((v) => (
@@ -662,7 +662,7 @@ export default function LembretesPage() {
                 <select
                   value={tipo}
                   onChange={(e) => setTipo(e.target.value)}
-                  className="w-full bg-zinc-900/50 border border-zinc-800/50 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-cyan-500/50 focus:ring-2 focus:ring-cyan-500/20 transition-all"
+                  className="w-full bg-zinc-900/50 border border-border rounded-xl px-4 py-3 text-white focus:outline-none focus:border-cyan-500/50 focus:ring-2 focus:ring-cyan-500/20 transition-all"
                 >
                   {Object.entries(tipoLabels).map(([key, label]) => (
                     <option key={key} value={key}>{label}</option>
@@ -677,7 +677,7 @@ export default function LembretesPage() {
                   type="date"
                   value={dataLembrete}
                   onChange={(e) => setDataLembrete(e.target.value)}
-                  className="w-full bg-zinc-900/50 border border-zinc-800/50 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-cyan-500/50 focus:ring-2 focus:ring-cyan-500/20 transition-all [color-scheme:dark]"
+                  className="w-full bg-zinc-900/50 border border-border rounded-xl px-4 py-3 text-white focus:outline-none focus:border-cyan-500/50 focus:ring-2 focus:ring-cyan-500/20 transition-all [color-scheme:dark]"
                 />
               </div>
 
@@ -690,7 +690,7 @@ export default function LembretesPage() {
                   onChange={(e) => setKmLembrete(e.target.value)}
                   placeholder="Ex: 60000"
                   max={9999999}
-                  className="w-full bg-zinc-900/50 border border-zinc-800/50 rounded-xl px-4 py-3 text-white placeholder-zinc-500 focus:outline-none focus:border-cyan-500/50 focus:ring-2 focus:ring-cyan-500/20 transition-all"
+                  className="w-full bg-zinc-900/50 border border-border rounded-xl px-4 py-3 text-white placeholder-zinc-500 focus:outline-none focus:border-cyan-500/50 focus:ring-2 focus:ring-cyan-500/20 transition-all"
                 />
               </div>
 
@@ -702,15 +702,15 @@ export default function LembretesPage() {
                   onChange={(e) => setMensagem(e.target.value)}
                   rows={2}
                   placeholder="Anotacoes sobre este lembrete..."
-                  className="w-full bg-zinc-900/50 border border-zinc-800/50 rounded-xl px-4 py-3 text-white placeholder-zinc-500 focus:outline-none focus:border-cyan-500/50 focus:ring-2 focus:ring-cyan-500/20 transition-all resize-none"
+                  className="w-full bg-zinc-900/50 border border-border rounded-xl px-4 py-3 text-white placeholder-zinc-500 focus:outline-none focus:border-cyan-500/50 focus:ring-2 focus:ring-cyan-500/20 transition-all resize-none"
                 />
               </div>
             </div>
 
-            <div className="p-6 border-t border-zinc-800/50 flex gap-3 justify-end">
+            <div className="p-6 border-t border-border flex gap-3 justify-end">
               <button
                 onClick={() => setShowModal(false)}
-                className="px-6 py-3 border border-zinc-700 rounded-xl text-zinc-300 hover:bg-zinc-800 transition-colors"
+                className="px-6 py-3 border border-border rounded-xl text-zinc-300 hover:bg-zinc-800 transition-colors"
               >
                 Cancelar
               </button>
@@ -729,7 +729,7 @@ export default function LembretesPage() {
       {/* Modal Confirmar Exclusao */}
       {showDeleteConfirm && deletingLembrete && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-card border border-zinc-800/50 rounded-2xl w-full max-w-md shadow-2xl shadow-black/50">
+          <div className="bg-card border border-border rounded-2xl w-full max-w-md shadow-2xl shadow-black/50">
             <div className="p-6">
               <div className="w-14 h-14 mx-auto mb-4 bg-red-500/10 rounded-2xl flex items-center justify-center border border-red-500/20">
                 <Trash2 className="text-red-400" size={28} />
@@ -740,10 +740,10 @@ export default function LembretesPage() {
                 <strong className="text-white">{formatPlate(deletingLembrete.veiculo.placa)}</strong> sera excluido permanentemente.
               </p>
             </div>
-            <div className="p-6 border-t border-zinc-800/50 flex gap-3">
+            <div className="p-6 border-t border-border flex gap-3">
               <button
                 onClick={() => { setShowDeleteConfirm(false); setDeletingLembrete(null); }}
-                className="flex-1 px-6 py-3 border border-zinc-700 rounded-xl text-zinc-300 hover:bg-zinc-800 transition-colors"
+                className="flex-1 px-6 py-3 border border-border rounded-xl text-zinc-300 hover:bg-zinc-800 transition-colors"
               >
                 Cancelar
               </button>

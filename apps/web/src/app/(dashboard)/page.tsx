@@ -243,8 +243,8 @@ export default function Dashboard() {
         {/* Grid de 3 colunas: Serviços, Vendas, A Receber */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Serviços de Hoje */}
-          <div className="bg-card rounded-2xl border border-zinc-800/50 overflow-hidden">
-            <div className="p-4 border-b border-zinc-800 flex items-center justify-between">
+          <div className="bg-card rounded-2xl border border-border overflow-hidden">
+            <div className="p-4 border-b border-border flex items-center justify-between">
               <div>
                 <h2 className="text-lg font-bold text-white flex items-center gap-2">
                   <Calendar className="h-5 w-5 text-emerald-400" />
@@ -281,7 +281,7 @@ export default function Dashboard() {
                         className="block p-3 hover:bg-zinc-800/30 transition-all duration-200 group"
                       >
                         <div className="flex items-center gap-3">
-                          <div className="text-center min-w-[50px] py-2 bg-[#232323] rounded-lg border border-zinc-700/50 group-hover:border-emerald-500/50 transition-all">
+                          <div className="text-center min-w-[50px] py-2 bg-background-secondary rounded-lg border border-border/50 group-hover:border-emerald-500/50 transition-all">
                             <p className="text-sm font-bold text-white">{servico.hora}</p>
                           </div>
                           <div className="flex-1 min-w-0">
@@ -299,7 +299,7 @@ export default function Dashboard() {
               )}
             </div>
 
-            <div className="p-3 border-t border-zinc-800/50 bg-[#161616]">
+            <div className="p-3 border-t border-border bg-background">
               <Link
                 href="/ordens"
                 className="flex items-center justify-center gap-2 text-xs text-zinc-400 hover:text-emerald-400 transition-colors"
@@ -311,8 +311,8 @@ export default function Dashboard() {
           </div>
 
           {/* Vendas de Hoje */}
-          <div className="bg-card rounded-2xl border border-zinc-800/50 overflow-hidden">
-            <div className="p-4 border-b border-zinc-800 flex items-center justify-between">
+          <div className="bg-card rounded-2xl border border-border overflow-hidden">
+            <div className="p-4 border-b border-border flex items-center justify-between">
               <div>
                 <h2 className="text-lg font-bold text-white flex items-center gap-2">
                   <ShoppingCart className="h-5 w-5 text-blue-400" />
@@ -346,7 +346,7 @@ export default function Dashboard() {
                       className="block p-3 hover:bg-zinc-800/30 transition-all duration-200 group"
                     >
                       <div className="flex items-center gap-3">
-                        <div className="text-center min-w-[50px] py-2 bg-[#232323] rounded-lg border border-zinc-700/50 group-hover:border-blue-500/50 transition-all">
+                        <div className="text-center min-w-[50px] py-2 bg-background-secondary rounded-lg border border-border/50 group-hover:border-blue-500/50 transition-all">
                           <p className="text-sm font-bold text-white">{venda.hora}</p>
                         </div>
                         <div className="flex-1 min-w-0">
@@ -368,7 +368,7 @@ export default function Dashboard() {
               )}
             </div>
 
-            <div className="p-3 border-t border-zinc-800/50 bg-[#161616]">
+            <div className="p-3 border-t border-border bg-background">
               <Link
                 href="/vendas-rapidas"
                 className="flex items-center justify-center gap-2 text-xs text-zinc-400 hover:text-blue-400 transition-colors"
@@ -380,8 +380,8 @@ export default function Dashboard() {
           </div>
 
           {/* A Receber */}
-          <div className="bg-card rounded-2xl border border-zinc-800/50 overflow-hidden">
-            <div className="p-4 border-b border-zinc-800 flex items-center justify-between">
+          <div className="bg-card rounded-2xl border border-border overflow-hidden">
+            <div className="p-4 border-b border-border flex items-center justify-between">
               <div>
                 <h2 className="text-lg font-bold text-white flex items-center gap-2">
                   <Clock className="h-5 w-5 text-amber-400" />
@@ -444,7 +444,7 @@ export default function Dashboard() {
               )}
             </div>
 
-            <div className="p-3 border-t border-zinc-800/50 bg-[#161616]">
+            <div className="p-3 border-t border-border bg-background">
               <Link
                 href="/a-receber"
                 className="flex items-center justify-center gap-2 text-xs text-zinc-400 hover:text-amber-400 transition-colors"
@@ -459,7 +459,7 @@ export default function Dashboard() {
         {/* Lembretes - Barra horizontal */}
         {lembretes && lembretes.count > 0 && (
           <div className="bg-card rounded-2xl border border-cyan-500/20 overflow-hidden">
-            <div className="p-3 border-b border-zinc-800 flex items-center justify-between">
+            <div className="p-3 border-b border-border flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <div className="p-2 bg-cyan-500/10 rounded-lg">
                   <Bell className="h-4 w-4 text-cyan-400" />

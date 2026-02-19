@@ -45,24 +45,24 @@
   --sidebar-active: rgba(255, 255, 255, 0.2);
 }
 
-/* ===== LIGHT THEME (contraste do escuro) ===== */
+/* ===== LIGHT THEME (contraste suave do escuro) ===== */
 .light {
-  /* Backgrounds invertidos: escuro #121212 → claro #EDEDED */
-  --background: #EDEDED;
-  --background-secondary: #E1E1E1;
-  --background-tertiary: #DADADA;
-  /* Foregrounds invertidos: claro #E8E8E8 → escuro #171717 */
-  --foreground: #171717;
-  --foreground-secondary: #424242;
-  --foreground-muted: #616161;
-  /* Cards invertidos: escuro #1E1E1E → claro #E1E1E1 */
-  --card: #E1E1E1;
-  --card-hover: #D5D5D5;
-  --card-elevated: #E5E5E5;
-  /* Borders invertidos: escuro #333333 → claro #CCCCCC */
-  --border: #CCCCCC;
-  --border-light: #BBBBBB;
-  --border-hover: #B5B5B5;
+  /* Backgrounds mais escuros/suaves */
+  --background: #D0D0D0;
+  --background-secondary: #C4C4C4;
+  --background-tertiary: #B8B8B8;
+  /* Foregrounds */
+  --foreground: #1A1A1A;
+  --foreground-secondary: #333333;
+  --foreground-muted: #555555;
+  /* Cards mais escuros */
+  --card: #C4C4C4;
+  --card-hover: #B8B8B8;
+  --card-elevated: #CACACA;
+  /* Borders mais visíveis */
+  --border: #A0A0A0;
+  --border-light: #B0B0B0;
+  --border-hover: #909090;
   /* Primary: mesma cor verde da marca */
   --primary: #43A047;
   --primary-dark: #1B5E20;
@@ -73,33 +73,33 @@
   --secondary-foreground: #FFFFFF;
   /* Accent */
   --accent: #00E676;
-  /* Muted invertido */
-  --muted: #9E9E9E;
-  --muted-foreground: #616161;
-  /* Feedback: mesmas cores */
+  /* Muted */
+  --muted: #707070;
+  --muted-foreground: #555555;
+  /* Feedback */
   --danger: #EF5350;
   --danger-foreground: #FFFFFF;
   --warning: #FFD54F;
-  --warning-foreground: #171717;
+  --warning-foreground: #1A1A1A;
   --success: #66BB6A;
-  --success-foreground: #171717;
+  --success-foreground: #1A1A1A;
   --info: #42A5F5;
   --info-foreground: #FFFFFF;
-  /* Glass invertido */
-  --glass-bg: rgba(225, 225, 225, 0.88);
-  --glass-border: rgba(0, 0, 0, 0.05);
+  /* Glass */
+  --glass-bg: rgba(196, 196, 196, 0.92);
+  --glass-border: rgba(0, 0, 0, 0.1);
   /* Input */
-  --input-bg: #E1E1E1;
-  --input-border: #CCCCCC;
+  --input-bg: #C4C4C4;
+  --input-border: #A0A0A0;
   /* Scrollbar */
-  --scrollbar-thumb: #BBBBBB;
+  --scrollbar-thumb: #909090;
   --scrollbar-thumb-hover: #43A047;
-  /* Sidebar invertido */
-  --sidebar-bg: #E1E1E1;
+  /* Sidebar */
+  --sidebar-bg: #C4C4C4;
   --sidebar-text: rgba(0, 0, 0, 0.7);
-  --sidebar-text-active: #000000;
+  --sidebar-text-active: #1A1A1A;
   --sidebar-hover: rgba(0, 0, 0, 0.1);
-  --sidebar-active: rgba(0, 0, 0, 0.2);
+  --sidebar-active: rgba(0, 0, 0, 0.15);
 }
 
 @theme inline {

@@ -657,7 +657,7 @@ function OrdensPageContent() {
         <div className="flex flex-col md:flex-row gap-4 justify-between">
           <div className="flex flex-1 gap-4 items-center">
             {/* View Mode Toggle */}
-            <div className="flex items-center gap-1 bg-card border border-zinc-800/50 rounded-xl p-1">
+            <div className="flex items-center gap-1 bg-card border border-border rounded-xl p-1">
               <button
                 onClick={() => setViewMode('lista')}
                 className={`p-2.5 rounded-lg transition-all duration-200 ${
@@ -691,13 +691,13 @@ function OrdensPageContent() {
                     placeholder="Buscar por numero, placa ou cliente..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="w-full bg-card border border-zinc-800/50 rounded-xl pl-11 pr-4 py-3 text-sm text-white placeholder-zinc-500 focus:outline-none focus:border-emerald-500/50 focus:ring-1 focus:ring-emerald-500/20 transition-all duration-200"
+                    className="w-full bg-card border border-border rounded-xl pl-11 pr-4 py-3 text-sm text-white placeholder-zinc-500 focus:outline-none focus:border-emerald-500/50 focus:ring-1 focus:ring-emerald-500/20 transition-all duration-200"
                   />
                 </div>
                 <select
                   value={statusFilter}
                   onChange={(e) => setStatusFilter(e.target.value)}
-                  className="bg-card border border-zinc-800/50 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-emerald-500/50 focus:ring-1 focus:ring-emerald-500/20 transition-all duration-200 cursor-pointer"
+                  className="bg-card border border-border rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-emerald-500/50 focus:ring-1 focus:ring-emerald-500/20 transition-all duration-200 cursor-pointer"
                 >
                   <option value="">Todos os Status</option>
                   <option value="ATIVAS">Em Andamento</option>
@@ -710,7 +710,7 @@ function OrdensPageContent() {
                 <select
                   value={clienteFilter}
                   onChange={(e) => setClienteFilter(e.target.value)}
-                  className="bg-card border border-zinc-800/50 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-emerald-500/50 focus:ring-1 focus:ring-emerald-500/20 transition-all duration-200 cursor-pointer max-w-[200px]"
+                  className="bg-card border border-border rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-emerald-500/50 focus:ring-1 focus:ring-emerald-500/20 transition-all duration-200 cursor-pointer max-w-[200px]"
                 >
                   <option value="">Todos os Clientes</option>
                   {clientes.map((cliente) => (
@@ -722,7 +722,7 @@ function OrdensPageContent() {
                     type="date"
                     value={dataInicio}
                     onChange={(e) => setDataInicio(e.target.value)}
-                    className="bg-card border border-zinc-800/50 rounded-xl px-3 py-3 text-sm text-white focus:outline-none focus:border-emerald-500/50 focus:ring-1 focus:ring-emerald-500/20 transition-all duration-200 [color-scheme:dark]"
+                    className="bg-card border border-border rounded-xl px-3 py-3 text-sm text-white focus:outline-none focus:border-emerald-500/50 focus:ring-1 focus:ring-emerald-500/20 transition-all duration-200 [color-scheme:dark]"
                     title="Data inicial"
                   />
                   <span className="text-zinc-500">até</span>
@@ -730,7 +730,7 @@ function OrdensPageContent() {
                     type="date"
                     value={dataFim}
                     onChange={(e) => setDataFim(e.target.value)}
-                    className="bg-card border border-zinc-800/50 rounded-xl px-3 py-3 text-sm text-white focus:outline-none focus:border-emerald-500/50 focus:ring-1 focus:ring-emerald-500/20 transition-all duration-200 [color-scheme:dark]"
+                    className="bg-card border border-border rounded-xl px-3 py-3 text-sm text-white focus:outline-none focus:border-emerald-500/50 focus:ring-1 focus:ring-emerald-500/20 transition-all duration-200 [color-scheme:dark]"
                     title="Data final"
                   />
                   {(dataInicio || dataFim || clienteFilter) && (
@@ -748,7 +748,7 @@ function OrdensPageContent() {
               <div className="flex items-center gap-2">
                 <button
                   onClick={() => navigateWeek(-1)}
-                  className="p-2.5 bg-card border border-zinc-800/50 rounded-lg text-zinc-500 hover:text-white hover:border-emerald-500/30 transition-all duration-200"
+                  className="p-2.5 bg-card border border-border rounded-lg text-zinc-500 hover:text-white hover:border-emerald-500/30 transition-all duration-200"
                 >
                   <ChevronLeft size={18} />
                 </button>
@@ -757,13 +757,13 @@ function OrdensPageContent() {
                 </span>
                 <button
                   onClick={() => navigateWeek(1)}
-                  className="p-2.5 bg-card border border-zinc-800/50 rounded-lg text-zinc-500 hover:text-white hover:border-emerald-500/30 transition-all duration-200"
+                  className="p-2.5 bg-card border border-border rounded-lg text-zinc-500 hover:text-white hover:border-emerald-500/30 transition-all duration-200"
                 >
                   <ChevronRight size={18} />
                 </button>
                 <button
                   onClick={() => setCurrentDate(new Date())}
-                  className="px-4 py-2.5 bg-card border border-zinc-800/50 rounded-lg text-zinc-500 hover:text-primary hover:border-emerald-500/30 transition-all duration-200 text-sm font-medium"
+                  className="px-4 py-2.5 bg-card border border-border rounded-lg text-zinc-500 hover:text-primary hover:border-emerald-500/30 transition-all duration-200 text-sm font-medium"
                 >
                   Hoje
                 </button>
@@ -781,16 +781,16 @@ function OrdensPageContent() {
 
         {/* Calendar View */}
         {viewMode === 'calendario' && (
-          <div className="bg-card border border-zinc-800/50 rounded-2xl overflow-hidden">
+          <div className="bg-card border border-border rounded-2xl overflow-hidden">
             {/* Calendar Header */}
-            <div className="grid grid-cols-8 border-b border-zinc-800/50">
+            <div className="grid grid-cols-8 border-b border-border">
               <div className="p-4 text-zinc-500 text-sm font-medium">Horario</div>
               {weekDays.map((date, idx) => {
                 const isTodayDate = isToday(date);
                 return (
                   <div
                     key={idx}
-                    className={`p-4 text-center border-l border-zinc-800/50 ${isTodayDate ? 'bg-emerald-500/10' : ''}`}
+                    className={`p-4 text-center border-l border-border ${isTodayDate ? 'bg-emerald-500/10' : ''}`}
                   >
                     <p className="text-zinc-500 text-xs">{diasSemana[idx]}</p>
                     <p className={`text-lg font-bold ${isTodayDate ? 'text-emerald-400' : 'text-white'}`}>
@@ -804,8 +804,8 @@ function OrdensPageContent() {
             {/* Calendar Body */}
             <div className="max-h-[600px] overflow-y-auto">
               {horasTrabalho.map((hora) => (
-                <div key={hora} className="grid grid-cols-8 border-b border-zinc-800/30 min-h-[80px]">
-                  <div className="p-3 text-zinc-500 text-sm border-r border-zinc-800/30">
+                <div key={hora} className="grid grid-cols-8 border-b border-border min-h-[80px]">
+                  <div className="p-3 text-zinc-500 text-sm border-r border-border">
                     {hora}
                   </div>
                   {weekDays.map((date, idx) => {
@@ -820,7 +820,7 @@ function OrdensPageContent() {
                             openNewModalFromCalendar(date, hora);
                           }
                         }}
-                        className={`p-1 border-l border-zinc-800/30 relative ${isTodayDate ? 'bg-emerald-500/5' : ''} hover:bg-zinc-800/30 transition-all duration-200 ${diaOrdens.length === 0 ? 'cursor-pointer group' : ''}`}
+                        className={`p-1 border-l border-border relative ${isTodayDate ? 'bg-emerald-500/5' : ''} hover:bg-zinc-800/30 transition-all duration-200 ${diaOrdens.length === 0 ? 'cursor-pointer group' : ''}`}
                       >
                         {diaOrdens.length === 0 && (
                           <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
@@ -836,7 +836,7 @@ function OrdensPageContent() {
                                 setSelectedOrdem(ordem);
                                 setShowDetailModal(true);
                               }}
-                              className={`p-2 rounded-lg text-xs ${status.bg} ${status.color} border border-zinc-800/50 mb-1 hover:scale-[1.02] transition-transform duration-200 cursor-pointer`}
+                              className={`p-2 rounded-lg text-xs ${status.bg} ${status.color} border border-border mb-1 hover:scale-[1.02] transition-transform duration-200 cursor-pointer`}
                             >
                               <p className="font-semibold truncate">{capitalize(ordem.veiculo.cliente.nome)}</p>
                               <p className="truncate opacity-90">{formatPlate(ordem.veiculo.placa)}</p>
@@ -858,7 +858,7 @@ function OrdensPageContent() {
         <>
         <div className="space-y-4">
           {ordens.length === 0 ? (
-            <div className="bg-card border border-zinc-800/50 rounded-2xl p-12 text-center">
+            <div className="bg-card border border-border rounded-2xl p-12 text-center">
               <div className="p-4 bg-zinc-800/50 rounded-full w-fit mx-auto mb-4">
                 <ClipboardList className="h-8 w-8 text-zinc-600" />
               </div>
@@ -877,17 +877,17 @@ function OrdensPageContent() {
               return (
                 <div
                   key={ordem.id}
-                  className="group bg-card border border-zinc-800/50 rounded-2xl p-5 hover:border-emerald-500/30 transition-all duration-300"
+                  className="group bg-card border border-border rounded-2xl p-5 hover:border-emerald-500/30 transition-all duration-300"
                 >
                   <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                     <div className="flex items-start gap-4">
-                      <div className={`p-3 ${statusCfg.bg} rounded-xl border border-zinc-800/50`}>
+                      <div className={`p-3 ${statusCfg.bg} rounded-xl border border-border`}>
                         <StatusIcon size={24} className={statusCfg.color} />
                       </div>
                       <div className="space-y-1.5">
                         <div className="flex items-center gap-3">
                           <span className="text-lg font-bold text-white">#{ordem.numero.slice(-8).toUpperCase()}</span>
-                          <span className={`px-2.5 py-1 ${statusCfg.bg} rounded-lg text-xs font-semibold ${statusCfg.color} border border-zinc-800/50`}>
+                          <span className={`px-2.5 py-1 ${statusCfg.bg} rounded-lg text-xs font-semibold ${statusCfg.color} border border-border`}>
                             {statusCfg.label}
                           </span>
                         </div>
@@ -978,7 +978,7 @@ function OrdensPageContent() {
 
           {/* Paginacao */}
           {totalPages > 1 && (
-            <div className="flex items-center justify-between bg-card border border-zinc-800/50 rounded-2xl px-6 py-4">
+            <div className="flex items-center justify-between bg-card border border-border rounded-2xl px-6 py-4">
               <p className="text-sm text-zinc-400">
                 Mostrando {((currentPage - 1) * itemsPerPage) + 1} - {Math.min(currentPage * itemsPerPage, totalItems)} de {totalItems} ordens
               </p>
@@ -986,7 +986,7 @@ function OrdensPageContent() {
                 <button
                   onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
                   disabled={currentPage === 1}
-                  className="p-2 bg-zinc-900 border border-zinc-800 rounded-lg text-zinc-500 hover:text-white hover:border-emerald-500/30 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="p-2 bg-zinc-900 border border-border rounded-lg text-zinc-500 hover:text-white hover:border-emerald-500/30 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   <ChevronLeft size={18} />
                 </button>
@@ -996,7 +996,7 @@ function OrdensPageContent() {
                 <button
                   onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
                   disabled={currentPage === totalPages}
-                  className="p-2 bg-zinc-900 border border-zinc-800 rounded-lg text-zinc-500 hover:text-white hover:border-emerald-500/30 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="p-2 bg-zinc-900 border border-border rounded-lg text-zinc-500 hover:text-white hover:border-emerald-500/30 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   <ChevronRight size={18} />
                 </button>
@@ -1010,8 +1010,8 @@ function OrdensPageContent() {
       {/* Modal Nova O.S. */}
       {showModal && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-card border border-zinc-800 rounded-2xl w-full max-w-2xl max-h-[90vh] overflow-hidden flex flex-col shadow-2xl shadow-black/50">
-            <div className="p-6 border-b border-zinc-800 flex items-center justify-between">
+          <div className="bg-card border border-border rounded-2xl w-full max-w-2xl max-h-[90vh] overflow-hidden flex flex-col shadow-2xl shadow-black/50">
+            <div className="p-6 border-b border-border flex items-center justify-between">
               <div>
                 <h2 className="text-xl font-semibold text-white">{editingOrdem ? 'Editar Ordem de Servico' : 'Nova Ordem de Servico'}</h2>
                 <p className="text-sm text-zinc-400 mt-1">Passo {step} de 3</p>
@@ -1477,8 +1477,8 @@ function OrdensPageContent() {
       {/* Modal Detalhes */}
       {showDetailModal && selectedOrdem && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-card border border-zinc-800 rounded-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto shadow-2xl shadow-black/50">
-            <div className="p-6 border-b border-zinc-800 flex items-center justify-between">
+          <div className="bg-card border border-border rounded-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto shadow-2xl shadow-black/50">
+            <div className="p-6 border-b border-border flex items-center justify-between">
               <div>
                 <h2 className="text-xl font-semibold text-white">O.S. #{selectedOrdem.numero.slice(-8).toUpperCase()}</h2>
                 <div className="flex items-center gap-2 mt-1">
@@ -1641,8 +1641,8 @@ function OrdensPageContent() {
       {/* Modal Confirmar Exclusao */}
       {showDeleteConfirm && selectedOrdem && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-card border border-zinc-800 rounded-2xl w-full max-w-md shadow-2xl shadow-black/50">
-            <div className="p-6 border-b border-zinc-800">
+          <div className="bg-card border border-border rounded-2xl w-full max-w-md shadow-2xl shadow-black/50">
+            <div className="p-6 border-b border-border">
               <h2 className="text-xl font-semibold text-white">Confirmar Exclusao</h2>
             </div>
             <div className="p-6">
@@ -1659,13 +1659,13 @@ function OrdensPageContent() {
                 Tem certeza que deseja excluir esta O.S.? Esta acao nao pode ser desfeita.
               </p>
             </div>
-            <div className="p-6 border-t border-zinc-800 flex gap-3 justify-end">
+            <div className="p-6 border-t border-border flex gap-3 justify-end">
               <button
                 onClick={() => {
                   setShowDeleteConfirm(false);
                   setSelectedOrdem(null);
                 }}
-                className="px-6 py-3 border border-zinc-700 rounded-xl text-zinc-400 hover:bg-zinc-800 transition-all duration-200"
+                className="px-6 py-3 border border-border rounded-xl text-zinc-400 hover:bg-zinc-800 transition-all duration-200"
               >
                 Cancelar
               </button>
@@ -1684,8 +1684,8 @@ function OrdensPageContent() {
       {/* Modal Confirmar Conclusao */}
       {showConcluirConfirm && selectedOrdem && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-card border border-zinc-800 rounded-2xl w-full max-w-md shadow-2xl shadow-black/50">
-            <div className="p-6 border-b border-zinc-800">
+          <div className="bg-card border border-border rounded-2xl w-full max-w-md shadow-2xl shadow-black/50">
+            <div className="p-6 border-b border-border">
               <h2 className="text-xl font-semibold text-white">Concluir O.S.</h2>
             </div>
             <div className="p-6">
@@ -1721,7 +1721,7 @@ function OrdensPageContent() {
                     ))}
                   </div>
                 )}
-                <div className="pt-2 border-t border-zinc-800">
+                <div className="pt-2 border-t border-border">
                   <div className="flex justify-between">
                     <span className="text-zinc-400 font-medium">Total</span>
                     <span className="text-emerald-400 font-bold">{formatCurrency(selectedOrdem.total)}</span>
@@ -1749,7 +1749,7 @@ function OrdensPageContent() {
                           ? method.value === 'CREDITO_PESSOAL'
                             ? 'bg-amber-500/20 border-amber-500 text-amber-400'
                             : 'bg-emerald-500/20 border-emerald-500 text-emerald-400'
-                          : 'bg-background border-zinc-700 text-zinc-400 hover:border-zinc-600'
+                          : 'bg-background border-border text-zinc-400 hover:border-zinc-600'
                       }`}
                     >
                       <span>{method.icon}</span>
@@ -1784,7 +1784,7 @@ function OrdensPageContent() {
                       setDescontoConcluir(val);
                     }}
                     placeholder="0"
-                    className="w-24 px-4 py-3 bg-background rounded-xl border border-zinc-700 text-white text-center placeholder:text-zinc-500 focus:outline-none focus:border-amber-500/50"
+                    className="w-24 px-4 py-3 bg-background rounded-xl border border-border text-white text-center placeholder:text-zinc-500 focus:outline-none focus:border-amber-500/50"
                   />
                   <span className="text-zinc-500">%</span>
                   {parseFloat(descontoConcluir.replace(',', '.')) > 0 && (
@@ -1815,7 +1815,7 @@ function OrdensPageContent() {
                 Confirma a conclusao desta ordem de servico?
               </p>
             </div>
-            <div className="p-6 border-t border-zinc-800 flex gap-3 justify-end">
+            <div className="p-6 border-t border-border flex gap-3 justify-end">
               <button
                 onClick={() => {
                   setShowConcluirConfirm(false);
@@ -1824,7 +1824,7 @@ function OrdensPageContent() {
                   setDescontoConcluir('');
                   setDataPagamentoPrevistaConcluir('');
                 }}
-                className="px-6 py-3 border border-zinc-700 rounded-xl text-zinc-400 hover:bg-zinc-800 transition-all duration-200"
+                className="px-6 py-3 border border-border rounded-xl text-zinc-400 hover:bg-zinc-800 transition-all duration-200"
               >
                 Cancelar
               </button>

@@ -133,7 +133,7 @@ export default function HistoricoPage() {
       <div className="flex-1 p-6 overflow-y-auto custom-scrollbar">
         {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-          <div className="bg-card border border-zinc-800/50 rounded-2xl p-5">
+          <div className="bg-card border border-border rounded-2xl p-5">
             <div className="flex items-center gap-4">
               <div className="w-12 h-12 rounded-xl bg-emerald-500/10 flex items-center justify-center">
                 <Receipt size={24} className="text-emerald-400" />
@@ -144,7 +144,7 @@ export default function HistoricoPage() {
               </div>
             </div>
           </div>
-          <div className="bg-card border border-zinc-800/50 rounded-2xl p-5">
+          <div className="bg-card border border-border rounded-2xl p-5">
             <div className="flex items-center gap-4">
               <div className="w-12 h-12 rounded-xl bg-green-500/10 flex items-center justify-center">
                 <DollarSign size={24} className="text-green-400" />
@@ -158,7 +158,7 @@ export default function HistoricoPage() {
         </div>
 
         {/* Search and Filters */}
-        <div className="bg-card border border-zinc-800/50 rounded-2xl p-4 mb-6">
+        <div className="bg-card border border-border rounded-2xl p-4 mb-6">
           <div className="flex flex-col md:flex-row gap-4">
             {/* Search */}
             <div className="flex-1 relative">
@@ -168,7 +168,7 @@ export default function HistoricoPage() {
                 placeholder="Buscar por número, cliente ou placa..."
                 value={busca}
                 onChange={(e) => setBusca(e.target.value)}
-                className="w-full pl-11 pr-4 py-3 bg-zinc-900/50 border border-zinc-800 rounded-xl text-white placeholder:text-zinc-600 focus:outline-none focus:border-emerald-500/50 transition-colors"
+                className="w-full pl-11 pr-4 py-3 bg-zinc-900/50 border border-border rounded-xl text-white placeholder:text-zinc-600 focus:outline-none focus:border-emerald-500/50 transition-colors"
               />
             </div>
 
@@ -179,7 +179,7 @@ export default function HistoricoPage() {
                 className={`px-4 py-2.5 rounded-xl text-sm font-medium transition-all ${
                   tipoFilter === 'todos'
                     ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30'
-                    : 'bg-zinc-900 text-zinc-400 border border-zinc-800 hover:border-zinc-700'
+                    : 'bg-zinc-900 text-zinc-400 border border-border hover:border-border'
                 }`}
               >
                 Todos
@@ -189,7 +189,7 @@ export default function HistoricoPage() {
                 className={`px-4 py-2.5 rounded-xl text-sm font-medium transition-all flex items-center gap-2 ${
                   tipoFilter === 'os'
                     ? 'bg-blue-500/20 text-blue-400 border border-blue-500/30'
-                    : 'bg-zinc-900 text-zinc-400 border border-zinc-800 hover:border-zinc-700'
+                    : 'bg-zinc-900 text-zinc-400 border border-border hover:border-border'
                 }`}
               >
                 <ClipboardList size={16} />
@@ -200,7 +200,7 @@ export default function HistoricoPage() {
                 className={`px-4 py-2.5 rounded-xl text-sm font-medium transition-all flex items-center gap-2 ${
                   tipoFilter === 'vendas'
                     ? 'bg-purple-500/20 text-purple-400 border border-purple-500/30'
-                    : 'bg-zinc-900 text-zinc-400 border border-zinc-800 hover:border-zinc-700'
+                    : 'bg-zinc-900 text-zinc-400 border border-border hover:border-border'
                 }`}
               >
                 <ShoppingCart size={16} />
@@ -214,7 +214,7 @@ export default function HistoricoPage() {
               className={`px-4 py-2.5 rounded-xl text-sm font-medium transition-all flex items-center gap-2 ${
                 showFilters || hasActiveFilters
                   ? 'bg-amber-500/20 text-amber-400 border border-amber-500/30'
-                  : 'bg-zinc-900 text-zinc-400 border border-zinc-800 hover:border-zinc-700'
+                  : 'bg-zinc-900 text-zinc-400 border border-border hover:border-border'
               }`}
             >
               <Filter size={16} />
@@ -224,14 +224,14 @@ export default function HistoricoPage() {
 
           {/* Expanded Filters */}
           {showFilters && (
-            <div className="mt-4 pt-4 border-t border-zinc-800 flex flex-wrap gap-4 items-end">
+            <div className="mt-4 pt-4 border-t border-border flex flex-wrap gap-4 items-end">
               <div>
                 <label className="block text-xs text-zinc-500 mb-1">Data Início</label>
                 <input
                   type="date"
                   value={dataInicio}
                   onChange={(e) => setDataInicio(e.target.value)}
-                  className="px-4 py-2.5 bg-zinc-900 border border-zinc-800 rounded-xl text-white focus:outline-none focus:border-emerald-500/50"
+                  className="px-4 py-2.5 bg-zinc-900 border border-border rounded-xl text-white focus:outline-none focus:border-emerald-500/50"
                 />
               </div>
               <div>
@@ -240,7 +240,7 @@ export default function HistoricoPage() {
                   type="date"
                   value={dataFim}
                   onChange={(e) => setDataFim(e.target.value)}
-                  className="px-4 py-2.5 bg-zinc-900 border border-zinc-800 rounded-xl text-white focus:outline-none focus:border-emerald-500/50"
+                  className="px-4 py-2.5 bg-zinc-900 border border-border rounded-xl text-white focus:outline-none focus:border-emerald-500/50"
                 />
               </div>
               {hasActiveFilters && (
@@ -257,7 +257,7 @@ export default function HistoricoPage() {
         </div>
 
         {/* Results List */}
-        <div className="bg-card border border-zinc-800/50 rounded-2xl overflow-hidden">
+        <div className="bg-card border border-border rounded-2xl overflow-hidden">
           {loading ? (
             <div className="p-8 text-center text-zinc-500">
               <div className="animate-spin w-8 h-8 border-2 border-emerald-500 border-t-transparent rounded-full mx-auto mb-2"></div>
@@ -358,7 +358,7 @@ export default function HistoricoPage() {
 
         {/* Pagination */}
         {totalPages > 1 && (
-          <div className="flex items-center justify-between mt-4 bg-card border border-zinc-800/50 rounded-2xl px-6 py-4">
+          <div className="flex items-center justify-between mt-4 bg-card border border-border rounded-2xl px-6 py-4">
             <p className="text-sm text-zinc-400">
               Mostrando {((page - 1) * 20) + 1} - {Math.min(page * 20, total)} de {total} registros
             </p>
@@ -366,7 +366,7 @@ export default function HistoricoPage() {
               <button
                 onClick={() => setPage((p) => Math.max(1, p - 1))}
                 disabled={page === 1}
-                className="p-2 bg-zinc-900 border border-zinc-800 rounded-lg text-zinc-500 hover:text-white hover:border-emerald-500/30 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                className="p-2 bg-zinc-900 border border-border rounded-lg text-zinc-500 hover:text-white hover:border-emerald-500/30 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <ChevronLeft size={18} />
               </button>
@@ -376,7 +376,7 @@ export default function HistoricoPage() {
               <button
                 onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
                 disabled={page === totalPages}
-                className="p-2 bg-zinc-900 border border-zinc-800 rounded-lg text-zinc-500 hover:text-white hover:border-emerald-500/30 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                className="p-2 bg-zinc-900 border border-border rounded-lg text-zinc-500 hover:text-white hover:border-emerald-500/30 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <ChevronRight size={18} />
               </button>

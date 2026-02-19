@@ -174,7 +174,7 @@ export default function AReceberPage() {
                 placeholder="Buscar por cliente, número..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-12 pr-4 py-3 bg-card rounded-xl border border-zinc-800 text-white placeholder:text-zinc-500 focus:outline-none focus:border-amber-500/50"
+                className="w-full pl-12 pr-4 py-3 bg-card rounded-xl border border-border text-white placeholder:text-zinc-500 focus:outline-none focus:border-amber-500/50"
               />
             </div>
             <div className="flex gap-2">
@@ -189,7 +189,7 @@ export default function AReceberPage() {
                   className={`px-4 py-3 rounded-xl border transition-all duration-200 ${
                     filtroTipo === opt.value
                       ? 'bg-amber-500/20 border-amber-500 text-amber-400'
-                      : 'bg-card border-zinc-800 text-zinc-400 hover:border-zinc-700'
+                      : 'bg-card border-border text-zinc-400 hover:border-border'
                   }`}
                 >
                   {opt.label}
@@ -214,7 +214,7 @@ export default function AReceberPage() {
               {filteredPendencias.map((pendencia) => (
                 <div
                   key={`${pendencia.tipo}-${pendencia.id}`}
-                  className="bg-card border border-zinc-800 rounded-xl p-4 hover:border-zinc-700 transition-all duration-200"
+                  className="bg-card border border-border rounded-xl p-4 hover:border-border transition-all duration-200"
                 >
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-4">
@@ -288,8 +288,8 @@ export default function AReceberPage() {
       {/* Modal de Pagamento */}
       {showPagamentoModal && selectedPendencia && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-card border border-zinc-800 rounded-2xl w-full max-w-md shadow-2xl shadow-black/50">
-            <div className="p-6 border-b border-zinc-800 flex items-center justify-between">
+          <div className="bg-card border border-border rounded-2xl w-full max-w-md shadow-2xl shadow-black/50">
+            <div className="p-6 border-b border-border flex items-center justify-between">
               <h2 className="text-xl font-semibold text-white">Registrar Pagamento</h2>
               <button
                 onClick={() => {
@@ -344,7 +344,7 @@ export default function AReceberPage() {
                       className={`p-3 rounded-xl border transition-all duration-200 flex items-center justify-center gap-2 ${
                         formaPagamento === method.value
                           ? 'bg-emerald-500/20 border-emerald-500 text-emerald-400'
-                          : 'bg-background border-zinc-700 text-zinc-400 hover:border-zinc-600'
+                          : 'bg-background border-border text-zinc-400 hover:border-zinc-600'
                       }`}
                     >
                       <span>{method.icon}</span>
@@ -354,14 +354,14 @@ export default function AReceberPage() {
                 </div>
               </div>
             </div>
-            <div className="p-6 border-t border-zinc-800 flex gap-3 justify-end">
+            <div className="p-6 border-t border-border flex gap-3 justify-end">
               <button
                 onClick={() => {
                   setShowPagamentoModal(false);
                   setSelectedPendencia(null);
                   setFormaPagamento('');
                 }}
-                className="px-6 py-3 border border-zinc-700 rounded-xl text-zinc-400 hover:bg-zinc-800 transition-all duration-200"
+                className="px-6 py-3 border border-border rounded-xl text-zinc-400 hover:bg-zinc-800 transition-all duration-200"
               >
                 Cancelar
               </button>

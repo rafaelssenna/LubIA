@@ -221,7 +221,7 @@ function UsuariosPageContent() {
               placeholder="Buscar por nome ou email..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-10 pr-4 py-3 bg-card border border-zinc-800/50 rounded-xl text-white placeholder-zinc-500 focus:outline-none focus:border-purple-500/50 focus:ring-2 focus:ring-purple-500/20 transition-all"
+              className="w-full pl-10 pr-4 py-3 bg-card border border-border rounded-xl text-white placeholder-zinc-500 focus:outline-none focus:border-purple-500/50 focus:ring-2 focus:ring-purple-500/20 transition-all"
             />
           </div>
           <button
@@ -234,7 +234,7 @@ function UsuariosPageContent() {
         </div>
 
         {/* Users List */}
-        <div className="bg-card rounded-2xl border border-zinc-800/50 overflow-hidden">
+        <div className="bg-card rounded-2xl border border-border overflow-hidden">
           {filteredUsuarios.length === 0 ? (
             <div className="text-center py-12">
               <div className="p-4 bg-purple-500/10 rounded-2xl w-fit mx-auto mb-4 border border-purple-500/20">
@@ -251,7 +251,7 @@ function UsuariosPageContent() {
           ) : (
             <div className="overflow-x-auto">
               <table className="w-full">
-                <thead className="bg-zinc-900/50 border-b border-zinc-800/50">
+                <thead className="bg-zinc-900/50 border-b border-border">
                   <tr>
                     <th className="text-left px-6 py-4 text-xs font-semibold text-zinc-400 uppercase tracking-wider">Usuario</th>
                     <th className="text-left px-6 py-4 text-xs font-semibold text-zinc-400 uppercase tracking-wider">Nivel</th>
@@ -334,8 +334,8 @@ function UsuariosPageContent() {
       {/* Create/Edit Modal */}
       {showModal && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-card border border-zinc-800/50 rounded-2xl w-full max-w-md overflow-hidden shadow-2xl shadow-black/50 max-h-[90vh] overflow-y-auto">
-            <div className="flex items-center justify-between p-6 border-b border-zinc-800/50 sticky top-0 bg-card">
+          <div className="bg-card border border-border rounded-2xl w-full max-w-md overflow-hidden shadow-2xl shadow-black/50 max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between p-6 border-b border-border sticky top-0 bg-card">
               <h2 className="text-xl font-bold text-white">
                 {editingUsuario ? 'Editar Usuario' : 'Novo Usuario'}
               </h2>
@@ -358,7 +358,7 @@ function UsuariosPageContent() {
                   value={nome}
                   onChange={(e) => setNome(e.target.value)}
                   placeholder="Nome completo"
-                  className="w-full px-4 py-3 bg-zinc-900/50 border border-zinc-800/50 rounded-xl text-white placeholder-zinc-500 focus:outline-none focus:border-purple-500/50 focus:ring-2 focus:ring-purple-500/20 transition-all"
+                  className="w-full px-4 py-3 bg-zinc-900/50 border border-border rounded-xl text-white placeholder-zinc-500 focus:outline-none focus:border-purple-500/50 focus:ring-2 focus:ring-purple-500/20 transition-all"
                 />
               </div>
 
@@ -374,7 +374,7 @@ function UsuariosPageContent() {
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="email@exemplo.com"
-                    className="w-full pl-10 pr-4 py-3 bg-zinc-900/50 border border-zinc-800/50 rounded-xl text-white placeholder-zinc-500 focus:outline-none focus:border-purple-500/50 focus:ring-2 focus:ring-purple-500/20 transition-all"
+                    className="w-full pl-10 pr-4 py-3 bg-zinc-900/50 border border-border rounded-xl text-white placeholder-zinc-500 focus:outline-none focus:border-purple-500/50 focus:ring-2 focus:ring-purple-500/20 transition-all"
                   />
                 </div>
               </div>
@@ -390,7 +390,7 @@ function UsuariosPageContent() {
                     value={senha}
                     onChange={(e) => setSenha(e.target.value)}
                     placeholder={editingUsuario ? '........' : 'Minimo 6 caracteres'}
-                    className="w-full px-4 py-3 pr-10 bg-zinc-900/50 border border-zinc-800/50 rounded-xl text-white placeholder-zinc-500 focus:outline-none focus:border-purple-500/50 focus:ring-2 focus:ring-purple-500/20 transition-all"
+                    className="w-full px-4 py-3 pr-10 bg-zinc-900/50 border border-border rounded-xl text-white placeholder-zinc-500 focus:outline-none focus:border-purple-500/50 focus:ring-2 focus:ring-purple-500/20 transition-all"
                   />
                   <button
                     type="button"
@@ -413,7 +413,7 @@ function UsuariosPageContent() {
                     className={`flex items-start gap-3 p-3 rounded-xl border cursor-pointer transition-all ${
                       role === 'VENDEDOR'
                         ? 'bg-orange-500/10 border-orange-500/50'
-                        : 'bg-zinc-900/50 border-zinc-800/50 hover:border-zinc-700'
+                        : 'bg-zinc-900/50 border-border hover:border-border'
                     }`}
                   >
                     <input
@@ -438,7 +438,7 @@ function UsuariosPageContent() {
                     className={`flex items-start gap-3 p-3 rounded-xl border cursor-pointer transition-all ${
                       role === 'ATENDENTE'
                         ? 'bg-emerald-500/10 border-emerald-500/50'
-                        : 'bg-zinc-900/50 border-zinc-800/50 hover:border-zinc-700'
+                        : 'bg-zinc-900/50 border-border hover:border-border'
                     }`}
                   >
                     <input
@@ -463,7 +463,7 @@ function UsuariosPageContent() {
                     className={`flex items-start gap-3 p-3 rounded-xl border cursor-pointer transition-all ${
                       role === 'GERENTE'
                         ? 'bg-blue-500/10 border-blue-500/50'
-                        : 'bg-zinc-900/50 border-zinc-800/50 hover:border-zinc-700'
+                        : 'bg-zinc-900/50 border-border hover:border-border'
                     }`}
                   >
                     <input
@@ -488,7 +488,7 @@ function UsuariosPageContent() {
                     className={`flex items-start gap-3 p-3 rounded-xl border cursor-pointer transition-all ${
                       role === 'ADMIN'
                         ? 'bg-purple-500/10 border-purple-500/50'
-                        : 'bg-zinc-900/50 border-zinc-800/50 hover:border-zinc-700'
+                        : 'bg-zinc-900/50 border-border hover:border-border'
                     }`}
                   >
                     <input
@@ -512,7 +512,7 @@ function UsuariosPageContent() {
 
               {/* Ativo */}
               {editingUsuario && (
-                <div className="flex items-center gap-3 p-3 bg-zinc-900/50 rounded-xl border border-zinc-800/50">
+                <div className="flex items-center gap-3 p-3 bg-zinc-900/50 rounded-xl border border-border">
                   <input
                     type="checkbox"
                     id="ativo"
@@ -527,10 +527,10 @@ function UsuariosPageContent() {
               )}
             </div>
 
-            <div className="p-6 border-t border-zinc-800/50 flex justify-end gap-3 sticky bottom-0 bg-card">
+            <div className="p-6 border-t border-border flex justify-end gap-3 sticky bottom-0 bg-card">
               <button
                 onClick={() => setShowModal(false)}
-                className="px-6 py-3 border border-zinc-700 rounded-xl text-zinc-300 hover:bg-zinc-800 transition-colors"
+                className="px-6 py-3 border border-border rounded-xl text-zinc-300 hover:bg-zinc-800 transition-colors"
               >
                 Cancelar
               </button>
@@ -550,7 +550,7 @@ function UsuariosPageContent() {
       {/* Delete Confirmation Modal */}
       {showDeleteConfirm && selectedUsuario && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-card border border-zinc-800/50 rounded-2xl w-full max-w-sm shadow-2xl shadow-black/50">
+          <div className="bg-card border border-border rounded-2xl w-full max-w-sm shadow-2xl shadow-black/50">
             <div className="p-6">
               <div className="w-14 h-14 mx-auto mb-4 bg-red-500/10 rounded-2xl flex items-center justify-center border border-red-500/20">
                 <Trash2 className="h-7 w-7 text-red-400" />
@@ -561,13 +561,13 @@ function UsuariosPageContent() {
                 Tem certeza que deseja excluir este usuario? Esta acao nao pode ser desfeita.
               </p>
             </div>
-            <div className="p-6 border-t border-zinc-800/50 flex gap-3">
+            <div className="p-6 border-t border-border flex gap-3">
               <button
                 onClick={() => {
                   setShowDeleteConfirm(false);
                   setSelectedUsuario(null);
                 }}
-                className="flex-1 px-6 py-3 border border-zinc-700 text-zinc-300 rounded-xl hover:bg-zinc-800 transition-colors"
+                className="flex-1 px-6 py-3 border border-border text-zinc-300 rounded-xl hover:bg-zinc-800 transition-colors"
               >
                 Cancelar
               </button>

@@ -297,10 +297,10 @@ export default function WhatsAppPage() {
         </div>
 
         {/* Chat Interface */}
-        <div className="bg-card border border-zinc-800/50 rounded-2xl overflow-hidden h-[calc(100vh-380px)] flex shadow-2xl shadow-black/50">
+        <div className="bg-card border border-border rounded-2xl overflow-hidden h-[calc(100vh-380px)] flex shadow-2xl shadow-black/50">
           {/* Lista de Conversas */}
-          <div className="w-96 border-r border-zinc-800/50 flex flex-col">
-            <div className="p-4 border-b border-zinc-800/50 flex gap-2">
+          <div className="w-96 border-r border-border flex flex-col">
+            <div className="p-4 border-b border-border flex gap-2">
               <div className="relative group flex-1">
                 <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 text-zinc-500 group-focus-within:text-[#25D366] transition-colors" size={18} />
                 <input
@@ -308,12 +308,12 @@ export default function WhatsAppPage() {
                   value={busca}
                   onChange={(e) => setBusca(e.target.value)}
                   placeholder="Buscar conversa..."
-                  className="w-full bg-zinc-900/50 border border-zinc-800/50 rounded-xl pl-10 pr-4 py-3 text-sm text-white placeholder-zinc-500 focus:outline-none focus:border-[#25D366]/50 focus:ring-2 focus:ring-[#25D366]/20 transition-all"
+                  className="w-full bg-zinc-900/50 border border-border rounded-xl pl-10 pr-4 py-3 text-sm text-white placeholder-zinc-500 focus:outline-none focus:border-[#25D366]/50 focus:ring-2 focus:ring-[#25D366]/20 transition-all"
                 />
               </div>
               <button
                 onClick={() => fetchConversas()}
-                className="p-3 bg-zinc-900/50 border border-zinc-800/50 rounded-xl text-zinc-400 hover:border-[#25D366]/40 hover:text-[#25D366] transition-all"
+                className="p-3 bg-zinc-900/50 border border-border rounded-xl text-zinc-400 hover:border-[#25D366]/40 hover:text-[#25D366] transition-all"
               >
                 <RefreshCw size={18} className={loading ? 'animate-spin' : ''} />
               </button>
@@ -336,7 +336,7 @@ export default function WhatsAppPage() {
                   <div
                     key={conversa.id}
                     onClick={() => fetchMensagens(conversa.id)}
-                    className={`p-4 border-b border-zinc-800/50 cursor-pointer transition-all duration-200 ${
+                    className={`p-4 border-b border-border cursor-pointer transition-all duration-200 ${
                       selectedConversation?.id === conversa.id
                         ? 'bg-gradient-to-r from-[#25D366]/20 to-transparent border-l-4 border-l-[#25D366]'
                         : 'hover:bg-zinc-800/30'
@@ -372,7 +372,7 @@ export default function WhatsAppPage() {
             {selectedConversation ? (
               <>
                 {/* Header do Chat */}
-                <div className="p-4 border-b border-zinc-800/50 flex items-center justify-between bg-zinc-900/50">
+                <div className="p-4 border-b border-border flex items-center justify-between bg-zinc-900/50">
                   <div className="flex items-center gap-4">
                     <div className="relative">
                       <div className="w-11 h-11 bg-gradient-to-br from-[#25D366] to-[#128C7E] rounded-xl flex items-center justify-center text-white font-bold shadow-lg shadow-[#25D366]/20">
@@ -429,7 +429,7 @@ export default function WhatsAppPage() {
                           className={`max-w-[70%] p-4 rounded-2xl shadow-lg ${
                             msg.enviada
                               ? 'bg-gradient-to-br from-[#25D366] to-[#128C7E] text-white rounded-br-md shadow-[#25D366]/20'
-                              : 'bg-zinc-800/80 text-white rounded-bl-md border border-zinc-700/50'
+                              : 'bg-zinc-800/80 text-white rounded-bl-md border border-border/50'
                           }`}
                         >
                           <p className="text-sm leading-relaxed whitespace-pre-wrap">{msg.conteudo}</p>
@@ -450,7 +450,7 @@ export default function WhatsAppPage() {
 
                 {/* Templates */}
                 {showTemplates && (
-                  <div className="p-4 border-t border-zinc-800/50 bg-zinc-900/50">
+                  <div className="p-4 border-t border-border bg-zinc-900/50">
                     <p className="text-sm text-zinc-400 mb-3 flex items-center gap-2">
                       <Sparkles size={14} className="text-[#25D366]" />
                       Templates rapidos:
@@ -460,7 +460,7 @@ export default function WhatsAppPage() {
                         <button
                           key={template.id}
                           onClick={() => applyTemplate(template.texto)}
-                          className="flex items-center gap-2 px-4 py-2.5 bg-zinc-800/50 border border-zinc-700/50 rounded-xl text-zinc-300 hover:text-white hover:border-[#25D366]/50 hover:bg-[#25D366]/10 transition-all text-sm font-medium"
+                          className="flex items-center gap-2 px-4 py-2.5 bg-zinc-800/50 border border-border/50 rounded-xl text-zinc-300 hover:text-white hover:border-[#25D366]/50 hover:bg-[#25D366]/10 transition-all text-sm font-medium"
                         >
                           <template.icon size={16} className="text-[#25D366]" />
                           {template.nome}
@@ -471,7 +471,7 @@ export default function WhatsAppPage() {
                 )}
 
                 {/* Input de Mensagem */}
-                <div className="p-4 border-t border-zinc-800/50 bg-zinc-900/50">
+                <div className="p-4 border-t border-border bg-zinc-900/50">
                   <div className="flex items-center gap-2">
                     <button className="p-2.5 hover:bg-zinc-800 rounded-lg transition-all text-zinc-400 hover:text-amber-400">
                       <Smile size={20} />
@@ -497,7 +497,7 @@ export default function WhatsAppPage() {
                       onKeyDown={(e) => e.key === 'Enter' && !e.shiftKey && handleSend()}
                       placeholder="Digite uma mensagem..."
                       disabled={sending}
-                      className="flex-1 bg-zinc-900/50 border border-zinc-800/50 rounded-xl px-4 py-3 text-white placeholder-zinc-500 focus:outline-none focus:border-[#25D366]/50 focus:ring-2 focus:ring-[#25D366]/20 transition-all disabled:opacity-50"
+                      className="flex-1 bg-zinc-900/50 border border-border rounded-xl px-4 py-3 text-white placeholder-zinc-500 focus:outline-none focus:border-[#25D366]/50 focus:ring-2 focus:ring-[#25D366]/20 transition-all disabled:opacity-50"
                     />
                     <button
                       onClick={handleSend}

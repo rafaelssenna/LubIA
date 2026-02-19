@@ -586,8 +586,8 @@ export default function ConfiguracoesPage() {
 
       <div className="px-4 lg:px-8 space-y-8 max-w-4xl mx-auto">
         {/* Dados da Oficina */}
-        <div className="bg-card border border-zinc-800/50 rounded-2xl overflow-hidden">
-          <div className="p-6 border-b border-zinc-800/50 flex items-center gap-4">
+        <div className="bg-card border border-border rounded-2xl overflow-hidden">
+          <div className="p-6 border-b border-border flex items-center gap-4">
             <div className="p-3 bg-blue-500/10 rounded-xl border border-blue-500/20">
               <Building2 size={22} className="text-blue-400" />
             </div>
@@ -605,7 +605,7 @@ export default function ConfiguracoesPage() {
                 value={nomeOficina}
                 onChange={(e) => setNomeOficina(e.target.value)}
                 placeholder="Ex: Auto Center Silva"
-                className="w-full bg-zinc-900/50 border border-zinc-800/50 rounded-xl px-4 py-3 text-white placeholder-zinc-500 focus:outline-none focus:border-blue-500/50 focus:ring-2 focus:ring-blue-500/20 transition-all"
+                className="w-full bg-zinc-900/50 border border-border rounded-xl px-4 py-3 text-white placeholder-zinc-500 focus:outline-none focus:border-blue-500/50 focus:ring-2 focus:ring-blue-500/20 transition-all"
               />
             </div>
             <div>
@@ -618,7 +618,7 @@ export default function ConfiguracoesPage() {
                   value={cnpj}
                   onChange={(e) => handleCnpjChange(e.target.value)}
                   placeholder="00.000.000/0000-00"
-                  className="w-full bg-zinc-900/50 border border-zinc-800/50 rounded-xl px-4 py-3 text-white placeholder-zinc-500 focus:outline-none focus:border-blue-500/50 focus:ring-2 focus:ring-blue-500/20 transition-all"
+                  className="w-full bg-zinc-900/50 border border-border rounded-xl px-4 py-3 text-white placeholder-zinc-500 focus:outline-none focus:border-blue-500/50 focus:ring-2 focus:ring-blue-500/20 transition-all"
                 />
                 {buscandoCnpj && (
                   <div className="absolute right-3 top-1/2 -translate-y-1/2">
@@ -637,7 +637,7 @@ export default function ConfiguracoesPage() {
                 value={telefone}
                 onChange={(e) => setTelefone(formatTelefone(e.target.value))}
                 placeholder="(00) 00000-0000"
-                className="w-full bg-zinc-900/50 border border-zinc-800/50 rounded-xl px-4 py-3 text-white placeholder-zinc-500 focus:outline-none focus:border-blue-500/50 focus:ring-2 focus:ring-blue-500/20 transition-all"
+                className="w-full bg-zinc-900/50 border border-border rounded-xl px-4 py-3 text-white placeholder-zinc-500 focus:outline-none focus:border-blue-500/50 focus:ring-2 focus:ring-blue-500/20 transition-all"
               />
             </div>
             <div>
@@ -647,7 +647,7 @@ export default function ConfiguracoesPage() {
                 value={endereco}
                 onChange={(e) => setEndereco(e.target.value)}
                 placeholder="Rua, numero, bairro"
-                className="w-full bg-zinc-900/50 border border-zinc-800/50 rounded-xl px-4 py-3 text-white placeholder-zinc-500 focus:outline-none focus:border-blue-500/50 focus:ring-2 focus:ring-blue-500/20 transition-all"
+                className="w-full bg-zinc-900/50 border border-border rounded-xl px-4 py-3 text-white placeholder-zinc-500 focus:outline-none focus:border-blue-500/50 focus:ring-2 focus:ring-blue-500/20 transition-all"
               />
             </div>
 
@@ -670,8 +670,8 @@ export default function ConfiguracoesPage() {
         </div>
 
         {/* Filiais/Fornecedores */}
-        <div className="bg-card border border-zinc-800/50 rounded-2xl overflow-hidden">
-          <div className="p-6 border-b border-zinc-800/50 flex items-center justify-between">
+        <div className="bg-card border border-border rounded-2xl overflow-hidden">
+          <div className="p-6 border-b border-border flex items-center justify-between">
             <div className="flex items-center gap-4">
               <div className="p-3 bg-purple-500/10 rounded-xl border border-purple-500/20">
                 <Store size={22} className="text-purple-400" />
@@ -702,8 +702,8 @@ export default function ConfiguracoesPage() {
                     key={filial.id}
                     className={`flex items-center justify-between p-4 rounded-xl border transition-all ${
                       filial.ativo
-                        ? 'bg-zinc-900/50 border-zinc-800/50 hover:border-purple-500/30'
-                        : 'bg-zinc-900/30 border-zinc-800/30 opacity-60'
+                        ? 'bg-zinc-900/50 border-border hover:border-purple-500/30'
+                        : 'bg-zinc-900/30 border-border opacity-60'
                     }`}
                   >
                     <div className="flex items-center gap-4">
@@ -756,8 +756,8 @@ export default function ConfiguracoesPage() {
         {/* Modal Filial */}
         {showFilialModal && (
           <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-            <div className="bg-card border border-zinc-800/50 rounded-2xl w-full max-w-md shadow-2xl shadow-black/50">
-              <div className="p-6 border-b border-zinc-800/50">
+            <div className="bg-card border border-border rounded-2xl w-full max-w-md shadow-2xl shadow-black/50">
+              <div className="p-6 border-b border-border">
                 <h2 className="text-xl font-bold text-white">
                   {editingFilial ? 'Editar Filial' : 'Nova Filial'}
                 </h2>
@@ -770,7 +770,7 @@ export default function ConfiguracoesPage() {
                     value={filialForm.nome}
                     onChange={(e) => setFilialForm({ ...filialForm, nome: e.target.value })}
                     placeholder="Ex: Filial Centro"
-                    className="w-full bg-zinc-900/50 border border-zinc-800/50 rounded-xl px-4 py-3 text-white placeholder-zinc-500 focus:outline-none focus:border-purple-500/50 focus:ring-2 focus:ring-purple-500/20 transition-all"
+                    className="w-full bg-zinc-900/50 border border-border rounded-xl px-4 py-3 text-white placeholder-zinc-500 focus:outline-none focus:border-purple-500/50 focus:ring-2 focus:ring-purple-500/20 transition-all"
                   />
                 </div>
                 <div>
@@ -780,18 +780,18 @@ export default function ConfiguracoesPage() {
                     value={filialForm.cnpj}
                     onChange={(e) => setFilialForm({ ...filialForm, cnpj: e.target.value })}
                     placeholder="00.000.000/0000-00"
-                    className="w-full bg-zinc-900/50 border border-zinc-800/50 rounded-xl px-4 py-3 text-white placeholder-zinc-500 focus:outline-none focus:border-purple-500/50 focus:ring-2 focus:ring-purple-500/20 transition-all"
+                    className="w-full bg-zinc-900/50 border border-border rounded-xl px-4 py-3 text-white placeholder-zinc-500 focus:outline-none focus:border-purple-500/50 focus:ring-2 focus:ring-purple-500/20 transition-all"
                   />
                 </div>
               </div>
-              <div className="p-6 border-t border-zinc-800/50 flex gap-3 justify-end">
+              <div className="p-6 border-t border-border flex gap-3 justify-end">
                 <button
                   onClick={() => {
                     setShowFilialModal(false);
                     setEditingFilial(null);
                     setFilialForm({ nome: '', cnpj: '' });
                   }}
-                  className="px-6 py-3 border border-zinc-700 rounded-xl text-zinc-300 hover:bg-zinc-800 transition-colors"
+                  className="px-6 py-3 border border-border rounded-xl text-zinc-300 hover:bg-zinc-800 transition-colors"
                 >
                   Cancelar
                 </button>
@@ -816,8 +816,8 @@ export default function ConfiguracoesPage() {
         {/* Modal Servico */}
         {showServicoModal && (
           <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-            <div className="bg-card border border-zinc-800/50 rounded-2xl w-full max-w-md shadow-2xl shadow-black/50">
-              <div className="p-6 border-b border-zinc-800/50">
+            <div className="bg-card border border-border rounded-2xl w-full max-w-md shadow-2xl shadow-black/50">
+              <div className="p-6 border-b border-border">
                 <h2 className="text-xl font-bold text-white">
                   {editingServico ? 'Editar Servico' : 'Novo Servico'}
                 </h2>
@@ -830,18 +830,18 @@ export default function ConfiguracoesPage() {
                     value={servicoForm.nome}
                     onChange={(e) => setServicoForm({ ...servicoForm, nome: e.target.value })}
                     placeholder="Ex: Troca de Oleo"
-                    className="w-full bg-zinc-900/50 border border-zinc-800/50 rounded-xl px-4 py-3 text-white placeholder-zinc-500 focus:outline-none focus:border-purple-500/50 focus:ring-2 focus:ring-purple-500/20 transition-all"
+                    className="w-full bg-zinc-900/50 border border-border rounded-xl px-4 py-3 text-white placeholder-zinc-500 focus:outline-none focus:border-purple-500/50 focus:ring-2 focus:ring-purple-500/20 transition-all"
                   />
                 </div>
               </div>
-              <div className="p-6 border-t border-zinc-800/50 flex gap-3 justify-end">
+              <div className="p-6 border-t border-border flex gap-3 justify-end">
                 <button
                   onClick={() => {
                     setShowServicoModal(false);
                     setEditingServico(null);
                     setServicoForm({ nome: '' });
                   }}
-                  className="px-6 py-3 border border-zinc-700 rounded-xl text-zinc-300 hover:bg-zinc-800 transition-colors"
+                  className="px-6 py-3 border border-border rounded-xl text-zinc-300 hover:bg-zinc-800 transition-colors"
                 >
                   Cancelar
                 </button>
@@ -864,8 +864,8 @@ export default function ConfiguracoesPage() {
         )}
 
         {/* Integracao WhatsApp */}
-        <div className="bg-card border border-zinc-800/50 rounded-2xl overflow-hidden">
-          <div className="p-6 border-b border-zinc-800/50 flex items-center justify-between">
+        <div className="bg-card border border-border rounded-2xl overflow-hidden">
+          <div className="p-6 border-b border-border flex items-center justify-between">
             <div className="flex items-center gap-4">
               <div className="p-3 bg-[#25D366]/10 rounded-xl border border-[#25D366]/20">
                 <MessageCircle size={22} className="text-[#25D366]" />
@@ -917,7 +917,7 @@ export default function ConfiguracoesPage() {
                 </div>
               </div>
             ) : qrCode ? (
-              <div className="bg-zinc-900/50 border border-zinc-800/50 rounded-xl p-6 text-center">
+              <div className="bg-zinc-900/50 border border-border rounded-xl p-6 text-center">
                 <p className="text-white font-semibold mb-4">Escaneie o QR Code com o WhatsApp</p>
                 <div className="inline-block p-4 bg-white rounded-xl mb-4">
                   <img src={qrCode} alt="QR Code" className="w-64 h-64" />
@@ -963,7 +963,7 @@ export default function ConfiguracoesPage() {
                   <button
                     onClick={checkWhatsAppStatus}
                     disabled={checkingStatus}
-                    className="p-3 bg-zinc-900/50 border border-zinc-800/50 rounded-xl text-zinc-400 hover:text-white hover:border-[#25D366]/50 transition-all"
+                    className="p-3 bg-zinc-900/50 border border-border rounded-xl text-zinc-400 hover:text-white hover:border-[#25D366]/50 transition-all"
                     title="Verificar status"
                   >
                     <RefreshCw size={20} className={checkingStatus ? 'animate-spin' : ''} />
@@ -975,8 +975,8 @@ export default function ConfiguracoesPage() {
         </div>
 
         {/* Chatbot LoopIA */}
-        <div className="bg-card border border-zinc-800/50 rounded-2xl overflow-hidden">
-          <div className="p-6 border-b border-zinc-800/50 flex items-center justify-between">
+        <div className="bg-card border border-border rounded-2xl overflow-hidden">
+          <div className="p-6 border-b border-border flex items-center justify-between">
             <div className="flex items-center gap-4">
               <div className="p-3 bg-purple-500/10 rounded-xl border border-purple-500/20">
                 <Bot size={22} className="text-purple-400" />
@@ -1009,14 +1009,14 @@ export default function ConfiguracoesPage() {
                   value={chatbotNome}
                   onChange={(e) => setChatbotNome(e.target.value)}
                   placeholder="LoopIA"
-                  className="w-full bg-zinc-900/50 border border-zinc-800/50 rounded-xl px-4 py-3 text-white placeholder-zinc-500 focus:outline-none focus:border-purple-500/50 focus:ring-2 focus:ring-purple-500/20 transition-all"
+                  className="w-full bg-zinc-900/50 border border-border rounded-xl px-4 py-3 text-white placeholder-zinc-500 focus:outline-none focus:border-purple-500/50 focus:ring-2 focus:ring-purple-500/20 transition-all"
                 />
               </div>
 
               {/* Horario de Funcionamento */}
               <div>
                 <label className="block text-sm font-medium text-zinc-400 mb-2">Horario de Funcionamento</label>
-                <div className="bg-zinc-900/50 border border-zinc-800/50 rounded-xl p-4 space-y-2">
+                <div className="bg-zinc-900/50 border border-border rounded-xl p-4 space-y-2">
                   {DIAS_SEMANA.map((dia) => (
                     <div
                       key={dia.key}
@@ -1043,7 +1043,7 @@ export default function ConfiguracoesPage() {
                           <select
                             value={chatbotHorario[dia.key].abertura}
                             onChange={(e) => updateHorarioDia(dia.key, 'abertura', e.target.value)}
-                            className="bg-zinc-800 border border-zinc-700 rounded-lg px-2 py-1 text-sm text-white focus:outline-none focus:border-purple-500"
+                            className="bg-zinc-800 border border-border rounded-lg px-2 py-1 text-sm text-white focus:outline-none focus:border-purple-500"
                           >
                             {HORARIOS.map((h) => (
                               <option key={h} value={h}>{h}</option>
@@ -1053,7 +1053,7 @@ export default function ConfiguracoesPage() {
                           <select
                             value={chatbotHorario[dia.key].fechamento}
                             onChange={(e) => updateHorarioDia(dia.key, 'fechamento', e.target.value)}
-                            className="bg-zinc-800 border border-zinc-700 rounded-lg px-2 py-1 text-sm text-white focus:outline-none focus:border-purple-500"
+                            className="bg-zinc-800 border border-border rounded-lg px-2 py-1 text-sm text-white focus:outline-none focus:border-purple-500"
                           >
                             {HORARIOS.map((h) => (
                               <option key={h} value={h}>{h}</option>
@@ -1090,7 +1090,7 @@ export default function ConfiguracoesPage() {
                     Novo Servico
                   </button>
                 </div>
-                <div className="bg-zinc-900/50 border border-zinc-800/50 rounded-xl p-4">
+                <div className="bg-zinc-900/50 border border-border rounded-xl p-4">
                   {servicos.length > 0 ? (
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
                       {servicos.map((servico) => (
@@ -1098,8 +1098,8 @@ export default function ConfiguracoesPage() {
                           key={servico.id}
                           className={`flex items-center justify-between p-3 rounded-lg border transition-all ${
                             servico.ativo
-                              ? 'bg-zinc-800/50 border-zinc-700/50 hover:border-purple-500/30'
-                              : 'bg-zinc-800/30 border-zinc-700/30 opacity-60'
+                              ? 'bg-zinc-800/50 border-border/50 hover:border-purple-500/30'
+                              : 'bg-zinc-800/30 border-border/30 opacity-60'
                           }`}
                         >
                           <div className="flex items-center gap-2 min-w-0 flex-1">
@@ -1148,7 +1148,7 @@ export default function ConfiguracoesPage() {
                   onChange={(e) => setChatbotBoasVindas(e.target.value)}
                   placeholder="Ola! Sou a LoopIA, assistente virtual da oficina..."
                   rows={2}
-                  className="w-full bg-zinc-900/50 border border-zinc-800/50 rounded-xl px-4 py-3 text-white placeholder-zinc-500 focus:outline-none focus:border-purple-500/50 focus:ring-2 focus:ring-purple-500/20 transition-all resize-none"
+                  className="w-full bg-zinc-900/50 border border-border rounded-xl px-4 py-3 text-white placeholder-zinc-500 focus:outline-none focus:border-purple-500/50 focus:ring-2 focus:ring-purple-500/20 transition-all resize-none"
                 />
               </div>
 
@@ -1195,10 +1195,10 @@ export default function ConfiguracoesPage() {
         </div>
 
         {/* Versao */}
-        <div className="bg-card border border-zinc-800/50 rounded-2xl p-6">
+        <div className="bg-card border border-border rounded-2xl p-6">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
-              <div className="p-3 bg-zinc-800/50 rounded-xl border border-zinc-700/50">
+              <div className="p-3 bg-zinc-800/50 rounded-xl border border-border/50">
                 <Settings size={24} className="text-zinc-400" />
               </div>
               <div>
