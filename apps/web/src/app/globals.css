@@ -47,46 +47,46 @@
 
 /* ===== LIGHT THEME ===== */
 .light {
-  --background: #FAFAFA;
-  --background-secondary: #F5F5F5;
-  --background-tertiary: #EEEEEE;
+  --background: #F0F2F5;
+  --background-secondary: #E4E6E9;
+  --background-tertiary: #D8DADD;
   --foreground: #1A1A1A;
-  --foreground-secondary: #4A4A4A;
-  --foreground-muted: #6B7280;
+  --foreground-secondary: #374151;
+  --foreground-muted: #4B5563;
   --card: #FFFFFF;
-  --card-hover: #F9FAFB;
+  --card-hover: #F8F9FA;
   --card-elevated: #FFFFFF;
-  --border: #E5E7EB;
-  --border-light: #F3F4F6;
-  --border-hover: #D1D5DB;
-  --primary: #43A047;
-  --primary-dark: #2E7D32;
-  --primary-light: #66BB6A;
+  --border: #D1D5DB;
+  --border-light: #E5E7EB;
+  --border-hover: #9CA3AF;
+  --primary: #2E7D32;
+  --primary-dark: #1B5E20;
+  --primary-light: #43A047;
   --primary-foreground: #FFFFFF;
-  --secondary: #3B82F6;
+  --secondary: #2563EB;
   --secondary-foreground: #FFFFFF;
-  --accent: #10B981;
-  --muted: #9CA3AF;
-  --muted-foreground: #6B7280;
-  --danger: #EF4444;
+  --accent: #059669;
+  --muted: #6B7280;
+  --muted-foreground: #4B5563;
+  --danger: #DC2626;
   --danger-foreground: #FFFFFF;
-  --warning: #F59E0B;
+  --warning: #D97706;
   --warning-foreground: #1A1A1A;
-  --success: #22C55E;
+  --success: #16A34A;
   --success-foreground: #FFFFFF;
-  --info: #0EA5E9;
+  --info: #0284C7;
   --info-foreground: #FFFFFF;
-  --glass-bg: rgba(255, 255, 255, 0.8);
-  --glass-border: rgba(0, 0, 0, 0.08);
+  --glass-bg: rgba(255, 255, 255, 0.92);
+  --glass-border: rgba(0, 0, 0, 0.12);
   --input-bg: #FFFFFF;
-  --input-border: #E5E7EB;
-  --scrollbar-thumb: #D1D5DB;
-  --scrollbar-thumb-hover: #43A047;
+  --input-border: #D1D5DB;
+  --scrollbar-thumb: #9CA3AF;
+  --scrollbar-thumb-hover: #2E7D32;
   --sidebar-bg: #FFFFFF;
-  --sidebar-text: #4A4A4A;
+  --sidebar-text: #374151;
   --sidebar-text-active: #1A1A1A;
-  --sidebar-hover: rgba(0, 0, 0, 0.05);
-  --sidebar-active: rgba(67, 160, 71, 0.15);
+  --sidebar-hover: rgba(0, 0, 0, 0.06);
+  --sidebar-active: rgba(46, 125, 50, 0.18);
 }
 
 @theme inline {
