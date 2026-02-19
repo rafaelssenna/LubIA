@@ -299,6 +299,66 @@ const detectVolume = (descricao: string): number | null => {
   return null;
 };
 
+// Normaliza nome do produto para comparação (remove caracteres especiais, espaços extras, etc.)
+const normalizeProductName = (name: string): string => {
+  return name
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '') // Remove acentos
+    .replace(/[-_]/g, ' ')           // Substitui hífens e underscores por espaço
+    .replace(/\s+/g, ' ')            // Remove espaços múltiplos
+    .replace(/[^a-z0-9\s]/g, '')     // Remove caracteres especiais
+    .trim();
+};
+
+// Calcula similaridade entre duas strings (0 a 1)
+const calculateSimilarity = (str1: string, str2: string): number => {
+  const s1 = normalizeProductName(str1);
+  const s2 = normalizeProductName(str2);
+
+  if (s1 === s2) return 1;
+  if (s1.length === 0 || s2.length === 0) return 0;
+
+  // Verifica se um contém o outro
+  if (s1.includes(s2) || s2.includes(s1)) {
+    const shorter = s1.length < s2.length ? s1 : s2;
+    const longer = s1.length >= s2.length ? s1 : s2;
+    return shorter.length / longer.length;
+  }
+
+  // Divide em palavras e verifica quantas são iguais
+  const words1 = s1.split(' ').filter(w => w.length > 2);
+  const words2 = s2.split(' ').filter(w => w.length > 2);
+
+  if (words1.length === 0 || words2.length === 0) return 0;
+
+  let matchingWords = 0;
+  for (const w1 of words1) {
+    if (words2.some(w2 => w1 === w2 || w1.includes(w2) || w2.includes(w1))) {
+      matchingWords++;
+    }
+  }
+
+  return matchingWords / Math.max(words1.length, words2.length);
+};
+
+// Encontra o produto mais similar no estoque
+const findBestMatch = (descricao: string, produtos: Produto[]): Produto | null => {
+  let bestMatch: Produto | null = null;
+  let bestScore = 0;
+  const threshold = 0.6; // Mínimo 60% de similaridade
+
+  for (const produto of produtos) {
+    const score = calculateSimilarity(descricao, produto.nome);
+    if (score > bestScore && score >= threshold) {
+      bestScore = score;
+      bestMatch = produto;
+    }
+  }
+
+  return bestMatch;
+};
+
 export default function EstoquePage() {
   const toast = useToast();
   const [produtos, setProdutos] = useState<Produto[]>([]);
@@ -1505,21 +1565,25 @@ export default function EstoquePage() {
                 const unidadeDetectada = detectUnidade(descricao, item.unidade);
                 const volumeDetectado = detectVolume(descricao);
 
-                // Check if product already exists
+                // Check if product already exists using fuzzy matching
                 let existingProduct = null;
                 try {
-                  const searchRes = await fetch(`/api/produtos?busca=${encodeURIComponent(descricao)}`);
+                  // Busca por palavras-chave do produto
+                  const keywords = normalizeProductName(descricao).split(' ').filter(w => w.length > 3).slice(0, 3).join(' ');
+                  const searchRes = await fetch(`/api/produtos?busca=${encodeURIComponent(keywords)}`);
                   const searchData = await searchRes.json();
                   if (searchData.data?.length > 0) {
-                    // Find a close match
-                    existingProduct = searchData.data.find((p: Produto) =>
-                      p.nome.toLowerCase().includes(descricao.toLowerCase().substring(0, 15)) ||
-                      descricao.toLowerCase().includes(p.nome.toLowerCase().substring(0, 15))
-                    );
+                    // Find best match using fuzzy matching
+                    existingProduct = findBestMatch(descricao, searchData.data);
                   }
                 } catch (err) {
                   console.error('Erro ao buscar produto existente:', err);
                 }
+
+                // Se unidade é LITRO e não detectou volume, assume 1L
+                const volumeFinal = volumeDetectado ?? (unidadeDetectada === 'LITRO' ? 1 : null);
+                // semVolume = true apenas se unidade NÃO for LITRO/KG/METRO e não tem volume
+                const semVolume = !volumeFinal && !['LITRO', 'KG', 'METRO'].includes(unidadeDetectada);
 
                 return {
                   ...item,
@@ -1527,7 +1591,8 @@ export default function EstoquePage() {
                   codigo: item.codigo || `NF-${data.numeroNF || 'AUTO'}-${index + 1}`,
                   categoria: categoriaDetectada,
                   unidade: unidadeDetectada,
-                  volumeUnidade: volumeDetectado,
+                  volumeUnidade: volumeFinal,
+                  semVolume: semVolume,
                   quantidade: item.quantidade || 1,
                   estoqueMinimo: 5,
                   precoCompra: Math.round((item.valorUnitario || 0) * 100) / 100,
@@ -1553,12 +1618,22 @@ export default function EstoquePage() {
         <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 p-4">
           <div className="bg-[#1E1E1E] border border-[#333333] rounded-2xl shadow-2xl w-full max-w-3xl animate-fade-in max-h-[90vh] overflow-hidden flex flex-col">
             <div className="p-6 border-b border-[#333333]">
-              <h2 className="text-xl font-semibold text-[#E8E8E8]">Itens da Nota Fiscal</h2>
-              <p className="text-sm text-[#6B7280] mt-1">
-                {ocrResult?.numeroNF && `NF: ${ocrResult.numeroNF} • `}
-                {ocrResult?.fornecedor && `${ocrResult.fornecedor} • `}
-                {ocrItems.filter(i => i.selected).length} itens selecionados
-              </p>
+              <div className="flex items-start justify-between">
+                <div>
+                  <h2 className="text-xl font-semibold text-[#E8E8E8]">Itens da Nota Fiscal</h2>
+                  <p className="text-sm text-[#6B7280] mt-1">
+                    {ocrResult?.numeroNF && `NF: ${ocrResult.numeroNF} • `}
+                    {ocrResult?.fornecedor && `${ocrResult.fornecedor} • `}
+                    {ocrItems.filter(i => i.selected).length} itens selecionados
+                  </p>
+                </div>
+                {ocrResult?.cnpj && (
+                  <div className="text-right">
+                    <p className="text-xs text-[#6B7280]">CNPJ Fornecedor</p>
+                    <p className="text-sm font-mono text-amber-400">{ocrResult.cnpj}</p>
+                  </div>
+                )}
+              </div>
             </div>
             <div className="flex-1 overflow-y-auto p-6 space-y-4">
               {ocrItems.map((item, index) => (
