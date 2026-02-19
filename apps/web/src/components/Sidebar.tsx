@@ -86,7 +86,7 @@ const menuItems: MenuItem[] = [
     href: '/a-receber',
     permission: 'financeiro',
     subItems: [
-      { icon: Clock, label: 'A Receber', href: '/a-receber', permission: 'a-receber' },
+      { icon: Clock, label: 'Crédito Pessoal', href: '/a-receber', permission: 'a-receber' },
       { icon: History, label: 'Historico', href: '/historico', permission: 'historico' },
     ],
   },

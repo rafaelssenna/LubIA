@@ -119,7 +119,7 @@ export default function AReceberPage() {
 
   return (
     <div className="min-h-screen bg-background">
-      <Header title="A Receber" subtitle="Gerencie os pagamentos pendentes" />
+      <Header title="Crédito Pessoal" subtitle="Gerencie os pagamentos pendentes" />
       <main className="p-6">
         <div className="max-w-7xl mx-auto">
 

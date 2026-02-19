@@ -173,7 +173,7 @@ export async function GET() {
     const totalVendasHoje = vendasHoje.reduce((acc, v) => acc + Number(v.total), 0);
     const vendasHojePagas = vendasHoje.filter(v => v.pago).reduce((acc, v) => acc + Number(v.total), 0);
 
-    // A Receber (combina O.S. e Vendas)
+    // Crédito Pessoal (combina O.S. e Vendas)
     const pendenciasAReceber = [
       ...ordensAReceber.map(o => ({
         id: o.id,

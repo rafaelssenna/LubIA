@@ -240,7 +240,7 @@ export default function Dashboard() {
           </div>
         </div>
 
-        {/* Grid de 3 colunas: Serviços, Vendas, A Receber */}
+        {/* Grid de 3 colunas: Serviços, Vendas, Crédito Pessoal */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Serviços de Hoje */}
           <div className="bg-card rounded-2xl border border-border overflow-hidden">
@@ -379,13 +379,13 @@ export default function Dashboard() {
             </div>
           </div>
 
-          {/* A Receber */}
+          {/* Crédito Pessoal */}
           <div className="bg-card rounded-2xl border border-border overflow-hidden">
             <div className="p-4 border-b border-border flex items-center justify-between">
               <div>
                 <h2 className="text-lg font-bold text-foreground flex items-center gap-2">
                   <Clock className="h-5 w-5 text-amber-400" />
-                  A Receber
+                  Crédito Pessoal
                 </h2>
                 <p className="text-xs text-foreground-muted mt-0.5">
                   {aReceber?.count || 0} pendencia{(aReceber?.count || 0) !== 1 ? 's' : ''} - {formatCurrency(aReceber?.total || 0)}
