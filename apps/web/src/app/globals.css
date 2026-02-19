@@ -45,61 +45,61 @@
   --sidebar-active: rgba(255, 255, 255, 0.2);
 }
 
-/* ===== LIGHT THEME (cores sólidas) ===== */
+/* ===== LIGHT THEME (branco com texto escuro) ===== */
 .light {
-  /* Backgrounds - cinza médio */
-  --background: #B5B5B5;
-  --background-secondary: #A8A8A8;
-  --background-tertiary: #9C9C9C;
-  /* Foregrounds - preto sólido */
-  --foreground: #1A1A1A;
-  --foreground-secondary: #2D2D2D;
-  --foreground-muted: #4A4A4A;
-  /* Cards - mais claros que o fundo para destacar */
-  --card: #C8C8C8;
-  --card-hover: #BEBEBE;
-  --card-elevated: #D0D0D0;
-  /* Borders - escuros e visíveis */
-  --border: #8A8A8A;
-  --border-light: #9A9A9A;
-  --border-hover: #7A7A7A;
+  /* Backgrounds - branco/cinza claro */
+  --background: #F5F5F5;
+  --background-secondary: #EBEBEB;
+  --background-tertiary: #E0E0E0;
+  /* Foregrounds - PRETO para boa leitura */
+  --foreground: #000000;
+  --foreground-secondary: #1A1A1A;
+  --foreground-muted: #333333;
+  /* Cards - branco sólido */
+  --card: #FFFFFF;
+  --card-hover: #F8F8F8;
+  --card-elevated: #FFFFFF;
+  /* Borders - cinza visível */
+  --border: #CCCCCC;
+  --border-light: #DDDDDD;
+  --border-hover: #AAAAAA;
   /* Primary: verde da marca */
-  --primary: #43A047;
+  --primary: #2E7D32;
   --primary-dark: #1B5E20;
-  --primary-light: #66BB6A;
+  --primary-light: #43A047;
   --primary-foreground: #FFFFFF;
   /* Secondary */
-  --secondary: #42A5F5;
+  --secondary: #1976D2;
   --secondary-foreground: #FFFFFF;
   /* Accent */
-  --accent: #00E676;
-  /* Muted */
-  --muted: #5A5A5A;
-  --muted-foreground: #4A4A4A;
+  --accent: #00C853;
+  /* Muted - cinza escuro legível */
+  --muted: #555555;
+  --muted-foreground: #444444;
   /* Feedback */
-  --danger: #EF5350;
+  --danger: #D32F2F;
   --danger-foreground: #FFFFFF;
-  --warning: #FFD54F;
-  --warning-foreground: #1A1A1A;
-  --success: #66BB6A;
-  --success-foreground: #1A1A1A;
-  --info: #42A5F5;
+  --warning: #F9A825;
+  --warning-foreground: #000000;
+  --success: #388E3C;
+  --success-foreground: #FFFFFF;
+  --info: #1976D2;
   --info-foreground: #FFFFFF;
-  /* Glass - sólido, sem transparência */
-  --glass-bg: #C0C0C0;
-  --glass-border: #8A8A8A;
-  /* Input - destacado */
-  --input-bg: #D5D5D5;
-  --input-border: #8A8A8A;
+  /* Glass - branco sólido */
+  --glass-bg: #FFFFFF;
+  --glass-border: #CCCCCC;
+  /* Input - branco com borda */
+  --input-bg: #FFFFFF;
+  --input-border: #CCCCCC;
   /* Scrollbar */
-  --scrollbar-thumb: #7A7A7A;
-  --scrollbar-thumb-hover: #43A047;
-  /* Sidebar - sólido */
-  --sidebar-bg: #C0C0C0;
-  --sidebar-text: #2D2D2D;
-  --sidebar-text-active: #1A1A1A;
-  --sidebar-hover: #B0B0B0;
-  --sidebar-active: #A0A0A0;
+  --scrollbar-thumb: #AAAAAA;
+  --scrollbar-thumb-hover: #2E7D32;
+  /* Sidebar - branco */
+  --sidebar-bg: #FFFFFF;
+  --sidebar-text: #333333;
+  --sidebar-text-active: #000000;
+  --sidebar-hover: #F0F0F0;
+  --sidebar-active: #E8F5E9;
 }
 
 @theme inline {
@@ -212,20 +212,20 @@ body {
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -2px rgba(0, 0, 0, 0.2);
 }
 
-/* Light Mode - SEM transparência, tudo sólido */
+/* Light Mode - branco sólido */
 .light .glass {
-  background: #C8C8C8;
+  background: #FFFFFF;
   backdrop-filter: none;
   -webkit-backdrop-filter: none;
-  border: 1px solid #8A8A8A;
+  border: 1px solid #CCCCCC;
 }
 
 .light .glass-card {
-  background: #D5D5D5;
+  background: #FFFFFF;
   backdrop-filter: none;
   -webkit-backdrop-filter: none;
-  border: 1px solid #8A8A8A;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  border: 1px solid #CCCCCC;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
 }
 
 /* Button Styles */
@@ -337,7 +337,7 @@ input:focus, select:focus, textarea:focus {
 }
 
 .light .custom-scrollbar::-webkit-scrollbar-track {
-  background: #B0B0B0;
+  background: #F0F0F0;
 }
 
 .custom-scrollbar::-webkit-scrollbar-thumb {
