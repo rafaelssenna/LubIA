@@ -228,7 +228,7 @@ export default function ConfiguracoesPage() {
   const [servicos, setServicos] = useState<Servico[]>([]);
   const [showServicoModal, setShowServicoModal] = useState(false);
   const [editingServico, setEditingServico] = useState<Servico | null>(null);
-  const [servicoForm, setServicoForm] = useState({ nome: '', precoBase: '' });
+  const [servicoForm, setServicoForm] = useState({ nome: '' });
   const [savingServico, setSavingServico] = useState(false);
 
   // Filiais
@@ -292,8 +292,8 @@ export default function ConfiguracoesPage() {
   };
 
   const handleSaveServico = async () => {
-    if (!servicoForm.nome || !servicoForm.precoBase) {
-      toast.error('Preencha nome e preço');
+    if (!servicoForm.nome) {
+      toast.error('Preencha o nome do serviço');
       return;
     }
 
@@ -307,7 +307,7 @@ export default function ConfiguracoesPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           nome: servicoForm.nome,
-          precoBase: parseFloat(servicoForm.precoBase.replace(',', '.')),
+          precoBase: 0,
           categoria: 'OUTROS',
           ativo: true,
         }),
@@ -317,7 +317,7 @@ export default function ConfiguracoesPage() {
         toast.success(editingServico ? 'Serviço atualizado!' : 'Serviço cadastrado!');
         setShowServicoModal(false);
         setEditingServico(null);
-        setServicoForm({ nome: '', precoBase: '' });
+        setServicoForm({ nome: '' });
         fetchServicos();
       } else {
         const data = await res.json();
@@ -349,7 +349,7 @@ export default function ConfiguracoesPage() {
 
   const openEditServico = (servico: Servico) => {
     setEditingServico(servico);
-    setServicoForm({ nome: servico.nome, precoBase: servico.precoBase.toString().replace('.', ',') });
+    setServicoForm({ nome: servico.nome });
     setShowServicoModal(true);
   };
 
@@ -822,7 +822,7 @@ export default function ConfiguracoesPage() {
                   {editingServico ? 'Editar Servico' : 'Novo Servico'}
                 </h2>
               </div>
-              <div className="p-6 space-y-4">
+              <div className="p-6">
                 <div>
                   <label className="block text-sm font-medium text-zinc-400 mb-2">Nome do Servico</label>
                   <input
@@ -833,23 +833,13 @@ export default function ConfiguracoesPage() {
                     className="w-full bg-zinc-900/50 border border-zinc-800/50 rounded-xl px-4 py-3 text-white placeholder-zinc-500 focus:outline-none focus:border-purple-500/50 focus:ring-2 focus:ring-purple-500/20 transition-all"
                   />
                 </div>
-                <div>
-                  <label className="block text-sm font-medium text-zinc-400 mb-2">Preco (R$)</label>
-                  <input
-                    type="text"
-                    value={servicoForm.precoBase}
-                    onChange={(e) => setServicoForm({ ...servicoForm, precoBase: e.target.value })}
-                    placeholder="Ex: 150,00"
-                    className="w-full bg-zinc-900/50 border border-zinc-800/50 rounded-xl px-4 py-3 text-white placeholder-zinc-500 focus:outline-none focus:border-purple-500/50 focus:ring-2 focus:ring-purple-500/20 transition-all"
-                  />
-                </div>
               </div>
               <div className="p-6 border-t border-zinc-800/50 flex gap-3 justify-end">
                 <button
                   onClick={() => {
                     setShowServicoModal(false);
                     setEditingServico(null);
-                    setServicoForm({ nome: '', precoBase: '' });
+                    setServicoForm({ nome: '' });
                   }}
                   className="px-6 py-3 border border-zinc-700 rounded-xl text-zinc-300 hover:bg-zinc-800 transition-colors"
                 >
@@ -1091,7 +1081,7 @@ export default function ConfiguracoesPage() {
                   <button
                     onClick={() => {
                       setEditingServico(null);
-                      setServicoForm({ nome: '', precoBase: '' });
+                      setServicoForm({ nome: '' });
                       setShowServicoModal(true);
                     }}
                     className="flex items-center gap-1.5 px-3 py-1.5 bg-purple-500/10 border border-purple-500/30 rounded-lg text-purple-400 text-xs font-medium hover:bg-purple-500/20 transition-all"
@@ -1116,10 +1106,7 @@ export default function ConfiguracoesPage() {
                             <Wrench size={14} className="text-purple-400 shrink-0" />
                             <span className="text-sm text-white truncate">{servico.nome}</span>
                           </div>
-                          <div className="flex items-center gap-2 shrink-0">
-                            <span className="text-sm text-[#43A047] font-semibold">
-                              R$ {Number(servico.precoBase).toFixed(2).replace('.', ',')}
-                            </span>
+                          <div className="flex items-center gap-1 shrink-0">
                             <button
                               onClick={() => openEditServico(servico)}
                               className="p-1.5 hover:bg-blue-500/10 rounded-lg text-zinc-400 hover:text-blue-400 transition-all"
