@@ -5,9 +5,9 @@ import { getSession } from '@/lib/auth';
 
 // Mapa de transições de status válidas
 const VALID_TRANSITIONS: Record<string, string[]> = {
-  AGENDADO: ['EM_ANDAMENTO', 'CANCELADO'],
+  AGENDADO: ['EM_ANDAMENTO', 'CONCLUIDO', 'CANCELADO'],
   EM_ANDAMENTO: ['CONCLUIDO', 'AGUARDANDO_PECAS', 'CANCELADO'],
-  AGUARDANDO_PECAS: ['EM_ANDAMENTO', 'CANCELADO'],
+  AGUARDANDO_PECAS: ['EM_ANDAMENTO', 'CONCLUIDO', 'CANCELADO'],
   CONCLUIDO: ['ENTREGUE'],
   CANCELADO: [],
   ENTREGUE: [],
