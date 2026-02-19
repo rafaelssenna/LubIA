@@ -346,22 +346,22 @@ export default function VeiculosPage() {
                 </div>
 
                 <div className="space-y-2 mb-4">
-                  <div className="flex items-center justify-between text-sm p-3 rounded-xl bg-zinc-900 border border-border">
+                  <div className="flex items-center justify-between text-sm p-3 rounded-xl bg-primary/10 border border-primary/20">
                     <span className="text-muted flex items-center gap-2">
-                      <User size={14} className="text-blue-400" /> Proprietario
+                      <User size={14} className="text-primary" /> Proprietario
                     </span>
                     <span className="text-foreground">{capitalize(veiculo.cliente.nome)}</span>
                   </div>
                   {veiculo.kmAtual && (
-                    <div className="flex items-center justify-between text-sm p-3 rounded-xl bg-zinc-900 border border-border">
+                    <div className="flex items-center justify-between text-sm p-3 rounded-xl bg-primary/10 border border-primary/20">
                       <span className="text-muted flex items-center gap-2">
-                        <Gauge size={14} className="text-amber-400" /> KM Atual
+                        <Gauge size={14} className="text-primary" /> KM Atual
                       </span>
                       <span className="text-foreground">{veiculo.kmAtual.toLocaleString('pt-BR')} km</span>
                     </div>
                   )}
                   {veiculo.cor && (
-                    <div className="flex items-center justify-between text-sm p-3 rounded-xl bg-zinc-900 border border-border">
+                    <div className="flex items-center justify-between text-sm p-3 rounded-xl bg-primary/10 border border-primary/20">
                       <span className="text-muted">Cor</span>
                       <span className="text-foreground">{capitalize(veiculo.cor)}</span>
                     </div>

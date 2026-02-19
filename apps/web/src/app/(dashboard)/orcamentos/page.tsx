@@ -691,8 +691,8 @@ function OrcamentosPageContent() {
 
                     {/* Cliente */}
                     <div className="flex items-center gap-4 flex-1 min-w-[200px]">
-                      <div className="p-3 bg-zinc-800 rounded-xl">
-                        <User className="h-5 w-5 text-muted" />
+                      <div className="p-3 bg-primary/10 rounded-xl">
+                        <User className="h-5 w-5 text-primary" />
                       </div>
                       <div className="flex-1 min-w-0">
                         <p className="text-white font-medium truncate">
