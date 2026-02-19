@@ -1591,6 +1591,18 @@ function OrdensPageContent() {
               </div>
             </div>
             <div className="p-6 border-t border-[#333333] flex gap-3 justify-end">
+              {(selectedOrdem.status === 'AGENDADO' || selectedOrdem.status === 'EM_ANDAMENTO' || selectedOrdem.status === 'AGUARDANDO_PECAS') && (
+                <button
+                  onClick={() => {
+                    setShowDetailModal(false);
+                    setShowConcluirConfirm(true);
+                  }}
+                  className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-emerald-500 to-emerald-700 rounded-xl text-white font-medium hover:opacity-90 transition-opacity"
+                >
+                  <CheckCircle size={18} />
+                  Concluir
+                </button>
+              )}
               {(selectedOrdem.status === 'AGENDADO' || selectedOrdem.status === 'EM_ANDAMENTO') && (
                 <button
                   onClick={() => {
