@@ -189,10 +189,10 @@ export async function PUT(
       updateData.dataPagamentoPrevista = dataPagamentoPrevista ? new Date(dataPagamentoPrevista) : null;
     }
 
-    // If desconto is being applied, recalculate total
+    // If desconto is being applied, recalculate total (always round down)
     if (desconto !== undefined && desconto > 0) {
       const descontoValor = Number(existing.total) * (desconto / 100);
-      updateData.total = Number(existing.total) - descontoValor;
+      updateData.total = Math.floor(Number(existing.total) - descontoValor);
     }
 
     // If items are being updated, recalculate total and handle stock

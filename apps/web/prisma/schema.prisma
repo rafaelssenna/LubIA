@@ -181,6 +181,7 @@ enum FormaPagamento {
   PIX
   CREDITO
   DEBITO
+  CREDITO_PESSOAL
 }
 
 // Ordem de serviço

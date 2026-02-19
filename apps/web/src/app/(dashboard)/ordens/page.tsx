@@ -1805,7 +1805,7 @@ function OrdensPageContent() {
                     </div>
                     <div className="flex justify-between font-bold mt-1 pt-1 border-t border-amber-500/20">
                       <span className="text-white">Total Final:</span>
-                      <span className="text-emerald-400">{formatCurrency(selectedOrdem.total * (1 - parseFloat(descontoConcluir.replace(',', '.')) / 100))}</span>
+                      <span className="text-emerald-400">{formatCurrency(Math.floor(selectedOrdem.total * (1 - parseFloat(descontoConcluir.replace(',', '.')) / 100)))}</span>
                     </div>
                   </div>
                 )}

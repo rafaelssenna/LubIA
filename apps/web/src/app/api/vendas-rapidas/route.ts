@@ -149,9 +149,9 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // Aplicar desconto percentual
+    // Aplicar desconto percentual (sempre arredonda para baixo)
     const descontoValor = subtotalVenda * (descontoPercent / 100);
-    const totalVenda = subtotalVenda - descontoValor;
+    const totalVenda = Math.floor(subtotalVenda - descontoValor);
 
     // Validar estoque antes de criar
     const stockOps: StockOperation[] = itensData.map(item => ({

@@ -189,11 +189,11 @@ export default function VendasRapidasPage() {
     setItensVenda(itensVenda.filter(i => i.produtoId !== produtoId));
   };
 
-  // Calcular total
+  // Calcular total (sempre arredonda para baixo)
   const subtotalVenda = itensVenda.reduce((acc, item) => acc + item.subtotal, 0);
   const descontoPercent = parseFloat(desconto.replace(',', '.')) || 0;
   const descontoValor = subtotalVenda * (descontoPercent / 100);
-  const totalVenda = subtotalVenda - descontoValor;
+  const totalVenda = Math.floor(subtotalVenda - descontoValor);
 
   // Finalizar venda
   const finalizarVenda = async () => {
