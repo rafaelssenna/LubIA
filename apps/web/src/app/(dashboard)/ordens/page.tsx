@@ -103,6 +103,7 @@ function OrdensPageContent() {
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [showConcluirConfirm, setShowConcluirConfirm] = useState(false);
   const [selectedOrdem, setSelectedOrdem] = useState<OrdemServico | null>(null);
+  const [formaPagamento, setFormaPagamento] = useState<string>('');
   const [saving, setSaving] = useState(false);
 
   // Form states for new O.S.
@@ -382,12 +383,15 @@ function OrdensPageContent() {
     }
   };
 
-  const handleStatusChange = async (ordem: OrdemServico, newStatus: string) => {
+  const handleStatusChange = async (ordem: OrdemServico, newStatus: string, pagamento?: string) => {
     try {
       const res = await fetch(`/api/ordens/${ordem.id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ status: newStatus }),
+        body: JSON.stringify({
+          status: newStatus,
+          ...(pagamento && { formaPagamento: pagamento })
+        }),
       });
 
       if (res.ok) {
@@ -1577,6 +1581,33 @@ function OrdensPageContent() {
                 </div>
               </div>
 
+              {/* Forma de Pagamento */}
+              <div className="mb-4">
+                <label className="block text-sm text-zinc-400 mb-2">Forma de Pagamento</label>
+                <div className="grid grid-cols-2 gap-2">
+                  {[
+                    { value: 'PIX', label: 'PIX', icon: '📱' },
+                    { value: 'DINHEIRO', label: 'Dinheiro', icon: '💵' },
+                    { value: 'CREDITO', label: 'Crédito', icon: '💳' },
+                    { value: 'DEBITO', label: 'Débito', icon: '💳' },
+                  ].map((method) => (
+                    <button
+                      key={method.value}
+                      type="button"
+                      onClick={() => setFormaPagamento(method.value)}
+                      className={`p-3 rounded-xl border transition-all duration-200 flex items-center justify-center gap-2 ${
+                        formaPagamento === method.value
+                          ? 'bg-emerald-500/20 border-emerald-500 text-emerald-400'
+                          : 'bg-[#121212] border-zinc-700 text-zinc-400 hover:border-zinc-600'
+                      }`}
+                    >
+                      <span>{method.icon}</span>
+                      <span className="font-medium">{method.label}</span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+
               <p className="text-zinc-400 text-sm">
                 Confirma a conclusao desta ordem de servico?
               </p>
@@ -1586,6 +1617,7 @@ function OrdensPageContent() {
                 onClick={() => {
                   setShowConcluirConfirm(false);
                   setSelectedOrdem(null);
+                  setFormaPagamento('');
                 }}
                 className="px-6 py-3 border border-zinc-700 rounded-xl text-zinc-400 hover:bg-zinc-800 transition-all duration-200"
               >
@@ -1593,14 +1625,15 @@ function OrdensPageContent() {
               </button>
               <button
                 onClick={async () => {
-                  await handleStatusChange(selectedOrdem, 'CONCLUIDO');
+                  await handleStatusChange(selectedOrdem, 'CONCLUIDO', formaPagamento);
                   setShowConcluirConfirm(false);
                   setSelectedOrdem(null);
+                  setFormaPagamento('');
                 }}
-                disabled={saving}
+                disabled={saving || !formaPagamento}
                 className="px-6 py-3 bg-gradient-to-r from-emerald-500 to-emerald-700 rounded-xl text-white font-medium hover:shadow-lg hover:shadow-emerald-500/25 transition-all duration-300 disabled:opacity-50"
               >
-                Confirmar
+                {!formaPagamento ? 'Selecione o pagamento' : 'Confirmar'}
               </button>
             </div>
           </div>

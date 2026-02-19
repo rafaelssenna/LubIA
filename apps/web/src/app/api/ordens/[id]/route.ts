@@ -135,7 +135,7 @@ export async function PUT(
     }
 
     const body = await request.json();
-    const { status, veiculoId, dataAgendada, dataInicio, dataConclusao, kmEntrada, observacoes, itens, itensProduto, servicosExtras } = body;
+    const { status, veiculoId, dataAgendada, dataInicio, dataConclusao, kmEntrada, observacoes, itens, itensProduto, servicosExtras, formaPagamento } = body;
 
     // Verify order exists and belongs to this empresa
     const existing = await prisma.ordemServico.findFirst({
@@ -177,6 +177,7 @@ export async function PUT(
     if (dataConclusao !== undefined) updateData.dataConclusao = dataConclusao ? new Date(dataConclusao) : null;
     if (kmEntrada !== undefined) updateData.kmEntrada = kmEntrada;
     if (observacoes !== undefined) updateData.observacoes = observacoes;
+    if (formaPagamento !== undefined) updateData.formaPagamento = formaPagamento;
 
     // If items are being updated, recalculate total and handle stock
     if (itens !== undefined || itensProduto !== undefined || servicosExtras !== undefined) {

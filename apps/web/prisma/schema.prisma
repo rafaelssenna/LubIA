@@ -175,6 +175,14 @@ enum StatusOS {
   ENTREGUE
 }
 
+// Forma de pagamento
+enum FormaPagamento {
+  DINHEIRO
+  PIX
+  CREDITO
+  DEBITO
+}
+
 // Ordem de serviço
 model OrdemServico {
   id             Int         @id @default(autoincrement())
@@ -187,9 +195,10 @@ model OrdemServico {
   dataConclusao  DateTime?
   kmEntrada      Int?
   observacoes    String?
-  total          Decimal     @db.Decimal(10, 2) @default(0)
-  createdAt      DateTime    @default(now())
-  updatedAt      DateTime    @updatedAt
+  total          Decimal        @db.Decimal(10, 2) @default(0)
+  formaPagamento FormaPagamento?
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
 
   empresa        Empresa            @relation(fields: [empresaId], references: [id], onDelete: Cascade)
   veiculo        Veiculo            @relation(fields: [veiculoId], references: [id], onDelete: Cascade)
@@ -572,14 +581,15 @@ model ItemOrcamentoProduto {
 
 // Venda rápida - sem necessidade de cliente cadastrado
 model VendaRapida {
-  id          Int      @id @default(autoincrement())
-  empresaId   Int
-  numero      String   // VR-0001
-  nomeCliente String?  // Opcional - apenas para identificação
-  observacoes String?
-  total       Decimal  @db.Decimal(10, 2) @default(0)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id             Int             @id @default(autoincrement())
+  empresaId      Int
+  numero         String          // VR-0001
+  nomeCliente    String?         // Opcional - apenas para identificação
+  observacoes    String?
+  total          Decimal         @db.Decimal(10, 2) @default(0)
+  formaPagamento FormaPagamento?
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
 
   empresa Empresa           @relation(fields: [empresaId], references: [id], onDelete: Cascade)
   itens   ItemVendaRapida[]

@@ -80,6 +80,7 @@ export async function GET(request: NextRequest) {
         numero: v.numero,
         nomeCliente: v.nomeCliente,
         observacoes: v.observacoes,
+        formaPagamento: v.formaPagamento,
         total: Number(v.total),
         createdAt: v.createdAt,
         itens: v.itens.map(i => ({
@@ -116,7 +117,7 @@ export async function POST(request: NextRequest) {
 
   try {
     const body = await request.json();
-    const { nomeCliente, observacoes, itens } = body;
+    const { nomeCliente, observacoes, formaPagamento, itens } = body;
 
     if (!itens || itens.length === 0) {
       return NextResponse.json({ error: 'Adicione pelo menos um produto' }, { status: 400 });
@@ -184,6 +185,7 @@ export async function POST(request: NextRequest) {
           numero: numeroFormatado,
           nomeCliente: nomeCliente || null,
           observacoes: observacoes || null,
+          formaPagamento: formaPagamento || null,
           total: totalVenda,
           empresaId: session.empresaId,
           itens: {

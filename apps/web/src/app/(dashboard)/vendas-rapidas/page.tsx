@@ -70,6 +70,7 @@ export default function VendasRapidasPage() {
   const [showNovaVenda, setShowNovaVenda] = useState(false);
   const [nomeCliente, setNomeCliente] = useState('');
   const [observacoes, setObservacoes] = useState('');
+  const [formaPagamento, setFormaPagamento] = useState('');
   const [itensVenda, setItensVenda] = useState<ItemVenda[]>([]);
   const [saving, setSaving] = useState(false);
 
@@ -196,6 +197,11 @@ export default function VendasRapidasPage() {
       return;
     }
 
+    if (!formaPagamento) {
+      showToast('Selecione a forma de pagamento', 'error');
+      return;
+    }
+
     setSaving(true);
     try {
       const res = await fetch('/api/vendas-rapidas', {
@@ -204,6 +210,7 @@ export default function VendasRapidasPage() {
         body: JSON.stringify({
           nomeCliente: nomeCliente || null,
           observacoes: observacoes || null,
+          formaPagamento,
           itens: itensVenda.map(i => ({
             produtoId: i.produtoId,
             quantidade: i.quantidade,
@@ -233,6 +240,7 @@ export default function VendasRapidasPage() {
   const resetForm = () => {
     setNomeCliente('');
     setObservacoes('');
+    setFormaPagamento('');
     setItensVenda([]);
     setBuscaProduto('');
     setProdutos([]);
@@ -562,10 +570,37 @@ export default function VendasRapidasPage() {
                 <textarea
                   value={observacoes}
                   onChange={(e) => setObservacoes(e.target.value)}
-                  placeholder="Ex: Pagamento em dinheiro"
+                  placeholder="Ex: Troco para R$100"
                   rows={2}
                   className="w-full px-4 py-3 bg-[#121212] rounded-xl border border-white/10 text-white placeholder:text-white/40 focus:outline-none focus:border-[#43A047]/50 resize-none"
                 />
+              </div>
+
+              {/* Forma de Pagamento */}
+              <div>
+                <label className="block text-sm text-white/60 mb-2">Forma de Pagamento *</label>
+                <div className="grid grid-cols-2 gap-2">
+                  {[
+                    { value: 'PIX', label: 'PIX', icon: '📱' },
+                    { value: 'DINHEIRO', label: 'Dinheiro', icon: '💵' },
+                    { value: 'CREDITO', label: 'Crédito', icon: '💳' },
+                    { value: 'DEBITO', label: 'Débito', icon: '💳' },
+                  ].map((method) => (
+                    <button
+                      key={method.value}
+                      type="button"
+                      onClick={() => setFormaPagamento(method.value)}
+                      className={`p-3 rounded-xl border transition-all duration-200 flex items-center justify-center gap-2 ${
+                        formaPagamento === method.value
+                          ? 'bg-[#43A047]/20 border-[#43A047] text-[#43A047]'
+                          : 'bg-[#121212] border-white/10 text-white/60 hover:border-white/20'
+                      }`}
+                    >
+                      <span>{method.icon}</span>
+                      <span className="font-medium">{method.label}</span>
+                    </button>
+                  ))}
+                </div>
               </div>
             </div>
 
@@ -588,7 +623,7 @@ export default function VendasRapidasPage() {
                   </button>
                   <button
                     onClick={finalizarVenda}
-                    disabled={saving || itensVenda.length === 0}
+                    disabled={saving || itensVenda.length === 0 || !formaPagamento}
                     className="px-6 py-3 bg-[#43A047] text-white rounded-xl hover:bg-[#388E3C] transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
                   >
                     {saving ? (
@@ -599,7 +634,7 @@ export default function VendasRapidasPage() {
                     ) : (
                       <>
                         <ShoppingCart size={20} />
-                        Finalizar Venda
+                        {!formaPagamento ? 'Selecione o pagamento' : 'Finalizar Venda'}
                       </>
                     )}
                   </button>
