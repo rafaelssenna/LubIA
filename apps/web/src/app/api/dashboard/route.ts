@@ -28,20 +28,22 @@ export async function GET() {
     ] = await Promise.all([
       prisma.cliente.count({ where: { empresaId: session.empresaId } }),
       prisma.veiculo.count({ where: { empresaId: session.empresaId } }),
-      // Apenas O.S. concluídas/entregues contam no faturamento
+      // Apenas O.S. concluídas/entregues E PAGAS contam no faturamento
       prisma.ordemServico.findMany({
         where: {
           empresaId: session.empresaId,
           createdAt: { gte: inicioMes, lte: fimMes },
           status: { in: ['CONCLUIDO', 'ENTREGUE'] },
+          pago: true, // Apenas pagas
         },
         select: { total: true },
       }),
-      // Vendas rápidas do mês
+      // Vendas rápidas do mês (apenas pagas)
       prisma.vendaRapida.findMany({
         where: {
           empresaId: session.empresaId,
           createdAt: { gte: inicioMes, lte: fimMes },
+          pago: true, // Apenas pagas
         },
         select: { total: true },
       }),

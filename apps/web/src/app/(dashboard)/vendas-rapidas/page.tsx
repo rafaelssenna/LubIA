@@ -72,6 +72,8 @@ export default function VendasRapidasPage() {
   const [observacoes, setObservacoes] = useState('');
   const [formaPagamento, setFormaPagamento] = useState('');
   const [desconto, setDesconto] = useState('');
+  const [aReceber, setAReceber] = useState(false);
+  const [dataPagamentoPrevista, setDataPagamentoPrevista] = useState('');
   const [itensVenda, setItensVenda] = useState<ItemVenda[]>([]);
   const [saving, setSaving] = useState(false);
 
@@ -201,8 +203,13 @@ export default function VendasRapidasPage() {
       return;
     }
 
-    if (!formaPagamento) {
+    if (!aReceber && !formaPagamento) {
       showToast('Selecione a forma de pagamento', 'error');
+      return;
+    }
+
+    if (aReceber && !nomeCliente) {
+      showToast('Informe o nome do cliente para vendas a receber', 'error');
       return;
     }
 
@@ -214,8 +221,10 @@ export default function VendasRapidasPage() {
         body: JSON.stringify({
           nomeCliente: nomeCliente || null,
           observacoes: observacoes || null,
-          formaPagamento,
+          formaPagamento: aReceber ? null : formaPagamento,
           desconto: descontoPercent,
+          pago: !aReceber,
+          dataPagamentoPrevista: aReceber && dataPagamentoPrevista ? dataPagamentoPrevista : null,
           itens: itensVenda.map(i => ({
             produtoId: i.produtoId,
             quantidade: i.quantidade,
@@ -227,7 +236,10 @@ export default function VendasRapidasPage() {
 
       const data = await res.json();
       if (res.ok) {
-        showToast(`Venda ${data.data.numero} realizada com sucesso!`, 'success');
+        const msg = aReceber
+          ? `Venda ${data.data.numero} registrada como A Receber!`
+          : `Venda ${data.data.numero} realizada com sucesso!`;
+        showToast(msg, 'success');
         setShowNovaVenda(false);
         resetForm();
         fetchVendas();
@@ -247,6 +259,8 @@ export default function VendasRapidasPage() {
     setObservacoes('');
     setFormaPagamento('');
     setDesconto('');
+    setAReceber(false);
+    setDataPagamentoPrevista('');
     setItensVenda([]);
     setBuscaProduto('');
     setProdutos([]);
@@ -582,32 +596,74 @@ export default function VendasRapidasPage() {
                 />
               </div>
 
-              {/* Forma de Pagamento */}
-              <div>
-                <label className="block text-sm text-white/60 mb-2">Forma de Pagamento *</label>
-                <div className="grid grid-cols-2 gap-2">
-                  {[
-                    { value: 'PIX', label: 'PIX', icon: '📱' },
-                    { value: 'DINHEIRO', label: 'Dinheiro', icon: '💵' },
-                    { value: 'CREDITO', label: 'Crédito', icon: '💳' },
-                    { value: 'DEBITO', label: 'Débito', icon: '💳' },
-                  ].map((method) => (
-                    <button
-                      key={method.value}
-                      type="button"
-                      onClick={() => setFormaPagamento(method.value)}
-                      className={`p-3 rounded-xl border transition-all duration-200 flex items-center justify-center gap-2 ${
-                        formaPagamento === method.value
-                          ? 'bg-[#43A047]/20 border-[#43A047] text-[#43A047]'
-                          : 'bg-[#121212] border-white/10 text-white/60 hover:border-white/20'
-                      }`}
-                    >
-                      <span>{method.icon}</span>
-                      <span className="font-medium">{method.label}</span>
-                    </button>
-                  ))}
+              {/* Toggle A Receber */}
+              <div className="flex items-center justify-between p-3 bg-[#121212] rounded-xl border border-white/10">
+                <div className="flex items-center gap-3">
+                  <span className="text-xl">📋</span>
+                  <div>
+                    <p className="text-white font-medium">A Receber</p>
+                    <p className="text-xs text-white/40">Cliente vai pagar depois</p>
+                  </div>
                 </div>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setAReceber(!aReceber);
+                    if (!aReceber) setFormaPagamento('');
+                  }}
+                  className={`relative inline-flex h-7 w-12 items-center rounded-full transition-all duration-300 ${
+                    aReceber ? 'bg-amber-500' : 'bg-zinc-700'
+                  }`}
+                >
+                  <span
+                    className={`inline-block h-5 w-5 transform rounded-full bg-white transition-transform shadow-lg ${
+                      aReceber ? 'translate-x-6' : 'translate-x-1'
+                    }`}
+                  />
+                </button>
               </div>
+
+              {/* Data prevista de pagamento (quando A Receber) */}
+              {aReceber && (
+                <div>
+                  <label className="block text-sm text-white/60 mb-2">Data prevista de pagamento (opcional)</label>
+                  <input
+                    type="date"
+                    value={dataPagamentoPrevista}
+                    onChange={(e) => setDataPagamentoPrevista(e.target.value)}
+                    className="w-full px-4 py-3 bg-[#121212] rounded-xl border border-amber-500/30 text-white focus:outline-none focus:border-amber-500/50"
+                  />
+                </div>
+              )}
+
+              {/* Forma de Pagamento (quando NÃO é A Receber) */}
+              {!aReceber && (
+                <div>
+                  <label className="block text-sm text-white/60 mb-2">Forma de Pagamento *</label>
+                  <div className="grid grid-cols-2 gap-2">
+                    {[
+                      { value: 'PIX', label: 'PIX', icon: '📱' },
+                      { value: 'DINHEIRO', label: 'Dinheiro', icon: '💵' },
+                      { value: 'CREDITO', label: 'Crédito', icon: '💳' },
+                      { value: 'DEBITO', label: 'Débito', icon: '💳' },
+                    ].map((method) => (
+                      <button
+                        key={method.value}
+                        type="button"
+                        onClick={() => setFormaPagamento(method.value)}
+                        className={`p-3 rounded-xl border transition-all duration-200 flex items-center justify-center gap-2 ${
+                          formaPagamento === method.value
+                            ? 'bg-[#43A047]/20 border-[#43A047] text-[#43A047]'
+                            : 'bg-[#121212] border-white/10 text-white/60 hover:border-white/20'
+                        }`}
+                      >
+                        <span>{method.icon}</span>
+                        <span className="font-medium">{method.label}</span>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
 
               {/* Desconto */}
               <div>
@@ -658,6 +714,16 @@ export default function VendasRapidasPage() {
                       <p className="text-2xl font-bold text-emerald-400">{formatCurrency(totalVenda)}</p>
                     </>
                   )}
+                  {aReceber && (
+                    <div className="mt-2 px-3 py-2 bg-amber-500/20 rounded-lg border border-amber-500/30">
+                      <p className="text-amber-400 text-sm font-medium">A Receber</p>
+                      {dataPagamentoPrevista && (
+                        <p className="text-amber-400/70 text-xs">
+                          Previsão: {new Date(dataPagamentoPrevista + 'T00:00:00').toLocaleDateString('pt-BR')}
+                        </p>
+                      )}
+                    </div>
+                  )}
                 </div>
                 <div className="flex gap-3">
                   <button
@@ -671,13 +737,20 @@ export default function VendasRapidasPage() {
                   </button>
                   <button
                     onClick={finalizarVenda}
-                    disabled={saving || itensVenda.length === 0 || !formaPagamento}
-                    className="px-6 py-3 bg-[#43A047] text-white rounded-xl hover:bg-[#388E3C] transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                    disabled={saving || itensVenda.length === 0 || (!aReceber && !formaPagamento) || (aReceber && !nomeCliente)}
+                    className={`px-6 py-3 text-white rounded-xl transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 ${
+                      aReceber ? 'bg-amber-500 hover:bg-amber-600' : 'bg-[#43A047] hover:bg-[#388E3C]'
+                    }`}
                   >
                     {saving ? (
                       <>
                         <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
                         Finalizando...
+                      </>
+                    ) : aReceber ? (
+                      <>
+                        <ShoppingCart size={20} />
+                        {!nomeCliente ? 'Informe o cliente' : 'Registrar A Receber'}
                       </>
                     ) : (
                       <>

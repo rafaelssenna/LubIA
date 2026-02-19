@@ -117,8 +117,9 @@ export async function POST(request: NextRequest) {
 
   try {
     const body = await request.json();
-    const { nomeCliente, observacoes, formaPagamento, desconto, itens } = body;
+    const { nomeCliente, observacoes, formaPagamento, desconto, pago, dataPagamentoPrevista, itens } = body;
     const descontoPercent = parseFloat(desconto) || 0;
+    const isPago = pago !== false; // default true
 
     if (!itens || itens.length === 0) {
       return NextResponse.json({ error: 'Adicione pelo menos um produto' }, { status: 400 });
@@ -193,6 +194,9 @@ export async function POST(request: NextRequest) {
           formaPagamento: formaPagamento || null,
           desconto: descontoPercent,
           total: totalVenda,
+          pago: isPago,
+          dataPagamentoPrevista: dataPagamentoPrevista ? new Date(dataPagamentoPrevista) : null,
+          dataPagamento: isPago ? new Date() : null,
           empresaId: session.empresaId,
           itens: {
             create: itensData,

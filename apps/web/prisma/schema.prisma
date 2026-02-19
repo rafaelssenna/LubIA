@@ -198,6 +198,9 @@ model OrdemServico {
   total          Decimal        @db.Decimal(10, 2) @default(0)
   desconto       Decimal        @db.Decimal(5, 2) @default(0) // Percentual de desconto
   formaPagamento FormaPagamento?
+  pago           Boolean        @default(true) // false = A Receber
+  dataPagamentoPrevista DateTime? // Data prevista para pagamento (quando A Receber)
+  dataPagamento  DateTime?       // Data do pagamento efetivo
   createdAt      DateTime       @default(now())
   updatedAt      DateTime       @updatedAt
 
@@ -209,6 +212,7 @@ model OrdemServico {
 
   @@unique([numero, empresaId])
   @@index([empresaId])
+  @@index([pago]) // Index para buscar pendentes
   @@map("ordens_servico")
 }
 
@@ -590,6 +594,9 @@ model VendaRapida {
   total          Decimal         @db.Decimal(10, 2) @default(0)
   desconto       Decimal         @db.Decimal(5, 2) @default(0) // Percentual de desconto
   formaPagamento FormaPagamento?
+  pago           Boolean         @default(true) // false = A Receber
+  dataPagamentoPrevista DateTime? // Data prevista para pagamento (quando A Receber)
+  dataPagamento  DateTime?       // Data do pagamento efetivo
   createdAt      DateTime        @default(now())
   updatedAt      DateTime        @updatedAt
 
@@ -598,6 +605,7 @@ model VendaRapida {
 
   @@unique([numero, empresaId])
   @@index([empresaId])
+  @@index([pago]) // Index para buscar pendentes
   @@map("vendas_rapidas")
 }
 

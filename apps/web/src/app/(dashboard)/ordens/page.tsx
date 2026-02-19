@@ -104,6 +104,8 @@ function OrdensPageContent() {
   const [selectedOrdem, setSelectedOrdem] = useState<OrdemServico | null>(null);
   const [formaPagamento, setFormaPagamento] = useState<string>('');
   const [descontoConcluir, setDescontoConcluir] = useState<string>('');
+  const [aReceberConcluir, setAReceberConcluir] = useState(false);
+  const [dataPagamentoPrevistaConcluir, setDataPagamentoPrevistaConcluir] = useState('');
   const [saving, setSaving] = useState(false);
 
   // Form states for new O.S.
@@ -389,7 +391,7 @@ function OrdensPageContent() {
     }
   };
 
-  const handleStatusChange = async (ordem: OrdemServico, newStatus: string, pagamento?: string, desconto?: number) => {
+  const handleStatusChange = async (ordem: OrdemServico, newStatus: string, pagamento?: string, desconto?: number, pago?: boolean, dataPagamentoPrevista?: string) => {
     try {
       const res = await fetch(`/api/ordens/${ordem.id}`, {
         method: 'PUT',
@@ -397,7 +399,9 @@ function OrdensPageContent() {
         body: JSON.stringify({
           status: newStatus,
           ...(pagamento && { formaPagamento: pagamento }),
-          ...(desconto !== undefined && { desconto })
+          ...(desconto !== undefined && { desconto }),
+          ...(pago !== undefined && { pago }),
+          ...(dataPagamentoPrevista && { dataPagamentoPrevista })
         }),
       });
 
@@ -1726,32 +1730,76 @@ function OrdensPageContent() {
                 </div>
               </div>
 
-              {/* Forma de Pagamento */}
+              {/* Toggle A Receber */}
               <div className="mb-4">
-                <label className="block text-sm text-zinc-400 mb-2">Forma de Pagamento</label>
-                <div className="grid grid-cols-2 gap-2">
-                  {[
-                    { value: 'PIX', label: 'PIX', icon: '📱' },
-                    { value: 'DINHEIRO', label: 'Dinheiro', icon: '💵' },
-                    { value: 'CREDITO', label: 'Crédito', icon: '💳' },
-                    { value: 'DEBITO', label: 'Débito', icon: '💳' },
-                  ].map((method) => (
-                    <button
-                      key={method.value}
-                      type="button"
-                      onClick={() => setFormaPagamento(method.value)}
-                      className={`p-3 rounded-xl border transition-all duration-200 flex items-center justify-center gap-2 ${
-                        formaPagamento === method.value
-                          ? 'bg-emerald-500/20 border-emerald-500 text-emerald-400'
-                          : 'bg-[#121212] border-zinc-700 text-zinc-400 hover:border-zinc-600'
-                      }`}
-                    >
-                      <span>{method.icon}</span>
-                      <span className="font-medium">{method.label}</span>
-                    </button>
-                  ))}
+                <div className="flex items-center justify-between p-3 bg-[#121212] rounded-xl border border-zinc-700">
+                  <div className="flex items-center gap-3">
+                    <Clock size={18} className="text-amber-400" />
+                    <div>
+                      <span className="text-white text-sm font-medium">A Receber</span>
+                      <p className="text-xs text-zinc-500">Cliente pagará depois</p>
+                    </div>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setAReceberConcluir(!aReceberConcluir);
+                      if (!aReceberConcluir) {
+                        setFormaPagamento('');
+                      }
+                    }}
+                    className={`w-12 h-6 rounded-full transition-all duration-200 ${
+                      aReceberConcluir ? 'bg-amber-500' : 'bg-zinc-700'
+                    }`}
+                  >
+                    <div className={`w-5 h-5 bg-white rounded-full transition-all duration-200 ${
+                      aReceberConcluir ? 'translate-x-6' : 'translate-x-0.5'
+                    }`} />
+                  </button>
                 </div>
               </div>
+
+              {/* Data Prevista de Pagamento (quando A Receber) */}
+              {aReceberConcluir && (
+                <div className="mb-4">
+                  <label className="block text-sm text-zinc-400 mb-2">Data Prevista de Pagamento (opcional)</label>
+                  <input
+                    type="date"
+                    value={dataPagamentoPrevistaConcluir}
+                    onChange={(e) => setDataPagamentoPrevistaConcluir(e.target.value)}
+                    className="w-full px-4 py-3 bg-[#121212] rounded-xl border border-zinc-700 text-white placeholder:text-zinc-500 focus:outline-none focus:border-amber-500/50"
+                  />
+                </div>
+              )}
+
+              {/* Forma de Pagamento (apenas quando NÃO é A Receber) */}
+              {!aReceberConcluir && (
+                <div className="mb-4">
+                  <label className="block text-sm text-zinc-400 mb-2">Forma de Pagamento</label>
+                  <div className="grid grid-cols-2 gap-2">
+                    {[
+                      { value: 'PIX', label: 'PIX', icon: '📱' },
+                      { value: 'DINHEIRO', label: 'Dinheiro', icon: '💵' },
+                      { value: 'CREDITO', label: 'Crédito', icon: '💳' },
+                      { value: 'DEBITO', label: 'Débito', icon: '💳' },
+                    ].map((method) => (
+                      <button
+                        key={method.value}
+                        type="button"
+                        onClick={() => setFormaPagamento(method.value)}
+                        className={`p-3 rounded-xl border transition-all duration-200 flex items-center justify-center gap-2 ${
+                          formaPagamento === method.value
+                            ? 'bg-emerald-500/20 border-emerald-500 text-emerald-400'
+                            : 'bg-[#121212] border-zinc-700 text-zinc-400 hover:border-zinc-600'
+                        }`}
+                      >
+                        <span>{method.icon}</span>
+                        <span className="font-medium">{method.label}</span>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
 
               {/* Desconto */}
               <div className="mb-4">
@@ -1803,6 +1851,8 @@ function OrdensPageContent() {
                   setSelectedOrdem(null);
                   setFormaPagamento('');
                   setDescontoConcluir('');
+                  setAReceberConcluir(false);
+                  setDataPagamentoPrevistaConcluir('');
                 }}
                 className="px-6 py-3 border border-zinc-700 rounded-xl text-zinc-400 hover:bg-zinc-800 transition-all duration-200"
               >
@@ -1811,16 +1861,25 @@ function OrdensPageContent() {
               <button
                 onClick={async () => {
                   const descontoPercent = parseFloat(descontoConcluir.replace(',', '.')) || 0;
-                  await handleStatusChange(selectedOrdem, 'CONCLUIDO', formaPagamento, descontoPercent);
+                  await handleStatusChange(
+                    selectedOrdem,
+                    'CONCLUIDO',
+                    aReceberConcluir ? undefined : formaPagamento,
+                    descontoPercent,
+                    !aReceberConcluir, // pago = true se NÃO for A Receber
+                    aReceberConcluir ? dataPagamentoPrevistaConcluir : undefined
+                  );
                   setShowConcluirConfirm(false);
                   setSelectedOrdem(null);
                   setFormaPagamento('');
                   setDescontoConcluir('');
+                  setAReceberConcluir(false);
+                  setDataPagamentoPrevistaConcluir('');
                 }}
-                disabled={saving || !formaPagamento}
+                disabled={saving || (!aReceberConcluir && !formaPagamento)}
                 className="px-6 py-3 bg-gradient-to-r from-emerald-500 to-emerald-700 rounded-xl text-white font-medium hover:shadow-lg hover:shadow-emerald-500/25 transition-all duration-300 disabled:opacity-50"
               >
-                {!formaPagamento ? 'Selecione o pagamento' : 'Confirmar'}
+                {!aReceberConcluir && !formaPagamento ? 'Selecione o pagamento' : aReceberConcluir ? 'Concluir (A Receber)' : 'Confirmar'}
               </button>
             </div>
           </div>
