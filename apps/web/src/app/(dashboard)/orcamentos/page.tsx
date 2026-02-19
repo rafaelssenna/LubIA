@@ -56,7 +56,7 @@ const statusConfig: Record<string, { label: string; color: string; icon: any; bg
   PENDENTE: { label: 'Pendente', color: 'text-amber-400', icon: Clock, bg: 'bg-amber-500/10', border: 'border-amber-500/30' },
   APROVADO: { label: 'Aprovado', color: 'text-emerald-400', icon: CheckCircle, bg: 'bg-emerald-500/10', border: 'border-emerald-500/30' },
   RECUSADO: { label: 'Recusado', color: 'text-red-400', icon: XCircle, bg: 'bg-red-500/10', border: 'border-red-500/30' },
-  EXPIRADO: { label: 'Expirado', color: 'text-zinc-400', icon: AlertCircle, bg: 'bg-zinc-500/10', border: 'border-zinc-500/30' },
+  EXPIRADO: { label: 'Expirado', color: 'text-muted', icon: AlertCircle, bg: 'bg-zinc-500/10', border: 'border-zinc-500/30' },
   CONVERTIDO: { label: 'Convertido', color: 'text-blue-400', icon: TrendingUp, bg: 'bg-blue-500/10', border: 'border-blue-500/30' },
 };
 
@@ -542,7 +542,7 @@ function OrcamentosPageContent() {
             <div className="w-16 h-16 border-4 border-[#E85D04]/20 rounded-full"></div>
             <div className="absolute top-0 left-0 w-16 h-16 border-4 border-transparent border-t-[#E85D04] rounded-full animate-spin"></div>
           </div>
-          <p className="text-zinc-400 animate-pulse">Carregando orçamentos...</p>
+          <p className="text-muted animate-pulse">Carregando orcamentos...</p>
         </div>
       </div>
     );
@@ -567,8 +567,8 @@ function OrcamentosPageContent() {
               </div>
               <span className="text-xs font-medium text-[#E85D04] bg-[#E85D04]/10 px-2 py-1 rounded-full">Total</span>
             </div>
-            <p className="text-4xl font-bold text-white mb-1">{stats.total}</p>
-            <p className="text-sm text-zinc-400">orçamentos criados</p>
+            <p className="text-4xl font-bold text-foreground mb-1">{stats.total}</p>
+            <p className="text-sm text-muted">orçamentos criados</p>
           </div>
         </div>
 
@@ -581,8 +581,8 @@ function OrcamentosPageContent() {
               </div>
               <span className="text-xs font-medium text-amber-400 bg-amber-500/10 px-2 py-1 rounded-full">Aguardando</span>
             </div>
-            <p className="text-4xl font-bold text-white mb-1">{stats.pendentes}</p>
-            <p className="text-sm text-zinc-400">pendentes de resposta</p>
+            <p className="text-4xl font-bold text-foreground mb-1">{stats.pendentes}</p>
+            <p className="text-sm text-muted">pendentes de resposta</p>
           </div>
         </div>
 
@@ -595,8 +595,8 @@ function OrcamentosPageContent() {
               </div>
               <span className="text-xs font-medium text-emerald-400 bg-emerald-500/10 px-2 py-1 rounded-full">Aceitos</span>
             </div>
-            <p className="text-4xl font-bold text-white mb-1">{stats.aprovados}</p>
-            <p className="text-sm text-zinc-400">aprovados pelo cliente</p>
+            <p className="text-4xl font-bold text-foreground mb-1">{stats.aprovados}</p>
+            <p className="text-sm text-muted">aprovados pelo cliente</p>
           </div>
         </div>
 
@@ -609,8 +609,8 @@ function OrcamentosPageContent() {
               </div>
               <span className="text-xs font-medium text-blue-400 bg-blue-500/10 px-2 py-1 rounded-full">Sucesso</span>
             </div>
-            <p className="text-4xl font-bold text-white mb-1">{stats.convertidos}</p>
-            <p className="text-sm text-zinc-400">convertidos em O.S.</p>
+            <p className="text-4xl font-bold text-foreground mb-1">{stats.convertidos}</p>
+            <p className="text-sm text-muted">convertidos em O.S.</p>
           </div>
         </div>
       </div>
@@ -619,7 +619,7 @@ function OrcamentosPageContent() {
       <div className="flex flex-col lg:flex-row gap-4 items-start lg:items-center justify-between bg-card rounded-2xl p-4 border border-border">
         <div className="flex flex-col sm:flex-row gap-3 flex-1 w-full lg:w-auto">
           <div className="relative flex-1 min-w-[280px]">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-zinc-500" />
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-foreground-muted" />
             <input
               type="text"
               placeholder="Buscar por número, cliente ou telefone..."
@@ -655,8 +655,8 @@ function OrcamentosPageContent() {
           <div className="p-6 bg-zinc-800/50 rounded-full mb-6">
             <FileText className="h-12 w-12 text-zinc-600" />
           </div>
-          <h3 className="text-xl font-semibold text-white mb-2">Nenhum orçamento encontrado</h3>
-          <p className="text-zinc-400 mb-6">Comece criando seu primeiro orçamento</p>
+          <h3 className="text-xl font-semibold text-foreground mb-2">Nenhum orçamento encontrado</h3>
+          <p className="text-muted mb-6">Comece criando seu primeiro orçamento</p>
           <button
             onClick={openNewModal}
             className="flex items-center gap-2 px-6 py-3 bg-[#E85D04] hover:bg-[#E85D04]/90 text-white font-medium rounded-xl transition-colors"
@@ -684,21 +684,21 @@ function OrcamentosPageContent() {
                         <FileText className="h-6 w-6 text-[#E85D04]" />
                       </div>
                       <div>
-                        <p className="text-lg font-bold text-white">{orcamento.numero}</p>
-                        <p className="text-sm text-zinc-500">{formatDate(orcamento.createdAt)}</p>
+                        <p className="text-lg font-bold text-foreground">{orcamento.numero}</p>
+                        <p className="text-sm text-foreground-muted">{formatDate(orcamento.createdAt)}</p>
                       </div>
                     </div>
 
                     {/* Cliente */}
                     <div className="flex items-center gap-4 flex-1 min-w-[200px]">
                       <div className="p-3 bg-zinc-800 rounded-xl">
-                        <User className="h-5 w-5 text-zinc-400" />
+                        <User className="h-5 w-5 text-muted" />
                       </div>
                       <div className="flex-1 min-w-0">
                         <p className="text-white font-medium truncate">
                           {orcamento.nomeCliente || 'Cliente não informado'}
                         </p>
-                        <div className="flex items-center gap-1.5 text-sm text-zinc-400">
+                        <div className="flex items-center gap-1.5 text-sm text-muted">
                           <Phone className="h-3.5 w-3.5" />
                           <span>{formatPhone(orcamento.telefoneCliente)}</span>
                         </div>
@@ -716,7 +716,7 @@ function OrcamentosPageContent() {
                     {/* Total */}
                     <div className="flex flex-col items-end min-w-[140px]">
                       <span className="text-2xl font-bold text-white">{formatCurrency(orcamento.total)}</span>
-                      <span className="text-xs text-zinc-500">
+                      <span className="text-xs text-foreground-muted">
                         {orcamento.itensProduto.length + orcamento.servicosExtras.length} itens
                       </span>
                     </div>
@@ -728,7 +728,7 @@ function OrcamentosPageContent() {
                           setSelectedOrcamento(orcamento);
                           setShowDetailModal(true);
                         }}
-                        className="p-2.5 text-zinc-400 hover:text-white hover:bg-zinc-800 rounded-xl transition-all"
+                        className="p-2.5 text-muted hover:text-white hover:bg-zinc-800 rounded-xl transition-all"
                         title="Ver detalhes"
                       >
                         <Eye className="h-5 w-5" />
@@ -737,7 +737,7 @@ function OrcamentosPageContent() {
                         <button
                           onClick={() => sendWhatsApp(orcamento)}
                           disabled={sendingWhatsApp === orcamento.id}
-                          className="p-2.5 text-zinc-400 hover:text-green-400 hover:bg-green-500/10 rounded-xl transition-all disabled:opacity-50"
+                          className="p-2.5 text-muted hover:text-green-400 hover:bg-green-500/10 rounded-xl transition-all disabled:opacity-50"
                           title="Enviar via WhatsApp"
                         >
                           {sendingWhatsApp === orcamento.id ? (
@@ -749,7 +749,7 @@ function OrcamentosPageContent() {
                       )}
                       <button
                         onClick={() => downloadOrcamentoPDF(orcamento as any, empresaConfig || undefined)}
-                        className="p-2.5 text-zinc-400 hover:text-[#E85D04] hover:bg-[#E85D04]/10 rounded-xl transition-all"
+                        className="p-2.5 text-muted hover:text-[#E85D04] hover:bg-[#E85D04]/10 rounded-xl transition-all"
                         title="Baixar PDF"
                       >
                         <FileDown className="h-5 w-5" />
@@ -757,7 +757,7 @@ function OrcamentosPageContent() {
                       {orcamento.status !== 'CONVERTIDO' && orcamento.status !== 'RECUSADO' && (
                         <button
                           onClick={() => openConvertModal(orcamento)}
-                          className="p-2.5 text-zinc-400 hover:text-purple-400 hover:bg-purple-500/10 rounded-xl transition-all"
+                          className="p-2.5 text-muted hover:text-purple-400 hover:bg-purple-500/10 rounded-xl transition-all"
                           title="Converter em O.S."
                         >
                           <ArrowRight className="h-5 w-5" />
@@ -767,7 +767,7 @@ function OrcamentosPageContent() {
                         <>
                           <button
                             onClick={() => openEditModal(orcamento)}
-                            className="p-2.5 text-zinc-400 hover:text-blue-400 hover:bg-blue-500/10 rounded-xl transition-all"
+                            className="p-2.5 text-muted hover:text-blue-400 hover:bg-blue-500/10 rounded-xl transition-all"
                             title="Editar"
                           >
                             <Edit className="h-5 w-5" />
@@ -777,7 +777,7 @@ function OrcamentosPageContent() {
                               setSelectedOrcamento(orcamento);
                               setShowDeleteConfirm(true);
                             }}
-                            className="p-2.5 text-zinc-400 hover:text-red-400 hover:bg-red-500/10 rounded-xl transition-all"
+                            className="p-2.5 text-muted hover:text-red-400 hover:bg-red-500/10 rounded-xl transition-all"
                             title="Excluir"
                           >
                             <Trash2 className="h-5 w-5" />
@@ -796,7 +796,7 @@ function OrcamentosPageContent() {
       {/* Pagination */}
       {totalPages > 1 && (
         <div className="flex flex-col sm:flex-row items-center justify-between gap-4 bg-card rounded-2xl p-4 border border-border">
-          <p className="text-sm text-zinc-400">
+          <p className="text-sm text-muted">
             Mostrando <span className="text-white font-medium">{((currentPage - 1) * itemsPerPage) + 1}</span> a{' '}
             <span className="text-white font-medium">{Math.min(currentPage * itemsPerPage, totalItems)}</span> de{' '}
             <span className="text-white font-medium">{totalItems}</span> orçamentos
@@ -828,7 +828,7 @@ function OrcamentosPageContent() {
                     className={`w-10 h-10 rounded-xl font-medium transition-colors ${
                       currentPage === page
                         ? 'bg-[#E85D04] text-white'
-                        : 'bg-zinc-800 text-zinc-400 hover:bg-zinc-700 hover:text-white'
+                        : 'bg-zinc-800 text-muted hover:bg-zinc-700 hover:text-white'
                     }`}
                   >
                     {page}
@@ -857,7 +857,7 @@ function OrcamentosPageContent() {
                 <h2 className="text-2xl font-bold text-white">
                   {editingOrcamento ? 'Editar Orçamento' : 'Novo Orçamento'}
                 </h2>
-                <p className="text-sm text-zinc-400 mt-1">
+                <p className="text-sm text-muted mt-1">
                   {editingOrcamento ? 'Atualize as informações do orçamento' : 'Preencha os dados para criar um novo orçamento'}
                 </p>
               </div>
@@ -865,7 +865,7 @@ function OrcamentosPageContent() {
                 onClick={() => setShowModal(false)}
                 className="p-2 hover:bg-zinc-800 rounded-xl transition-colors"
               >
-                <X className="h-6 w-6 text-zinc-400" />
+                <X className="h-6 w-6 text-muted" />
               </button>
             </div>
 
@@ -873,7 +873,7 @@ function OrcamentosPageContent() {
               {/* Cliente */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-zinc-300 mb-2">
+                  <label className="block text-sm font-medium text-muted mb-2">
                     Nome do Cliente
                   </label>
                   <input
@@ -885,7 +885,7 @@ function OrcamentosPageContent() {
                   />
                 </div>
                 <div>
-                  <label className="flex items-center gap-2 text-sm font-medium text-zinc-300 mb-2">
+                  <label className="flex items-center gap-2 text-sm font-medium text-muted mb-2">
                     <Phone className="h-4 w-4" />
                     WhatsApp
                   </label>
@@ -901,11 +901,11 @@ function OrcamentosPageContent() {
 
               {/* Produtos */}
               <div className="space-y-3">
-                <label className="block text-sm font-medium text-zinc-300">
+                <label className="block text-sm font-medium text-muted">
                   Adicionar Produtos
                 </label>
                 <div className="relative">
-                  <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-500" />
+                  <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-foreground-muted" />
                   <input
                     type="text"
                     placeholder="Buscar produto..."
@@ -934,7 +934,7 @@ function OrcamentosPageContent() {
                           <div className="flex justify-between items-center">
                             <div>
                               <p className="text-white font-medium">{produto.nome}</p>
-                              <p className="text-xs text-zinc-400">{produto.codigo}</p>
+                              <p className="text-xs text-muted">{produto.codigo}</p>
                             </div>
                             <span className="text-[#E85D04] font-bold">{formatCurrency(produto.precoVenda)}</span>
                           </div>
@@ -968,7 +968,7 @@ function OrcamentosPageContent() {
                             }}
                             className="w-20 px-3 py-2 bg-card border border-border/50 rounded-lg text-white text-center focus:outline-none focus:ring-2 focus:ring-[#E85D04]/50"
                           />
-                          <span className="text-zinc-300 font-medium min-w-[100px] text-right">{formatCurrency(sp.precoUnitario * sp.quantidade)}</span>
+                          <span className="text-muted font-medium min-w-[100px] text-right">{formatCurrency(sp.precoUnitario * sp.quantidade)}</span>
                           <button
                             onClick={() => removeProduto(sp.produtoId)}
                             className="p-2 text-red-400 hover:bg-red-500/10 rounded-lg transition-colors"
@@ -984,7 +984,7 @@ function OrcamentosPageContent() {
 
               {/* Serviços Extras */}
               <div className="space-y-3">
-                <label className="block text-sm font-medium text-zinc-300">
+                <label className="block text-sm font-medium text-muted">
                   Serviços / Mão de Obra
                 </label>
                 <div className="flex gap-2">
@@ -1016,7 +1016,7 @@ function OrcamentosPageContent() {
                       <div key={index} className="flex items-center gap-3 p-3 bg-background-secondary rounded-xl border border-border/50">
                         <DollarSign className="h-5 w-5 text-emerald-400" />
                         <span className="flex-1 text-white font-medium">{servico.descricao}</span>
-                        <span className="text-zinc-300 font-medium">{formatCurrency(servico.valor)}</span>
+                        <span className="text-muted font-medium">{formatCurrency(servico.valor)}</span>
                         <button
                           onClick={() => removeServicoExtra(index)}
                           className="p-2 text-red-400 hover:bg-red-500/10 rounded-lg transition-colors"
@@ -1031,7 +1031,7 @@ function OrcamentosPageContent() {
 
               {/* Observações */}
               <div>
-                <label className="block text-sm font-medium text-zinc-300 mb-2">
+                <label className="block text-sm font-medium text-muted mb-2">
                   Observações
                 </label>
                 <textarea
@@ -1055,7 +1055,7 @@ function OrcamentosPageContent() {
             <div className="p-6 border-t border-border flex justify-between">
               <button
                 onClick={() => setShowModal(false)}
-                className="px-6 py-3 text-zinc-400 hover:text-white transition-colors"
+                className="px-6 py-3 text-muted hover:text-white transition-colors"
               >
                 Cancelar
               </button>
@@ -1081,7 +1081,7 @@ function OrcamentosPageContent() {
                 <h2 className="text-2xl font-bold text-white">
                   {selectedOrcamento.numero}
                 </h2>
-                <p className="text-sm text-zinc-400 mt-1">{formatDate(selectedOrcamento.createdAt)}</p>
+                <p className="text-sm text-muted mt-1">{formatDate(selectedOrcamento.createdAt)}</p>
               </div>
               <button
                 onClick={() => {
@@ -1090,14 +1090,14 @@ function OrcamentosPageContent() {
                 }}
                 className="p-2 hover:bg-zinc-800 rounded-xl transition-colors"
               >
-                <X className="h-6 w-6 text-zinc-400" />
+                <X className="h-6 w-6 text-muted" />
               </button>
             </div>
 
             <div className="flex-1 overflow-y-auto p-6 space-y-6">
               {/* Status */}
               <div className="flex items-center justify-between p-4 bg-background-secondary rounded-xl">
-                <span className="text-zinc-400">Status:</span>
+                <span className="text-muted">Status:</span>
                 <span className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-medium ${statusConfig[selectedOrcamento.status].bg} ${statusConfig[selectedOrcamento.status].color}`}>
                   {statusConfig[selectedOrcamento.status].label}
                 </span>
@@ -1107,11 +1107,11 @@ function OrcamentosPageContent() {
               <div className="p-4 bg-background-secondary rounded-xl">
                 <div className="flex items-center gap-4">
                   <div className="p-3 bg-zinc-700 rounded-xl">
-                    <User className="h-6 w-6 text-zinc-300" />
+                    <User className="h-6 w-6 text-muted" />
                   </div>
                   <div>
                     <p className="text-white font-semibold text-lg">{selectedOrcamento.nomeCliente || 'Cliente não informado'}</p>
-                    <p className="text-zinc-400 flex items-center gap-2 mt-1">
+                    <p className="text-muted flex items-center gap-2 mt-1">
                       <Phone className="h-4 w-4" />
                       {formatPhone(selectedOrcamento.telefoneCliente)}
                     </p>
@@ -1122,7 +1122,7 @@ function OrcamentosPageContent() {
               {/* Products */}
               {selectedOrcamento.itensProduto.length > 0 && (
                 <div>
-                  <h4 className="text-sm font-medium text-zinc-400 mb-3 flex items-center gap-2">
+                  <h4 className="text-sm font-medium text-muted mb-3 flex items-center gap-2">
                     <Package className="h-4 w-4" />
                     Produtos
                   </h4>
@@ -1131,7 +1131,7 @@ function OrcamentosPageContent() {
                       <div key={item.id} className="flex justify-between items-center p-4 bg-background-secondary rounded-xl">
                         <div>
                           <p className="text-white font-medium">{item.produtoNome}</p>
-                          <p className="text-sm text-zinc-400">{item.quantidade}x {formatCurrency(item.precoUnitario)}</p>
+                          <p className="text-sm text-muted">{item.quantidade}x {formatCurrency(item.precoUnitario)}</p>
                         </div>
                         <span className="text-white font-bold">{formatCurrency(item.subtotal)}</span>
                       </div>
@@ -1143,7 +1143,7 @@ function OrcamentosPageContent() {
               {/* Services */}
               {selectedOrcamento.servicosExtras.length > 0 && (
                 <div>
-                  <h4 className="text-sm font-medium text-zinc-400 mb-3 flex items-center gap-2">
+                  <h4 className="text-sm font-medium text-muted mb-3 flex items-center gap-2">
                     <DollarSign className="h-4 w-4" />
                     Serviços
                   </h4>
@@ -1218,11 +1218,11 @@ function OrcamentosPageContent() {
                 <Trash2 className="h-8 w-8 text-red-500" />
               </div>
               <div>
-                <h3 className="text-xl font-bold text-white">Excluir Orçamento</h3>
-                <p className="text-zinc-400">{selectedOrcamento.numero}</p>
+                <h3 className="text-xl font-bold text-foreground">Excluir Orçamento</h3>
+                <p className="text-muted">{selectedOrcamento.numero}</p>
               </div>
             </div>
-            <p className="text-zinc-300 mb-8">
+            <p className="text-muted mb-8">
               Tem certeza que deseja excluir este orçamento? Esta ação não pode ser desfeita.
             </p>
             <div className="flex gap-3">
@@ -1255,7 +1255,7 @@ function OrcamentosPageContent() {
             <div className="flex items-center justify-between p-6 border-b border-border">
               <div>
                 <h2 className="text-2xl font-bold text-white">Converter em O.S.</h2>
-                <p className="text-sm text-zinc-400 mt-1">
+                <p className="text-sm text-muted mt-1">
                   {convertingOrcamento.numero} - {convertingOrcamento.nomeCliente || 'Cliente não informado'}
                 </p>
               </div>
@@ -1266,7 +1266,7 @@ function OrcamentosPageContent() {
                 }}
                 className="p-2 hover:bg-zinc-800 rounded-xl transition-colors"
               >
-                <X className="h-6 w-6 text-zinc-400" />
+                <X className="h-6 w-6 text-muted" />
               </button>
             </div>
 
@@ -1278,7 +1278,7 @@ function OrcamentosPageContent() {
                   className={`flex-1 py-2.5 px-4 rounded-lg text-sm font-medium transition-colors ${
                     !showQuickRegister
                       ? 'bg-purple-600 text-white'
-                      : 'text-zinc-400 hover:text-white'
+                      : 'text-muted hover:text-white'
                   }`}
                 >
                   Selecionar Veículo
@@ -1288,7 +1288,7 @@ function OrcamentosPageContent() {
                   className={`flex-1 py-2.5 px-4 rounded-lg text-sm font-medium transition-colors ${
                     showQuickRegister
                       ? 'bg-purple-600 text-white'
-                      : 'text-zinc-400 hover:text-white'
+                      : 'text-muted hover:text-white'
                   }`}
                 >
                   + Cadastro Rápido
@@ -1306,11 +1306,11 @@ function OrcamentosPageContent() {
 
                   {/* Vehicle Search */}
                   <div>
-                    <label className="block text-sm font-medium text-zinc-400 mb-2">
+                    <label className="block text-sm font-medium text-muted mb-2">
                       Buscar Veículo
                     </label>
                     <div className="relative">
-                      <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-zinc-500" />
+                      <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-foreground-muted" />
                       <input
                         type="text"
                         placeholder="Buscar por placa, modelo ou cliente..."
@@ -1344,9 +1344,9 @@ function OrcamentosPageContent() {
                         >
                           <div className="flex items-center justify-between">
                             <div>
-                              <p className="font-semibold text-white">{veiculo.placa}</p>
-                              <p className="text-sm text-zinc-400">{veiculo.marca} {veiculo.modelo}</p>
-                              <p className="text-xs text-zinc-500">{veiculo.cliente.nome}</p>
+                              <p className="font-semibold text-foreground">{veiculo.placa}</p>
+                              <p className="text-sm text-muted">{veiculo.marca} {veiculo.modelo}</p>
+                              <p className="text-xs text-foreground-muted">{veiculo.cliente.nome}</p>
                             </div>
                             {selectedVeiculoId === veiculo.id && (
                               <CheckCircle className="h-6 w-6 text-purple-400" />
@@ -1355,7 +1355,7 @@ function OrcamentosPageContent() {
                         </button>
                       ))}
                     {veiculos.length === 0 && (
-                      <p className="text-center text-zinc-500 py-8">Nenhum veículo cadastrado</p>
+                      <p className="text-center text-foreground-muted py-8">Nenhum veículo cadastrado</p>
                     )}
                   </div>
                 </>
@@ -1370,13 +1370,13 @@ function OrcamentosPageContent() {
 
                   {/* Customer Fields */}
                   <div className="space-y-4">
-                    <h4 className="text-sm font-medium text-zinc-300 flex items-center gap-2">
+                    <h4 className="text-sm font-medium text-muted flex items-center gap-2">
                       <User className="h-4 w-4" />
                       Dados do Cliente
                     </h4>
                     <div className="grid grid-cols-2 gap-3">
                       <div>
-                        <label className="block text-xs text-zinc-500 mb-1">Nome *</label>
+                        <label className="block text-xs text-foreground-muted mb-1">Nome *</label>
                         <input
                           type="text"
                           value={quickNome}
@@ -1386,7 +1386,7 @@ function OrcamentosPageContent() {
                         />
                       </div>
                       <div>
-                        <label className="block text-xs text-zinc-500 mb-1">Telefone *</label>
+                        <label className="block text-xs text-foreground-muted mb-1">Telefone *</label>
                         <input
                           type="text"
                           value={quickTelefone}
@@ -1400,13 +1400,13 @@ function OrcamentosPageContent() {
 
                   {/* Vehicle Fields */}
                   <div className="space-y-4">
-                    <h4 className="text-sm font-medium text-zinc-300 flex items-center gap-2">
+                    <h4 className="text-sm font-medium text-muted flex items-center gap-2">
                       <Package className="h-4 w-4" />
                       Dados do Veículo
                     </h4>
                     <div className="grid grid-cols-4 gap-3">
                       <div>
-                        <label className="block text-xs text-zinc-500 mb-1">Placa *</label>
+                        <label className="block text-xs text-foreground-muted mb-1">Placa *</label>
                         <input
                           type="text"
                           value={quickPlaca}
@@ -1417,7 +1417,7 @@ function OrcamentosPageContent() {
                         />
                       </div>
                       <div>
-                        <label className="block text-xs text-zinc-500 mb-1">Marca *</label>
+                        <label className="block text-xs text-foreground-muted mb-1">Marca *</label>
                         <input
                           type="text"
                           value={quickMarca}
@@ -1427,7 +1427,7 @@ function OrcamentosPageContent() {
                         />
                       </div>
                       <div>
-                        <label className="block text-xs text-zinc-500 mb-1">Modelo *</label>
+                        <label className="block text-xs text-foreground-muted mb-1">Modelo *</label>
                         <input
                           type="text"
                           value={quickModelo}
@@ -1437,7 +1437,7 @@ function OrcamentosPageContent() {
                         />
                       </div>
                       <div>
-                        <label className="block text-xs text-zinc-500 mb-1">Cilindrada</label>
+                        <label className="block text-xs text-foreground-muted mb-1">Cilindrada</label>
                         <input
                           type="text"
                           value={quickCilindrada}
@@ -1469,7 +1469,7 @@ function OrcamentosPageContent() {
               {/* Total */}
               <div className="p-4 bg-background-secondary rounded-xl">
                 <div className="flex justify-between items-center">
-                  <span className="text-zinc-400">Total do Orçamento:</span>
+                  <span className="text-muted">Total do Orçamento:</span>
                   <span className="text-2xl font-bold text-[#E85D04]">
                     R$ {convertingOrcamento.total.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
                   </span>
@@ -1519,7 +1519,7 @@ export default function OrcamentosPage() {
             <div className="w-16 h-16 border-4 border-[#E85D04]/20 rounded-full"></div>
             <div className="absolute top-0 left-0 w-16 h-16 border-4 border-transparent border-t-[#E85D04] rounded-full animate-spin"></div>
           </div>
-          <p className="text-zinc-400 animate-pulse">Carregando orçamentos...</p>
+          <p className="text-muted animate-pulse">Carregando orcamentos...</p>
         </div>
       </div>
     }>

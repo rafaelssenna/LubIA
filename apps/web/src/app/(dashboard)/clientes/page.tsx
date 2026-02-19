@@ -293,7 +293,7 @@ export default function ClientesPage() {
             <div className="w-16 h-16 border-4 border-blue-500/20 rounded-full"></div>
             <div className="absolute top-0 left-0 w-16 h-16 border-4 border-transparent border-t-blue-500 rounded-full animate-spin"></div>
           </div>
-          <p className="text-zinc-400 animate-pulse">Carregando clientes...</p>
+          <p className="text-muted animate-pulse">Carregando clientes...</p>
         </div>
       </div>
     );
@@ -316,8 +316,8 @@ export default function ClientesPage() {
                 </div>
                 <span className="text-xs font-medium text-blue-400 bg-blue-500/10 px-2 py-1 rounded-full">Total</span>
               </div>
-              <p className="text-4xl font-bold text-white mb-1">{clientes.length}</p>
-              <p className="text-sm text-zinc-400">clientes cadastrados</p>
+              <p className="text-4xl font-bold text-foreground mb-1">{clientes.length}</p>
+              <p className="text-sm text-muted">clientes cadastrados</p>
             </div>
           </div>
 
@@ -331,10 +331,10 @@ export default function ClientesPage() {
                 </div>
                 <span className="text-xs font-medium text-purple-400 bg-purple-500/10 px-2 py-1 rounded-full">Veiculos</span>
               </div>
-              <p className="text-4xl font-bold text-white mb-1">
+              <p className="text-4xl font-bold text-foreground mb-1">
                 {clientes.reduce((acc, c) => acc + c.veiculosCount, 0)}
               </p>
-              <p className="text-sm text-zinc-400">veiculos registrados</p>
+              <p className="text-sm text-muted">veiculos registrados</p>
             </div>
           </div>
 
@@ -348,8 +348,8 @@ export default function ClientesPage() {
                 </div>
                 <span className="text-xs font-medium text-emerald-400 bg-emerald-500/10 px-2 py-1 rounded-full">WhatsApp</span>
               </div>
-              <p className="text-4xl font-bold text-white mb-1">0</p>
-              <p className="text-sm text-zinc-400">mensagens enviadas hoje</p>
+              <p className="text-4xl font-bold text-foreground mb-1">0</p>
+              <p className="text-sm text-muted">mensagens enviadas hoje</p>
             </div>
           </div>
         </div>
@@ -363,7 +363,7 @@ export default function ClientesPage() {
               placeholder="Buscar cliente por nome, telefone ou CPF/CNPJ..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full bg-card border border-border rounded-xl pl-11 pr-4 py-3 text-sm text-white placeholder-zinc-500 focus:outline-none focus:border-blue-500/50 focus:ring-1 focus:ring-blue-500/20 transition-all duration-200"
+              className="w-full bg-card border border-border rounded-xl pl-11 pr-4 py-3 text-sm text-foreground placeholder-zinc-500 focus:outline-none focus:border-blue-500/50 focus:ring-1 focus:ring-blue-500/20 transition-all duration-200"
             />
           </div>
           <button
@@ -386,7 +386,7 @@ export default function ClientesPage() {
               <div className="p-4 bg-zinc-800/50 rounded-full w-fit mx-auto mb-4">
                 <Users className="h-8 w-8 text-zinc-600" />
               </div>
-              <p className="text-zinc-400">Nenhum cliente encontrado</p>
+              <p className="text-muted">Nenhum cliente encontrado</p>
               <button
                 onClick={() => setShowModal(true)}
                 className="inline-flex items-center gap-2 mt-4 text-primary hover:text-primary-light transition-colors"
@@ -407,8 +407,8 @@ export default function ClientesPage() {
                       {capitalize(cliente.nome).charAt(0)}
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p className="font-semibold text-white truncate">{capitalize(cliente.nome)}</p>
-                      <div className="flex items-center gap-3 text-sm text-zinc-400">
+                      <p className="font-semibold text-foreground truncate">{capitalize(cliente.nome)}</p>
+                      <div className="flex items-center gap-3 text-sm text-muted">
                         <span className="flex items-center gap-1">
                           <Phone size={12} className="text-emerald-400" />
                           {formatPhone(cliente.telefone)}
@@ -471,56 +471,56 @@ export default function ClientesPage() {
           <div className="bg-card border border-border rounded-2xl w-full max-w-md shadow-2xl shadow-black/50">
             <div className="p-6 border-b border-border flex items-center justify-between">
               <div>
-                <h2 className="text-xl font-semibold text-white">Novo Cliente</h2>
-                <p className="text-sm text-zinc-400 mt-1">Cadastre um novo cliente</p>
+                <h2 className="text-xl font-semibold text-foreground">Novo Cliente</h2>
+                <p className="text-sm text-muted mt-1">Cadastre um novo cliente</p>
               </div>
-              <button onClick={() => setShowModal(false)} className="p-2 hover:bg-zinc-800 rounded-xl text-zinc-400 hover:text-white transition-all duration-200">
+              <button onClick={() => setShowModal(false)} className="p-2 hover:bg-zinc-800 rounded-xl text-muted hover:text-foreground transition-all duration-200">
                 <X size={20} />
               </button>
             </div>
             <div className="p-6 space-y-4 max-h-[60vh] overflow-y-auto">
               <div>
-                <label className="block text-sm font-medium text-zinc-400 mb-2">Nome *</label>
+                <label className="block text-sm font-medium text-muted mb-2">Nome *</label>
                 <input
                   type="text"
                   value={form.nome}
                   onChange={(e) => setForm({ ...form, nome: e.target.value })}
                   placeholder="Nome completo"
                   maxLength={100}
-                  className="w-full bg-zinc-900 border border-border rounded-xl px-4 py-3 text-white placeholder-zinc-600 focus:outline-none focus:border-blue-500/50 focus:ring-1 focus:ring-blue-500/20 transition-all duration-200"
+                  className="w-full bg-zinc-900 border border-border rounded-xl px-4 py-3 text-foreground placeholder-zinc-600 focus:outline-none focus:border-blue-500/50 focus:ring-1 focus:ring-blue-500/20 transition-all duration-200"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-zinc-400 mb-2">Telefone *</label>
+                <label className="block text-sm font-medium text-muted mb-2">Telefone *</label>
                 <input
                   type="text"
                   value={form.telefone}
                   onChange={(e) => setForm({ ...form, telefone: e.target.value })}
                   placeholder="(11) 99999-9999"
                   maxLength={15}
-                  className="w-full bg-zinc-900 border border-border rounded-xl px-4 py-3 text-white placeholder-zinc-600 focus:outline-none focus:border-blue-500/50 focus:ring-1 focus:ring-blue-500/20 transition-all duration-200"
+                  className="w-full bg-zinc-900 border border-border rounded-xl px-4 py-3 text-foreground placeholder-zinc-600 focus:outline-none focus:border-blue-500/50 focus:ring-1 focus:ring-blue-500/20 transition-all duration-200"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-zinc-400 mb-2">Email</label>
+                <label className="block text-sm font-medium text-muted mb-2">Email</label>
                 <input
                   type="email"
                   value={form.email}
                   onChange={(e) => setForm({ ...form, email: e.target.value })}
                   placeholder="email@exemplo.com"
                   maxLength={100}
-                  className="w-full bg-zinc-900 border border-border rounded-xl px-4 py-3 text-white placeholder-zinc-600 focus:outline-none focus:border-blue-500/50 focus:ring-1 focus:ring-blue-500/20 transition-all duration-200"
+                  className="w-full bg-zinc-900 border border-border rounded-xl px-4 py-3 text-foreground placeholder-zinc-600 focus:outline-none focus:border-blue-500/50 focus:ring-1 focus:ring-blue-500/20 transition-all duration-200"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-zinc-400 mb-2">CPF/CNPJ</label>
+                <label className="block text-sm font-medium text-muted mb-2">CPF/CNPJ</label>
                 <input
                   type="text"
                   value={form.cpf}
                   onChange={(e) => setForm({ ...form, cpf: e.target.value })}
                   placeholder="CPF ou CNPJ"
                   maxLength={18}
-                  className="w-full bg-zinc-900 border border-border rounded-xl px-4 py-3 text-white placeholder-zinc-600 focus:outline-none focus:border-blue-500/50 focus:ring-1 focus:ring-blue-500/20 transition-all duration-200"
+                  className="w-full bg-zinc-900 border border-border rounded-xl px-4 py-3 text-foreground placeholder-zinc-600 focus:outline-none focus:border-blue-500/50 focus:ring-1 focus:ring-blue-500/20 transition-all duration-200"
                 />
               </div>
               {/* Endereco */}
@@ -539,7 +539,7 @@ export default function ClientesPage() {
                           if (value.length === 8) buscarCep(value);
                         }}
                         placeholder="CEP"
-                        className="w-full bg-zinc-900 border border-border rounded-xl px-4 py-3 text-white placeholder-zinc-600 focus:outline-none focus:border-blue-500/50 text-sm"
+                        className="w-full bg-zinc-900 border border-border rounded-xl px-4 py-3 text-foreground placeholder-zinc-600 focus:outline-none focus:border-blue-500/50 text-sm"
                       />
                     </div>
                     <div className="col-span-2">
@@ -550,7 +550,7 @@ export default function ClientesPage() {
                         placeholder={buscandoCep ? 'Buscando...' : 'Rua'}
                         disabled={buscandoCep}
                         maxLength={100}
-                        className="w-full bg-zinc-900 border border-border rounded-xl px-4 py-3 text-white placeholder-zinc-600 focus:outline-none focus:border-blue-500/50 text-sm disabled:opacity-50"
+                        className="w-full bg-zinc-900 border border-border rounded-xl px-4 py-3 text-foreground placeholder-zinc-600 focus:outline-none focus:border-blue-500/50 text-sm disabled:opacity-50"
                       />
                     </div>
                   </div>
@@ -562,7 +562,7 @@ export default function ClientesPage() {
                         onChange={(e) => setEnderecoForm({ ...enderecoForm, numero: e.target.value })}
                         placeholder="No"
                         maxLength={10}
-                        className="w-full bg-zinc-900 border border-border rounded-xl px-4 py-3 text-white placeholder-zinc-600 focus:outline-none focus:border-blue-500/50 text-sm"
+                        className="w-full bg-zinc-900 border border-border rounded-xl px-4 py-3 text-foreground placeholder-zinc-600 focus:outline-none focus:border-blue-500/50 text-sm"
                       />
                     </div>
                     <div className="col-span-2">
@@ -572,7 +572,7 @@ export default function ClientesPage() {
                         onChange={(e) => setEnderecoForm({ ...enderecoForm, complemento: e.target.value })}
                         placeholder="Complemento"
                         maxLength={50}
-                        className="w-full bg-zinc-900 border border-border rounded-xl px-4 py-3 text-white placeholder-zinc-600 focus:outline-none focus:border-blue-500/50 text-sm"
+                        className="w-full bg-zinc-900 border border-border rounded-xl px-4 py-3 text-foreground placeholder-zinc-600 focus:outline-none focus:border-blue-500/50 text-sm"
                       />
                     </div>
                   </div>
@@ -585,7 +585,7 @@ export default function ClientesPage() {
                         placeholder="Bairro"
                         disabled={buscandoCep}
                         maxLength={50}
-                        className="w-full bg-zinc-900 border border-border rounded-xl px-4 py-3 text-white placeholder-zinc-600 focus:outline-none focus:border-blue-500/50 text-sm disabled:opacity-50"
+                        className="w-full bg-zinc-900 border border-border rounded-xl px-4 py-3 text-foreground placeholder-zinc-600 focus:outline-none focus:border-blue-500/50 text-sm disabled:opacity-50"
                       />
                     </div>
                     <div>
@@ -596,7 +596,7 @@ export default function ClientesPage() {
                         placeholder="Cidade"
                         disabled={buscandoCep}
                         maxLength={50}
-                        className="w-full bg-zinc-900 border border-border rounded-xl px-4 py-3 text-white placeholder-zinc-600 focus:outline-none focus:border-blue-500/50 text-sm disabled:opacity-50"
+                        className="w-full bg-zinc-900 border border-border rounded-xl px-4 py-3 text-foreground placeholder-zinc-600 focus:outline-none focus:border-blue-500/50 text-sm disabled:opacity-50"
                       />
                     </div>
                     <div>
@@ -607,7 +607,7 @@ export default function ClientesPage() {
                         placeholder="UF"
                         maxLength={2}
                         disabled={buscandoCep}
-                        className="w-full bg-zinc-900 border border-border rounded-xl px-4 py-3 text-white placeholder-zinc-600 focus:outline-none focus:border-blue-500/50 text-sm disabled:opacity-50"
+                        className="w-full bg-zinc-900 border border-border rounded-xl px-4 py-3 text-foreground placeholder-zinc-600 focus:outline-none focus:border-blue-500/50 text-sm disabled:opacity-50"
                       />
                     </div>
                   </div>
@@ -617,7 +617,7 @@ export default function ClientesPage() {
             <div className="p-6 border-t border-border flex gap-3 justify-end">
               <button
                 onClick={() => setShowModal(false)}
-                className="px-6 py-3 border border-border rounded-xl text-zinc-400 hover:bg-zinc-800 transition-all duration-200"
+                className="px-6 py-3 border border-border rounded-xl text-muted hover:bg-zinc-800 transition-all duration-200"
               >
                 Cancelar
               </button>
@@ -639,58 +639,58 @@ export default function ClientesPage() {
           <div className="bg-card border border-border rounded-2xl w-full max-w-md shadow-2xl shadow-black/50">
             <div className="p-6 border-b border-border flex items-center justify-between">
               <div>
-                <h2 className="text-xl font-semibold text-white">Editar Cliente</h2>
-                <p className="text-sm text-zinc-400 mt-1">Atualize as informacoes do cliente</p>
+                <h2 className="text-xl font-semibold text-foreground">Editar Cliente</h2>
+                <p className="text-sm text-muted mt-1">Atualize as informacoes do cliente</p>
               </div>
-              <button onClick={() => setShowEditModal(false)} className="p-2 hover:bg-zinc-800 rounded-xl text-zinc-400 hover:text-white transition-all duration-200">
+              <button onClick={() => setShowEditModal(false)} className="p-2 hover:bg-zinc-800 rounded-xl text-muted hover:text-foreground transition-all duration-200">
                 <X size={20} />
               </button>
             </div>
             <div className="p-6 space-y-4 max-h-[60vh] overflow-y-auto">
               <div>
-                <label className="block text-sm font-medium text-zinc-400 mb-2">Nome *</label>
+                <label className="block text-sm font-medium text-muted mb-2">Nome *</label>
                 <input
                   type="text"
                   value={form.nome}
                   onChange={(e) => setForm({ ...form, nome: e.target.value })}
                   maxLength={100}
-                  className="w-full bg-zinc-900 border border-border rounded-xl px-4 py-3 text-white placeholder-zinc-600 focus:outline-none focus:border-blue-500/50 focus:ring-1 focus:ring-blue-500/20 transition-all duration-200"
+                  className="w-full bg-zinc-900 border border-border rounded-xl px-4 py-3 text-foreground placeholder-zinc-600 focus:outline-none focus:border-blue-500/50 focus:ring-1 focus:ring-blue-500/20 transition-all duration-200"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-zinc-400 mb-2">Telefone *</label>
+                <label className="block text-sm font-medium text-muted mb-2">Telefone *</label>
                 <input
                   type="text"
                   value={form.telefone}
                   onChange={(e) => setForm({ ...form, telefone: e.target.value })}
                   maxLength={15}
-                  className="w-full bg-zinc-900 border border-border rounded-xl px-4 py-3 text-white placeholder-zinc-600 focus:outline-none focus:border-blue-500/50 focus:ring-1 focus:ring-blue-500/20 transition-all duration-200"
+                  className="w-full bg-zinc-900 border border-border rounded-xl px-4 py-3 text-foreground placeholder-zinc-600 focus:outline-none focus:border-blue-500/50 focus:ring-1 focus:ring-blue-500/20 transition-all duration-200"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-zinc-400 mb-2">Email</label>
+                <label className="block text-sm font-medium text-muted mb-2">Email</label>
                 <input
                   type="email"
                   value={form.email}
                   onChange={(e) => setForm({ ...form, email: e.target.value })}
                   maxLength={100}
-                  className="w-full bg-zinc-900 border border-border rounded-xl px-4 py-3 text-white placeholder-zinc-600 focus:outline-none focus:border-blue-500/50 focus:ring-1 focus:ring-blue-500/20 transition-all duration-200"
+                  className="w-full bg-zinc-900 border border-border rounded-xl px-4 py-3 text-foreground placeholder-zinc-600 focus:outline-none focus:border-blue-500/50 focus:ring-1 focus:ring-blue-500/20 transition-all duration-200"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-zinc-400 mb-2">CPF/CNPJ</label>
+                <label className="block text-sm font-medium text-muted mb-2">CPF/CNPJ</label>
                 <input
                   type="text"
                   value={form.cpf}
                   onChange={(e) => setForm({ ...form, cpf: e.target.value })}
                   placeholder="CPF ou CNPJ"
                   maxLength={18}
-                  className="w-full bg-zinc-900 border border-border rounded-xl px-4 py-3 text-white placeholder-zinc-600 focus:outline-none focus:border-blue-500/50 focus:ring-1 focus:ring-blue-500/20 transition-all duration-200"
+                  className="w-full bg-zinc-900 border border-border rounded-xl px-4 py-3 text-foreground placeholder-zinc-600 focus:outline-none focus:border-blue-500/50 focus:ring-1 focus:ring-blue-500/20 transition-all duration-200"
                 />
               </div>
               {/* Endereco */}
               <div className="pt-2 border-t border-border">
-                <label className="block text-sm font-medium text-zinc-400 mb-3">Endereco</label>
+                <label className="block text-sm font-medium text-muted mb-3">Endereco</label>
                 <div className="space-y-3">
                   <div className="grid grid-cols-3 gap-3">
                     <div className="col-span-1">
@@ -704,7 +704,7 @@ export default function ClientesPage() {
                           if (value.length === 8) buscarCep(value);
                         }}
                         placeholder="CEP"
-                        className="w-full bg-zinc-900 border border-border rounded-xl px-4 py-3 text-white placeholder-zinc-600 focus:outline-none focus:border-blue-500/50 text-sm"
+                        className="w-full bg-zinc-900 border border-border rounded-xl px-4 py-3 text-foreground placeholder-zinc-600 focus:outline-none focus:border-blue-500/50 text-sm"
                       />
                     </div>
                     <div className="col-span-2">
@@ -715,7 +715,7 @@ export default function ClientesPage() {
                         placeholder={buscandoCep ? 'Buscando...' : 'Rua'}
                         disabled={buscandoCep}
                         maxLength={100}
-                        className="w-full bg-zinc-900 border border-border rounded-xl px-4 py-3 text-white placeholder-zinc-600 focus:outline-none focus:border-blue-500/50 text-sm disabled:opacity-50"
+                        className="w-full bg-zinc-900 border border-border rounded-xl px-4 py-3 text-foreground placeholder-zinc-600 focus:outline-none focus:border-blue-500/50 text-sm disabled:opacity-50"
                       />
                     </div>
                   </div>
@@ -727,7 +727,7 @@ export default function ClientesPage() {
                         onChange={(e) => setEnderecoForm({ ...enderecoForm, numero: e.target.value })}
                         placeholder="No"
                         maxLength={10}
-                        className="w-full bg-zinc-900 border border-border rounded-xl px-4 py-3 text-white placeholder-zinc-600 focus:outline-none focus:border-blue-500/50 text-sm"
+                        className="w-full bg-zinc-900 border border-border rounded-xl px-4 py-3 text-foreground placeholder-zinc-600 focus:outline-none focus:border-blue-500/50 text-sm"
                       />
                     </div>
                     <div className="col-span-2">
@@ -737,7 +737,7 @@ export default function ClientesPage() {
                         onChange={(e) => setEnderecoForm({ ...enderecoForm, complemento: e.target.value })}
                         placeholder="Complemento"
                         maxLength={50}
-                        className="w-full bg-zinc-900 border border-border rounded-xl px-4 py-3 text-white placeholder-zinc-600 focus:outline-none focus:border-blue-500/50 text-sm"
+                        className="w-full bg-zinc-900 border border-border rounded-xl px-4 py-3 text-foreground placeholder-zinc-600 focus:outline-none focus:border-blue-500/50 text-sm"
                       />
                     </div>
                   </div>
@@ -750,7 +750,7 @@ export default function ClientesPage() {
                         placeholder="Bairro"
                         disabled={buscandoCep}
                         maxLength={50}
-                        className="w-full bg-zinc-900 border border-border rounded-xl px-4 py-3 text-white placeholder-zinc-600 focus:outline-none focus:border-blue-500/50 text-sm disabled:opacity-50"
+                        className="w-full bg-zinc-900 border border-border rounded-xl px-4 py-3 text-foreground placeholder-zinc-600 focus:outline-none focus:border-blue-500/50 text-sm disabled:opacity-50"
                       />
                     </div>
                     <div>
@@ -761,7 +761,7 @@ export default function ClientesPage() {
                         placeholder="Cidade"
                         disabled={buscandoCep}
                         maxLength={50}
-                        className="w-full bg-zinc-900 border border-border rounded-xl px-4 py-3 text-white placeholder-zinc-600 focus:outline-none focus:border-blue-500/50 text-sm disabled:opacity-50"
+                        className="w-full bg-zinc-900 border border-border rounded-xl px-4 py-3 text-foreground placeholder-zinc-600 focus:outline-none focus:border-blue-500/50 text-sm disabled:opacity-50"
                       />
                     </div>
                     <div>
@@ -772,7 +772,7 @@ export default function ClientesPage() {
                         placeholder="UF"
                         maxLength={2}
                         disabled={buscandoCep}
-                        className="w-full bg-zinc-900 border border-border rounded-xl px-4 py-3 text-white placeholder-zinc-600 focus:outline-none focus:border-blue-500/50 text-sm disabled:opacity-50"
+                        className="w-full bg-zinc-900 border border-border rounded-xl px-4 py-3 text-foreground placeholder-zinc-600 focus:outline-none focus:border-blue-500/50 text-sm disabled:opacity-50"
                       />
                     </div>
                   </div>
@@ -782,7 +782,7 @@ export default function ClientesPage() {
             <div className="p-6 border-t border-border flex gap-3 justify-end">
               <button
                 onClick={() => setShowEditModal(false)}
-                className="px-6 py-3 border border-border rounded-xl text-zinc-400 hover:bg-zinc-800 transition-all duration-200"
+                className="px-6 py-3 border border-border rounded-xl text-muted hover:bg-zinc-800 transition-all duration-200"
               >
                 Cancelar
               </button>
@@ -803,7 +803,7 @@ export default function ClientesPage() {
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
           <div className="bg-card border border-border rounded-2xl w-full max-w-md shadow-2xl shadow-black/50">
             <div className="p-6 border-b border-border">
-              <h2 className="text-xl font-semibold text-white">Confirmar Exclusao</h2>
+              <h2 className="text-xl font-semibold text-foreground">Confirmar Exclusao</h2>
             </div>
             <div className="p-6">
               <div className="flex items-center gap-4 mb-4">
@@ -811,8 +811,8 @@ export default function ClientesPage() {
                   <Trash2 size={24} className="text-red-400" />
                 </div>
                 <div>
-                  <p className="text-white font-medium">{selectedCliente.nome}</p>
-                  <p className="text-sm text-zinc-400">{formatPhone(selectedCliente.telefone)}</p>
+                  <p className="text-foreground font-medium">{selectedCliente.nome}</p>
+                  <p className="text-sm text-muted">{formatPhone(selectedCliente.telefone)}</p>
                 </div>
               </div>
               {selectedCliente.veiculosCount > 0 ? (
@@ -821,7 +821,7 @@ export default function ClientesPage() {
                   Remova os veiculos primeiro para poder excluir o cliente.
                 </div>
               ) : (
-                <p className="text-zinc-400 text-sm">
+                <p className="text-muted text-sm">
                   Tem certeza que deseja excluir este cliente? Esta acao nao pode ser desfeita.
                 </p>
               )}
@@ -832,7 +832,7 @@ export default function ClientesPage() {
                   setShowDeleteConfirm(false);
                   setSelectedCliente(null);
                 }}
-                className="px-6 py-3 border border-border rounded-xl text-zinc-400 hover:bg-zinc-800 transition-all duration-200"
+                className="px-6 py-3 border border-border rounded-xl text-muted hover:bg-zinc-800 transition-all duration-200"
               >
                 Cancelar
               </button>
@@ -860,63 +860,63 @@ export default function ClientesPage() {
                   {capitalize(selectedCliente.nome).charAt(0)}
                 </div>
                 <div>
-                  <h2 className="text-xl font-semibold text-white">{capitalize(selectedCliente.nome)}</h2>
-                  <p className="text-sm text-zinc-400">Cliente #{selectedCliente.id}</p>
+                  <h2 className="text-xl font-semibold text-foreground">{capitalize(selectedCliente.nome)}</h2>
+                  <p className="text-sm text-muted">Cliente #{selectedCliente.id}</p>
                 </div>
               </div>
-              <button onClick={() => setShowDetailModal(false)} className="p-2 hover:bg-zinc-800 rounded-xl text-zinc-400 hover:text-white transition-all duration-200">
+              <button onClick={() => setShowDetailModal(false)} className="p-2 hover:bg-zinc-800 rounded-xl text-muted hover:text-foreground transition-all duration-200">
                 <X size={20} />
               </button>
             </div>
             <div className="p-6 space-y-4">
               <div className="grid grid-cols-2 gap-4">
                 <div className="p-4 bg-zinc-900 rounded-xl border border-border">
-                  <div className="flex items-center gap-2 text-zinc-400 mb-1">
+                  <div className="flex items-center gap-2 text-muted mb-1">
                     <Phone size={14} className="text-emerald-400" />
                     <span className="text-xs">Telefone</span>
                   </div>
-                  <p className="text-white">{formatPhone(selectedCliente.telefone)}</p>
+                  <p className="text-foreground">{formatPhone(selectedCliente.telefone)}</p>
                 </div>
                 <div className="p-4 bg-zinc-900 rounded-xl border border-border">
-                  <div className="flex items-center gap-2 text-zinc-400 mb-1">
+                  <div className="flex items-center gap-2 text-muted mb-1">
                     <Car size={14} className="text-purple-400" />
                     <span className="text-xs">Veiculos</span>
                   </div>
-                  <p className="text-white">{selectedCliente.veiculosCount}</p>
+                  <p className="text-foreground">{selectedCliente.veiculosCount}</p>
                 </div>
               </div>
               {selectedCliente.email && (
                 <div className="p-4 bg-zinc-900 rounded-xl border border-border">
-                  <div className="flex items-center gap-2 text-zinc-400 mb-1">
+                  <div className="flex items-center gap-2 text-muted mb-1">
                     <Mail size={14} className="text-blue-400" />
                     <span className="text-xs">Email</span>
                   </div>
-                  <p className="text-white">{selectedCliente.email.toLowerCase()}</p>
+                  <p className="text-foreground">{selectedCliente.email.toLowerCase()}</p>
                 </div>
               )}
               {selectedCliente.cpf && (
                 <div className="p-4 bg-zinc-900 rounded-xl border border-border">
-                  <div className="flex items-center gap-2 text-zinc-400 mb-1">
+                  <div className="flex items-center gap-2 text-muted mb-1">
                     <CreditCard size={14} className="text-amber-400" />
                     <span className="text-xs">CPF/CNPJ</span>
                   </div>
-                  <p className="text-white">{formatCpfCnpj(selectedCliente.cpf)}</p>
+                  <p className="text-foreground">{formatCpfCnpj(selectedCliente.cpf)}</p>
                 </div>
               )}
               {selectedCliente.endereco && (
                 <div className="p-4 bg-zinc-900 rounded-xl border border-border">
-                  <div className="flex items-center gap-2 text-zinc-400 mb-1">
+                  <div className="flex items-center gap-2 text-muted mb-1">
                     <MapPin size={14} className="text-red-400" />
                     <span className="text-xs">Endereco</span>
                   </div>
-                  <p className="text-white">{selectedCliente.endereco}</p>
+                  <p className="text-foreground">{selectedCliente.endereco}</p>
                 </div>
               )}
 
               {/* Veiculos */}
               {selectedCliente.veiculos && selectedCliente.veiculos.length > 0 && (
                 <div>
-                  <h3 className="text-sm font-medium text-zinc-400 mb-3">Veiculos</h3>
+                  <h3 className="text-sm font-medium text-muted mb-3">Veiculos</h3>
                   <div className="space-y-2">
                     {selectedCliente.veiculos.map((veiculo) => (
                       <div key={veiculo.id} className="p-4 bg-zinc-900 rounded-xl border border-border flex items-center justify-between">
@@ -925,7 +925,7 @@ export default function ClientesPage() {
                             <Car size={16} className="text-purple-400" />
                           </div>
                           <div>
-                            <p className="text-white">{capitalize(veiculo.marca)} {capitalize(veiculo.modelo)}</p>
+                            <p className="text-foreground">{capitalize(veiculo.marca)} {capitalize(veiculo.modelo)}</p>
                             <p className="text-xs text-emerald-400 font-mono">{formatPlate(veiculo.placa)}</p>
                           </div>
                         </div>
@@ -947,7 +947,7 @@ export default function ClientesPage() {
               </button>
               <button
                 onClick={() => setShowDetailModal(false)}
-                className="px-6 py-3 border border-border rounded-xl text-zinc-400 hover:bg-zinc-800 transition-all duration-200"
+                className="px-6 py-3 border border-border rounded-xl text-muted hover:bg-zinc-800 transition-all duration-200"
               >
                 Fechar
               </button>

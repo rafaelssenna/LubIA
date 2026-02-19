@@ -198,7 +198,7 @@ function UsuariosPageContent() {
             <div className="w-16 h-16 border-4 border-purple-500/20 rounded-full"></div>
             <div className="absolute top-0 left-0 w-16 h-16 border-4 border-transparent border-t-purple-500 rounded-full animate-spin"></div>
           </div>
-          <p className="text-zinc-400 animate-pulse">Carregando usuarios...</p>
+          <p className="text-muted animate-pulse">Carregando usuarios...</p>
         </div>
       </div>
     );
@@ -221,7 +221,7 @@ function UsuariosPageContent() {
               placeholder="Buscar por nome ou email..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-10 pr-4 py-3 bg-card border border-border rounded-xl text-white placeholder-zinc-500 focus:outline-none focus:border-purple-500/50 focus:ring-2 focus:ring-purple-500/20 transition-all"
+              className="w-full pl-10 pr-4 py-3 bg-card border border-border rounded-xl text-foreground placeholder-zinc-500 focus:outline-none focus:border-purple-500/50 focus:ring-2 focus:ring-purple-500/20 transition-all"
             />
           </div>
           <button
@@ -240,7 +240,7 @@ function UsuariosPageContent() {
               <div className="p-4 bg-purple-500/10 rounded-2xl w-fit mx-auto mb-4 border border-purple-500/20">
                 <User className="h-8 w-8 text-purple-400" />
               </div>
-              <p className="text-white font-medium">Nenhum usuario encontrado</p>
+              <p className="text-foreground font-medium">Nenhum usuario encontrado</p>
               <button
                 onClick={openNewModal}
                 className="mt-4 text-primary hover:text-primary-light transition-colors"
@@ -253,11 +253,11 @@ function UsuariosPageContent() {
               <table className="w-full">
                 <thead className="bg-zinc-900/50 border-b border-border">
                   <tr>
-                    <th className="text-left px-6 py-4 text-xs font-semibold text-zinc-400 uppercase tracking-wider">Usuario</th>
-                    <th className="text-left px-6 py-4 text-xs font-semibold text-zinc-400 uppercase tracking-wider">Nivel</th>
-                    <th className="text-left px-6 py-4 text-xs font-semibold text-zinc-400 uppercase tracking-wider">Status</th>
-                    <th className="text-left px-6 py-4 text-xs font-semibold text-zinc-400 uppercase tracking-wider">Ultimo Login</th>
-                    <th className="text-right px-6 py-4 text-xs font-semibold text-zinc-400 uppercase tracking-wider">Acoes</th>
+                    <th className="text-left px-6 py-4 text-xs font-semibold text-muted uppercase tracking-wider">Usuario</th>
+                    <th className="text-left px-6 py-4 text-xs font-semibold text-muted uppercase tracking-wider">Nivel</th>
+                    <th className="text-left px-6 py-4 text-xs font-semibold text-muted uppercase tracking-wider">Status</th>
+                    <th className="text-left px-6 py-4 text-xs font-semibold text-muted uppercase tracking-wider">Ultimo Login</th>
+                    <th className="text-right px-6 py-4 text-xs font-semibold text-muted uppercase tracking-wider">Acoes</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-zinc-800/50">
@@ -272,8 +272,8 @@ function UsuariosPageContent() {
                               <User className="h-5 w-5 text-purple-400" />
                             </div>
                             <div>
-                              <p className="text-white font-semibold">{usuario.nome}</p>
-                              <p className="text-sm text-zinc-400">{usuario.email}</p>
+                              <p className="text-foreground font-semibold">{usuario.nome}</p>
+                              <p className="text-sm text-muted">{usuario.email}</p>
                             </div>
                           </div>
                         </td>
@@ -297,7 +297,7 @@ function UsuariosPageContent() {
                           )}
                         </td>
                         <td className="px-6 py-4">
-                          <span className="text-zinc-400 text-sm">
+                          <span className="text-muted text-sm">
                             {formatDate(usuario.lastLoginAt)}
                           </span>
                         </td>
@@ -336,12 +336,12 @@ function UsuariosPageContent() {
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
           <div className="bg-card border border-border rounded-2xl w-full max-w-md overflow-hidden shadow-2xl shadow-black/50 max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between p-6 border-b border-border sticky top-0 bg-card">
-              <h2 className="text-xl font-bold text-white">
+              <h2 className="text-xl font-bold text-foreground">
                 {editingUsuario ? 'Editar Usuario' : 'Novo Usuario'}
               </h2>
               <button
                 onClick={() => setShowModal(false)}
-                className="p-2 hover:bg-zinc-800 rounded-lg text-zinc-400 hover:text-white transition-colors"
+                className="p-2 hover:bg-zinc-800 rounded-lg text-muted hover:text-foreground transition-colors"
               >
                 <X className="h-5 w-5" />
               </button>
@@ -350,7 +350,7 @@ function UsuariosPageContent() {
             <div className="p-6 space-y-4">
               {/* Nome */}
               <div>
-                <label className="block text-sm font-medium text-zinc-400 mb-2">
+                <label className="block text-sm font-medium text-muted mb-2">
                   Nome
                 </label>
                 <input
@@ -358,13 +358,13 @@ function UsuariosPageContent() {
                   value={nome}
                   onChange={(e) => setNome(e.target.value)}
                   placeholder="Nome completo"
-                  className="w-full px-4 py-3 bg-zinc-900/50 border border-border rounded-xl text-white placeholder-zinc-500 focus:outline-none focus:border-purple-500/50 focus:ring-2 focus:ring-purple-500/20 transition-all"
+                  className="w-full px-4 py-3 bg-zinc-900/50 border border-border rounded-xl text-foreground placeholder-zinc-500 focus:outline-none focus:border-purple-500/50 focus:ring-2 focus:ring-purple-500/20 transition-all"
                 />
               </div>
 
               {/* Email */}
               <div>
-                <label className="block text-sm font-medium text-zinc-400 mb-2">
+                <label className="block text-sm font-medium text-muted mb-2">
                   Email
                 </label>
                 <div className="relative">
@@ -374,14 +374,14 @@ function UsuariosPageContent() {
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="email@exemplo.com"
-                    className="w-full pl-10 pr-4 py-3 bg-zinc-900/50 border border-border rounded-xl text-white placeholder-zinc-500 focus:outline-none focus:border-purple-500/50 focus:ring-2 focus:ring-purple-500/20 transition-all"
+                    className="w-full pl-10 pr-4 py-3 bg-zinc-900/50 border border-border rounded-xl text-foreground placeholder-zinc-500 focus:outline-none focus:border-purple-500/50 focus:ring-2 focus:ring-purple-500/20 transition-all"
                   />
                 </div>
               </div>
 
               {/* Senha */}
               <div>
-                <label className="block text-sm font-medium text-zinc-400 mb-2">
+                <label className="block text-sm font-medium text-muted mb-2">
                   {editingUsuario ? 'Nova Senha (deixe em branco para manter)' : 'Senha'}
                 </label>
                 <div className="relative">
@@ -390,12 +390,12 @@ function UsuariosPageContent() {
                     value={senha}
                     onChange={(e) => setSenha(e.target.value)}
                     placeholder={editingUsuario ? '........' : 'Minimo 6 caracteres'}
-                    className="w-full px-4 py-3 pr-10 bg-zinc-900/50 border border-border rounded-xl text-white placeholder-zinc-500 focus:outline-none focus:border-purple-500/50 focus:ring-2 focus:ring-purple-500/20 transition-all"
+                    className="w-full px-4 py-3 pr-10 bg-zinc-900/50 border border-border rounded-xl text-foreground placeholder-zinc-500 focus:outline-none focus:border-purple-500/50 focus:ring-2 focus:ring-purple-500/20 transition-all"
                   />
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3.5 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-white transition-colors"
+                    className="absolute right-3.5 top-1/2 -translate-y-1/2 text-foreground-muted hover:text-foreground transition-colors"
                   >
                     {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                   </button>
@@ -404,7 +404,7 @@ function UsuariosPageContent() {
 
               {/* Role */}
               <div>
-                <label className="block text-sm font-medium text-zinc-400 mb-3">
+                <label className="block text-sm font-medium text-muted mb-3">
                   Nivel de Acesso
                 </label>
                 <div className="space-y-2">
@@ -426,10 +426,10 @@ function UsuariosPageContent() {
                     />
                     <div className="flex-1">
                       <div className="flex items-center gap-2">
-                        <span className="font-medium text-white">Vendedor</span>
+                        <span className="font-medium text-foreground">Vendedor</span>
                         <span className="text-xs px-2 py-0.5 rounded-lg bg-orange-500/20 text-orange-400">VENDEDOR</span>
                       </div>
-                      <p className="text-xs text-zinc-400 mt-1">Clientes, Veiculos, Orcamentos, WhatsApp</p>
+                      <p className="text-xs text-muted mt-1">Clientes, Veiculos, Orcamentos, WhatsApp</p>
                     </div>
                   </label>
 
@@ -451,10 +451,10 @@ function UsuariosPageContent() {
                     />
                     <div className="flex-1">
                       <div className="flex items-center gap-2">
-                        <span className="font-medium text-white">Atendente</span>
+                        <span className="font-medium text-foreground">Atendente</span>
                         <span className="text-xs px-2 py-0.5 rounded-lg bg-emerald-500/20 text-emerald-400">ATENDENTE</span>
                       </div>
-                      <p className="text-xs text-zinc-400 mt-1">Dashboard, Clientes, Veiculos, Ordens, Orcamentos, WhatsApp</p>
+                      <p className="text-xs text-muted mt-1">Dashboard, Clientes, Veiculos, Ordens, Orcamentos, WhatsApp</p>
                     </div>
                   </label>
 
@@ -476,10 +476,10 @@ function UsuariosPageContent() {
                     />
                     <div className="flex-1">
                       <div className="flex items-center gap-2">
-                        <span className="font-medium text-white">Gerente</span>
+                        <span className="font-medium text-foreground">Gerente</span>
                         <span className="text-xs px-2 py-0.5 rounded-lg bg-blue-500/20 text-blue-400">GERENTE</span>
                       </div>
-                      <p className="text-xs text-zinc-400 mt-1">Tudo exceto Usuarios e Configuracoes</p>
+                      <p className="text-xs text-muted mt-1">Tudo exceto Usuarios e Configuracoes</p>
                     </div>
                   </label>
 
@@ -501,10 +501,10 @@ function UsuariosPageContent() {
                     />
                     <div className="flex-1">
                       <div className="flex items-center gap-2">
-                        <span className="font-medium text-white">Administrador</span>
+                        <span className="font-medium text-foreground">Administrador</span>
                         <span className="text-xs px-2 py-0.5 rounded-lg bg-purple-500/20 text-purple-400">ADMIN</span>
                       </div>
-                      <p className="text-xs text-zinc-400 mt-1">Acesso total ao sistema</p>
+                      <p className="text-xs text-muted mt-1">Acesso total ao sistema</p>
                     </div>
                   </label>
                 </div>
@@ -520,7 +520,7 @@ function UsuariosPageContent() {
                     onChange={(e) => setAtivo(e.target.checked)}
                     className="w-4 h-4 text-emerald-500 bg-zinc-700 border-zinc-600 rounded focus:ring-emerald-500"
                   />
-                  <label htmlFor="ativo" className="text-sm text-zinc-300">
+                  <label htmlFor="ativo" className="text-sm text-muted">
                     Usuario ativo
                   </label>
                 </div>
@@ -530,7 +530,7 @@ function UsuariosPageContent() {
             <div className="p-6 border-t border-border flex justify-end gap-3 sticky bottom-0 bg-card">
               <button
                 onClick={() => setShowModal(false)}
-                className="px-6 py-3 border border-border rounded-xl text-zinc-300 hover:bg-zinc-800 transition-colors"
+                className="px-6 py-3 border border-border rounded-xl text-muted hover:bg-zinc-800 transition-colors"
               >
                 Cancelar
               </button>
@@ -555,9 +555,9 @@ function UsuariosPageContent() {
               <div className="w-14 h-14 mx-auto mb-4 bg-red-500/10 rounded-2xl flex items-center justify-center border border-red-500/20">
                 <Trash2 className="h-7 w-7 text-red-400" />
               </div>
-              <h3 className="text-xl font-bold text-white text-center mb-2">Excluir Usuario</h3>
-              <p className="text-zinc-400 text-center text-sm mb-1">{selectedUsuario.nome}</p>
-              <p className="text-zinc-500 text-center text-sm">
+              <h3 className="text-xl font-bold text-foreground text-center mb-2">Excluir Usuario</h3>
+              <p className="text-muted text-center text-sm mb-1">{selectedUsuario.nome}</p>
+              <p className="text-foreground-muted text-center text-sm">
                 Tem certeza que deseja excluir este usuario? Esta acao nao pode ser desfeita.
               </p>
             </div>
@@ -567,7 +567,7 @@ function UsuariosPageContent() {
                   setShowDeleteConfirm(false);
                   setSelectedUsuario(null);
                 }}
-                className="flex-1 px-6 py-3 border border-border text-zinc-300 rounded-xl hover:bg-zinc-800 transition-colors"
+                className="flex-1 px-6 py-3 border border-border text-muted rounded-xl hover:bg-zinc-800 transition-colors"
               >
                 Cancelar
               </button>
@@ -597,7 +597,7 @@ export default function UsuariosPage() {
             <div className="w-16 h-16 border-4 border-purple-500/20 rounded-full"></div>
             <div className="absolute top-0 left-0 w-16 h-16 border-4 border-transparent border-t-purple-500 rounded-full animate-spin"></div>
           </div>
-          <p className="text-zinc-400 animate-pulse">Carregando...</p>
+          <p className="text-muted animate-pulse">Carregando...</p>
         </div>
       </div>
     }>

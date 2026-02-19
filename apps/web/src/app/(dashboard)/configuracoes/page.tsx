@@ -574,7 +574,7 @@ export default function ConfiguracoesPage() {
             <div className="w-16 h-16 border-4 border-primary/20 rounded-full"></div>
             <div className="absolute top-0 left-0 w-16 h-16 border-4 border-transparent border-t-primary rounded-full animate-spin"></div>
           </div>
-          <p className="text-zinc-400 animate-pulse">Carregando configuracoes...</p>
+          <p className="text-muted animate-pulse">Carregando configuracoes...</p>
         </div>
       </div>
     );
@@ -592,24 +592,24 @@ export default function ConfiguracoesPage() {
               <Building2 size={22} className="text-blue-400" />
             </div>
             <div>
-              <h2 className="text-lg font-bold text-white">Dados da Oficina</h2>
-              <p className="text-sm text-zinc-400">Informacoes que aparecem nas O.S. e documentos</p>
+              <h2 className="text-lg font-bold text-foreground">Dados da Oficina</h2>
+              <p className="text-sm text-muted">Informacoes que aparecem nas O.S. e documentos</p>
             </div>
           </div>
 
           <div className="p-6 grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-zinc-400 mb-2">Nome da Oficina</label>
+              <label className="block text-sm font-medium text-muted mb-2">Nome da Oficina</label>
               <input
                 type="text"
                 value={nomeOficina}
                 onChange={(e) => setNomeOficina(e.target.value)}
                 placeholder="Ex: Auto Center Silva"
-                className="w-full bg-zinc-900/50 border border-border rounded-xl px-4 py-3 text-white placeholder-zinc-500 focus:outline-none focus:border-blue-500/50 focus:ring-2 focus:ring-blue-500/20 transition-all"
+                className="w-full bg-zinc-900/50 border border-border rounded-xl px-4 py-3 text-foreground placeholder-zinc-500 focus:outline-none focus:border-blue-500/50 focus:ring-2 focus:ring-blue-500/20 transition-all"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-zinc-400 mb-2">
+              <label className="block text-sm font-medium text-muted mb-2">
                 CNPJ <span className="text-red-400">*</span>
               </label>
               <div className="relative">
@@ -618,7 +618,7 @@ export default function ConfiguracoesPage() {
                   value={cnpj}
                   onChange={(e) => handleCnpjChange(e.target.value)}
                   placeholder="00.000.000/0000-00"
-                  className="w-full bg-zinc-900/50 border border-border rounded-xl px-4 py-3 text-white placeholder-zinc-500 focus:outline-none focus:border-blue-500/50 focus:ring-2 focus:ring-blue-500/20 transition-all"
+                  className="w-full bg-zinc-900/50 border border-border rounded-xl px-4 py-3 text-foreground placeholder-zinc-500 focus:outline-none focus:border-blue-500/50 focus:ring-2 focus:ring-blue-500/20 transition-all"
                 />
                 {buscandoCnpj && (
                   <div className="absolute right-3 top-1/2 -translate-y-1/2">
@@ -626,10 +626,10 @@ export default function ConfiguracoesPage() {
                   </div>
                 )}
               </div>
-              <p className="text-xs text-zinc-500 mt-1">Digite o CNPJ para preencher automaticamente</p>
+              <p className="text-xs text-foreground-muted mt-1">Digite o CNPJ para preencher automaticamente</p>
             </div>
             <div>
-              <label className="block text-sm font-medium text-zinc-400 mb-2">
+              <label className="block text-sm font-medium text-muted mb-2">
                 Telefone <span className="text-red-400">*</span>
               </label>
               <input
@@ -637,17 +637,17 @@ export default function ConfiguracoesPage() {
                 value={telefone}
                 onChange={(e) => setTelefone(formatTelefone(e.target.value))}
                 placeholder="(00) 00000-0000"
-                className="w-full bg-zinc-900/50 border border-border rounded-xl px-4 py-3 text-white placeholder-zinc-500 focus:outline-none focus:border-blue-500/50 focus:ring-2 focus:ring-blue-500/20 transition-all"
+                className="w-full bg-zinc-900/50 border border-border rounded-xl px-4 py-3 text-foreground placeholder-zinc-500 focus:outline-none focus:border-blue-500/50 focus:ring-2 focus:ring-blue-500/20 transition-all"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-zinc-400 mb-2">Endereco</label>
+              <label className="block text-sm font-medium text-muted mb-2">Endereco</label>
               <input
                 type="text"
                 value={endereco}
                 onChange={(e) => setEndereco(e.target.value)}
                 placeholder="Rua, numero, bairro"
-                className="w-full bg-zinc-900/50 border border-border rounded-xl px-4 py-3 text-white placeholder-zinc-500 focus:outline-none focus:border-blue-500/50 focus:ring-2 focus:ring-blue-500/20 transition-all"
+                className="w-full bg-zinc-900/50 border border-border rounded-xl px-4 py-3 text-foreground placeholder-zinc-500 focus:outline-none focus:border-blue-500/50 focus:ring-2 focus:ring-blue-500/20 transition-all"
               />
             </div>
 
@@ -677,8 +677,8 @@ export default function ConfiguracoesPage() {
                 <Store size={22} className="text-purple-400" />
               </div>
               <div>
-                <h2 className="text-lg font-bold text-white">Filiais / Fornecedores</h2>
-                <p className="text-sm text-zinc-400">Cadastre as filiais para associar aos produtos</p>
+                <h2 className="text-lg font-bold text-foreground">Filiais / Fornecedores</h2>
+                <p className="text-sm text-muted">Cadastre as filiais para associar aos produtos</p>
               </div>
             </div>
             <button
@@ -711,8 +711,8 @@ export default function ConfiguracoesPage() {
                         <Store size={18} className="text-purple-400" />
                       </div>
                       <div>
-                        <p className="font-semibold text-white">{filial.nome}</p>
-                        <p className="text-sm text-zinc-400 font-mono">{filial.cnpj}</p>
+                        <p className="font-semibold text-foreground">{filial.nome}</p>
+                        <p className="text-sm text-muted font-mono">{filial.cnpj}</p>
                       </div>
                       {!filial.ativo && (
                         <span className="px-2.5 py-1 bg-red-500/10 text-red-400 text-xs rounded-lg border border-red-500/20">
@@ -744,8 +744,8 @@ export default function ConfiguracoesPage() {
                 <div className="p-4 bg-purple-500/10 rounded-2xl w-fit mx-auto mb-4 border border-purple-500/20">
                   <Store size={28} className="text-purple-400" />
                 </div>
-                <p className="text-white font-medium">Nenhuma filial cadastrada</p>
-                <p className="text-sm text-zinc-400 mt-1">
+                <p className="text-foreground font-medium">Nenhuma filial cadastrada</p>
+                <p className="text-sm text-muted mt-1">
                   Cadastre filiais para associar aos produtos no estoque
                 </p>
               </div>
@@ -758,29 +758,29 @@ export default function ConfiguracoesPage() {
           <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
             <div className="bg-card border border-border rounded-2xl w-full max-w-md shadow-2xl shadow-black/50">
               <div className="p-6 border-b border-border">
-                <h2 className="text-xl font-bold text-white">
+                <h2 className="text-xl font-bold text-foreground">
                   {editingFilial ? 'Editar Filial' : 'Nova Filial'}
                 </h2>
               </div>
               <div className="p-6 space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-zinc-400 mb-2">Nome da Filial</label>
+                  <label className="block text-sm font-medium text-muted mb-2">Nome da Filial</label>
                   <input
                     type="text"
                     value={filialForm.nome}
                     onChange={(e) => setFilialForm({ ...filialForm, nome: e.target.value })}
                     placeholder="Ex: Filial Centro"
-                    className="w-full bg-zinc-900/50 border border-border rounded-xl px-4 py-3 text-white placeholder-zinc-500 focus:outline-none focus:border-purple-500/50 focus:ring-2 focus:ring-purple-500/20 transition-all"
+                    className="w-full bg-zinc-900/50 border border-border rounded-xl px-4 py-3 text-foreground placeholder-zinc-500 focus:outline-none focus:border-purple-500/50 focus:ring-2 focus:ring-purple-500/20 transition-all"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-zinc-400 mb-2">CNPJ</label>
+                  <label className="block text-sm font-medium text-muted mb-2">CNPJ</label>
                   <input
                     type="text"
                     value={filialForm.cnpj}
                     onChange={(e) => setFilialForm({ ...filialForm, cnpj: e.target.value })}
                     placeholder="00.000.000/0000-00"
-                    className="w-full bg-zinc-900/50 border border-border rounded-xl px-4 py-3 text-white placeholder-zinc-500 focus:outline-none focus:border-purple-500/50 focus:ring-2 focus:ring-purple-500/20 transition-all"
+                    className="w-full bg-zinc-900/50 border border-border rounded-xl px-4 py-3 text-foreground placeholder-zinc-500 focus:outline-none focus:border-purple-500/50 focus:ring-2 focus:ring-purple-500/20 transition-all"
                   />
                 </div>
               </div>
@@ -791,7 +791,7 @@ export default function ConfiguracoesPage() {
                     setEditingFilial(null);
                     setFilialForm({ nome: '', cnpj: '' });
                   }}
-                  className="px-6 py-3 border border-border rounded-xl text-zinc-300 hover:bg-zinc-800 transition-colors"
+                  className="px-6 py-3 border border-border rounded-xl text-muted hover:bg-zinc-800 transition-colors"
                 >
                   Cancelar
                 </button>
@@ -818,19 +818,19 @@ export default function ConfiguracoesPage() {
           <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
             <div className="bg-card border border-border rounded-2xl w-full max-w-md shadow-2xl shadow-black/50">
               <div className="p-6 border-b border-border">
-                <h2 className="text-xl font-bold text-white">
+                <h2 className="text-xl font-bold text-foreground">
                   {editingServico ? 'Editar Servico' : 'Novo Servico'}
                 </h2>
               </div>
               <div className="p-6">
                 <div>
-                  <label className="block text-sm font-medium text-zinc-400 mb-2">Nome do Servico</label>
+                  <label className="block text-sm font-medium text-muted mb-2">Nome do Servico</label>
                   <input
                     type="text"
                     value={servicoForm.nome}
                     onChange={(e) => setServicoForm({ ...servicoForm, nome: e.target.value })}
                     placeholder="Ex: Troca de Oleo"
-                    className="w-full bg-zinc-900/50 border border-border rounded-xl px-4 py-3 text-white placeholder-zinc-500 focus:outline-none focus:border-purple-500/50 focus:ring-2 focus:ring-purple-500/20 transition-all"
+                    className="w-full bg-zinc-900/50 border border-border rounded-xl px-4 py-3 text-foreground placeholder-zinc-500 focus:outline-none focus:border-purple-500/50 focus:ring-2 focus:ring-purple-500/20 transition-all"
                   />
                 </div>
               </div>
@@ -841,7 +841,7 @@ export default function ConfiguracoesPage() {
                     setEditingServico(null);
                     setServicoForm({ nome: '' });
                   }}
-                  className="px-6 py-3 border border-border rounded-xl text-zinc-300 hover:bg-zinc-800 transition-colors"
+                  className="px-6 py-3 border border-border rounded-xl text-muted hover:bg-zinc-800 transition-colors"
                 >
                   Cancelar
                 </button>
@@ -871,8 +871,8 @@ export default function ConfiguracoesPage() {
                 <MessageCircle size={22} className="text-[#25D366]" />
               </div>
               <div>
-                <h2 className="text-lg font-bold text-white">Integracao WhatsApp</h2>
-                <p className="text-sm text-zinc-400">Envie lembretes e mensagens automaticas</p>
+                <h2 className="text-lg font-bold text-foreground">Integracao WhatsApp</h2>
+                <p className="text-sm text-muted">Envie lembretes e mensagens automaticas</p>
               </div>
             </div>
             <div className="flex items-center gap-2">
@@ -900,8 +900,8 @@ export default function ConfiguracoesPage() {
                       <Smartphone size={26} className="text-[#25D366]" />
                     </div>
                     <div>
-                      <p className="font-semibold text-white">{whatsappStatus.profileName || 'WhatsApp Conectado'}</p>
-                      <p className="text-sm text-zinc-400">{whatsappStatus.number}</p>
+                      <p className="font-semibold text-foreground">{whatsappStatus.profileName || 'WhatsApp Conectado'}</p>
+                      <p className="text-sm text-muted">{whatsappStatus.number}</p>
                       {whatsappStatus.isBusiness && (
                         <span className="text-xs text-[#25D366]">WhatsApp Business</span>
                       )}
@@ -918,22 +918,22 @@ export default function ConfiguracoesPage() {
               </div>
             ) : qrCode ? (
               <div className="bg-zinc-900/50 border border-border rounded-xl p-6 text-center">
-                <p className="text-white font-semibold mb-4">Escaneie o QR Code com o WhatsApp</p>
+                <p className="text-foreground font-semibold mb-4">Escaneie o QR Code com o WhatsApp</p>
                 <div className="inline-block p-4 bg-white rounded-xl mb-4">
                   <img src={qrCode} alt="QR Code" className="w-64 h-64" />
                 </div>
                 {pairCode && (
                   <div className="mb-4">
-                    <p className="text-sm text-zinc-400 mb-2">Ou use o codigo de pareamento:</p>
+                    <p className="text-sm text-muted mb-2">Ou use o codigo de pareamento:</p>
                     <p className="text-2xl font-mono text-primary tracking-widest">{pairCode}</p>
                   </div>
                 )}
-                <p className="text-sm text-zinc-500">
+                <p className="text-sm text-foreground-muted">
                   Aguardando conexao... <Loader2 className="inline animate-spin ml-2" size={16} />
                 </p>
                 <button
                   onClick={() => { setQrCode(null); setPairCode(null); }}
-                  className="mt-4 text-sm text-zinc-400 hover:text-white transition-colors"
+                  className="mt-4 text-sm text-muted hover:text-foreground transition-colors"
                 >
                   Cancelar
                 </button>
@@ -943,8 +943,8 @@ export default function ConfiguracoesPage() {
                 <div className="p-4 bg-[#25D366]/10 rounded-2xl w-fit mx-auto mb-4 border border-[#25D366]/20">
                   <MessageCircle size={32} className="text-[#25D366]" />
                 </div>
-                <p className="text-white font-semibold mb-2">Conecte seu WhatsApp</p>
-                <p className="text-sm text-zinc-400 mb-6 max-w-md mx-auto">
+                <p className="text-foreground font-semibold mb-2">Conecte seu WhatsApp</p>
+                <p className="text-sm text-muted mb-6 max-w-md mx-auto">
                   Ao conectar, voce podera enviar mensagens automaticas de lembretes e acompanhamento para seus clientes.
                 </p>
                 <div className="flex items-center justify-center gap-4">
@@ -963,7 +963,7 @@ export default function ConfiguracoesPage() {
                   <button
                     onClick={checkWhatsAppStatus}
                     disabled={checkingStatus}
-                    className="p-3 bg-zinc-900/50 border border-border rounded-xl text-zinc-400 hover:text-white hover:border-[#25D366]/50 transition-all"
+                    className="p-3 bg-zinc-900/50 border border-border rounded-xl text-muted hover:text-foreground hover:border-[#25D366]/50 transition-all"
                     title="Verificar status"
                   >
                     <RefreshCw size={20} className={checkingStatus ? 'animate-spin' : ''} />
@@ -982,8 +982,8 @@ export default function ConfiguracoesPage() {
                 <Bot size={22} className="text-purple-400" />
               </div>
               <div>
-                <h2 className="text-lg font-bold text-white">Chatbot LoopIA</h2>
-                <p className="text-sm text-zinc-400">Assistente virtual com inteligencia artificial</p>
+                <h2 className="text-lg font-bold text-foreground">Chatbot LoopIA</h2>
+                <p className="text-sm text-muted">Assistente virtual com inteligencia artificial</p>
               </div>
             </div>
             <button
@@ -1003,19 +1003,19 @@ export default function ConfiguracoesPage() {
           {chatbotEnabled && (
             <div className="p-6 space-y-4">
               <div>
-                <label className="block text-sm font-medium text-zinc-400 mb-2">Nome do Assistente</label>
+                <label className="block text-sm font-medium text-muted mb-2">Nome do Assistente</label>
                 <input
                   type="text"
                   value={chatbotNome}
                   onChange={(e) => setChatbotNome(e.target.value)}
                   placeholder="LoopIA"
-                  className="w-full bg-zinc-900/50 border border-border rounded-xl px-4 py-3 text-white placeholder-zinc-500 focus:outline-none focus:border-purple-500/50 focus:ring-2 focus:ring-purple-500/20 transition-all"
+                  className="w-full bg-zinc-900/50 border border-border rounded-xl px-4 py-3 text-foreground placeholder-zinc-500 focus:outline-none focus:border-purple-500/50 focus:ring-2 focus:ring-purple-500/20 transition-all"
                 />
               </div>
 
               {/* Horario de Funcionamento */}
               <div>
-                <label className="block text-sm font-medium text-zinc-400 mb-2">Horario de Funcionamento</label>
+                <label className="block text-sm font-medium text-muted mb-2">Horario de Funcionamento</label>
                 <div className="bg-zinc-900/50 border border-border rounded-xl p-4 space-y-2">
                   {DIAS_SEMANA.map((dia) => (
                     <div
@@ -1037,23 +1037,23 @@ export default function ConfiguracoesPage() {
                           <CheckCircle size={14} className="text-white" />
                         )}
                       </button>
-                      <span className="w-20 text-sm text-white">{dia.label}</span>
+                      <span className="w-20 text-sm text-foreground">{dia.label}</span>
                       {chatbotHorario[dia.key].ativo && (
                         <>
                           <select
                             value={chatbotHorario[dia.key].abertura}
                             onChange={(e) => updateHorarioDia(dia.key, 'abertura', e.target.value)}
-                            className="bg-zinc-800 border border-border rounded-lg px-2 py-1 text-sm text-white focus:outline-none focus:border-purple-500"
+                            className="bg-zinc-800 border border-border rounded-lg px-2 py-1 text-sm text-foreground focus:outline-none focus:border-purple-500"
                           >
                             {HORARIOS.map((h) => (
                               <option key={h} value={h}>{h}</option>
                             ))}
                           </select>
-                          <span className="text-zinc-500">as</span>
+                          <span className="text-foreground-muted">as</span>
                           <select
                             value={chatbotHorario[dia.key].fechamento}
                             onChange={(e) => updateHorarioDia(dia.key, 'fechamento', e.target.value)}
-                            className="bg-zinc-800 border border-border rounded-lg px-2 py-1 text-sm text-white focus:outline-none focus:border-purple-500"
+                            className="bg-zinc-800 border border-border rounded-lg px-2 py-1 text-sm text-foreground focus:outline-none focus:border-purple-500"
                           >
                             {HORARIOS.map((h) => (
                               <option key={h} value={h}>{h}</option>
@@ -1062,12 +1062,12 @@ export default function ConfiguracoesPage() {
                         </>
                       )}
                       {!chatbotHorario[dia.key].ativo && (
-                        <span className="text-sm text-zinc-500">Fechado</span>
+                        <span className="text-sm text-foreground-muted">Fechado</span>
                       )}
                     </div>
                   ))}
                 </div>
-                <p className="mt-2 text-xs text-zinc-400">
+                <p className="mt-2 text-xs text-muted">
                   Resumo: {horarioParaString(chatbotHorario) || 'Nenhum dia selecionado'}
                 </p>
               </div>
@@ -1075,7 +1075,7 @@ export default function ConfiguracoesPage() {
               {/* Servicos do Sistema */}
               <div>
                 <div className="flex items-center justify-between mb-2">
-                  <label className="block text-sm font-medium text-zinc-400">
+                  <label className="block text-sm font-medium text-muted">
                     Servicos que a LoopIA conhece
                   </label>
                   <button
@@ -1104,7 +1104,7 @@ export default function ConfiguracoesPage() {
                         >
                           <div className="flex items-center gap-2 min-w-0 flex-1">
                             <Wrench size={14} className="text-purple-400 shrink-0" />
-                            <span className="text-sm text-white truncate">{servico.nome}</span>
+                            <span className="text-sm text-foreground truncate">{servico.nome}</span>
                           </div>
                           <div className="flex items-center gap-1 shrink-0">
                             <button
@@ -1128,27 +1128,27 @@ export default function ConfiguracoesPage() {
                   ) : (
                     <div className="text-center py-4">
                       <Wrench size={24} className="text-zinc-500 mx-auto mb-2" />
-                      <p className="text-sm text-zinc-400">Nenhum servico cadastrado</p>
-                      <p className="text-xs text-zinc-500 mt-1">
+                      <p className="text-sm text-muted">Nenhum servico cadastrado</p>
+                      <p className="text-xs text-foreground-muted mt-1">
                         Clique em "Novo Servico" para adicionar
                       </p>
                     </div>
                   )}
                 </div>
-                <p className="mt-2 text-xs text-zinc-500 flex items-center gap-1">
+                <p className="mt-2 text-xs text-foreground-muted flex items-center gap-1">
                   <DollarSign size={12} />
                   A LoopIA usa automaticamente os servicos e precos cadastrados aqui
                 </p>
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-zinc-400 mb-2">Mensagem de Boas-Vindas</label>
+                <label className="block text-sm font-medium text-muted mb-2">Mensagem de Boas-Vindas</label>
                 <textarea
                   value={chatbotBoasVindas}
                   onChange={(e) => setChatbotBoasVindas(e.target.value)}
                   placeholder="Ola! Sou a LoopIA, assistente virtual da oficina..."
                   rows={2}
-                  className="w-full bg-zinc-900/50 border border-border rounded-xl px-4 py-3 text-white placeholder-zinc-500 focus:outline-none focus:border-purple-500/50 focus:ring-2 focus:ring-purple-500/20 transition-all resize-none"
+                  className="w-full bg-zinc-900/50 border border-border rounded-xl px-4 py-3 text-foreground placeholder-zinc-500 focus:outline-none focus:border-purple-500/50 focus:ring-2 focus:ring-purple-500/20 transition-all resize-none"
                 />
               </div>
 
@@ -1156,8 +1156,8 @@ export default function ConfiguracoesPage() {
                 <div className="flex items-start gap-3">
                   <Bot size={20} className="text-purple-400 mt-0.5" />
                   <div>
-                    <p className="text-sm text-white font-medium">Como funciona</p>
-                    <p className="text-xs text-zinc-400 mt-1">
+                    <p className="text-sm text-foreground font-medium">Como funciona</p>
+                    <p className="text-xs text-muted mt-1">
                       A LoopIA responde automaticamente as mensagens recebidas no WhatsApp usando inteligencia artificial (Gemini).
                       Ela conhece os servicos da oficina, precos, e dados dos clientes cadastrados.
                     </p>
@@ -1172,8 +1172,8 @@ export default function ConfiguracoesPage() {
               <div className="p-4 bg-zinc-800/50 rounded-2xl w-fit mx-auto mb-4">
                 <Power size={28} className="text-zinc-500" />
               </div>
-              <p className="text-white font-medium">Chatbot desativado</p>
-              <p className="text-sm text-zinc-400 mt-1">Ative para responder mensagens automaticamente</p>
+              <p className="text-foreground font-medium">Chatbot desativado</p>
+              <p className="text-sm text-muted mt-1">Ative para responder mensagens automaticamente</p>
             </div>
           )}
         </div>
@@ -1202,8 +1202,8 @@ export default function ConfiguracoesPage() {
                 <Settings size={24} className="text-zinc-400" />
               </div>
               <div>
-                <h3 className="font-bold text-white">Sobre o LubIA</h3>
-                <p className="text-sm text-zinc-400">Versao 1.0.0 - Sistema de Gestao Inteligente para Oficinas</p>
+                <h3 className="font-bold text-foreground">Sobre o LubIA</h3>
+                <p className="text-sm text-muted">Versao 1.0.0 - Sistema de Gestao Inteligente para Oficinas</p>
               </div>
             </div>
             <span className="px-4 py-2 bg-emerald-500/10 text-emerald-400 text-xs font-semibold rounded-xl border border-emerald-500/20">

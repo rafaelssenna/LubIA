@@ -130,7 +130,7 @@ export default function AReceberPage() {
                 <div>
                   <p className="text-sm text-amber-400/70">Total Pendente</p>
                   <p className="text-2xl font-bold text-amber-400">{formatCurrency(stats.totalPendente)}</p>
-                  <p className="text-xs text-zinc-500 mt-1">{stats.total} pendências</p>
+                  <p className="text-xs text-foreground-muted mt-1">{stats.total} pendências</p>
                 </div>
                 <div className="p-3 bg-amber-500/10 rounded-xl">
                   <Clock size={24} className="text-amber-400" />
@@ -143,7 +143,7 @@ export default function AReceberPage() {
                 <div>
                   <p className="text-sm text-purple-400/70">Ordens de Servico</p>
                   <p className="text-2xl font-bold text-purple-400">{formatCurrency(stats.totalOrdens)}</p>
-                  <p className="text-xs text-zinc-500 mt-1">{stats.ordens} ordens</p>
+                  <p className="text-xs text-foreground-muted mt-1">{stats.ordens} ordens</p>
                 </div>
                 <div className="p-3 bg-purple-500/10 rounded-xl">
                   <Car size={24} className="text-purple-400" />
@@ -156,7 +156,7 @@ export default function AReceberPage() {
                 <div>
                   <p className="text-sm text-blue-400/70">Vendas Rapidas</p>
                   <p className="text-2xl font-bold text-blue-400">{formatCurrency(stats.totalVendas)}</p>
-                  <p className="text-xs text-zinc-500 mt-1">{stats.vendas} vendas</p>
+                  <p className="text-xs text-foreground-muted mt-1">{stats.vendas} vendas</p>
                 </div>
                 <div className="p-3 bg-blue-500/10 rounded-xl">
                   <Package size={24} className="text-blue-400" />
@@ -174,7 +174,7 @@ export default function AReceberPage() {
                 placeholder="Buscar por cliente, número..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-12 pr-4 py-3 bg-card rounded-xl border border-border text-white placeholder:text-zinc-500 focus:outline-none focus:border-amber-500/50"
+                className="w-full pl-12 pr-4 py-3 bg-card rounded-xl border border-border text-foreground placeholder:text-zinc-500 focus:outline-none focus:border-amber-500/50"
               />
             </div>
             <div className="flex gap-2">
@@ -189,7 +189,7 @@ export default function AReceberPage() {
                   className={`px-4 py-3 rounded-xl border transition-all duration-200 ${
                     filtroTipo === opt.value
                       ? 'bg-amber-500/20 border-amber-500 text-amber-400'
-                      : 'bg-card border-border text-zinc-400 hover:border-border'
+                      : 'bg-card border-border text-muted hover:border-border'
                   }`}
                 >
                   {opt.label}
@@ -206,8 +206,8 @@ export default function AReceberPage() {
           ) : filteredPendencias.length === 0 ? (
             <div className="text-center py-20">
               <CheckCircle size={48} className="text-emerald-500 mx-auto mb-4" />
-              <p className="text-white text-lg font-medium">Nenhuma pendência!</p>
-              <p className="text-zinc-500">Todos os pagamentos estão em dia.</p>
+              <p className="text-foreground text-lg font-medium">Nenhuma pendência!</p>
+              <p className="text-foreground-muted">Todos os pagamentos estão em dia.</p>
             </div>
           ) : (
             <div className="space-y-3">
@@ -231,7 +231,7 @@ export default function AReceberPage() {
                       </div>
                       <div>
                         <div className="flex items-center gap-2">
-                          <span className="text-white font-medium">{pendencia.numero}</span>
+                          <span className="text-foreground font-medium">{pendencia.numero}</span>
                           <span className={`text-xs px-2 py-0.5 rounded-full ${
                             pendencia.tipo === 'ORDEM'
                               ? 'bg-purple-500/20 text-purple-400'
@@ -246,9 +246,9 @@ export default function AReceberPage() {
                             </span>
                           )}
                         </div>
-                        <p className="text-sm text-zinc-400">{pendencia.cliente}</p>
+                        <p className="text-sm text-muted">{pendencia.cliente}</p>
                         {pendencia.veiculo && (
-                          <p className="text-xs text-zinc-500">{pendencia.veiculo}</p>
+                          <p className="text-xs text-foreground-muted">{pendencia.veiculo}</p>
                         )}
                       </div>
                     </div>
@@ -256,7 +256,7 @@ export default function AReceberPage() {
                     <div className="flex items-center gap-6">
                       <div className="text-right">
                         <p className="text-lg font-bold text-amber-400">{formatCurrency(pendencia.total)}</p>
-                        <div className="flex items-center gap-1 text-xs text-zinc-500">
+                        <div className="flex items-center gap-1 text-xs text-foreground-muted">
                           <Calendar size={12} />
                           {pendencia.dataPagamentoPrevista ? (
                             <span className={isVencido(pendencia.dataPagamentoPrevista) ? 'text-red-400' : ''}>
@@ -290,14 +290,14 @@ export default function AReceberPage() {
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
           <div className="bg-card border border-border rounded-2xl w-full max-w-md shadow-2xl shadow-black/50">
             <div className="p-6 border-b border-border flex items-center justify-between">
-              <h2 className="text-xl font-semibold text-white">Registrar Pagamento</h2>
+              <h2 className="text-xl font-semibold text-foreground">Registrar Pagamento</h2>
               <button
                 onClick={() => {
                   setShowPagamentoModal(false);
                   setSelectedPendencia(null);
                   setFormaPagamento('');
                 }}
-                className="p-2 text-zinc-400 hover:text-white transition-colors"
+                className="p-2 text-muted hover:text-foreground transition-colors"
               >
                 <X size={20} />
               </button>
@@ -316,20 +316,20 @@ export default function AReceberPage() {
                   )}
                 </div>
                 <div>
-                  <p className="text-white font-medium">{selectedPendencia.numero}</p>
-                  <p className="text-sm text-zinc-400">{selectedPendencia.cliente}</p>
+                  <p className="text-foreground font-medium">{selectedPendencia.numero}</p>
+                  <p className="text-sm text-muted">{selectedPendencia.cliente}</p>
                 </div>
               </div>
 
               <div className="bg-background rounded-xl p-4 mb-6">
                 <div className="flex justify-between items-center">
-                  <span className="text-zinc-400">Valor a receber:</span>
+                  <span className="text-muted">Valor a receber:</span>
                   <span className="text-2xl font-bold text-emerald-400">{formatCurrency(selectedPendencia.total)}</span>
                 </div>
               </div>
 
               <div className="mb-6">
-                <label className="block text-sm text-zinc-400 mb-2">Forma de Pagamento</label>
+                <label className="block text-sm text-muted mb-2">Forma de Pagamento</label>
                 <div className="grid grid-cols-2 gap-2">
                   {[
                     { value: 'PIX', label: 'PIX', icon: '📱' },
@@ -344,7 +344,7 @@ export default function AReceberPage() {
                       className={`p-3 rounded-xl border transition-all duration-200 flex items-center justify-center gap-2 ${
                         formaPagamento === method.value
                           ? 'bg-emerald-500/20 border-emerald-500 text-emerald-400'
-                          : 'bg-background border-border text-zinc-400 hover:border-zinc-600'
+                          : 'bg-background border-border text-muted hover:border-zinc-600'
                       }`}
                     >
                       <span>{method.icon}</span>
@@ -361,7 +361,7 @@ export default function AReceberPage() {
                   setSelectedPendencia(null);
                   setFormaPagamento('');
                 }}
-                className="px-6 py-3 border border-border rounded-xl text-zinc-400 hover:bg-zinc-800 transition-all duration-200"
+                className="px-6 py-3 border border-border rounded-xl text-muted hover:bg-zinc-800 transition-all duration-200"
               >
                 Cancelar
               </button>

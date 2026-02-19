@@ -296,8 +296,8 @@ export default function VendasRapidasPage() {
                 <Receipt size={24} className="text-blue-400" />
               </div>
               <div>
-                <p className="text-white/60 text-sm">Total de Vendas</p>
-                <p className="text-2xl font-bold text-white">{stats.total}</p>
+                <p className="text-muted text-sm">Total de Vendas</p>
+                <p className="text-2xl font-bold text-foreground">{stats.total}</p>
               </div>
             </div>
           </div>
@@ -308,8 +308,8 @@ export default function VendasRapidasPage() {
                 <Clock size={24} className="text-emerald-400" />
               </div>
               <div>
-                <p className="text-white/60 text-sm">Vendas Hoje</p>
-                <p className="text-2xl font-bold text-white">{stats.hoje}</p>
+                <p className="text-muted text-sm">Vendas Hoje</p>
+                <p className="text-2xl font-bold text-foreground">{stats.hoje}</p>
               </div>
             </div>
           </div>
@@ -320,8 +320,8 @@ export default function VendasRapidasPage() {
                 <DollarSign size={24} className="text-amber-400" />
               </div>
               <div>
-                <p className="text-white/60 text-sm">Faturamento Hoje</p>
-                <p className="text-2xl font-bold text-white">{formatCurrency(stats.faturamentoHoje)}</p>
+                <p className="text-muted text-sm">Faturamento Hoje</p>
+                <p className="text-2xl font-bold text-foreground">{formatCurrency(stats.faturamentoHoje)}</p>
               </div>
             </div>
           </div>
@@ -330,13 +330,13 @@ export default function VendasRapidasPage() {
         {/* Actions */}
         <div className="flex flex-col md:flex-row gap-4 justify-between">
           <div className="relative flex-1 max-w-md">
-            <Search size={20} className="absolute left-4 top-1/2 -translate-y-1/2 text-white/40" />
+            <Search size={20} className="absolute left-4 top-1/2 -translate-y-1/2 text-foreground-muted" />
             <input
               type="text"
               placeholder="Buscar por número ou cliente..."
               value={busca}
               onChange={(e) => setBusca(e.target.value)}
-              className="w-full pl-12 pr-4 py-3 bg-card rounded-xl border border-white/10 text-white placeholder:text-white/40 focus:outline-none focus:border-primary/50"
+              className="w-full pl-12 pr-4 py-3 bg-card rounded-xl border border-white/10 text-foreground placeholder:text-foreground-muted focus:outline-none focus:border-primary/50"
             />
           </div>
           <button
@@ -351,9 +351,9 @@ export default function VendasRapidasPage() {
         {/* Lista de Vendas */}
         <div className="bg-card rounded-2xl border border-white/10 overflow-hidden">
           {loading ? (
-            <div className="p-8 text-center text-white/60">Carregando...</div>
+            <div className="p-8 text-center text-muted">Carregando...</div>
           ) : vendas.length === 0 ? (
-            <div className="p-8 text-center text-white/60">
+            <div className="p-8 text-center text-muted">
               <ShoppingCart size={48} className="mx-auto mb-4 opacity-50" />
               <p>Nenhuma venda encontrada</p>
             </div>
@@ -362,12 +362,12 @@ export default function VendasRapidasPage() {
               <table className="w-full">
                 <thead>
                   <tr className="border-b border-white/10">
-                    <th className="text-left p-4 text-white/60 font-medium">Número</th>
-                    <th className="text-left p-4 text-white/60 font-medium">Cliente</th>
-                    <th className="text-left p-4 text-white/60 font-medium">Itens</th>
-                    <th className="text-left p-4 text-white/60 font-medium">Total</th>
-                    <th className="text-left p-4 text-white/60 font-medium">Data</th>
-                    <th className="text-right p-4 text-white/60 font-medium">Ações</th>
+                    <th className="text-left p-4 text-muted font-medium">Número</th>
+                    <th className="text-left p-4 text-muted font-medium">Cliente</th>
+                    <th className="text-left p-4 text-muted font-medium">Itens</th>
+                    <th className="text-left p-4 text-muted font-medium">Total</th>
+                    <th className="text-left p-4 text-muted font-medium">Data</th>
+                    <th className="text-right p-4 text-muted font-medium">Ações</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -376,23 +376,23 @@ export default function VendasRapidasPage() {
                       <td className="p-4">
                         <span className="text-primary font-mono font-medium">{venda.numero}</span>
                       </td>
-                      <td className="p-4 text-white">
-                        {venda.nomeCliente || <span className="text-white/40">Balcão</span>}
+                      <td className="p-4 text-foreground">
+                        {venda.nomeCliente || <span className="text-foreground-muted">Balcão</span>}
                       </td>
                       <td className="p-4">
-                        <span className="text-white/80">{venda.itens.length} produto(s)</span>
+                        <span className="text-foreground">{venda.itens.length} produto(s)</span>
                       </td>
                       <td className="p-4">
                         <span className="text-emerald-400 font-medium">{formatCurrency(venda.total)}</span>
                       </td>
-                      <td className="p-4 text-white/60">{formatDate(venda.createdAt)}</td>
+                      <td className="p-4 text-muted">{formatDate(venda.createdAt)}</td>
                       <td className="p-4 text-right">
                         <button
                           onClick={() => {
                             setVendaSelecionada(venda);
                             setShowDetalhes(true);
                           }}
-                          className="px-3 py-1.5 bg-white/5 hover:bg-white/10 text-white/80 rounded-lg transition-colors"
+                          className="px-3 py-1.5 bg-white/5 hover:bg-white/10 text-foreground rounded-lg transition-colors"
                         >
                           Ver detalhes
                         </button>
@@ -412,9 +412,9 @@ export default function VendasRapidasPage() {
                 disabled={page === 1}
                 className="p-2 hover:bg-white/10 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
               >
-                <ChevronLeft size={20} className="text-white/60" />
+                <ChevronLeft size={20} className="text-muted" />
               </button>
-              <span className="text-white/60 px-4">
+              <span className="text-muted px-4">
                 Página {page} de {totalPages}
               </span>
               <button
@@ -422,7 +422,7 @@ export default function VendasRapidasPage() {
                 disabled={page === totalPages}
                 className="p-2 hover:bg-white/10 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
               >
-                <ChevronRight size={20} className="text-white/60" />
+                <ChevronRight size={20} className="text-muted" />
               </button>
             </div>
           )}
@@ -435,7 +435,7 @@ export default function VendasRapidasPage() {
           <div className="bg-card rounded-2xl w-full max-w-3xl max-h-[90vh] overflow-hidden flex flex-col">
             {/* Header */}
             <div className="flex items-center justify-between p-6 border-b border-white/10">
-              <h2 className="text-xl font-semibold text-white">Nova Venda Rápida</h2>
+              <h2 className="text-xl font-semibold text-foreground">Nova Venda Rápida</h2>
               <button
                 onClick={() => {
                   setShowNovaVenda(false);
@@ -443,7 +443,7 @@ export default function VendasRapidasPage() {
                 }}
                 className="p-2 hover:bg-white/10 rounded-lg transition-colors"
               >
-                <X size={20} className="text-white/60" />
+                <X size={20} className="text-muted" />
               </button>
             </div>
 
@@ -451,27 +451,27 @@ export default function VendasRapidasPage() {
             <div className="flex-1 overflow-y-auto p-6 space-y-6">
               {/* Cliente (opcional) */}
               <div>
-                <label className="block text-sm text-white/60 mb-2">Nome do Cliente (opcional)</label>
+                <label className="block text-sm text-muted mb-2">Nome do Cliente (opcional)</label>
                 <input
                   type="text"
                   value={nomeCliente}
                   onChange={(e) => setNomeCliente(e.target.value)}
                   placeholder="Ex: João"
-                  className="w-full px-4 py-3 bg-background rounded-xl border border-white/10 text-white placeholder:text-white/40 focus:outline-none focus:border-primary/50"
+                  className="w-full px-4 py-3 bg-background rounded-xl border border-white/10 text-foreground placeholder:text-foreground-muted focus:outline-none focus:border-primary/50"
                 />
               </div>
 
               {/* Busca de Produtos */}
               <div>
-                <label className="block text-sm text-white/60 mb-2">Adicionar Produto</label>
+                <label className="block text-sm text-muted mb-2">Adicionar Produto</label>
                 <div className="relative">
-                  <Search size={20} className="absolute left-4 top-1/2 -translate-y-1/2 text-white/40" />
+                  <Search size={20} className="absolute left-4 top-1/2 -translate-y-1/2 text-foreground-muted" />
                   <input
                     type="text"
                     value={buscaProduto}
                     onChange={(e) => setBuscaProduto(e.target.value)}
                     placeholder="Buscar por código ou nome..."
-                    className="w-full pl-12 pr-4 py-3 bg-background rounded-xl border border-white/10 text-white placeholder:text-white/40 focus:outline-none focus:border-primary/50"
+                    className="w-full pl-12 pr-4 py-3 bg-background rounded-xl border border-white/10 text-foreground placeholder:text-foreground-muted focus:outline-none focus:border-primary/50"
                   />
                   {/* Dropdown de resultados */}
                   {produtos.length > 0 && (
@@ -495,11 +495,11 @@ export default function VendasRapidasPage() {
                                   </span>
                                 )}
                               </p>
-                              <p className="text-white/60 text-sm">{produto.codigo} • {produto.marca}</p>
+                              <p className="text-muted text-sm">{produto.codigo} • {produto.marca}</p>
                             </div>
                             <div className="text-right">
                               <p className="text-emerald-400 font-medium">{formatCurrency(produto.precoVenda)}/{unidadeLabel}</p>
-                              <p className="text-white/40 text-sm">Estoque: {produto.quantidade} {unidadeLabel}</p>
+                              <p className="text-foreground-muted text-sm">Estoque: {produto.quantidade} {unidadeLabel}</p>
                             </div>
                           </button>
                         );
@@ -507,7 +507,7 @@ export default function VendasRapidasPage() {
                     </div>
                   )}
                   {loadingProdutos && (
-                    <div className="absolute top-full left-0 right-0 mt-2 bg-background-secondary rounded-xl border border-white/10 p-4 text-center text-white/60">
+                    <div className="absolute top-full left-0 right-0 mt-2 bg-background-secondary rounded-xl border border-white/10 p-4 text-center text-muted">
                       Buscando...
                     </div>
                   )}
@@ -516,9 +516,9 @@ export default function VendasRapidasPage() {
 
               {/* Lista de Itens */}
               <div>
-                <label className="block text-sm text-white/60 mb-2">Itens da Venda</label>
+                <label className="block text-sm text-muted mb-2">Itens da Venda</label>
                 {itensVenda.length === 0 ? (
-                  <div className="bg-background rounded-xl border border-white/10 p-8 text-center text-white/40">
+                  <div className="bg-background rounded-xl border border-white/10 p-8 text-center text-foreground-muted">
                     <Package size={32} className="mx-auto mb-2 opacity-50" />
                     <p>Nenhum produto adicionado</p>
                   </div>
@@ -536,7 +536,7 @@ export default function VendasRapidasPage() {
                         >
                           <div className="flex-1">
                             <p className="text-white font-medium">{item.produtoNome}</p>
-                            <p className="text-white/60 text-sm">
+                            <p className="text-muted text-sm">
                               {item.produtoCodigo}
                               {isGranel && <span className="ml-2 text-amber-400">(Granel)</span>}
                             </p>
@@ -569,7 +569,7 @@ export default function VendasRapidasPage() {
                           </div>
                           <div className="text-right min-w-[100px]">
                             <p className="text-emerald-400 font-medium">{formatCurrency(item.subtotal)}</p>
-                            <p className="text-white/40 text-sm">{formatCurrency(item.precoUnitario)}/{unidadeLabel}</p>
+                            <p className="text-foreground-muted text-sm">{formatCurrency(item.precoUnitario)}/{unidadeLabel}</p>
                           </div>
                           <button
                             onClick={() => removerItem(item.produtoId)}
@@ -586,19 +586,19 @@ export default function VendasRapidasPage() {
 
               {/* Observações */}
               <div>
-                <label className="block text-sm text-white/60 mb-2">Observações (opcional)</label>
+                <label className="block text-sm text-muted mb-2">Observações (opcional)</label>
                 <textarea
                   value={observacoes}
                   onChange={(e) => setObservacoes(e.target.value)}
                   placeholder="Ex: Troco para R$100"
                   rows={2}
-                  className="w-full px-4 py-3 bg-background rounded-xl border border-white/10 text-white placeholder:text-white/40 focus:outline-none focus:border-primary/50 resize-none"
+                  className="w-full px-4 py-3 bg-background rounded-xl border border-white/10 text-foreground placeholder:text-foreground-muted focus:outline-none focus:border-primary/50 resize-none"
                 />
               </div>
 
               {/* Forma de Pagamento */}
               <div>
-                <label className="block text-sm text-white/60 mb-2">Forma de Pagamento *</label>
+                <label className="block text-sm text-muted mb-2">Forma de Pagamento *</label>
                 <div className="grid grid-cols-2 gap-2">
                   {[
                     { value: 'PIX', label: 'PIX', icon: '📱' },
@@ -616,7 +616,7 @@ export default function VendasRapidasPage() {
                           ? method.value === 'CREDITO_PESSOAL'
                             ? 'bg-amber-500/20 border-amber-500 text-amber-400'
                             : 'bg-primary/20 border-primary text-primary'
-                          : 'bg-background border-white/10 text-white/60 hover:border-white/20'
+                          : 'bg-background border-white/10 text-muted hover:border-white/20'
                       }`}
                     >
                       <span>{method.icon}</span>
@@ -629,19 +629,19 @@ export default function VendasRapidasPage() {
               {/* Data prevista de pagamento (quando Crédito Pessoal) */}
               {formaPagamento === 'CREDITO_PESSOAL' && (
                 <div>
-                  <label className="block text-sm text-white/60 mb-2">Data prevista de pagamento (opcional)</label>
+                  <label className="block text-sm text-muted mb-2">Data prevista de pagamento (opcional)</label>
                   <input
                     type="date"
                     value={dataPagamentoPrevista}
                     onChange={(e) => setDataPagamentoPrevista(e.target.value)}
-                    className="w-full px-4 py-3 bg-background rounded-xl border border-amber-500/30 text-white focus:outline-none focus:border-amber-500/50"
+                    className="w-full px-4 py-3 bg-background rounded-xl border border-amber-500/30 text-foreground focus:outline-none focus:border-amber-500/50"
                   />
                 </div>
               )}
 
               {/* Desconto */}
               <div>
-                <label className="block text-sm text-white/60 mb-2">Desconto (%)</label>
+                <label className="block text-sm text-muted mb-2">Desconto (%)</label>
                 <div className="flex items-center gap-3">
                   <input
                     type="text"
@@ -651,9 +651,9 @@ export default function VendasRapidasPage() {
                       setDesconto(val);
                     }}
                     placeholder="0"
-                    className="w-24 px-4 py-3 bg-background rounded-xl border border-white/10 text-white text-center placeholder:text-white/40 focus:outline-none focus:border-amber-500/50"
+                    className="w-24 px-4 py-3 bg-background rounded-xl border border-white/10 text-foreground text-center placeholder:text-foreground-muted focus:outline-none focus:border-amber-500/50"
                   />
-                  <span className="text-white/40">%</span>
+                  <span className="text-foreground-muted">%</span>
                   {descontoPercent > 0 && (
                     <span className="text-amber-400 text-sm">
                       - {formatCurrency(descontoValor)}
@@ -670,21 +670,21 @@ export default function VendasRapidasPage() {
                   {descontoPercent > 0 ? (
                     <>
                       <div className="flex items-center gap-4 text-sm">
-                        <span className="text-white/40">Subtotal:</span>
-                        <span className="text-white/60">{formatCurrency(subtotalVenda)}</span>
+                        <span className="text-foreground-muted">Subtotal:</span>
+                        <span className="text-muted">{formatCurrency(subtotalVenda)}</span>
                       </div>
                       <div className="flex items-center gap-4 text-sm">
                         <span className="text-amber-400">Desconto ({descontoPercent}%):</span>
                         <span className="text-amber-400">- {formatCurrency(descontoValor)}</span>
                       </div>
                       <div className="flex items-center gap-4">
-                        <span className="text-white/60 text-sm">Total:</span>
+                        <span className="text-muted text-sm">Total:</span>
                         <span className="text-2xl font-bold text-emerald-400">{formatCurrency(totalVenda)}</span>
                       </div>
                     </>
                   ) : (
                     <>
-                      <p className="text-white/60 text-sm">Total da Venda</p>
+                      <p className="text-muted text-sm">Total da Venda</p>
                       <p className="text-2xl font-bold text-emerald-400">{formatCurrency(totalVenda)}</p>
                     </>
                   )}
@@ -747,8 +747,8 @@ export default function VendasRapidasPage() {
             {/* Header */}
             <div className="flex items-center justify-between p-6 border-b border-white/10">
               <div>
-                <h2 className="text-xl font-semibold text-white">Venda {vendaSelecionada.numero}</h2>
-                <p className="text-white/60 text-sm">{formatDate(vendaSelecionada.createdAt)}</p>
+                <h2 className="text-xl font-semibold text-foreground">Venda {vendaSelecionada.numero}</h2>
+                <p className="text-muted text-sm">{formatDate(vendaSelecionada.createdAt)}</p>
               </div>
               <button
                 onClick={() => {
@@ -757,7 +757,7 @@ export default function VendasRapidasPage() {
                 }}
                 className="p-2 hover:bg-white/10 rounded-lg transition-colors"
               >
-                <X size={20} className="text-white/60" />
+                <X size={20} className="text-muted" />
               </button>
             </div>
 
@@ -765,19 +765,19 @@ export default function VendasRapidasPage() {
             <div className="flex-1 overflow-y-auto p-6 space-y-4">
               {vendaSelecionada.nomeCliente && (
                 <div>
-                  <p className="text-white/60 text-sm">Cliente</p>
+                  <p className="text-muted text-sm">Cliente</p>
                   <p className="text-white">{vendaSelecionada.nomeCliente}</p>
                 </div>
               )}
 
               <div>
-                <p className="text-white/60 text-sm mb-2">Itens</p>
+                <p className="text-muted text-sm mb-2">Itens</p>
                 <div className="space-y-2">
                   {vendaSelecionada.itens.map((item, idx) => (
                     <div key={idx} className="flex items-center justify-between bg-background rounded-xl p-3">
                       <div>
                         <p className="text-white font-medium">{item.produtoNome}</p>
-                        <p className="text-white/60 text-sm">{item.quantidade}x {formatCurrency(item.precoUnitario)}</p>
+                        <p className="text-muted text-sm">{item.quantidade}x {formatCurrency(item.precoUnitario)}</p>
                       </div>
                       <p className="text-emerald-400 font-medium">{formatCurrency(item.subtotal)}</p>
                     </div>
@@ -787,7 +787,7 @@ export default function VendasRapidasPage() {
 
               {vendaSelecionada.observacoes && (
                 <div>
-                  <p className="text-white/60 text-sm">Observações</p>
+                  <p className="text-muted text-sm">Observações</p>
                   <p className="text-white">{vendaSelecionada.observacoes}</p>
                 </div>
               )}
@@ -797,7 +797,7 @@ export default function VendasRapidasPage() {
             <div className="p-6 border-t border-white/10 bg-background">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-white/60 text-sm">Total</p>
+                  <p className="text-muted text-sm">Total</p>
                   <p className="text-2xl font-bold text-emerald-400">{formatCurrency(vendaSelecionada.total)}</p>
                 </div>
                 <button

@@ -557,7 +557,7 @@ function OrdensPageContent() {
             <div className="w-16 h-16 border-4 border-emerald-500/20 rounded-full"></div>
             <div className="absolute top-0 left-0 w-16 h-16 border-4 border-transparent border-t-emerald-500 rounded-full animate-spin"></div>
           </div>
-          <p className="text-zinc-400 animate-pulse">Carregando ordens...</p>
+          <p className="text-muted animate-pulse">Carregando ordens...</p>
         </div>
       </div>
     );
@@ -583,8 +583,8 @@ function OrdensPageContent() {
                 </div>
                 <span className="text-xs font-medium text-emerald-400 bg-emerald-500/10 px-2 py-1 rounded-full">Total</span>
               </div>
-              <p className="text-4xl font-bold text-white mb-1">{stats.total}</p>
-              <p className="text-sm text-zinc-400">ordens de servico</p>
+              <p className="text-4xl font-bold text-foreground mb-1">{stats.total}</p>
+              <p className="text-sm text-muted">ordens de servico</p>
             </div>
           </button>
 
@@ -601,8 +601,8 @@ function OrdensPageContent() {
                 </div>
                 <span className="text-xs font-medium text-purple-400 bg-purple-500/10 px-2 py-1 rounded-full">Abertas</span>
               </div>
-              <p className="text-4xl font-bold text-white mb-1">{stats.abertas}</p>
-              <p className="text-sm text-zinc-400">em andamento</p>
+              <p className="text-4xl font-bold text-foreground mb-1">{stats.abertas}</p>
+              <p className="text-sm text-muted">em andamento</p>
             </div>
           </button>
 
@@ -619,8 +619,8 @@ function OrdensPageContent() {
                 </div>
                 <span className="text-xs font-medium text-cyan-400 bg-cyan-500/10 px-2 py-1 rounded-full">Finalizadas</span>
               </div>
-              <p className="text-4xl font-bold text-white mb-1">{stats.concluidas}</p>
-              <p className="text-sm text-zinc-400">concluidas</p>
+              <p className="text-4xl font-bold text-foreground mb-1">{stats.concluidas}</p>
+              <p className="text-sm text-muted">concluidas</p>
             </div>
           </button>
 
@@ -647,8 +647,8 @@ function OrdensPageContent() {
                 </div>
                 <span className="text-xs font-medium text-blue-400 bg-blue-500/10 px-2 py-1 rounded-full">Hoje</span>
               </div>
-              <p className="text-4xl font-bold text-white mb-1">{stats.hoje}</p>
-              <p className="text-sm text-zinc-400">agendadas hoje</p>
+              <p className="text-4xl font-bold text-foreground mb-1">{stats.hoje}</p>
+              <p className="text-sm text-muted">agendadas hoje</p>
             </div>
           </button>
         </div>
@@ -663,7 +663,7 @@ function OrdensPageContent() {
                 className={`p-2.5 rounded-lg transition-all duration-200 ${
                   viewMode === 'lista'
                     ? 'bg-gradient-to-r from-primary to-primary-dark text-white shadow-lg shadow-primary/25'
-                    : 'text-zinc-500 hover:text-white hover:bg-zinc-800'
+                    : 'text-foreground-muted hover:text-white hover:bg-zinc-800'
                 }`}
                 title="Lista"
               >
@@ -674,7 +674,7 @@ function OrdensPageContent() {
                 className={`p-2.5 rounded-lg transition-all duration-200 ${
                   viewMode === 'calendario'
                     ? 'bg-gradient-to-r from-primary to-primary-dark text-white shadow-lg shadow-primary/25'
-                    : 'text-zinc-500 hover:text-white hover:bg-zinc-800'
+                    : 'text-foreground-muted hover:text-white hover:bg-zinc-800'
                 }`}
                 title="Calendario"
               >
@@ -685,7 +685,7 @@ function OrdensPageContent() {
             {viewMode === 'lista' ? (
               <>
                 <div className="relative flex-1 max-w-md">
-                  <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-500" size={18} />
+                  <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-foreground-muted" size={18} />
                   <input
                     type="text"
                     placeholder="Buscar por numero, placa ou cliente..."
@@ -725,7 +725,7 @@ function OrdensPageContent() {
                     className="bg-card border border-border rounded-xl px-3 py-3 text-sm text-white focus:outline-none focus:border-emerald-500/50 focus:ring-1 focus:ring-emerald-500/20 transition-all duration-200 [color-scheme:dark]"
                     title="Data inicial"
                   />
-                  <span className="text-zinc-500">até</span>
+                  <span className="text-foreground-muted">até</span>
                   <input
                     type="date"
                     value={dataFim}
@@ -736,7 +736,7 @@ function OrdensPageContent() {
                   {(dataInicio || dataFim || clienteFilter) && (
                     <button
                       onClick={() => { setDataInicio(''); setDataFim(''); setClienteFilter(''); }}
-                      className="p-2 hover:bg-red-500/10 rounded-lg text-zinc-500 hover:text-red-400 transition-all duration-200"
+                      className="p-2 hover:bg-red-500/10 rounded-lg text-foreground-muted hover:text-red-400 transition-all duration-200"
                       title="Limpar filtros"
                     >
                       <X size={18} />
@@ -748,7 +748,7 @@ function OrdensPageContent() {
               <div className="flex items-center gap-2">
                 <button
                   onClick={() => navigateWeek(-1)}
-                  className="p-2.5 bg-card border border-border rounded-lg text-zinc-500 hover:text-white hover:border-emerald-500/30 transition-all duration-200"
+                  className="p-2.5 bg-card border border-border rounded-lg text-foreground-muted hover:text-white hover:border-emerald-500/30 transition-all duration-200"
                 >
                   <ChevronLeft size={18} />
                 </button>
@@ -757,13 +757,13 @@ function OrdensPageContent() {
                 </span>
                 <button
                   onClick={() => navigateWeek(1)}
-                  className="p-2.5 bg-card border border-border rounded-lg text-zinc-500 hover:text-white hover:border-emerald-500/30 transition-all duration-200"
+                  className="p-2.5 bg-card border border-border rounded-lg text-foreground-muted hover:text-white hover:border-emerald-500/30 transition-all duration-200"
                 >
                   <ChevronRight size={18} />
                 </button>
                 <button
                   onClick={() => setCurrentDate(new Date())}
-                  className="px-4 py-2.5 bg-card border border-border rounded-lg text-zinc-500 hover:text-primary hover:border-emerald-500/30 transition-all duration-200 text-sm font-medium"
+                  className="px-4 py-2.5 bg-card border border-border rounded-lg text-foreground-muted hover:text-primary hover:border-emerald-500/30 transition-all duration-200 text-sm font-medium"
                 >
                   Hoje
                 </button>
@@ -784,7 +784,7 @@ function OrdensPageContent() {
           <div className="bg-card border border-border rounded-2xl overflow-hidden">
             {/* Calendar Header */}
             <div className="grid grid-cols-8 border-b border-border">
-              <div className="p-4 text-zinc-500 text-sm font-medium">Horario</div>
+              <div className="p-4 text-foreground-muted text-sm font-medium">Horario</div>
               {weekDays.map((date, idx) => {
                 const isTodayDate = isToday(date);
                 return (
@@ -792,7 +792,7 @@ function OrdensPageContent() {
                     key={idx}
                     className={`p-4 text-center border-l border-border ${isTodayDate ? 'bg-emerald-500/10' : ''}`}
                   >
-                    <p className="text-zinc-500 text-xs">{diasSemana[idx]}</p>
+                    <p className="text-foreground-muted text-xs">{diasSemana[idx]}</p>
                     <p className={`text-lg font-bold ${isTodayDate ? 'text-emerald-400' : 'text-white'}`}>
                       {date.getDate()}
                     </p>
@@ -805,7 +805,7 @@ function OrdensPageContent() {
             <div className="max-h-[600px] overflow-y-auto">
               {horasTrabalho.map((hora) => (
                 <div key={hora} className="grid grid-cols-8 border-b border-border min-h-[80px]">
-                  <div className="p-3 text-zinc-500 text-sm border-r border-border">
+                  <div className="p-3 text-foreground-muted text-sm border-r border-border">
                     {hora}
                   </div>
                   {weekDays.map((date, idx) => {
@@ -862,7 +862,7 @@ function OrdensPageContent() {
               <div className="p-4 bg-zinc-800/50 rounded-full w-fit mx-auto mb-4">
                 <ClipboardList className="h-8 w-8 text-zinc-600" />
               </div>
-              <p className="text-zinc-400">Nenhuma O.S. encontrada</p>
+              <p className="text-muted">Nenhuma O.S. encontrada</p>
               <button
                 onClick={() => openNewModal()}
                 className="inline-flex items-center gap-2 mt-4 text-primary hover:text-primary-light transition-colors"
@@ -886,12 +886,12 @@ function OrdensPageContent() {
                       </div>
                       <div className="space-y-1.5">
                         <div className="flex items-center gap-3">
-                          <span className="text-lg font-bold text-white">#{ordem.numero.slice(-8).toUpperCase()}</span>
+                          <span className="text-lg font-bold text-foreground">#{ordem.numero.slice(-8).toUpperCase()}</span>
                           <span className={`px-2.5 py-1 ${statusCfg.bg} rounded-lg text-xs font-semibold ${statusCfg.color} border border-border`}>
                             {statusCfg.label}
                           </span>
                         </div>
-                        <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-zinc-400">
+                        <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-muted">
                           <span className="flex items-center gap-1.5">
                             <Car size={14} className="text-emerald-400" />
                             <span className="font-medium text-emerald-400">{formatPlate(ordem.veiculo.placa)}</span>
@@ -903,7 +903,7 @@ function OrdensPageContent() {
                             {capitalize(ordem.veiculo.cliente.nome)}
                           </span>
                         </div>
-                        <div className="flex items-center gap-4 text-xs text-zinc-500">
+                        <div className="flex items-center gap-4 text-xs text-foreground-muted">
                           <span>{formatDateTime(ordem.createdAt)}</span>
                           {ordem.dataAgendada && (
                             <>
@@ -931,7 +931,7 @@ function OrdensPageContent() {
                       <div className="flex items-center gap-1">
                         <button
                           onClick={() => downloadOrdemPDF(ordem, empresaConfig || undefined)}
-                          className="p-2 hover:bg-emerald-500/10 rounded-xl text-zinc-500 hover:text-emerald-400 transition-all duration-200"
+                          className="p-2 hover:bg-emerald-500/10 rounded-xl text-foreground-muted hover:text-emerald-400 transition-all duration-200"
                           title="Baixar PDF"
                         >
                           <FileDown size={18} />
@@ -941,7 +941,7 @@ function OrdensPageContent() {
                             setSelectedOrdem(ordem);
                             setShowDetailModal(true);
                           }}
-                          className="p-2 hover:bg-blue-500/10 rounded-xl text-zinc-500 hover:text-blue-400 transition-all duration-200"
+                          className="p-2 hover:bg-blue-500/10 rounded-xl text-foreground-muted hover:text-blue-400 transition-all duration-200"
                           title="Ver detalhes"
                         >
                           <Eye size={18} />
@@ -949,7 +949,7 @@ function OrdensPageContent() {
                         {(ordem.status === 'AGENDADO' || ordem.status === 'EM_ANDAMENTO') && (
                           <button
                             onClick={() => openEditModal(ordem)}
-                            className="p-2 hover:bg-amber-500/10 rounded-xl text-zinc-500 hover:text-amber-400 transition-all duration-200"
+                            className="p-2 hover:bg-amber-500/10 rounded-xl text-foreground-muted hover:text-amber-400 transition-all duration-200"
                             title="Editar"
                           >
                             <Edit size={18} />
@@ -961,7 +961,7 @@ function OrdensPageContent() {
                               setSelectedOrdem(ordem);
                               setShowDeleteConfirm(true);
                             }}
-                            className="p-2 hover:bg-red-500/10 rounded-xl text-zinc-500 hover:text-red-400 transition-all duration-200"
+                            className="p-2 hover:bg-red-500/10 rounded-xl text-foreground-muted hover:text-red-400 transition-all duration-200"
                             title="Excluir"
                           >
                             <Trash2 size={18} />
@@ -979,14 +979,14 @@ function OrdensPageContent() {
           {/* Paginacao */}
           {totalPages > 1 && (
             <div className="flex items-center justify-between bg-card border border-border rounded-2xl px-6 py-4">
-              <p className="text-sm text-zinc-400">
+              <p className="text-sm text-muted">
                 Mostrando {((currentPage - 1) * itemsPerPage) + 1} - {Math.min(currentPage * itemsPerPage, totalItems)} de {totalItems} ordens
               </p>
               <div className="flex items-center gap-2">
                 <button
                   onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
                   disabled={currentPage === 1}
-                  className="p-2 bg-zinc-900 border border-border rounded-lg text-zinc-500 hover:text-white hover:border-emerald-500/30 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="p-2 bg-zinc-900 border border-border rounded-lg text-foreground-muted hover:text-white hover:border-emerald-500/30 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   <ChevronLeft size={18} />
                 </button>
@@ -996,7 +996,7 @@ function OrdensPageContent() {
                 <button
                   onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
                   disabled={currentPage === totalPages}
-                  className="p-2 bg-zinc-900 border border-border rounded-lg text-zinc-500 hover:text-white hover:border-emerald-500/30 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="p-2 bg-zinc-900 border border-border rounded-lg text-foreground-muted hover:text-white hover:border-emerald-500/30 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   <ChevronRight size={18} />
                 </button>
@@ -1013,10 +1013,10 @@ function OrdensPageContent() {
           <div className="bg-card border border-border rounded-2xl w-full max-w-2xl max-h-[90vh] overflow-hidden flex flex-col shadow-2xl shadow-black/50">
             <div className="p-6 border-b border-border flex items-center justify-between">
               <div>
-                <h2 className="text-xl font-semibold text-white">{editingOrdem ? 'Editar Ordem de Servico' : 'Nova Ordem de Servico'}</h2>
-                <p className="text-sm text-zinc-400 mt-1">Passo {step} de 3</p>
+                <h2 className="text-xl font-semibold text-foreground">{editingOrdem ? 'Editar Ordem de Servico' : 'Nova Ordem de Servico'}</h2>
+                <p className="text-sm text-muted mt-1">Passo {step} de 3</p>
               </div>
-              <button onClick={() => { setShowModal(false); setEditingOrdem(null); }} className="p-2 hover:bg-zinc-800 rounded-xl text-zinc-400 hover:text-white transition-all duration-200">
+              <button onClick={() => { setShowModal(false); setEditingOrdem(null); }} className="p-2 hover:bg-zinc-800 rounded-xl text-muted hover:text-white transition-all duration-200">
                 <X size={20} />
               </button>
             </div>
@@ -1032,7 +1032,7 @@ function OrdensPageContent() {
                       className={`flex-1 py-2.5 px-4 rounded-lg text-sm font-medium transition-all ${
                         !modoNovoVeiculo
                           ? 'bg-gradient-to-r from-primary to-primary-dark text-white'
-                          : 'text-zinc-400 hover:text-white'
+                          : 'text-muted hover:text-white'
                       }`}
                     >
                       Buscar Veículo
@@ -1042,7 +1042,7 @@ function OrdensPageContent() {
                       className={`flex-1 py-2.5 px-4 rounded-lg text-sm font-medium transition-all ${
                         modoNovoVeiculo
                           ? 'bg-gradient-to-r from-primary to-primary-dark text-white'
-                          : 'text-zinc-400 hover:text-white'
+                          : 'text-muted hover:text-white'
                       }`}
                     >
                       <Plus size={16} className="inline mr-1" />
@@ -1129,7 +1129,7 @@ function OrdensPageContent() {
 
                       {/* Campos opcionais */}
                       <div className="space-y-3">
-                        <p className="text-xs text-zinc-500 uppercase tracking-wider">Opcional</p>
+                        <p className="text-xs text-foreground-muted uppercase tracking-wider">Opcional</p>
                         <div className="grid grid-cols-2 gap-3">
                           <input
                             type="text"
@@ -1480,7 +1480,7 @@ function OrdensPageContent() {
           <div className="bg-card border border-border rounded-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto shadow-2xl shadow-black/50">
             <div className="p-6 border-b border-border flex items-center justify-between">
               <div>
-                <h2 className="text-xl font-semibold text-white">O.S. #{selectedOrdem.numero.slice(-8).toUpperCase()}</h2>
+                <h2 className="text-xl font-semibold text-foreground">O.S. #{selectedOrdem.numero.slice(-8).toUpperCase()}</h2>
                 <div className="flex items-center gap-2 mt-1">
                   {(() => {
                     const status = statusConfig[selectedOrdem.status];
@@ -1643,7 +1643,7 @@ function OrdensPageContent() {
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
           <div className="bg-card border border-border rounded-2xl w-full max-w-md shadow-2xl shadow-black/50">
             <div className="p-6 border-b border-border">
-              <h2 className="text-xl font-semibold text-white">Confirmar Exclusao</h2>
+              <h2 className="text-xl font-semibold text-foreground">Confirmar Exclusao</h2>
             </div>
             <div className="p-6">
               <div className="flex items-center gap-4 mb-4">
@@ -1652,10 +1652,10 @@ function OrdensPageContent() {
                 </div>
                 <div>
                   <p className="text-white font-medium">O.S. #{selectedOrdem.numero.slice(-8).toUpperCase()}</p>
-                  <p className="text-sm text-zinc-400">{formatPlate(selectedOrdem.veiculo.placa)} - {capitalize(selectedOrdem.veiculo.cliente.nome)}</p>
+                  <p className="text-sm text-muted">{formatPlate(selectedOrdem.veiculo.placa)} - {capitalize(selectedOrdem.veiculo.cliente.nome)}</p>
                 </div>
               </div>
-              <p className="text-zinc-400 text-sm">
+              <p className="text-muted text-sm">
                 Tem certeza que deseja excluir esta O.S.? Esta acao nao pode ser desfeita.
               </p>
             </div>
@@ -1665,7 +1665,7 @@ function OrdensPageContent() {
                   setShowDeleteConfirm(false);
                   setSelectedOrdem(null);
                 }}
-                className="px-6 py-3 border border-border rounded-xl text-zinc-400 hover:bg-zinc-800 transition-all duration-200"
+                className="px-6 py-3 border border-border rounded-xl text-muted hover:bg-zinc-800 transition-all duration-200"
               >
                 Cancelar
               </button>
@@ -1686,7 +1686,7 @@ function OrdensPageContent() {
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
           <div className="bg-card border border-border rounded-2xl w-full max-w-md shadow-2xl shadow-black/50">
             <div className="p-6 border-b border-border">
-              <h2 className="text-xl font-semibold text-white">Concluir O.S.</h2>
+              <h2 className="text-xl font-semibold text-foreground">Concluir O.S.</h2>
             </div>
             <div className="p-6">
               <div className="flex items-center gap-4 mb-4">
@@ -1695,7 +1695,7 @@ function OrdensPageContent() {
                 </div>
                 <div>
                   <p className="text-white font-medium">O.S. #{selectedOrdem.numero.slice(-8).toUpperCase()}</p>
-                  <p className="text-sm text-zinc-400">{formatPlate(selectedOrdem.veiculo.placa)} - {capitalize(selectedOrdem.veiculo.cliente.nome)}</p>
+                  <p className="text-sm text-muted">{formatPlate(selectedOrdem.veiculo.placa)} - {capitalize(selectedOrdem.veiculo.cliente.nome)}</p>
                 </div>
               </div>
 
@@ -1703,9 +1703,9 @@ function OrdensPageContent() {
               <div className="bg-background rounded-xl p-4 mb-4 space-y-2">
                 {selectedOrdem.itensProduto.length > 0 && (
                   <div>
-                    <p className="text-xs text-zinc-500 mb-1">Produtos</p>
+                    <p className="text-xs text-foreground-muted mb-1">Produtos</p>
                     {selectedOrdem.itensProduto.map((item) => (
-                      <p key={item.id} className="text-sm text-zinc-300">
+                      <p key={item.id} className="text-sm text-muted">
                         {item.produtoNome} x{item.quantidade} - {formatCurrency(item.subtotal)}
                       </p>
                     ))}
@@ -1713,9 +1713,9 @@ function OrdensPageContent() {
                 )}
                 {selectedOrdem.servicosExtras.length > 0 && (
                   <div>
-                    <p className="text-xs text-zinc-500 mb-1">Servicos</p>
+                    <p className="text-xs text-foreground-muted mb-1">Servicos</p>
                     {selectedOrdem.servicosExtras.map((s, i) => (
-                      <p key={i} className="text-sm text-zinc-300">
+                      <p key={i} className="text-sm text-muted">
                         {s.descricao} - {formatCurrency(s.valor)}
                       </p>
                     ))}
@@ -1723,7 +1723,7 @@ function OrdensPageContent() {
                 )}
                 <div className="pt-2 border-t border-border">
                   <div className="flex justify-between">
-                    <span className="text-zinc-400 font-medium">Total</span>
+                    <span className="text-muted font-medium">Total</span>
                     <span className="text-emerald-400 font-bold">{formatCurrency(selectedOrdem.total)}</span>
                   </div>
                 </div>
@@ -1731,7 +1731,7 @@ function OrdensPageContent() {
 
               {/* Forma de Pagamento */}
               <div className="mb-4">
-                <label className="block text-sm text-zinc-400 mb-2">Forma de Pagamento</label>
+                <label className="block text-sm text-muted mb-2">Forma de Pagamento</label>
                 <div className="grid grid-cols-2 gap-2">
                   {[
                     { value: 'PIX', label: 'PIX', icon: '📱' },
@@ -1749,7 +1749,7 @@ function OrdensPageContent() {
                           ? method.value === 'CREDITO_PESSOAL'
                             ? 'bg-amber-500/20 border-amber-500 text-amber-400'
                             : 'bg-emerald-500/20 border-emerald-500 text-emerald-400'
-                          : 'bg-background border-border text-zinc-400 hover:border-zinc-600'
+                          : 'bg-background border-border text-muted hover:border-zinc-600'
                       }`}
                     >
                       <span>{method.icon}</span>
@@ -1762,19 +1762,19 @@ function OrdensPageContent() {
               {/* Data Prevista de Pagamento (quando Crédito Pessoal) */}
               {formaPagamento === 'CREDITO_PESSOAL' && (
                 <div className="mb-4">
-                  <label className="block text-sm text-zinc-400 mb-2">Data Prevista de Pagamento (opcional)</label>
+                  <label className="block text-sm text-muted mb-2">Data Prevista de Pagamento (opcional)</label>
                   <input
                     type="date"
                     value={dataPagamentoPrevistaConcluir}
                     onChange={(e) => setDataPagamentoPrevistaConcluir(e.target.value)}
-                    className="w-full px-4 py-3 bg-background rounded-xl border border-amber-500/30 text-white placeholder:text-zinc-500 focus:outline-none focus:border-amber-500/50"
+                    className="w-full px-4 py-3 bg-background rounded-xl border border-amber-500/30 text-white placeholder:text-foreground-muted focus:outline-none focus:border-amber-500/50"
                   />
                 </div>
               )}
 
               {/* Desconto */}
               <div className="mb-4">
-                <label className="block text-sm text-zinc-400 mb-2">Desconto (%)</label>
+                <label className="block text-sm text-muted mb-2">Desconto (%)</label>
                 <div className="flex items-center gap-3">
                   <input
                     type="text"
@@ -1784,9 +1784,9 @@ function OrdensPageContent() {
                       setDescontoConcluir(val);
                     }}
                     placeholder="0"
-                    className="w-24 px-4 py-3 bg-background rounded-xl border border-border text-white text-center placeholder:text-zinc-500 focus:outline-none focus:border-amber-500/50"
+                    className="w-24 px-4 py-3 bg-background rounded-xl border border-border text-white text-center placeholder:text-foreground-muted focus:outline-none focus:border-amber-500/50"
                   />
-                  <span className="text-zinc-500">%</span>
+                  <span className="text-foreground-muted">%</span>
                   {parseFloat(descontoConcluir.replace(',', '.')) > 0 && (
                     <span className="text-amber-400 text-sm">
                       - {formatCurrency(selectedOrdem.total * (parseFloat(descontoConcluir.replace(',', '.')) / 100))}
@@ -1796,8 +1796,8 @@ function OrdensPageContent() {
                 {parseFloat(descontoConcluir.replace(',', '.')) > 0 && (
                   <div className="mt-2 p-2 bg-amber-500/10 rounded-lg border border-amber-500/20">
                     <div className="flex justify-between text-sm">
-                      <span className="text-zinc-400">Subtotal:</span>
-                      <span className="text-zinc-300">{formatCurrency(selectedOrdem.total)}</span>
+                      <span className="text-muted">Subtotal:</span>
+                      <span className="text-muted">{formatCurrency(selectedOrdem.total)}</span>
                     </div>
                     <div className="flex justify-between text-sm">
                       <span className="text-amber-400">Desconto:</span>
@@ -1811,7 +1811,7 @@ function OrdensPageContent() {
                 )}
               </div>
 
-              <p className="text-zinc-400 text-sm">
+              <p className="text-muted text-sm">
                 Confirma a conclusao desta ordem de servico?
               </p>
             </div>
@@ -1824,7 +1824,7 @@ function OrdensPageContent() {
                   setDescontoConcluir('');
                   setDataPagamentoPrevistaConcluir('');
                 }}
-                className="px-6 py-3 border border-border rounded-xl text-zinc-400 hover:bg-zinc-800 transition-all duration-200"
+                className="px-6 py-3 border border-border rounded-xl text-muted hover:bg-zinc-800 transition-all duration-200"
               >
                 Cancelar
               </button>
@@ -1868,7 +1868,7 @@ export default function OrdensPage() {
             <div className="w-16 h-16 border-4 border-emerald-500/20 rounded-full"></div>
             <div className="absolute top-0 left-0 w-16 h-16 border-4 border-transparent border-t-emerald-500 rounded-full animate-spin"></div>
           </div>
-          <p className="text-zinc-400 animate-pulse">Carregando ordens...</p>
+          <p className="text-muted animate-pulse">Carregando ordens...</p>
         </div>
       </div>
     }>

@@ -877,7 +877,7 @@ export default function EstoquePage() {
             <div className="w-16 h-16 border-4 border-amber-500/20 rounded-full"></div>
             <div className="absolute top-0 left-0 w-16 h-16 border-4 border-transparent border-t-amber-500 rounded-full animate-spin"></div>
           </div>
-          <p className="text-zinc-400 animate-pulse">Carregando estoque...</p>
+          <p className="text-muted animate-pulse">Carregando estoque...</p>
         </div>
       </div>
     );
@@ -900,8 +900,8 @@ export default function EstoquePage() {
                 </div>
                 <span className="text-xs font-medium text-emerald-400 bg-emerald-500/10 px-2 py-1 rounded-full">Produtos</span>
               </div>
-              <p className="text-4xl font-bold text-white mb-1">{produtos.length}</p>
-              <p className="text-sm text-zinc-400">cadastrados</p>
+              <p className="text-4xl font-bold text-foreground mb-1">{produtos.length}</p>
+              <p className="text-sm text-muted">cadastrados</p>
             </div>
           </div>
 
@@ -915,8 +915,8 @@ export default function EstoquePage() {
                 </div>
                 <span className="text-xs font-medium text-blue-400 bg-blue-500/10 px-2 py-1 rounded-full">Itens</span>
               </div>
-              <p className="text-4xl font-bold text-white mb-1">{totalItens.toFixed(0)}</p>
-              <p className="text-sm text-zinc-400">em estoque</p>
+              <p className="text-4xl font-bold text-foreground mb-1">{totalItens.toFixed(0)}</p>
+              <p className="text-sm text-muted">em estoque</p>
             </div>
           </div>
 
@@ -930,8 +930,8 @@ export default function EstoquePage() {
                 </div>
                 <span className="text-xs font-medium text-amber-400 bg-amber-500/10 px-2 py-1 rounded-full">Valor</span>
               </div>
-              <p className="text-3xl font-bold text-white mb-1">{valorTotal.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</p>
-              <p className="text-sm text-zinc-400">valor total</p>
+              <p className="text-3xl font-bold text-foreground mb-1">{valorTotal.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</p>
+              <p className="text-sm text-muted">valor total</p>
             </div>
           </div>
 
@@ -945,8 +945,8 @@ export default function EstoquePage() {
                 </div>
                 <span className={`text-xs font-medium ${estoqueBaixoCount > 0 ? 'text-red-400 bg-red-500/10' : 'text-emerald-400 bg-emerald-500/10'} px-2 py-1 rounded-full`}>Alerta</span>
               </div>
-              <p className="text-4xl font-bold text-white mb-1">{estoqueBaixoCount}</p>
-              <p className="text-sm text-zinc-400">estoque baixo</p>
+              <p className="text-4xl font-bold text-foreground mb-1">{estoqueBaixoCount}</p>
+              <p className="text-sm text-muted">estoque baixo</p>
             </div>
           </div>
         </div>
@@ -959,7 +959,7 @@ export default function EstoquePage() {
                 <AlertTriangle size={20} className="text-red-400" />
               </div>
               <div>
-                <p className="text-white font-medium">
+                <p className="text-foreground font-medium">
                   {estoqueBaixoCount} {estoqueBaixoCount === 1 ? 'produto esta' : 'produtos estao'} com estoque baixo
                 </p>
                 <p className="text-sm text-red-400">Verifique os itens que precisam de reposicao</p>
@@ -978,19 +978,19 @@ export default function EstoquePage() {
         <div className="flex flex-col md:flex-row gap-4 justify-between">
           <div className="flex gap-3 flex-1">
             <div className="relative flex-1 max-w-md">
-              <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-500" size={18} />
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-foreground-muted" size={18} />
               <input
                 type="text"
                 placeholder="Buscar produto..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full bg-card border border-border rounded-xl pl-11 pr-4 py-3 text-sm text-white placeholder-zinc-500 focus:outline-none focus:border-amber-500/50 focus:ring-1 focus:ring-amber-500/20 transition-all duration-200"
+                className="w-full bg-card border border-border rounded-xl pl-11 pr-4 py-3 text-sm text-foreground placeholder-zinc-500 focus:outline-none focus:border-amber-500/50 focus:ring-1 focus:ring-amber-500/20 transition-all duration-200"
               />
             </div>
             <select
               value={categoriaFilter}
               onChange={(e) => setCategoriaFilter(e.target.value)}
-              className="bg-card border border-border rounded-xl px-4 py-3 text-zinc-400 focus:outline-none focus:border-amber-500/50 focus:ring-1 focus:ring-amber-500/20 transition-all duration-200"
+              className="bg-card border border-border rounded-xl px-4 py-3 text-muted focus:outline-none focus:border-amber-500/50 focus:ring-1 focus:ring-amber-500/20 transition-all duration-200"
             >
               {categorias.map((cat) => (
                 <option key={cat.value} value={cat.value}>{cat.label}</option>
@@ -1001,7 +1001,7 @@ export default function EstoquePage() {
               className={`flex items-center gap-2 px-4 py-3 rounded-xl transition-all duration-200 ${
                 showOnlyLowStock
                   ? 'bg-red-500/10 border border-red-500/50 text-red-400'
-                  : 'border border-border text-zinc-500 hover:bg-zinc-800 hover:text-white'
+                  : 'border border-border text-foreground-muted hover:bg-zinc-800 hover:text-foreground'
               }`}
               title="Filtrar estoque baixo"
             >

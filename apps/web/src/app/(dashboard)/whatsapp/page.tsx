@@ -217,7 +217,7 @@ export default function WhatsAppPage() {
             <div className="w-16 h-16 border-4 border-[#25D366]/20 rounded-full"></div>
             <div className="absolute top-0 left-0 w-16 h-16 border-4 border-transparent border-t-[#25D366] rounded-full animate-spin"></div>
           </div>
-          <p className="text-zinc-400 animate-pulse">Carregando conversas...</p>
+          <p className="text-muted animate-pulse">Carregando conversas...</p>
         </div>
       </div>
     );
@@ -240,8 +240,8 @@ export default function WhatsAppPage() {
                 </div>
                 <span className="text-xs font-medium text-[#25D366] bg-[#25D366]/10 px-2 py-1 rounded-full">Total</span>
               </div>
-              <p className="text-4xl font-bold text-white mb-1">{stats.total}</p>
-              <p className="text-sm text-zinc-400">conversas</p>
+              <p className="text-4xl font-bold text-foreground mb-1">{stats.total}</p>
+              <p className="text-sm text-muted">conversas</p>
             </div>
           </div>
 
@@ -255,8 +255,8 @@ export default function WhatsAppPage() {
                 </div>
                 <span className="text-xs font-medium text-blue-400 bg-blue-500/10 px-2 py-1 rounded-full">Hoje</span>
               </div>
-              <p className="text-4xl font-bold text-white mb-1">{stats.hoje}</p>
-              <p className="text-sm text-zinc-400">ativas hoje</p>
+              <p className="text-4xl font-bold text-foreground mb-1">{stats.hoje}</p>
+              <p className="text-sm text-muted">ativas hoje</p>
             </div>
           </div>
 
@@ -270,8 +270,8 @@ export default function WhatsAppPage() {
                 </div>
                 <span className="text-xs font-medium text-amber-400 bg-amber-500/10 px-2 py-1 rounded-full">Pendentes</span>
               </div>
-              <p className="text-4xl font-bold text-white mb-1">{stats.naoLidas}</p>
-              <p className="text-sm text-zinc-400">nao lidas</p>
+              <p className="text-4xl font-bold text-foreground mb-1">{stats.naoLidas}</p>
+              <p className="text-sm text-muted">nao lidas</p>
             </div>
           </div>
 
@@ -308,12 +308,12 @@ export default function WhatsAppPage() {
                   value={busca}
                   onChange={(e) => setBusca(e.target.value)}
                   placeholder="Buscar conversa..."
-                  className="w-full bg-zinc-900/50 border border-border rounded-xl pl-10 pr-4 py-3 text-sm text-white placeholder-zinc-500 focus:outline-none focus:border-[#25D366]/50 focus:ring-2 focus:ring-[#25D366]/20 transition-all"
+                  className="w-full bg-zinc-900/50 border border-border rounded-xl pl-10 pr-4 py-3 text-sm text-foreground placeholder-zinc-500 focus:outline-none focus:border-[#25D366]/50 focus:ring-2 focus:ring-[#25D366]/20 transition-all"
                 />
               </div>
               <button
                 onClick={() => fetchConversas()}
-                className="p-3 bg-zinc-900/50 border border-border rounded-xl text-zinc-400 hover:border-[#25D366]/40 hover:text-[#25D366] transition-all"
+                className="p-3 bg-zinc-900/50 border border-border rounded-xl text-muted hover:border-[#25D366]/40 hover:text-[#25D366] transition-all"
               >
                 <RefreshCw size={18} className={loading ? 'animate-spin' : ''} />
               </button>
@@ -327,7 +327,7 @@ export default function WhatsAppPage() {
                   </div>
                 </div>
               ) : conversas.length === 0 ? (
-                <div className="flex flex-col items-center justify-center h-32 text-zinc-500">
+                <div className="flex flex-col items-center justify-center h-32 text-foreground-muted">
                   <MessageCircle size={32} className="mb-2 opacity-50" />
                   <p className="text-sm">Nenhuma conversa</p>
                 </div>
@@ -350,10 +350,10 @@ export default function WhatsAppPage() {
                       </div>
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center justify-between">
-                          <p className="font-semibold text-white truncate">{conversa.nome}</p>
-                          <span className="text-xs text-zinc-500">{formatDate(conversa.ultimaData)}</span>
+                          <p className="font-semibold text-foreground truncate">{conversa.nome}</p>
+                          <span className="text-xs text-foreground-muted">{formatDate(conversa.ultimaData)}</span>
                         </div>
-                        <p className="text-sm text-zinc-400 truncate mt-1">{conversa.ultimaMensagem || 'Nova conversa'}</p>
+                        <p className="text-sm text-muted truncate mt-1">{conversa.ultimaMensagem || 'Nova conversa'}</p>
                       </div>
                       {conversa.naoLidas > 0 && (
                         <div className="w-6 h-6 bg-gradient-to-r from-[#25D366] to-[#128C7E] rounded-full flex items-center justify-center shadow-lg shadow-[#25D366]/30">
@@ -380,8 +380,8 @@ export default function WhatsAppPage() {
                       </div>
                     </div>
                     <div>
-                      <p className="font-semibold text-white">{selectedConversation.nome}</p>
-                      <p className="text-xs text-zinc-400 flex items-center gap-2">
+                      <p className="font-semibold text-foreground">{selectedConversation.nome}</p>
+                      <p className="text-xs text-muted flex items-center gap-2">
                         <span>{selectedConversation.telefone}</span>
                         {selectedConversation.cliente && (
                           <>
@@ -393,10 +393,10 @@ export default function WhatsAppPage() {
                     </div>
                   </div>
                   <div className="flex gap-2">
-                    <button className="p-2.5 hover:bg-zinc-800 rounded-lg transition-all text-zinc-400 hover:text-[#25D366]">
+                    <button className="p-2.5 hover:bg-zinc-800 rounded-lg transition-all text-muted hover:text-[#25D366]">
                       <Phone size={18} />
                     </button>
-                    <button className="p-2.5 hover:bg-zinc-800 rounded-lg transition-all text-zinc-400 hover:text-white">
+                    <button className="p-2.5 hover:bg-zinc-800 rounded-lg transition-all text-muted hover:text-foreground">
                       <Archive size={18} />
                     </button>
                   </div>
@@ -412,12 +412,12 @@ export default function WhatsAppPage() {
                       </div>
                     </div>
                   ) : selectedConversation.mensagens.length === 0 ? (
-                    <div className="flex flex-col items-center justify-center h-full text-zinc-500">
+                    <div className="flex flex-col items-center justify-center h-full text-foreground-muted">
                       <div className="p-4 bg-[#25D366]/10 rounded-2xl border border-[#25D366]/20 mb-4">
                         <MessageCircle size={40} className="text-[#25D366]" />
                       </div>
-                      <p className="text-white font-medium">Nenhuma mensagem ainda</p>
-                      <p className="text-sm text-zinc-400 mt-1">Envie uma mensagem para iniciar a conversa</p>
+                      <p className="text-foreground font-medium">Nenhuma mensagem ainda</p>
+                      <p className="text-sm text-muted mt-1">Envie uma mensagem para iniciar a conversa</p>
                     </div>
                   ) : (
                     selectedConversation.mensagens.map((msg) => (
@@ -451,7 +451,7 @@ export default function WhatsAppPage() {
                 {/* Templates */}
                 {showTemplates && (
                   <div className="p-4 border-t border-border bg-zinc-900/50">
-                    <p className="text-sm text-zinc-400 mb-3 flex items-center gap-2">
+                    <p className="text-sm text-muted mb-3 flex items-center gap-2">
                       <Sparkles size={14} className="text-[#25D366]" />
                       Templates rapidos:
                     </p>
@@ -460,7 +460,7 @@ export default function WhatsAppPage() {
                         <button
                           key={template.id}
                           onClick={() => applyTemplate(template.texto)}
-                          className="flex items-center gap-2 px-4 py-2.5 bg-zinc-800/50 border border-border/50 rounded-xl text-zinc-300 hover:text-white hover:border-[#25D366]/50 hover:bg-[#25D366]/10 transition-all text-sm font-medium"
+                          className="flex items-center gap-2 px-4 py-2.5 bg-zinc-800/50 border border-border/50 rounded-xl text-muted hover:text-foreground hover:border-[#25D366]/50 hover:bg-[#25D366]/10 transition-all text-sm font-medium"
                         >
                           <template.icon size={16} className="text-[#25D366]" />
                           {template.nome}
@@ -473,13 +473,13 @@ export default function WhatsAppPage() {
                 {/* Input de Mensagem */}
                 <div className="p-4 border-t border-border bg-zinc-900/50">
                   <div className="flex items-center gap-2">
-                    <button className="p-2.5 hover:bg-zinc-800 rounded-lg transition-all text-zinc-400 hover:text-amber-400">
+                    <button className="p-2.5 hover:bg-zinc-800 rounded-lg transition-all text-muted hover:text-amber-400">
                       <Smile size={20} />
                     </button>
-                    <button className="p-2.5 hover:bg-zinc-800 rounded-lg transition-all text-zinc-400 hover:text-white">
+                    <button className="p-2.5 hover:bg-zinc-800 rounded-lg transition-all text-muted hover:text-foreground">
                       <Paperclip size={20} />
                     </button>
-                    <button className="p-2.5 hover:bg-zinc-800 rounded-lg transition-all text-zinc-400 hover:text-blue-400">
+                    <button className="p-2.5 hover:bg-zinc-800 rounded-lg transition-all text-muted hover:text-blue-400">
                       <Image size={20} />
                     </button>
                     <button
@@ -497,7 +497,7 @@ export default function WhatsAppPage() {
                       onKeyDown={(e) => e.key === 'Enter' && !e.shiftKey && handleSend()}
                       placeholder="Digite uma mensagem..."
                       disabled={sending}
-                      className="flex-1 bg-zinc-900/50 border border-border rounded-xl px-4 py-3 text-white placeholder-zinc-500 focus:outline-none focus:border-[#25D366]/50 focus:ring-2 focus:ring-[#25D366]/20 transition-all disabled:opacity-50"
+                      className="flex-1 bg-zinc-900/50 border border-border rounded-xl px-4 py-3 text-foreground placeholder-zinc-500 focus:outline-none focus:border-[#25D366]/50 focus:ring-2 focus:ring-[#25D366]/20 transition-all disabled:opacity-50"
                     />
                     <button
                       onClick={handleSend}
@@ -510,12 +510,12 @@ export default function WhatsAppPage() {
                 </div>
               </>
             ) : (
-              <div className="flex-1 flex flex-col items-center justify-center text-zinc-500">
+              <div className="flex-1 flex flex-col items-center justify-center text-foreground-muted">
                 <div className="p-6 bg-gradient-to-br from-[#25D366]/20 to-[#128C7E]/10 rounded-3xl border border-[#25D366]/20 mb-6">
                   <MessageCircle size={48} className="text-[#25D366]" />
                 </div>
-                <h3 className="text-xl font-bold text-white mb-2">Central de Mensagens</h3>
-                <p className="text-center max-w-md text-zinc-400">
+                <h3 className="text-xl font-bold text-foreground mb-2">Central de Mensagens</h3>
+                <p className="text-center max-w-md text-muted">
                   Selecione uma conversa ao lado para visualizar e responder mensagens
                 </p>
                 {conversas.length === 0 && !loading && (

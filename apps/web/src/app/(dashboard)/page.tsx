@@ -166,7 +166,7 @@ export default function Dashboard() {
             <div className="w-16 h-16 border-4 border-primary/20 rounded-full"></div>
             <div className="absolute top-0 left-0 w-16 h-16 border-4 border-transparent border-t-primary rounded-full animate-spin"></div>
           </div>
-          <p className="text-zinc-400 animate-pulse">Carregando dashboard...</p>
+          <p className="text-muted animate-pulse">Carregando dashboard...</p>
         </div>
       </div>
     );
@@ -189,8 +189,8 @@ export default function Dashboard() {
                 </div>
                 <span className="text-xs font-medium text-blue-400 bg-blue-500/10 px-2 py-1 rounded-full">Clientes</span>
               </div>
-              <p className="text-4xl font-bold text-white mb-1">{stats?.clientes || 0}</p>
-              <p className="text-sm text-zinc-400">cadastrados</p>
+              <p className="text-4xl font-bold text-foreground mb-1">{stats?.clientes || 0}</p>
+              <p className="text-sm text-muted">cadastrados</p>
             </div>
           </div>
 
@@ -204,8 +204,8 @@ export default function Dashboard() {
                 </div>
                 <span className="text-xs font-medium text-purple-400 bg-purple-500/10 px-2 py-1 rounded-full">Veiculos</span>
               </div>
-              <p className="text-4xl font-bold text-white mb-1">{stats?.veiculos || 0}</p>
-              <p className="text-sm text-zinc-400">registrados</p>
+              <p className="text-4xl font-bold text-foreground mb-1">{stats?.veiculos || 0}</p>
+              <p className="text-sm text-muted">registrados</p>
             </div>
           </div>
 
@@ -219,8 +219,8 @@ export default function Dashboard() {
                 </div>
                 <span className="text-xs font-medium text-emerald-400 bg-emerald-500/10 px-2 py-1 rounded-full">O.S. Mes</span>
               </div>
-              <p className="text-4xl font-bold text-white mb-1">{stats?.ordensMes || 0}</p>
-              <p className="text-sm text-zinc-400">ordens de servico</p>
+              <p className="text-4xl font-bold text-foreground mb-1">{stats?.ordensMes || 0}</p>
+              <p className="text-sm text-muted">ordens de servico</p>
             </div>
           </div>
 
@@ -234,8 +234,8 @@ export default function Dashboard() {
                 </div>
                 <span className="text-xs font-medium text-amber-400 bg-amber-500/10 px-2 py-1 rounded-full">Faturamento</span>
               </div>
-              <p className="text-3xl font-bold text-white mb-1">{formatCurrency(stats?.faturamento || 0)}</p>
-              <p className="text-sm text-zinc-400">este mes</p>
+              <p className="text-3xl font-bold text-foreground mb-1">{formatCurrency(stats?.faturamento || 0)}</p>
+              <p className="text-sm text-muted">este mes</p>
             </div>
           </div>
         </div>
@@ -246,11 +246,11 @@ export default function Dashboard() {
           <div className="bg-card rounded-2xl border border-border overflow-hidden">
             <div className="p-4 border-b border-border flex items-center justify-between">
               <div>
-                <h2 className="text-lg font-bold text-white flex items-center gap-2">
+                <h2 className="text-lg font-bold text-foreground flex items-center gap-2">
                   <Calendar className="h-5 w-5 text-emerald-400" />
                   Servicos de Hoje
                 </h2>
-                <p className="text-xs text-zinc-500 mt-0.5">
+                <p className="text-xs text-foreground-muted mt-0.5">
                   {servicosHoje.length} agendamento{servicosHoje.length !== 1 ? 's' : ''}
                 </p>
               </div>
@@ -266,8 +266,8 @@ export default function Dashboard() {
             <div className="max-h-[300px] overflow-y-auto custom-scrollbar">
               {servicosHoje.length === 0 ? (
                 <div className="p-8 text-center">
-                  <Calendar className="h-8 w-8 text-zinc-600 mx-auto mb-2" />
-                  <p className="text-sm text-zinc-500">Nenhum servico hoje</p>
+                  <Calendar className="h-8 w-8 text-muted mx-auto mb-2" />
+                  <p className="text-sm text-foreground-muted">Nenhum servico hoje</p>
                 </div>
               ) : (
                 <div className="divide-y divide-zinc-800/50">
@@ -282,11 +282,11 @@ export default function Dashboard() {
                       >
                         <div className="flex items-center gap-3">
                           <div className="text-center min-w-[50px] py-2 bg-background-secondary rounded-lg border border-border/50 group-hover:border-emerald-500/50 transition-all">
-                            <p className="text-sm font-bold text-white">{servico.hora}</p>
+                            <p className="text-sm font-bold text-foreground">{servico.hora}</p>
                           </div>
                           <div className="flex-1 min-w-0">
-                            <p className="font-medium text-white text-sm truncate">{servico.cliente}</p>
-                            <p className="text-xs text-zinc-500 truncate">{servico.placa}</p>
+                            <p className="font-medium text-foreground text-sm truncate">{servico.cliente}</p>
+                            <p className="text-xs text-foreground-muted truncate">{servico.placa}</p>
                           </div>
                           <span className={`p-1.5 rounded-lg ${statusCfg.bg}`}>
                             <StatusIcon className={`h-4 w-4 ${statusCfg.text}`} />
@@ -302,7 +302,7 @@ export default function Dashboard() {
             <div className="p-3 border-t border-border bg-background">
               <Link
                 href="/ordens"
-                className="flex items-center justify-center gap-2 text-xs text-zinc-400 hover:text-emerald-400 transition-colors"
+                className="flex items-center justify-center gap-2 text-xs text-muted hover:text-emerald-400 transition-colors"
               >
                 Ver todas as O.S.
                 <ArrowRight className="h-3 w-3" />
@@ -314,11 +314,11 @@ export default function Dashboard() {
           <div className="bg-card rounded-2xl border border-border overflow-hidden">
             <div className="p-4 border-b border-border flex items-center justify-between">
               <div>
-                <h2 className="text-lg font-bold text-white flex items-center gap-2">
+                <h2 className="text-lg font-bold text-foreground flex items-center gap-2">
                   <ShoppingCart className="h-5 w-5 text-blue-400" />
                   Vendas de Hoje
                 </h2>
-                <p className="text-xs text-zinc-500 mt-0.5">
+                <p className="text-xs text-foreground-muted mt-0.5">
                   {vendasHoje?.count || 0} venda{(vendasHoje?.count || 0) !== 1 ? 's' : ''} - {formatCurrency(vendasHoje?.total || 0)}
                 </p>
               </div>
@@ -334,8 +334,8 @@ export default function Dashboard() {
             <div className="max-h-[300px] overflow-y-auto custom-scrollbar">
               {!vendasHoje || vendasHoje.itens.length === 0 ? (
                 <div className="p-8 text-center">
-                  <ShoppingCart className="h-8 w-8 text-zinc-600 mx-auto mb-2" />
-                  <p className="text-sm text-zinc-500">Nenhuma venda hoje</p>
+                  <ShoppingCart className="h-8 w-8 text-muted mx-auto mb-2" />
+                  <p className="text-sm text-foreground-muted">Nenhuma venda hoje</p>
                 </div>
               ) : (
                 <div className="divide-y divide-zinc-800/50">
@@ -347,11 +347,11 @@ export default function Dashboard() {
                     >
                       <div className="flex items-center gap-3">
                         <div className="text-center min-w-[50px] py-2 bg-background-secondary rounded-lg border border-border/50 group-hover:border-blue-500/50 transition-all">
-                          <p className="text-sm font-bold text-white">{venda.hora}</p>
+                          <p className="text-sm font-bold text-foreground">{venda.hora}</p>
                         </div>
                         <div className="flex-1 min-w-0">
-                          <p className="font-medium text-white text-sm truncate">{venda.cliente}</p>
-                          <p className="text-xs text-zinc-500">{venda.itensCount} {venda.itensCount === 1 ? 'item' : 'itens'}</p>
+                          <p className="font-medium text-foreground text-sm truncate">{venda.cliente}</p>
+                          <p className="text-xs text-foreground-muted">{venda.itensCount} {venda.itensCount === 1 ? 'item' : 'itens'}</p>
                         </div>
                         <div className="text-right">
                           <p className={`text-sm font-semibold ${venda.pago ? 'text-emerald-400' : 'text-amber-400'}`}>
@@ -371,7 +371,7 @@ export default function Dashboard() {
             <div className="p-3 border-t border-border bg-background">
               <Link
                 href="/vendas-rapidas"
-                className="flex items-center justify-center gap-2 text-xs text-zinc-400 hover:text-blue-400 transition-colors"
+                className="flex items-center justify-center gap-2 text-xs text-muted hover:text-blue-400 transition-colors"
               >
                 Ver todas as vendas
                 <ArrowRight className="h-3 w-3" />
@@ -383,11 +383,11 @@ export default function Dashboard() {
           <div className="bg-card rounded-2xl border border-border overflow-hidden">
             <div className="p-4 border-b border-border flex items-center justify-between">
               <div>
-                <h2 className="text-lg font-bold text-white flex items-center gap-2">
+                <h2 className="text-lg font-bold text-foreground flex items-center gap-2">
                   <Clock className="h-5 w-5 text-amber-400" />
                   A Receber
                 </h2>
-                <p className="text-xs text-zinc-500 mt-0.5">
+                <p className="text-xs text-foreground-muted mt-0.5">
                   {aReceber?.count || 0} pendencia{(aReceber?.count || 0) !== 1 ? 's' : ''} - {formatCurrency(aReceber?.total || 0)}
                 </p>
               </div>
@@ -404,7 +404,7 @@ export default function Dashboard() {
               {!aReceber || aReceber.itens.length === 0 ? (
                 <div className="p-8 text-center">
                   <CheckCircle className="h-8 w-8 text-emerald-500 mx-auto mb-2" />
-                  <p className="text-sm text-zinc-500">Nenhuma pendencia!</p>
+                  <p className="text-sm text-foreground-muted">Nenhuma pendencia!</p>
                 </div>
               ) : (
                 <div className="divide-y divide-zinc-800/50">
@@ -423,9 +423,9 @@ export default function Dashboard() {
                           )}
                         </div>
                         <div className="flex-1 min-w-0">
-                          <p className="font-medium text-white text-sm truncate">{pendencia.cliente}</p>
+                          <p className="font-medium text-foreground text-sm truncate">{pendencia.cliente}</p>
                           <div className="flex items-center gap-2">
-                            <p className="text-xs text-zinc-500">{pendencia.numero}</p>
+                            <p className="text-xs text-foreground-muted">{pendencia.numero}</p>
                             {isVencido(pendencia.dataPagamentoPrevista) && (
                               <span className="text-xs text-red-400 flex items-center gap-0.5">
                                 <AlertCircle className="h-3 w-3" />
@@ -447,7 +447,7 @@ export default function Dashboard() {
             <div className="p-3 border-t border-border bg-background">
               <Link
                 href="/a-receber"
-                className="flex items-center justify-center gap-2 text-xs text-zinc-400 hover:text-amber-400 transition-colors"
+                className="flex items-center justify-center gap-2 text-xs text-muted hover:text-amber-400 transition-colors"
               >
                 Gerenciar pendencias
                 <ArrowRight className="h-3 w-3" />
@@ -465,8 +465,8 @@ export default function Dashboard() {
                   <Bell className="h-4 w-4 text-cyan-400" />
                 </div>
                 <div>
-                  <h3 className="text-sm font-semibold text-white">Lembretes Pendentes</h3>
-                  <p className="text-xs text-zinc-500">{lembretes.count} cliente{lembretes.count !== 1 ? 's' : ''} para contatar</p>
+                  <h3 className="text-sm font-semibold text-foreground">Lembretes Pendentes</h3>
+                  <p className="text-xs text-foreground-muted">{lembretes.count} cliente{lembretes.count !== 1 ? 's' : ''} para contatar</p>
                 </div>
               </div>
               <Link
@@ -504,13 +504,13 @@ export default function Dashboard() {
                       className={`flex-shrink-0 p-3 rounded-xl border ${urgenciaColors[lembrete.urgencia]} min-w-[200px] max-w-[220px]`}
                     >
                       <div className="flex items-start justify-between gap-2 mb-2">
-                        <p className="text-sm font-medium text-white truncate">{lembrete.cliente}</p>
+                        <p className="text-sm font-medium text-foreground truncate">{lembrete.cliente}</p>
                         <span className={`px-1.5 py-0.5 rounded text-[10px] font-medium whitespace-nowrap ${urgenciaBadge[lembrete.urgencia]}`}>
                           {diasLabel}
                         </span>
                       </div>
-                      <p className="text-xs text-zinc-400 truncate">{lembrete.veiculo}</p>
-                      <p className="text-xs text-zinc-500">{lembrete.placa}</p>
+                      <p className="text-xs text-muted truncate">{lembrete.veiculo}</p>
+                      <p className="text-xs text-foreground-muted">{lembrete.placa}</p>
                       {lembrete.telefone && (
                         <a
                           href={`https://wa.me/55${lembrete.telefone.replace(/\D/g, '')}`}

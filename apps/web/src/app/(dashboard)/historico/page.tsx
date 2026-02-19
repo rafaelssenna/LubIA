@@ -139,8 +139,8 @@ export default function HistoricoPage() {
                 <Receipt size={24} className="text-emerald-400" />
               </div>
               <div>
-                <p className="text-sm text-zinc-500">Vendas Hoje</p>
-                <p className="text-2xl font-bold text-white">{stats.vendasHoje}</p>
+                <p className="text-sm text-foreground-muted">Vendas Hoje</p>
+                <p className="text-2xl font-bold text-foreground">{stats.vendasHoje}</p>
               </div>
             </div>
           </div>
@@ -150,7 +150,7 @@ export default function HistoricoPage() {
                 <DollarSign size={24} className="text-green-400" />
               </div>
               <div>
-                <p className="text-sm text-zinc-500">Faturamento Hoje</p>
+                <p className="text-sm text-foreground-muted">Faturamento Hoje</p>
                 <p className="text-2xl font-bold text-emerald-400">{formatCurrency(stats.faturamentoHoje)}</p>
               </div>
             </div>
@@ -168,7 +168,7 @@ export default function HistoricoPage() {
                 placeholder="Buscar por número, cliente ou placa..."
                 value={busca}
                 onChange={(e) => setBusca(e.target.value)}
-                className="w-full pl-11 pr-4 py-3 bg-zinc-900/50 border border-border rounded-xl text-white placeholder:text-zinc-600 focus:outline-none focus:border-emerald-500/50 transition-colors"
+                className="w-full pl-11 pr-4 py-3 bg-zinc-900/50 border border-border rounded-xl text-foreground placeholder:text-zinc-600 focus:outline-none focus:border-emerald-500/50 transition-colors"
               />
             </div>
 
@@ -179,7 +179,7 @@ export default function HistoricoPage() {
                 className={`px-4 py-2.5 rounded-xl text-sm font-medium transition-all ${
                   tipoFilter === 'todos'
                     ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30'
-                    : 'bg-zinc-900 text-zinc-400 border border-border hover:border-border'
+                    : 'bg-zinc-900 text-muted border border-border hover:border-border'
                 }`}
               >
                 Todos
@@ -189,7 +189,7 @@ export default function HistoricoPage() {
                 className={`px-4 py-2.5 rounded-xl text-sm font-medium transition-all flex items-center gap-2 ${
                   tipoFilter === 'os'
                     ? 'bg-blue-500/20 text-blue-400 border border-blue-500/30'
-                    : 'bg-zinc-900 text-zinc-400 border border-border hover:border-border'
+                    : 'bg-zinc-900 text-muted border border-border hover:border-border'
                 }`}
               >
                 <ClipboardList size={16} />
@@ -200,7 +200,7 @@ export default function HistoricoPage() {
                 className={`px-4 py-2.5 rounded-xl text-sm font-medium transition-all flex items-center gap-2 ${
                   tipoFilter === 'vendas'
                     ? 'bg-purple-500/20 text-purple-400 border border-purple-500/30'
-                    : 'bg-zinc-900 text-zinc-400 border border-border hover:border-border'
+                    : 'bg-zinc-900 text-muted border border-border hover:border-border'
                 }`}
               >
                 <ShoppingCart size={16} />
@@ -214,7 +214,7 @@ export default function HistoricoPage() {
               className={`px-4 py-2.5 rounded-xl text-sm font-medium transition-all flex items-center gap-2 ${
                 showFilters || hasActiveFilters
                   ? 'bg-amber-500/20 text-amber-400 border border-amber-500/30'
-                  : 'bg-zinc-900 text-zinc-400 border border-border hover:border-border'
+                  : 'bg-zinc-900 text-muted border border-border hover:border-border'
               }`}
             >
               <Filter size={16} />
@@ -226,21 +226,21 @@ export default function HistoricoPage() {
           {showFilters && (
             <div className="mt-4 pt-4 border-t border-border flex flex-wrap gap-4 items-end">
               <div>
-                <label className="block text-xs text-zinc-500 mb-1">Data Início</label>
+                <label className="block text-xs text-foreground-muted mb-1">Data Início</label>
                 <input
                   type="date"
                   value={dataInicio}
                   onChange={(e) => setDataInicio(e.target.value)}
-                  className="px-4 py-2.5 bg-zinc-900 border border-border rounded-xl text-white focus:outline-none focus:border-emerald-500/50"
+                  className="px-4 py-2.5 bg-zinc-900 border border-border rounded-xl text-foreground focus:outline-none focus:border-emerald-500/50"
                 />
               </div>
               <div>
-                <label className="block text-xs text-zinc-500 mb-1">Data Fim</label>
+                <label className="block text-xs text-foreground-muted mb-1">Data Fim</label>
                 <input
                   type="date"
                   value={dataFim}
                   onChange={(e) => setDataFim(e.target.value)}
-                  className="px-4 py-2.5 bg-zinc-900 border border-border rounded-xl text-white focus:outline-none focus:border-emerald-500/50"
+                  className="px-4 py-2.5 bg-zinc-900 border border-border rounded-xl text-foreground focus:outline-none focus:border-emerald-500/50"
                 />
               </div>
               {hasActiveFilters && (
@@ -259,12 +259,12 @@ export default function HistoricoPage() {
         {/* Results List */}
         <div className="bg-card border border-border rounded-2xl overflow-hidden">
           {loading ? (
-            <div className="p-8 text-center text-zinc-500">
+            <div className="p-8 text-center text-foreground-muted">
               <div className="animate-spin w-8 h-8 border-2 border-emerald-500 border-t-transparent rounded-full mx-auto mb-2"></div>
               Carregando...
             </div>
           ) : items.length === 0 ? (
-            <div className="p-8 text-center text-zinc-500">
+            <div className="p-8 text-center text-foreground-muted">
               <History size={48} className="mx-auto mb-4 opacity-50" />
               <p>Nenhum registro encontrado</p>
             </div>
@@ -301,7 +301,7 @@ export default function HistoricoPage() {
                         {/* Info */}
                         <div className="min-w-0 flex-1">
                           <div className="flex items-center gap-2 flex-wrap">
-                            <span className="font-semibold text-white">
+                            <span className="font-semibold text-foreground">
                               {item.numero}
                             </span>
                             <span
@@ -314,14 +314,14 @@ export default function HistoricoPage() {
                               {item.tipo === 'OS' ? 'O.S.' : 'Venda'}
                             </span>
                           </div>
-                          <p className="text-sm text-zinc-400 truncate">
+                          <p className="text-sm text-muted truncate">
                             {item.cliente}
                             {item.descricao && item.tipo === 'OS' && (
-                              <span className="text-zinc-600"> - {item.descricao}</span>
+                              <span className="text-foreground-muted"> - {item.descricao}</span>
                             )}
                           </p>
                           {item.itens && (
-                            <p className="text-xs text-zinc-600 truncate mt-0.5">
+                            <p className="text-xs text-foreground-muted truncate mt-0.5">
                               {item.itens}
                             </p>
                           )}
@@ -343,7 +343,7 @@ export default function HistoricoPage() {
                           <p className="font-bold text-emerald-400">
                             {formatCurrency(item.total)}
                           </p>
-                          <p className="text-xs text-zinc-600">
+                          <p className="text-xs text-foreground-muted">
                             {formatDateTime(item.data)}
                           </p>
                         </div>
@@ -359,24 +359,24 @@ export default function HistoricoPage() {
         {/* Pagination */}
         {totalPages > 1 && (
           <div className="flex items-center justify-between mt-4 bg-card border border-border rounded-2xl px-6 py-4">
-            <p className="text-sm text-zinc-400">
+            <p className="text-sm text-muted">
               Mostrando {((page - 1) * 20) + 1} - {Math.min(page * 20, total)} de {total} registros
             </p>
             <div className="flex items-center gap-2">
               <button
                 onClick={() => setPage((p) => Math.max(1, p - 1))}
                 disabled={page === 1}
-                className="p-2 bg-zinc-900 border border-border rounded-lg text-zinc-500 hover:text-white hover:border-emerald-500/30 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                className="p-2 bg-zinc-900 border border-border rounded-lg text-foreground-muted hover:text-foreground hover:border-emerald-500/30 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <ChevronLeft size={18} />
               </button>
-              <span className="px-4 py-2 text-white font-medium">
+              <span className="px-4 py-2 text-foreground font-medium">
                 {page} / {totalPages}
               </span>
               <button
                 onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
                 disabled={page === totalPages}
-                className="p-2 bg-zinc-900 border border-border rounded-lg text-zinc-500 hover:text-white hover:border-emerald-500/30 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                className="p-2 bg-zinc-900 border border-border rounded-lg text-foreground-muted hover:text-foreground hover:border-emerald-500/30 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <ChevronRight size={18} />
               </button>
