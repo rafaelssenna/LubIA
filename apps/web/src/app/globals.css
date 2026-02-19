@@ -45,25 +45,25 @@
   --sidebar-active: rgba(255, 255, 255, 0.2);
 }
 
-/* ===== LIGHT THEME (contraste suave do escuro) ===== */
+/* ===== LIGHT THEME (cores sólidas) ===== */
 .light {
-  /* Backgrounds mais escuros/suaves */
-  --background: #D0D0D0;
-  --background-secondary: #C4C4C4;
-  --background-tertiary: #B8B8B8;
-  /* Foregrounds */
+  /* Backgrounds - cinza médio */
+  --background: #B5B5B5;
+  --background-secondary: #A8A8A8;
+  --background-tertiary: #9C9C9C;
+  /* Foregrounds - preto sólido */
   --foreground: #1A1A1A;
-  --foreground-secondary: #333333;
-  --foreground-muted: #555555;
-  /* Cards mais escuros */
-  --card: #C4C4C4;
-  --card-hover: #B8B8B8;
-  --card-elevated: #CACACA;
-  /* Borders mais visíveis */
-  --border: #A0A0A0;
-  --border-light: #B0B0B0;
-  --border-hover: #909090;
-  /* Primary: mesma cor verde da marca */
+  --foreground-secondary: #2D2D2D;
+  --foreground-muted: #4A4A4A;
+  /* Cards - mais claros que o fundo para destacar */
+  --card: #C8C8C8;
+  --card-hover: #BEBEBE;
+  --card-elevated: #D0D0D0;
+  /* Borders - escuros e visíveis */
+  --border: #8A8A8A;
+  --border-light: #9A9A9A;
+  --border-hover: #7A7A7A;
+  /* Primary: verde da marca */
   --primary: #43A047;
   --primary-dark: #1B5E20;
   --primary-light: #66BB6A;
@@ -74,8 +74,8 @@
   /* Accent */
   --accent: #00E676;
   /* Muted */
-  --muted: #707070;
-  --muted-foreground: #555555;
+  --muted: #5A5A5A;
+  --muted-foreground: #4A4A4A;
   /* Feedback */
   --danger: #EF5350;
   --danger-foreground: #FFFFFF;
@@ -85,21 +85,21 @@
   --success-foreground: #1A1A1A;
   --info: #42A5F5;
   --info-foreground: #FFFFFF;
-  /* Glass */
-  --glass-bg: rgba(196, 196, 196, 0.92);
-  --glass-border: rgba(0, 0, 0, 0.1);
-  /* Input */
-  --input-bg: #C4C4C4;
-  --input-border: #A0A0A0;
+  /* Glass - sólido, sem transparência */
+  --glass-bg: #C0C0C0;
+  --glass-border: #8A8A8A;
+  /* Input - destacado */
+  --input-bg: #D5D5D5;
+  --input-border: #8A8A8A;
   /* Scrollbar */
-  --scrollbar-thumb: #909090;
+  --scrollbar-thumb: #7A7A7A;
   --scrollbar-thumb-hover: #43A047;
-  /* Sidebar */
-  --sidebar-bg: #C4C4C4;
-  --sidebar-text: rgba(0, 0, 0, 0.7);
+  /* Sidebar - sólido */
+  --sidebar-bg: #C0C0C0;
+  --sidebar-text: #2D2D2D;
   --sidebar-text-active: #1A1A1A;
-  --sidebar-hover: rgba(0, 0, 0, 0.1);
-  --sidebar-active: rgba(0, 0, 0, 0.15);
+  --sidebar-hover: #B0B0B0;
+  --sidebar-active: #A0A0A0;
 }
 
 @theme inline {
