@@ -297,7 +297,7 @@ export default function WhatsAppPage() {
         </div>
 
         {/* Chat Interface */}
-        <div className="bg-[#1a1a1a] border border-zinc-800/50 rounded-2xl overflow-hidden h-[calc(100vh-380px)] flex shadow-2xl shadow-black/50">
+        <div className="bg-card border border-zinc-800/50 rounded-2xl overflow-hidden h-[calc(100vh-380px)] flex shadow-2xl shadow-black/50">
           {/* Lista de Conversas */}
           <div className="w-96 border-r border-zinc-800/50 flex flex-col">
             <div className="p-4 border-b border-zinc-800/50 flex gap-2">

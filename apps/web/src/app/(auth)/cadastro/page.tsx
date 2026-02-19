@@ -143,17 +143,17 @@ export default function CadastroPage() {
         {/* Logo */}
         <div className="text-center mb-8">
           <div className="flex items-center justify-center gap-3 mb-2">
-            <div className="w-12 h-12 bg-gradient-to-br from-[#43A047] to-[#1B5E20] rounded-2xl flex items-center justify-center">
+            <div className="w-12 h-12 bg-gradient-to-br from-primary to-primary-dark rounded-2xl flex items-center justify-center">
               <span className="text-2xl font-bold text-white">L</span>
             </div>
-            <h1 className="text-3xl font-bold text-[#E8E8E8]">Loop<span className="text-[#43A047]">IA</span></h1>
+            <h1 className="text-3xl font-bold text-foreground">Loop<span className="text-primary">IA</span></h1>
           </div>
-          <p className="text-[#9E9E9E]">Sistema de Gestão de Oficinas</p>
+          <p className="text-muted">Sistema de Gestão de Oficinas</p>
         </div>
 
         {/* Form */}
-        <div className="bg-[#1E1E1E] border border-[#333333] rounded-2xl p-8">
-          <h2 className="text-2xl font-bold text-[#E8E8E8] mb-6">Criar Conta</h2>
+        <div className="bg-card border border-border rounded-2xl p-8">
+          <h2 className="text-2xl font-bold text-foreground mb-6">Criar Conta</h2>
 
           {error && (
             <div className="mb-4 p-3 bg-red-500/10 border border-red-500/30 rounded-xl flex items-center gap-2 text-red-400">
@@ -164,7 +164,7 @@ export default function CadastroPage() {
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-[#9E9E9E] mb-2">
+              <label className="block text-sm font-medium text-muted mb-2">
                 Nome da Oficina/Empresa
               </label>
               <input
@@ -172,13 +172,13 @@ export default function CadastroPage() {
                 value={nomeEmpresa}
                 onChange={(e) => setNomeEmpresa(e.target.value)}
                 required
-                className="w-full bg-[#121212] border border-[#333333] rounded-xl px-4 py-3 text-[#E8E8E8] focus:outline-none focus:border-[#43A047] transition-colors"
+                className="w-full bg-background border border-border rounded-xl px-4 py-3 text-foreground focus:outline-none focus:border-primary transition-colors"
                 placeholder="Ex: Auto Center Silva"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-[#9E9E9E] mb-2">
+              <label className="block text-sm font-medium text-muted mb-2">
                 CNPJ da Empresa
               </label>
               <div className="relative">
@@ -187,12 +187,12 @@ export default function CadastroPage() {
                   value={cnpjEmpresa}
                   onChange={(e) => handleCnpjChange(e.target.value)}
                   required
-                  className="w-full bg-[#121212] border border-[#333333] rounded-xl px-4 py-3 text-[#E8E8E8] focus:outline-none focus:border-[#43A047] transition-colors"
+                  className="w-full bg-background border border-border rounded-xl px-4 py-3 text-foreground focus:outline-none focus:border-primary transition-colors"
                   placeholder="00.000.000/0000-00"
                 />
                 {buscandoCnpj && (
                   <div className="absolute right-3 top-1/2 -translate-y-1/2">
-                    <Loader2 className="animate-spin text-[#43A047]" size={20} />
+                    <Loader2 className="animate-spin text-primary" size={20} />
                   </div>
                 )}
               </div>
@@ -202,7 +202,7 @@ export default function CadastroPage() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-[#9E9E9E] mb-2">
+              <label className="block text-sm font-medium text-muted mb-2">
                 Telefone da Empresa (WhatsApp)
               </label>
               <input
@@ -210,13 +210,13 @@ export default function CadastroPage() {
                 value={telefoneEmpresa}
                 onChange={(e) => setTelefoneEmpresa(formatTelefone(e.target.value))}
                 required
-                className="w-full bg-[#121212] border border-[#333333] rounded-xl px-4 py-3 text-[#E8E8E8] focus:outline-none focus:border-[#43A047] transition-colors"
+                className="w-full bg-background border border-border rounded-xl px-4 py-3 text-foreground focus:outline-none focus:border-primary transition-colors"
                 placeholder="(31) 99999-9999"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-[#9E9E9E] mb-2">
+              <label className="block text-sm font-medium text-muted mb-2">
                 Endereço da Empresa
               </label>
               <input
@@ -224,17 +224,17 @@ export default function CadastroPage() {
                 value={enderecoEmpresa}
                 onChange={(e) => setEnderecoEmpresa(e.target.value)}
                 required
-                className="w-full bg-[#121212] border border-[#333333] rounded-xl px-4 py-3 text-[#E8E8E8] focus:outline-none focus:border-[#43A047] transition-colors"
+                className="w-full bg-background border border-border rounded-xl px-4 py-3 text-foreground focus:outline-none focus:border-primary transition-colors"
                 placeholder="Rua, número, bairro, cidade"
               />
             </div>
 
-            <div className="border-t border-[#333333] pt-4 mt-4">
-              <p className="text-sm text-[#9E9E9E] mb-4">Dados do administrador</p>
+            <div className="border-t border-border pt-4 mt-4">
+              <p className="text-sm text-muted mb-4">Dados do administrador</p>
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-[#9E9E9E] mb-2">
+              <label className="block text-sm font-medium text-muted mb-2">
                 Seu Nome
               </label>
               <input
@@ -242,13 +242,13 @@ export default function CadastroPage() {
                 value={nome}
                 onChange={(e) => setNome(e.target.value)}
                 required
-                className="w-full bg-[#121212] border border-[#333333] rounded-xl px-4 py-3 text-[#E8E8E8] focus:outline-none focus:border-[#43A047] transition-colors"
+                className="w-full bg-background border border-border rounded-xl px-4 py-3 text-foreground focus:outline-none focus:border-primary transition-colors"
                 placeholder="Seu nome completo"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-[#9E9E9E] mb-2">
+              <label className="block text-sm font-medium text-muted mb-2">
                 Email
               </label>
               <input
@@ -257,13 +257,13 @@ export default function CadastroPage() {
                 onChange={(e) => setEmail(e.target.value)}
                 required
                 autoComplete="email"
-                className="w-full bg-[#121212] border border-[#333333] rounded-xl px-4 py-3 text-[#E8E8E8] focus:outline-none focus:border-[#43A047] transition-colors"
+                className="w-full bg-background border border-border rounded-xl px-4 py-3 text-foreground focus:outline-none focus:border-primary transition-colors"
                 placeholder="seu@email.com"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-[#9E9E9E] mb-2">
+              <label className="block text-sm font-medium text-muted mb-2">
                 Senha
               </label>
               <input
@@ -272,13 +272,13 @@ export default function CadastroPage() {
                 onChange={(e) => setSenha(e.target.value)}
                 required
                 autoComplete="new-password"
-                className="w-full bg-[#121212] border border-[#333333] rounded-xl px-4 py-3 text-[#E8E8E8] focus:outline-none focus:border-[#43A047] transition-colors"
+                className="w-full bg-background border border-border rounded-xl px-4 py-3 text-foreground focus:outline-none focus:border-primary transition-colors"
                 placeholder="Mínimo 6 caracteres"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-[#9E9E9E] mb-2">
+              <label className="block text-sm font-medium text-muted mb-2">
                 Confirmar Senha
               </label>
               <input
@@ -287,7 +287,7 @@ export default function CadastroPage() {
                 onChange={(e) => setConfirmarSenha(e.target.value)}
                 required
                 autoComplete="new-password"
-                className="w-full bg-[#121212] border border-[#333333] rounded-xl px-4 py-3 text-[#E8E8E8] focus:outline-none focus:border-[#43A047] transition-colors"
+                className="w-full bg-background border border-border rounded-xl px-4 py-3 text-foreground focus:outline-none focus:border-primary transition-colors"
                 placeholder="Repita a senha"
               />
             </div>
@@ -295,7 +295,7 @@ export default function CadastroPage() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-[#43A047] to-[#1B5E20] rounded-xl text-white font-medium hover:opacity-90 disabled:opacity-50 transition-opacity mt-6"
+              className="w-full flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-primary to-primary-dark rounded-xl text-white font-medium hover:opacity-90 disabled:opacity-50 transition-opacity mt-6"
             >
               {loading ? (
                 <Loader2 className="animate-spin" size={20} />
@@ -309,7 +309,7 @@ export default function CadastroPage() {
           <div className="mt-6 text-center">
             <Link
               href="/login"
-              className="inline-flex items-center gap-2 text-[#9E9E9E] hover:text-[#43A047] transition-colors"
+              className="inline-flex items-center gap-2 text-muted hover:text-primary transition-colors"
             >
               <ArrowLeft size={16} />
               Já tenho uma conta

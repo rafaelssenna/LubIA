@@ -50,7 +50,7 @@ const statusConfig: Record<string, { label: string; color: string; icon: any; bg
   AGENDADO: { label: 'Agendado', color: 'text-blue-400', icon: Calendar, bg: 'bg-blue-500/10', step: 1 },
   AGUARDANDO_PECAS: { label: 'Aguardando Pecas', color: 'text-amber-400', icon: Pause, bg: 'bg-amber-500/10', step: 2 },
   EM_ANDAMENTO: { label: 'Em Andamento', color: 'text-purple-400', icon: Play, bg: 'bg-purple-500/10', step: 2 },
-  CONCLUIDO: { label: 'Concluido', color: 'text-[#43A047]', icon: CheckCircle, bg: 'bg-green-500/10', step: 3 },
+  CONCLUIDO: { label: 'Concluido', color: 'text-primary', icon: CheckCircle, bg: 'bg-green-500/10', step: 3 },
   CANCELADO: { label: 'Cancelado', color: 'text-red-500', icon: XCircle, bg: 'bg-red-500/10', step: 0 },
   ENTREGUE: { label: 'Entregue', color: 'text-cyan-400', icon: Truck, bg: 'bg-cyan-500/10', step: 4 },
 };
@@ -195,10 +195,10 @@ export default function ConsultaPage() {
     <div className="max-w-2xl mx-auto p-6">
       {/* Titulo */}
       <div className="text-center mb-8">
-        <h1 className="text-2xl font-bold text-[#E8E8E8] mb-2">
+        <h1 className="text-2xl font-bold text-foreground mb-2">
           Consulte o status do seu veiculo
         </h1>
-        <p className="text-[#9E9E9E]">
+        <p className="text-muted">
           Digite a placa para ver o historico de servicos
         </p>
       </div>
@@ -207,20 +207,20 @@ export default function ConsultaPage() {
       <form onSubmit={handleSubmit} className="mb-8">
         <div className="flex gap-3">
           <div className="relative flex-1">
-            <Car className="absolute left-4 top-1/2 -translate-y-1/2 text-[#9E9E9E]" size={20} />
+            <Car className="absolute left-4 top-1/2 -translate-y-1/2 text-muted" size={20} />
             <input
               type="text"
               value={placa}
               onChange={(e) => setPlaca(formatPlaca(e.target.value))}
               placeholder="ABC1D23 ou ABC-1234"
               maxLength={8}
-              className="w-full bg-[#1E1E1E] border border-[#333333] rounded-xl pl-12 pr-4 py-4 text-lg text-[#E8E8E8] placeholder-gray-500 focus:outline-none focus:border-[#43A047] focus:ring-2 focus:ring-[#43A047]/20 transition-all uppercase tracking-wider font-mono"
+              className="w-full bg-card border border-border rounded-xl pl-12 pr-4 py-4 text-lg text-foreground placeholder-gray-500 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all uppercase tracking-wider font-mono"
             />
           </div>
           <button
             type="submit"
             disabled={loading || placa.length < 7}
-            className="px-6 py-4 bg-gradient-to-r from-[#43A047] to-[#1B5E20] rounded-xl text-white font-semibold shadow-lg shadow-green-500/20 hover:shadow-xl hover:shadow-green-500/20 hover:scale-[1.02] active:scale-[0.98] transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
+            className="px-6 py-4 bg-gradient-to-r from-primary to-primary-dark rounded-xl text-white font-semibold shadow-lg shadow-green-500/20 hover:shadow-xl hover:shadow-green-500/20 hover:scale-[1.02] active:scale-[0.98] transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
           >
             {loading ? (
               <Loader2 className="animate-spin" size={24} />
@@ -243,20 +243,20 @@ export default function ConsultaPage() {
       {result && (
         <div className="space-y-6 animate-fade-in">
           {/* Dados do Veiculo */}
-          <div className="bg-[#1E1E1E] border border-[#333333] rounded-2xl p-6">
+          <div className="bg-card border border-border rounded-2xl p-6">
             <div className="flex items-center gap-4">
-              <div className="p-4 bg-gradient-to-br from-[#43A047]/20 to-[#43A047]/5 rounded-xl">
-                <Car size={32} className="text-[#43A047]" />
+              <div className="p-4 bg-gradient-to-br from-primary/20 to-primary/5 rounded-xl">
+                <Car size={32} className="text-primary" />
               </div>
               <div>
-                <h2 className="text-xl font-bold text-[#E8E8E8]">
+                <h2 className="text-xl font-bold text-foreground">
                   {result.veiculo.marca} {result.veiculo.modelo}
-                  {result.veiculo.ano && <span className="text-[#9E9E9E] font-normal"> ({result.veiculo.ano})</span>}
+                  {result.veiculo.ano && <span className="text-muted font-normal"> ({result.veiculo.ano})</span>}
                 </h2>
                 <div className="flex items-center gap-4 mt-1">
-                  <span className="text-[#43A047] font-mono text-lg">{result.veiculo.placa}</span>
+                  <span className="text-primary font-mono text-lg">{result.veiculo.placa}</span>
                   {result.veiculo.kmAtual && (
-                    <span className="text-[#9E9E9E]">
+                    <span className="text-muted">
                       {result.veiculo.kmAtual.toLocaleString('pt-BR')} km
                     </span>
                   )}
@@ -269,8 +269,8 @@ export default function ConsultaPage() {
           {result.manutencao && (
             <div className="space-y-4">
               {/* Header com título */}
-              <h3 className="text-lg font-semibold text-[#E8E8E8] flex items-center gap-2">
-                <Wrench size={20} className="text-[#43A047]" />
+              <h3 className="text-lg font-semibold text-foreground flex items-center gap-2">
+                <Wrench size={20} className="text-primary" />
                 Manutenções Preventivas
               </h3>
 
@@ -284,15 +284,15 @@ export default function ConsultaPage() {
                   const urgente = !ultimo || atrasado || oleo.kmFaltando <= 500;
                   const alerta = !urgente && oleo.kmFaltando <= 1000;
                   return (
-                    <div className={`bg-[#1E1E1E] border rounded-2xl p-5 ${urgente ? 'border-red-500/50' : 'border-[#333333]'}`}>
+                    <div className={`bg-card border rounded-2xl p-5 ${urgente ? 'border-red-500/50' : 'border-border'}`}>
                       <div className="flex items-center justify-between mb-4">
                         <div className="flex items-center gap-3">
                           <div className={`p-2.5 rounded-xl ${urgente ? 'bg-red-500/10' : alerta ? 'bg-amber-500/10' : 'bg-amber-500/10'}`}>
                             <Droplets size={20} className={urgente ? 'text-red-400' : alerta ? 'text-amber-400' : 'text-amber-400'} />
                           </div>
                           <div>
-                            <h4 className="font-semibold text-[#E8E8E8]">Troca de Óleo</h4>
-                            <p className="text-xs text-[#9E9E9E]">A cada 5.000 km</p>
+                            <h4 className="font-semibold text-foreground">Troca de Óleo</h4>
+                            <p className="text-xs text-muted">A cada 5.000 km</p>
                           </div>
                         </div>
                         <div className="text-right">
@@ -310,10 +310,10 @@ export default function ConsultaPage() {
                             </>
                           ) : (
                             <>
-                              <p className="text-[#43A047] font-medium">
+                              <p className="text-primary font-medium">
                                 {oleo.km.toLocaleString('pt-BR')} km
                               </p>
-                              <p className={`text-xs ${urgente ? 'text-red-400' : alerta ? 'text-amber-400' : 'text-[#9E9E9E]'}`}>
+                              <p className={`text-xs ${urgente ? 'text-red-400' : alerta ? 'text-amber-400' : 'text-muted'}`}>
                                 Faltam {oleo.kmFaltando.toLocaleString('pt-BR')} km
                               </p>
                             </>
@@ -321,16 +321,16 @@ export default function ConsultaPage() {
                         </div>
                       </div>
                       {/* Barra de progresso */}
-                      <div className="h-2 bg-[#333333] rounded-full overflow-hidden">
+                      <div className="h-2 bg-border rounded-full overflow-hidden">
                         <div
                           className={`h-full rounded-full transition-all duration-500 ${
-                            urgente ? 'bg-red-500' : alerta ? 'bg-amber-500' : 'bg-gradient-to-r from-[#43A047] to-[#1B5E20]'
+                            urgente ? 'bg-red-500' : alerta ? 'bg-amber-500' : 'bg-gradient-to-r from-primary to-primary-dark'
                           }`}
                           style={{ width: !ultimo || atrasado ? '100%' : `${Math.min(100, Math.max(0, ((5000 - oleo.kmFaltando) / 5000) * 100))}%` }}
                         />
                       </div>
                       {ultimo ? (
-                        <p className="text-xs text-[#9E9E9E] mt-2">
+                        <p className="text-xs text-muted mt-2">
                           Última: {ultimo.km?.toLocaleString('pt-BR')} km ({formatDate(ultimo.data)})
                         </p>
                       ) : (
@@ -351,15 +351,15 @@ export default function ConsultaPage() {
                   const urgente = !ultimo || atrasado || alinh.kmFaltando <= 1000;
                   const alerta = !urgente && alinh.kmFaltando <= 2000;
                   return (
-                    <div className={`bg-[#1E1E1E] border rounded-2xl p-5 ${urgente ? 'border-red-500/50' : 'border-[#333333]'}`}>
+                    <div className={`bg-card border rounded-2xl p-5 ${urgente ? 'border-red-500/50' : 'border-border'}`}>
                       <div className="flex items-center justify-between mb-4">
                         <div className="flex items-center gap-3">
                           <div className={`p-2.5 rounded-xl ${urgente ? 'bg-red-500/10' : alerta ? 'bg-amber-500/10' : 'bg-blue-500/10'}`}>
                             <CircleDot size={20} className={urgente ? 'text-red-400' : alerta ? 'text-amber-400' : 'text-blue-400'} />
                           </div>
                           <div>
-                            <h4 className="font-semibold text-[#E8E8E8]">Alinhamento e Balanceamento</h4>
-                            <p className="text-xs text-[#9E9E9E]">A cada 10.000 km</p>
+                            <h4 className="font-semibold text-foreground">Alinhamento e Balanceamento</h4>
+                            <p className="text-xs text-muted">A cada 10.000 km</p>
                           </div>
                         </div>
                         <div className="text-right">
@@ -377,10 +377,10 @@ export default function ConsultaPage() {
                             </>
                           ) : (
                             <>
-                              <p className="text-[#43A047] font-medium">
+                              <p className="text-primary font-medium">
                                 {alinh.km.toLocaleString('pt-BR')} km
                               </p>
-                              <p className={`text-xs ${urgente ? 'text-red-400' : alerta ? 'text-amber-400' : 'text-[#9E9E9E]'}`}>
+                              <p className={`text-xs ${urgente ? 'text-red-400' : alerta ? 'text-amber-400' : 'text-muted'}`}>
                                 Faltam {alinh.kmFaltando.toLocaleString('pt-BR')} km
                               </p>
                             </>
@@ -388,7 +388,7 @@ export default function ConsultaPage() {
                         </div>
                       </div>
                       {/* Barra de progresso */}
-                      <div className="h-2 bg-[#333333] rounded-full overflow-hidden">
+                      <div className="h-2 bg-border rounded-full overflow-hidden">
                         <div
                           className={`h-full rounded-full transition-all duration-500 ${
                             urgente ? 'bg-red-500' : alerta ? 'bg-amber-500' : 'bg-gradient-to-r from-blue-500 to-blue-600'
@@ -397,7 +397,7 @@ export default function ConsultaPage() {
                         />
                       </div>
                       {ultimo ? (
-                        <p className="text-xs text-[#9E9E9E] mt-2">
+                        <p className="text-xs text-muted mt-2">
                           Último: {ultimo.km?.toLocaleString('pt-BR')} km ({formatDate(ultimo.data)})
                         </p>
                       ) : (
@@ -418,15 +418,15 @@ export default function ConsultaPage() {
                   const urgente = !ultimo || atrasado || filtros.kmFaltando <= 1000;
                   const alerta = !urgente && filtros.kmFaltando <= 2000;
                   return (
-                    <div className={`bg-[#1E1E1E] border rounded-2xl p-5 ${urgente ? 'border-red-500/50' : 'border-[#333333]'}`}>
+                    <div className={`bg-card border rounded-2xl p-5 ${urgente ? 'border-red-500/50' : 'border-border'}`}>
                       <div className="flex items-center justify-between mb-4">
                         <div className="flex items-center gap-3">
                           <div className={`p-2.5 rounded-xl ${urgente ? 'bg-red-500/10' : alerta ? 'bg-amber-500/10' : 'bg-purple-500/10'}`}>
                             <Filter size={20} className={urgente ? 'text-red-400' : alerta ? 'text-amber-400' : 'text-purple-400'} />
                           </div>
                           <div>
-                            <h4 className="font-semibold text-[#E8E8E8]">Troca de Filtros</h4>
-                            <p className="text-xs text-[#9E9E9E]">A cada 10.000 km</p>
+                            <h4 className="font-semibold text-foreground">Troca de Filtros</h4>
+                            <p className="text-xs text-muted">A cada 10.000 km</p>
                           </div>
                         </div>
                         <div className="text-right">
@@ -444,10 +444,10 @@ export default function ConsultaPage() {
                             </>
                           ) : (
                             <>
-                              <p className="text-[#43A047] font-medium">
+                              <p className="text-primary font-medium">
                                 {filtros.km.toLocaleString('pt-BR')} km
                               </p>
-                              <p className={`text-xs ${urgente ? 'text-red-400' : alerta ? 'text-amber-400' : 'text-[#9E9E9E]'}`}>
+                              <p className={`text-xs ${urgente ? 'text-red-400' : alerta ? 'text-amber-400' : 'text-muted'}`}>
                                 Faltam {filtros.kmFaltando.toLocaleString('pt-BR')} km
                               </p>
                             </>
@@ -455,7 +455,7 @@ export default function ConsultaPage() {
                         </div>
                       </div>
                       {/* Barra de progresso */}
-                      <div className="h-2 bg-[#333333] rounded-full overflow-hidden">
+                      <div className="h-2 bg-border rounded-full overflow-hidden">
                         <div
                           className={`h-full rounded-full transition-all duration-500 ${
                             urgente ? 'bg-red-500' : alerta ? 'bg-amber-500' : 'bg-gradient-to-r from-purple-500 to-purple-600'
@@ -464,7 +464,7 @@ export default function ConsultaPage() {
                         />
                       </div>
                       {ultimo ? (
-                        <p className="text-xs text-[#9E9E9E] mt-2">
+                        <p className="text-xs text-muted mt-2">
                           Última: {ultimo.km?.toLocaleString('pt-BR')} km ({formatDate(ultimo.data)})
                         </p>
                       ) : (
@@ -479,8 +479,8 @@ export default function ConsultaPage() {
               </div>
 
               {/* Atualizar KM */}
-              <div className="bg-[#1E1E1E] border border-[#333333] rounded-2xl p-5">
-                <p className="text-sm text-[#9E9E9E] mb-3 flex items-center gap-2">
+              <div className="bg-card border border-border rounded-2xl p-5">
+                <p className="text-sm text-muted mb-3 flex items-center gap-2">
                   <Gauge size={16} />
                   Atualize a quilometragem do veículo
                 </p>
@@ -492,16 +492,16 @@ export default function ConsultaPage() {
                       value={kmInput}
                       onChange={(e) => setKmInput(formatKmInput(e.target.value))}
                       placeholder="Ex: 42000"
-                      className="w-full bg-[#121212] border border-[#333333] rounded-xl px-4 py-3 text-[#E8E8E8] placeholder-gray-500 focus:outline-none focus:border-[#43A047] focus:ring-2 focus:ring-[#43A047]/20 transition-all font-mono"
+                      className="w-full bg-background border border-border rounded-xl px-4 py-3 text-foreground placeholder-gray-500 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all font-mono"
                     />
-                    <span className="absolute right-4 top-1/2 -translate-y-1/2 text-[#9E9E9E] text-sm">
+                    <span className="absolute right-4 top-1/2 -translate-y-1/2 text-muted text-sm">
                       km
                     </span>
                   </div>
                   <button
                     onClick={handleUpdateKm}
                     disabled={kmLoading || !kmInput || parseInt(kmInput, 10) <= (result.veiculo.kmAtual || 0)}
-                    className="px-5 py-3 bg-gradient-to-r from-[#43A047] to-[#1B5E20] rounded-xl text-white font-medium shadow-lg shadow-green-500/20 hover:shadow-xl hover:shadow-green-500/20 hover:scale-[1.02] active:scale-[0.98] transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
+                    className="px-5 py-3 bg-gradient-to-r from-primary to-primary-dark rounded-xl text-white font-medium shadow-lg shadow-green-500/20 hover:shadow-xl hover:shadow-green-500/20 hover:scale-[1.02] active:scale-[0.98] transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
                   >
                     {kmLoading ? (
                       <Loader2 className="animate-spin" size={20} />
@@ -517,7 +517,7 @@ export default function ConsultaPage() {
                   </p>
                 )}
                 {kmSuccess && (
-                  <p className="text-[#43A047] text-sm mt-2 flex items-center gap-1">
+                  <p className="text-primary text-sm mt-2 flex items-center gap-1">
                     <CheckCircle size={14} />
                     {kmSuccess}
                   </p>
@@ -528,18 +528,18 @@ export default function ConsultaPage() {
 
           {/* Status Tracker - apenas se tem ordem ativa */}
           {ordemAtiva && (
-            <div className="bg-[#1E1E1E] border border-[#333333] rounded-2xl p-6">
-              <h3 className="text-lg font-semibold text-[#E8E8E8] mb-2">Status Atual</h3>
-              <p className="text-sm text-[#9E9E9E] mb-6">
+            <div className="bg-card border border-border rounded-2xl p-6">
+              <h3 className="text-lg font-semibold text-foreground mb-2">Status Atual</h3>
+              <p className="text-sm text-muted mb-6">
                 {ordemAtiva.servicos.join(', ')} - #{ordemAtiva.numero}
               </p>
 
               {/* Progress Steps */}
               <div className="relative">
                 {/* Linha de conexao */}
-                <div className="absolute top-6 left-0 right-0 h-1 bg-[#333333] mx-8" />
+                <div className="absolute top-6 left-0 right-0 h-1 bg-border mx-8" />
                 <div
-                  className="absolute top-6 left-0 h-1 bg-gradient-to-r from-[#43A047] to-[#43A047] mx-8 transition-all duration-500"
+                  className="absolute top-6 left-0 h-1 bg-gradient-to-r from-primary to-primary mx-8 transition-all duration-500"
                   style={{ width: `calc(${((currentStep - 1) / 3) * 100}% - 64px)` }}
                 />
 
@@ -553,7 +553,7 @@ export default function ConsultaPage() {
                     const colorMap: Record<string, { bg: string; ring: string; text: string }> = {
                       blue: { bg: 'bg-blue-500', ring: 'ring-blue-500/30', text: 'text-blue-400' },
                       purple: { bg: 'bg-purple-500', ring: 'ring-purple-500/30', text: 'text-purple-400' },
-                      green: { bg: 'bg-[#43A047]', ring: 'ring-green-500/30', text: 'text-[#43A047]' },
+                      green: { bg: 'bg-primary', ring: 'ring-green-500/30', text: 'text-primary' },
                       cyan: { bg: 'bg-cyan-500', ring: 'ring-cyan-500/30', text: 'text-cyan-400' },
                     };
                     const colorClasses = colorMap[stepInfo.color];
@@ -564,7 +564,7 @@ export default function ConsultaPage() {
                           className={`w-12 h-12 rounded-full flex items-center justify-center transition-all duration-300 ${
                             isCompleted
                               ? `${colorClasses.bg} text-white shadow-lg ${isCurrent ? `ring-4 ${colorClasses.ring} scale-110` : ''}`
-                              : 'bg-[#333333] text-[#666666]'
+                              : 'bg-border text-[#666666]'
                           }`}
                         >
                           <StepIcon size={20} />
@@ -581,7 +581,7 @@ export default function ConsultaPage() {
               </div>
 
               {/* Info adicional */}
-              <div className="mt-6 pt-4 border-t border-[#333333] text-sm text-[#9E9E9E]">
+              <div className="mt-6 pt-4 border-t border-border text-sm text-muted">
                 {ordemAtiva.status === 'AGENDADO' && ordemAtiva.dataAgendada && (
                   <p>Agendado para: <span className="text-blue-400">{formatDate(ordemAtiva.dataAgendada)}</span></p>
                 )}
@@ -592,7 +592,7 @@ export default function ConsultaPage() {
                   <p className="text-purple-400">Seu veiculo esta sendo atendido</p>
                 )}
                 {ordemAtiva.status === 'CONCLUIDO' && (
-                  <p className="text-[#43A047]">Servico concluido! Aguardando retirada</p>
+                  <p className="text-primary">Servico concluido! Aguardando retirada</p>
                 )}
               </div>
             </div>
@@ -600,14 +600,14 @@ export default function ConsultaPage() {
 
           {/* Historico de Servicos */}
           <div>
-            <h3 className="text-lg font-semibold text-[#E8E8E8] mb-4 flex items-center gap-2">
-              <Clock size={20} className="text-[#43A047]" />
+            <h3 className="text-lg font-semibold text-foreground mb-4 flex items-center gap-2">
+              <Clock size={20} className="text-primary" />
               Historico de Servicos
             </h3>
 
             {result.ordens.length === 0 ? (
-              <div className="bg-[#1E1E1E] border border-[#333333] rounded-2xl p-8 text-center">
-                <p className="text-[#9E9E9E]">Nenhum servico encontrado para este veiculo</p>
+              <div className="bg-card border border-border rounded-2xl p-8 text-center">
+                <p className="text-muted">Nenhum servico encontrado para este veiculo</p>
               </div>
             ) : (
               <div className="space-y-3">
@@ -619,8 +619,8 @@ export default function ConsultaPage() {
                   return (
                     <div
                       key={index}
-                      className={`bg-[#1E1E1E] border rounded-xl p-4 transition-colors ${
-                        isActive ? 'border-[#43A047]/50 ring-1 ring-[#43A047]/20' : 'border-[#333333] hover:border-[#43A047]/30'
+                      className={`bg-card border rounded-xl p-4 transition-colors ${
+                        isActive ? 'border-primary/50 ring-1 ring-primary/20' : 'border-border hover:border-primary/30'
                       }`}
                     >
                       <div className="flex items-start justify-between gap-4">
@@ -633,9 +633,9 @@ export default function ConsultaPage() {
                               <span className={`px-2 py-0.5 ${status.bg} rounded-full text-xs font-medium ${status.color}`}>
                                 {status.label}
                               </span>
-                              <span className="text-[#9E9E9E] text-xs">#{ordem.numero}</span>
+                              <span className="text-muted text-xs">#{ordem.numero}</span>
                               {isActive && (
-                                <span className="px-2 py-0.5 bg-[#43A047]/20 rounded-full text-xs font-medium text-[#43A047]">
+                                <span className="px-2 py-0.5 bg-primary/20 rounded-full text-xs font-medium text-primary">
                                   Atual
                                 </span>
                               )}
@@ -644,7 +644,7 @@ export default function ConsultaPage() {
                               {ordem.servicos.map((servico, i) => (
                                 <span
                                   key={i}
-                                  className="text-sm text-[#E8E8E8] bg-[#2A2A2A] px-2 py-0.5 rounded"
+                                  className="text-sm text-foreground bg-background-secondary px-2 py-0.5 rounded"
                                 >
                                   {servico}
                                 </span>
@@ -652,10 +652,10 @@ export default function ConsultaPage() {
                             </div>
                           </div>
                         </div>
-                        <div className="text-right text-xs text-[#9E9E9E] whitespace-nowrap">
+                        <div className="text-right text-xs text-muted whitespace-nowrap">
                           {ordem.dataConclusao ? (
                             <div>
-                              <p className="text-[#43A047]">Concluido</p>
+                              <p className="text-primary">Concluido</p>
                               <p>{formatDate(ordem.dataConclusao)}</p>
                             </div>
                           ) : ordem.dataAgendada ? (
@@ -679,7 +679,7 @@ export default function ConsultaPage() {
 
       {/* Dica inicial */}
       {!result && !error && !loading && (
-        <div className="text-center text-[#9E9E9E] mt-12">
+        <div className="text-center text-muted mt-12">
           <Car size={48} className="mx-auto mb-4 opacity-30" />
           <p>Digite a placa do seu veiculo acima para consultar</p>
         </div>

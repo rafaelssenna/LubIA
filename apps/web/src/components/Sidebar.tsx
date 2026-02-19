@@ -29,10 +29,11 @@ import {
 } from 'lucide-react';
 import { useSidebar } from '@/contexts/SidebarContext';
 import { useAuth } from '@/contexts/AuthContext';
+import ThemeToggle from './ThemeToggle';
 
 type RoleUsuario = 'ADMIN' | 'GERENTE' | 'ATENDENTE' | 'VENDEDOR';
 
-// Permissões por role
+// Permissoes por role
 const ROLE_PERMISSIONS: Record<RoleUsuario, string[]> = {
   ADMIN: ['*'],
   GERENTE: ['dashboard', 'cadastros', 'clientes', 'veiculos', 'operacoes', 'ordens', 'orcamentos', 'vendas-rapidas', 'financeiro', 'a-receber', 'historico', 'estoque', 'lembretes', 'whatsapp'],
@@ -64,18 +65,18 @@ const menuItems: MenuItem[] = [
     permission: 'cadastros',
     subItems: [
       { icon: Users, label: 'Clientes', href: '/clientes', permission: 'clientes' },
-      { icon: Car, label: 'Veículos', href: '/veiculos', permission: 'veiculos' },
+      { icon: Car, label: 'Veiculos', href: '/veiculos', permission: 'veiculos' },
     ],
   },
   {
     icon: Briefcase,
-    label: 'Operações',
+    label: 'Operacoes',
     href: '/ordens',
     permission: 'operacoes',
     subItems: [
       { icon: ClipboardList, label: 'Ordens', href: '/ordens', permission: 'ordens' },
-      { icon: FileText, label: 'Orçamentos', href: '/orcamentos', permission: 'orcamentos' },
-      { icon: ShoppingCart, label: 'Vendas Rápidas', href: '/vendas-rapidas', permission: 'vendas-rapidas' },
+      { icon: FileText, label: 'Orcamentos', href: '/orcamentos', permission: 'orcamentos' },
+      { icon: ShoppingCart, label: 'Vendas Rapidas', href: '/vendas-rapidas', permission: 'vendas-rapidas' },
     ],
   },
   {
@@ -85,7 +86,7 @@ const menuItems: MenuItem[] = [
     permission: 'financeiro',
     subItems: [
       { icon: Clock, label: 'A Receber', href: '/a-receber', permission: 'a-receber' },
-      { icon: History, label: 'Histórico', href: '/historico', permission: 'historico' },
+      { icon: History, label: 'Historico', href: '/historico', permission: 'historico' },
     ],
   },
   { icon: Package, label: 'Estoque', href: '/estoque', permission: 'estoque' },
@@ -100,11 +101,11 @@ export default function Sidebar() {
   const [configIncomplete, setConfigIncomplete] = useState(false);
   const [expandedMenu, setExpandedMenu] = useState<string | null>(null);
 
-  // Filtrar menu baseado nas permissões do role
+  // Filtrar menu baseado nas permissoes do role
   const userRole = (user?.role || 'ATENDENTE') as RoleUsuario;
   const permissions = ROLE_PERMISSIONS[userRole];
 
-  // Filtra itens e subitens baseado nas permissões
+  // Filtra itens e subitens baseado nas permissoes
   const filteredMenuItems = menuItems
     .filter(item => permissions.includes('*') || permissions.includes(item.permission))
     .map(item => {
@@ -118,15 +119,15 @@ export default function Sidebar() {
       }
       return item;
     })
-    .filter(item => !item.subItems || item.subItems.length > 0); // Remove menus pai sem filhos
+    .filter(item => !item.subItems || item.subItems.length > 0);
 
-  // Verifica se um submenu contém a rota atual
+  // Verifica se um submenu contem a rota atual
   const isSubMenuActive = (item: MenuItem) => {
     if (!item.subItems) return false;
     return item.subItems.some(sub => pathname === sub.href);
   };
 
-  // Verificar se a configuração está completa
+  // Verificar se a configuracao esta completa
   useEffect(() => {
     const checkConfig = async () => {
       try {
@@ -134,30 +135,27 @@ export default function Sidebar() {
         const data = await res.json();
         if (data.data) {
           const { nomeOficina, cnpj, telefone, endereco } = data.data;
-          // Mostra alerta se QUALQUER campo obrigatório estiver vazio
           const anyEmpty = !nomeOficina || !cnpj || !telefone || !endereco;
           setConfigIncomplete(anyEmpty);
         } else {
-          // Sem config = incompleta
           setConfigIncomplete(true);
         }
       } catch {
-        // Em caso de erro, não mostrar alerta
         setConfigIncomplete(false);
       }
     };
 
     checkConfig();
-  }, [pathname]); // Re-verificar quando mudar de página
+  }, [pathname]);
 
   return (
     <aside
-      className={`fixed left-0 top-0 h-screen bg-[#1E1E1E] flex flex-col transition-all duration-300 z-50 shadow-xl shadow-[#1E1E1E]/20 ${
+      className={`fixed left-0 top-0 h-screen bg-sidebar-bg flex flex-col transition-all duration-300 z-50 shadow-xl border-r border-border ${
         collapsed ? 'w-20' : 'w-72'
       }`}
     >
       {/* Logo */}
-      <div className="p-4 border-b border-white/15">
+      <div className="p-4 border-b border-border">
         <div className="flex items-center justify-center">
           <Image
             src="/logo.png"
@@ -173,7 +171,7 @@ export default function Sidebar() {
       {/* Toggle button */}
       <button
         onClick={toggleCollapsed}
-        className="absolute -right-3 top-24 w-6 h-6 bg-[#43A047] rounded-full flex items-center justify-center text-white hover:scale-110 transition-transform shadow-lg shadow-[#43A047]/40 border-2 border-[#121212]"
+        className="absolute -right-3 top-24 w-6 h-6 bg-primary rounded-full flex items-center justify-center text-primary-foreground hover:scale-110 transition-transform shadow-lg shadow-primary/40 border-2 border-background"
       >
         {collapsed ? <ChevronRight size={14} /> : <ChevronLeft size={14} />}
       </button>
@@ -191,7 +189,6 @@ export default function Sidebar() {
                 <button
                   onClick={() => {
                     if (collapsed) {
-                      // Se colapsado, navegar direto
                       window.location.href = item.href;
                     } else {
                       setExpandedMenu(isExpanded ? null : item.label);
@@ -199,14 +196,14 @@ export default function Sidebar() {
                   }}
                   className={`flex items-center gap-3 px-4 py-3.5 rounded-xl transition-all duration-300 group relative overflow-hidden w-full ${
                     isActive
-                      ? 'bg-white/20 text-white shadow-lg shadow-black/10 ring-1 ring-white/20'
-                      : 'text-white/70 hover:bg-white/10 hover:text-white'
+                      ? 'bg-sidebar-active text-sidebar-text-active shadow-lg shadow-black/10 ring-1 ring-primary/30'
+                      : 'text-sidebar-text hover:bg-sidebar-hover hover:text-sidebar-text-active'
                   } ${collapsed ? 'justify-center px-3' : ''}`}
                   title={collapsed ? item.label : undefined}
                   style={{ animationDelay: `${index * 0.05}s` }}
                 >
                   {isActive && (
-                    <div className="absolute inset-0 bg-gradient-to-r from-white/10 to-transparent"></div>
+                    <div className="absolute inset-0 bg-gradient-to-r from-primary/10 to-transparent"></div>
                   )}
                   <item.icon
                     size={20}
@@ -226,7 +223,7 @@ export default function Sidebar() {
                 </button>
                 {/* Subitems */}
                 {!collapsed && isExpanded && (
-                  <div className="ml-4 mt-1 space-y-1 border-l-2 border-white/10 pl-3">
+                  <div className="ml-4 mt-1 space-y-1 border-l-2 border-border pl-3">
                     {item.subItems!.map((subItem) => {
                       const isSubActive = pathname === subItem.href;
                       return (
@@ -235,8 +232,8 @@ export default function Sidebar() {
                           href={subItem.href}
                           className={`flex items-center gap-2 px-3 py-2.5 rounded-lg transition-all duration-200 text-sm ${
                             isSubActive
-                              ? 'bg-white/15 text-white'
-                              : 'text-white/60 hover:bg-white/10 hover:text-white'
+                              ? 'bg-sidebar-active text-sidebar-text-active'
+                              : 'text-sidebar-text hover:bg-sidebar-hover hover:text-sidebar-text-active'
                           }`}
                         >
                           <subItem.icon size={16} />
@@ -256,14 +253,14 @@ export default function Sidebar() {
               href={item.href}
               className={`flex items-center gap-3 px-4 py-3.5 rounded-xl transition-all duration-300 group relative overflow-hidden ${
                 isActive
-                  ? 'bg-white/20 text-white shadow-lg shadow-black/10 ring-1 ring-white/20'
-                  : 'text-white/70 hover:bg-white/10 hover:text-white'
+                  ? 'bg-sidebar-active text-sidebar-text-active shadow-lg shadow-black/10 ring-1 ring-primary/30'
+                  : 'text-sidebar-text hover:bg-sidebar-hover hover:text-sidebar-text-active'
               } ${collapsed ? 'justify-center px-3' : ''}`}
               title={collapsed ? item.label : undefined}
               style={{ animationDelay: `${index * 0.05}s` }}
             >
               {isActive && (
-                <div className="absolute inset-0 bg-gradient-to-r from-white/10 to-transparent"></div>
+                <div className="absolute inset-0 bg-gradient-to-r from-primary/10 to-transparent"></div>
               )}
               <item.icon
                 size={20}
@@ -275,7 +272,7 @@ export default function Sidebar() {
                 <span className="font-medium relative z-10">{item.label}</span>
               )}
               {!collapsed && isActive && (
-                <div className="ml-auto w-2 h-2 bg-[#66BB6A] rounded-full animate-pulse"></div>
+                <div className="ml-auto w-2 h-2 bg-primary-light rounded-full animate-pulse"></div>
               )}
             </Link>
           );
@@ -283,45 +280,45 @@ export default function Sidebar() {
       </nav>
 
       {/* Footer */}
-      <div className="p-4 border-t border-white/15 space-y-1.5">
-        {/* Usuários e Configurações - apenas para ADMIN */}
+      <div className="p-4 border-t border-border space-y-1.5">
+        {/* Usuarios e Configuracoes - apenas para ADMIN */}
         {isAdmin && (
           <>
             <Link
               href="/usuarios"
               className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-300 group ${
                 pathname === '/usuarios'
-                  ? 'bg-white/20 text-white shadow-lg shadow-black/10 ring-1 ring-white/20'
-                  : 'text-white/70 hover:bg-white/10 hover:text-white'
+                  ? 'bg-sidebar-active text-sidebar-text-active shadow-lg shadow-black/10 ring-1 ring-primary/30'
+                  : 'text-sidebar-text hover:bg-sidebar-hover hover:text-sidebar-text-active'
               } ${collapsed ? 'justify-center px-3' : ''}`}
-              title={collapsed ? 'Usuários' : undefined}
+              title={collapsed ? 'Usuarios' : undefined}
             >
               <UserCog size={20} className="group-hover:scale-110 transition-transform" />
-              {!collapsed && <span className="font-medium">Usuários</span>}
+              {!collapsed && <span className="font-medium">Usuarios</span>}
             </Link>
             <Link
               href="/configuracoes"
               className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-300 group relative ${
                 configIncomplete
-                  ? 'bg-orange-500/10 text-orange-400 ring-1 ring-orange-500/30'
-                  : 'text-white/70 hover:bg-white/10 hover:text-white'
+                  ? 'bg-warning/10 text-warning ring-1 ring-warning/30'
+                  : 'text-sidebar-text hover:bg-sidebar-hover hover:text-sidebar-text-active'
               } ${collapsed ? 'justify-center px-3' : ''}`}
-              title={collapsed ? (configIncomplete ? 'Configurações - Preencha os dados!' : 'Configurações') : undefined}
+              title={collapsed ? (configIncomplete ? 'Configuracoes - Preencha os dados!' : 'Configuracoes') : undefined}
             >
               {configIncomplete ? (
                 <div className="relative">
                   <Settings size={20} className="animate-pulse" />
-                  <span className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-orange-500 rounded-full animate-ping"></span>
-                  <span className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-orange-500 rounded-full"></span>
+                  <span className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-warning rounded-full animate-ping"></span>
+                  <span className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-warning rounded-full"></span>
                 </div>
               ) : (
                 <Settings size={20} className="group-hover:rotate-90 transition-transform duration-500" />
               )}
               {!collapsed && (
                 <span className="font-medium flex items-center gap-2">
-                  Configurações
+                  Configuracoes
                   {configIncomplete && (
-                    <span className="text-xs bg-orange-500/20 px-2 py-0.5 rounded-full animate-pulse">
+                    <span className="text-xs bg-warning/20 px-2 py-0.5 rounded-full animate-pulse">
                       Pendente
                     </span>
                   )}
@@ -330,9 +327,14 @@ export default function Sidebar() {
             </Link>
           </>
         )}
+
+        {/* Theme Toggle */}
+        <ThemeToggle collapsed={collapsed} />
+
+        {/* Logout */}
         <button
           onClick={logout}
-          className={`flex items-center gap-3 px-4 py-3 rounded-xl text-white/70 hover:bg-red-500/20 hover:text-red-300 transition-all duration-300 w-full group ${
+          className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sidebar-text hover:bg-danger/20 hover:text-danger transition-all duration-300 w-full group ${
             collapsed ? 'justify-center px-3' : ''
           }`}
           title={collapsed ? 'Sair' : undefined}

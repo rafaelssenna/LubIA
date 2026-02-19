@@ -73,7 +73,7 @@ const statusConfig: Record<string, { label: string; color: string; icon: any; bg
   AGENDADO: { label: 'Agendado', color: 'text-blue-400', icon: Calendar, bg: 'bg-blue-500/10' },
   AGUARDANDO_PECAS: { label: 'Aguardando Peças', color: 'text-amber-400', icon: Pause, bg: 'bg-amber-500/10' },
   EM_ANDAMENTO: { label: 'Em Andamento', color: 'text-purple-400', icon: Play, bg: 'bg-purple-500/10' },
-  CONCLUIDO: { label: 'Concluído', color: 'text-[#43A047]', icon: CheckCircle, bg: 'bg-green-500/10' },
+  CONCLUIDO: { label: 'Concluído', color: 'text-primary', icon: CheckCircle, bg: 'bg-green-500/10' },
   CANCELADO: { label: 'Cancelado', color: 'text-red-500', icon: XCircle, bg: 'bg-red-500/10' },
 };
 
@@ -657,12 +657,12 @@ function OrdensPageContent() {
         <div className="flex flex-col md:flex-row gap-4 justify-between">
           <div className="flex flex-1 gap-4 items-center">
             {/* View Mode Toggle */}
-            <div className="flex items-center gap-1 bg-[#1a1a1a] border border-zinc-800/50 rounded-xl p-1">
+            <div className="flex items-center gap-1 bg-card border border-zinc-800/50 rounded-xl p-1">
               <button
                 onClick={() => setViewMode('lista')}
                 className={`p-2.5 rounded-lg transition-all duration-200 ${
                   viewMode === 'lista'
-                    ? 'bg-gradient-to-r from-[#43A047] to-[#2E7D32] text-white shadow-lg shadow-[#43A047]/25'
+                    ? 'bg-gradient-to-r from-primary to-primary-dark text-white shadow-lg shadow-primary/25'
                     : 'text-zinc-500 hover:text-white hover:bg-zinc-800'
                 }`}
                 title="Lista"
@@ -673,7 +673,7 @@ function OrdensPageContent() {
                 onClick={() => setViewMode('calendario')}
                 className={`p-2.5 rounded-lg transition-all duration-200 ${
                   viewMode === 'calendario'
-                    ? 'bg-gradient-to-r from-[#43A047] to-[#2E7D32] text-white shadow-lg shadow-[#43A047]/25'
+                    ? 'bg-gradient-to-r from-primary to-primary-dark text-white shadow-lg shadow-primary/25'
                     : 'text-zinc-500 hover:text-white hover:bg-zinc-800'
                 }`}
                 title="Calendario"
@@ -691,13 +691,13 @@ function OrdensPageContent() {
                     placeholder="Buscar por numero, placa ou cliente..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="w-full bg-[#1a1a1a] border border-zinc-800/50 rounded-xl pl-11 pr-4 py-3 text-sm text-white placeholder-zinc-500 focus:outline-none focus:border-emerald-500/50 focus:ring-1 focus:ring-emerald-500/20 transition-all duration-200"
+                    className="w-full bg-card border border-zinc-800/50 rounded-xl pl-11 pr-4 py-3 text-sm text-white placeholder-zinc-500 focus:outline-none focus:border-emerald-500/50 focus:ring-1 focus:ring-emerald-500/20 transition-all duration-200"
                   />
                 </div>
                 <select
                   value={statusFilter}
                   onChange={(e) => setStatusFilter(e.target.value)}
-                  className="bg-[#1a1a1a] border border-zinc-800/50 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-emerald-500/50 focus:ring-1 focus:ring-emerald-500/20 transition-all duration-200 cursor-pointer"
+                  className="bg-card border border-zinc-800/50 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-emerald-500/50 focus:ring-1 focus:ring-emerald-500/20 transition-all duration-200 cursor-pointer"
                 >
                   <option value="">Todos os Status</option>
                   <option value="ATIVAS">Em Andamento</option>
@@ -710,7 +710,7 @@ function OrdensPageContent() {
                 <select
                   value={clienteFilter}
                   onChange={(e) => setClienteFilter(e.target.value)}
-                  className="bg-[#1a1a1a] border border-zinc-800/50 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-emerald-500/50 focus:ring-1 focus:ring-emerald-500/20 transition-all duration-200 cursor-pointer max-w-[200px]"
+                  className="bg-card border border-zinc-800/50 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-emerald-500/50 focus:ring-1 focus:ring-emerald-500/20 transition-all duration-200 cursor-pointer max-w-[200px]"
                 >
                   <option value="">Todos os Clientes</option>
                   {clientes.map((cliente) => (
@@ -722,7 +722,7 @@ function OrdensPageContent() {
                     type="date"
                     value={dataInicio}
                     onChange={(e) => setDataInicio(e.target.value)}
-                    className="bg-[#1a1a1a] border border-zinc-800/50 rounded-xl px-3 py-3 text-sm text-white focus:outline-none focus:border-emerald-500/50 focus:ring-1 focus:ring-emerald-500/20 transition-all duration-200 [color-scheme:dark]"
+                    className="bg-card border border-zinc-800/50 rounded-xl px-3 py-3 text-sm text-white focus:outline-none focus:border-emerald-500/50 focus:ring-1 focus:ring-emerald-500/20 transition-all duration-200 [color-scheme:dark]"
                     title="Data inicial"
                   />
                   <span className="text-zinc-500">até</span>
@@ -730,7 +730,7 @@ function OrdensPageContent() {
                     type="date"
                     value={dataFim}
                     onChange={(e) => setDataFim(e.target.value)}
-                    className="bg-[#1a1a1a] border border-zinc-800/50 rounded-xl px-3 py-3 text-sm text-white focus:outline-none focus:border-emerald-500/50 focus:ring-1 focus:ring-emerald-500/20 transition-all duration-200 [color-scheme:dark]"
+                    className="bg-card border border-zinc-800/50 rounded-xl px-3 py-3 text-sm text-white focus:outline-none focus:border-emerald-500/50 focus:ring-1 focus:ring-emerald-500/20 transition-all duration-200 [color-scheme:dark]"
                     title="Data final"
                   />
                   {(dataInicio || dataFim || clienteFilter) && (
@@ -748,7 +748,7 @@ function OrdensPageContent() {
               <div className="flex items-center gap-2">
                 <button
                   onClick={() => navigateWeek(-1)}
-                  className="p-2.5 bg-[#1a1a1a] border border-zinc-800/50 rounded-lg text-zinc-500 hover:text-white hover:border-emerald-500/30 transition-all duration-200"
+                  className="p-2.5 bg-card border border-zinc-800/50 rounded-lg text-zinc-500 hover:text-white hover:border-emerald-500/30 transition-all duration-200"
                 >
                   <ChevronLeft size={18} />
                 </button>
@@ -757,13 +757,13 @@ function OrdensPageContent() {
                 </span>
                 <button
                   onClick={() => navigateWeek(1)}
-                  className="p-2.5 bg-[#1a1a1a] border border-zinc-800/50 rounded-lg text-zinc-500 hover:text-white hover:border-emerald-500/30 transition-all duration-200"
+                  className="p-2.5 bg-card border border-zinc-800/50 rounded-lg text-zinc-500 hover:text-white hover:border-emerald-500/30 transition-all duration-200"
                 >
                   <ChevronRight size={18} />
                 </button>
                 <button
                   onClick={() => setCurrentDate(new Date())}
-                  className="px-4 py-2.5 bg-[#1a1a1a] border border-zinc-800/50 rounded-lg text-zinc-500 hover:text-[#43A047] hover:border-emerald-500/30 transition-all duration-200 text-sm font-medium"
+                  className="px-4 py-2.5 bg-card border border-zinc-800/50 rounded-lg text-zinc-500 hover:text-primary hover:border-emerald-500/30 transition-all duration-200 text-sm font-medium"
                 >
                   Hoje
                 </button>
@@ -772,7 +772,7 @@ function OrdensPageContent() {
           </div>
           <button
             onClick={() => openNewModal()}
-            className="flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-[#43A047] to-[#2E7D32] hover:from-[#2E7D32] hover:to-[#43A047] text-white font-semibold rounded-xl transition-all duration-300 shadow-lg shadow-[#43A047]/25 hover:shadow-[#43A047]/40 hover:scale-[1.02]"
+            className="flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-primary to-primary-dark hover:from-primary-dark hover:to-primary text-white font-semibold rounded-xl transition-all duration-300 shadow-lg shadow-primary/25 hover:shadow-primary/40 hover:scale-[1.02]"
           >
             <Plus size={18} />
             Nova O.S.
@@ -781,7 +781,7 @@ function OrdensPageContent() {
 
         {/* Calendar View */}
         {viewMode === 'calendario' && (
-          <div className="bg-[#1a1a1a] border border-zinc-800/50 rounded-2xl overflow-hidden">
+          <div className="bg-card border border-zinc-800/50 rounded-2xl overflow-hidden">
             {/* Calendar Header */}
             <div className="grid grid-cols-8 border-b border-zinc-800/50">
               <div className="p-4 text-zinc-500 text-sm font-medium">Horario</div>
@@ -824,7 +824,7 @@ function OrdensPageContent() {
                       >
                         {diaOrdens.length === 0 && (
                           <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                            <Plus size={20} className="text-[#43A047]" />
+                            <Plus size={20} className="text-primary" />
                           </div>
                         )}
                         {diaOrdens.map((ordem) => {
@@ -858,14 +858,14 @@ function OrdensPageContent() {
         <>
         <div className="space-y-4">
           {ordens.length === 0 ? (
-            <div className="bg-[#1a1a1a] border border-zinc-800/50 rounded-2xl p-12 text-center">
+            <div className="bg-card border border-zinc-800/50 rounded-2xl p-12 text-center">
               <div className="p-4 bg-zinc-800/50 rounded-full w-fit mx-auto mb-4">
                 <ClipboardList className="h-8 w-8 text-zinc-600" />
               </div>
               <p className="text-zinc-400">Nenhuma O.S. encontrada</p>
               <button
                 onClick={() => openNewModal()}
-                className="inline-flex items-center gap-2 mt-4 text-[#43A047] hover:text-[#66BB6A] transition-colors"
+                className="inline-flex items-center gap-2 mt-4 text-primary hover:text-primary-light transition-colors"
               >
                 Criar nova ordem de servico
               </button>
@@ -877,7 +877,7 @@ function OrdensPageContent() {
               return (
                 <div
                   key={ordem.id}
-                  className="group bg-[#1a1a1a] border border-zinc-800/50 rounded-2xl p-5 hover:border-emerald-500/30 transition-all duration-300"
+                  className="group bg-card border border-zinc-800/50 rounded-2xl p-5 hover:border-emerald-500/30 transition-all duration-300"
                 >
                   <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                     <div className="flex items-start gap-4">
@@ -978,7 +978,7 @@ function OrdensPageContent() {
 
           {/* Paginacao */}
           {totalPages > 1 && (
-            <div className="flex items-center justify-between bg-[#1a1a1a] border border-zinc-800/50 rounded-2xl px-6 py-4">
+            <div className="flex items-center justify-between bg-card border border-zinc-800/50 rounded-2xl px-6 py-4">
               <p className="text-sm text-zinc-400">
                 Mostrando {((currentPage - 1) * itemsPerPage) + 1} - {Math.min(currentPage * itemsPerPage, totalItems)} de {totalItems} ordens
               </p>
@@ -1010,7 +1010,7 @@ function OrdensPageContent() {
       {/* Modal Nova O.S. */}
       {showModal && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-[#1a1a1a] border border-zinc-800 rounded-2xl w-full max-w-2xl max-h-[90vh] overflow-hidden flex flex-col shadow-2xl shadow-black/50">
+          <div className="bg-card border border-zinc-800 rounded-2xl w-full max-w-2xl max-h-[90vh] overflow-hidden flex flex-col shadow-2xl shadow-black/50">
             <div className="p-6 border-b border-zinc-800 flex items-center justify-between">
               <div>
                 <h2 className="text-xl font-semibold text-white">{editingOrdem ? 'Editar Ordem de Servico' : 'Nova Ordem de Servico'}</h2>
@@ -1026,12 +1026,12 @@ function OrdensPageContent() {
               {step === 1 && (
                 <div className="space-y-4">
                   {/* Toggle entre buscar e criar */}
-                  <div className="flex items-center gap-2 bg-[#121212] border border-[#333333] rounded-xl p-1">
+                  <div className="flex items-center gap-2 bg-background border border-border rounded-xl p-1">
                     <button
                       onClick={() => { setModoNovoVeiculo(false); setSelectedVeiculoId(null); }}
                       className={`flex-1 py-2.5 px-4 rounded-lg text-sm font-medium transition-all ${
                         !modoNovoVeiculo
-                          ? 'bg-gradient-to-r from-[#43A047] to-[#2E7D32] text-white'
+                          ? 'bg-gradient-to-r from-primary to-primary-dark text-white'
                           : 'text-zinc-400 hover:text-white'
                       }`}
                     >
@@ -1041,7 +1041,7 @@ function OrdensPageContent() {
                       onClick={() => { setModoNovoVeiculo(true); setSelectedVeiculoId(null); }}
                       className={`flex-1 py-2.5 px-4 rounded-lg text-sm font-medium transition-all ${
                         modoNovoVeiculo
-                          ? 'bg-gradient-to-r from-[#43A047] to-[#2E7D32] text-white'
+                          ? 'bg-gradient-to-r from-primary to-primary-dark text-white'
                           : 'text-zinc-400 hover:text-white'
                       }`}
                     >
@@ -1053,23 +1053,23 @@ function OrdensPageContent() {
                   {!modoNovoVeiculo ? (
                     <>
                       <div className="relative">
-                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-[#66BB6A]" size={18} />
+                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-primary-light" size={18} />
                         <input
                           type="text"
                           placeholder="Buscar veiculo por placa, cliente ou modelo..."
                           value={searchVeiculo}
                           onChange={(e) => setSearchVeiculo(e.target.value)}
-                          className="w-full bg-[#121212] border border-[#333333] rounded-xl pl-11 pr-4 py-3 text-sm text-[#E8E8E8] placeholder-gray-400 focus:outline-none focus:border-[#43A047]"
+                          className="w-full bg-background border border-border rounded-xl pl-11 pr-4 py-3 text-sm text-foreground placeholder-gray-400 focus:outline-none focus:border-primary"
                         />
                       </div>
                       <div className="space-y-2 max-h-[300px] overflow-y-auto">
                         {filteredVeiculos.length === 0 ? (
                           <div className="text-center py-8">
                             <Car className="mx-auto h-10 w-10 text-zinc-600 mb-2" />
-                            <p className="text-[#9E9E9E]">Nenhum veículo encontrado</p>
+                            <p className="text-muted">Nenhum veículo encontrado</p>
                             <button
                               onClick={() => setModoNovoVeiculo(true)}
-                              className="text-[#43A047] text-sm mt-2 hover:underline"
+                              className="text-primary text-sm mt-2 hover:underline"
                             >
                               Cadastrar novo veículo
                             </button>
@@ -1087,8 +1087,8 @@ function OrdensPageContent() {
                               }}
                               className={`w-full p-4 rounded-xl text-left transition-colors ${
                                 selectedVeiculoId === veiculo.id
-                                  ? 'bg-green-500/10 border-2 border-[#43A047]'
-                                  : 'bg-[#121212] border border-[#333333] hover:border-[#66BB6A]'
+                                  ? 'bg-green-500/10 border-2 border-primary'
+                                  : 'bg-background border border-border hover:border-primary-light'
                               }`}
                             >
                               <div className="flex items-center gap-3">
@@ -1097,11 +1097,11 @@ function OrdensPageContent() {
                                 </div>
                                 <div>
                                   <div className="flex items-center gap-2">
-                                    <span className="font-bold text-[#E8E8E8]">{formatPlate(veiculo.placa)}</span>
-                                    <span className="text-[#9E9E9E]">{capitalize(veiculo.marca)} {capitalize(veiculo.modelo)}</span>
-                                    {veiculo.ano && <span className="text-[#9E9E9E]">({veiculo.ano})</span>}
+                                    <span className="font-bold text-foreground">{formatPlate(veiculo.placa)}</span>
+                                    <span className="text-muted">{capitalize(veiculo.marca)} {capitalize(veiculo.modelo)}</span>
+                                    {veiculo.ano && <span className="text-muted">({veiculo.ano})</span>}
                                   </div>
-                                  <p className="text-sm text-[#9E9E9E]">{capitalize(veiculo.cliente.nome)}</p>
+                                  <p className="text-sm text-muted">{capitalize(veiculo.cliente.nome)}</p>
                                 </div>
                               </div>
                             </button>
@@ -1111,7 +1111,7 @@ function OrdensPageContent() {
                     </>
                   ) : (
                     /* Formulário de novo veículo */
-                    <div className="space-y-4 bg-[#121212] rounded-xl p-4 border border-[#333333]">
+                    <div className="space-y-4 bg-background rounded-xl p-4 border border-border">
                       {/* Placa em destaque */}
                       <div className="bg-gradient-to-r from-blue-500/10 to-cyan-500/10 border border-blue-500/30 rounded-xl p-4">
                         <label className="block text-sm font-semibold text-blue-400 mb-2">
@@ -1123,7 +1123,7 @@ function OrdensPageContent() {
                           onChange={(e) => setNovoVeiculo({ ...novoVeiculo, placa: e.target.value.toUpperCase() })}
                           placeholder="ABC1D23"
                           maxLength={7}
-                          className="w-full bg-[#1a1a1a] border-2 border-blue-500/30 rounded-xl px-4 py-3 text-lg font-bold text-[#E8E8E8] placeholder-gray-500 focus:outline-none focus:border-blue-500 uppercase tracking-wider"
+                          className="w-full bg-card border-2 border-blue-500/30 rounded-xl px-4 py-3 text-lg font-bold text-foreground placeholder-gray-500 focus:outline-none focus:border-blue-500 uppercase tracking-wider"
                         />
                       </div>
 
@@ -1136,35 +1136,35 @@ function OrdensPageContent() {
                             value={novoVeiculo.clienteNome}
                             onChange={(e) => setNovoVeiculo({ ...novoVeiculo, clienteNome: e.target.value })}
                             placeholder="Nome do cliente"
-                            className="bg-[#1a1a1a] border border-[#333333] rounded-xl px-4 py-2.5 text-[#E8E8E8] placeholder-gray-500 focus:outline-none focus:border-[#43A047]"
+                            className="bg-card border border-border rounded-xl px-4 py-2.5 text-foreground placeholder-gray-500 focus:outline-none focus:border-primary"
                           />
                           <input
                             type="tel"
                             value={novoVeiculo.clienteTelefone}
                             onChange={(e) => setNovoVeiculo({ ...novoVeiculo, clienteTelefone: e.target.value })}
                             placeholder="Telefone"
-                            className="bg-[#1a1a1a] border border-[#333333] rounded-xl px-4 py-2.5 text-[#E8E8E8] placeholder-gray-500 focus:outline-none focus:border-[#43A047]"
+                            className="bg-card border border-border rounded-xl px-4 py-2.5 text-foreground placeholder-gray-500 focus:outline-none focus:border-primary"
                           />
                           <input
                             type="text"
                             value={novoVeiculo.marca}
                             onChange={(e) => setNovoVeiculo({ ...novoVeiculo, marca: e.target.value })}
                             placeholder="Marca"
-                            className="bg-[#1a1a1a] border border-[#333333] rounded-xl px-4 py-2.5 text-[#E8E8E8] placeholder-gray-500 focus:outline-none focus:border-[#43A047]"
+                            className="bg-card border border-border rounded-xl px-4 py-2.5 text-foreground placeholder-gray-500 focus:outline-none focus:border-primary"
                           />
                           <input
                             type="text"
                             value={novoVeiculo.modelo}
                             onChange={(e) => setNovoVeiculo({ ...novoVeiculo, modelo: e.target.value })}
                             placeholder="Modelo"
-                            className="bg-[#1a1a1a] border border-[#333333] rounded-xl px-4 py-2.5 text-[#E8E8E8] placeholder-gray-500 focus:outline-none focus:border-[#43A047]"
+                            className="bg-card border border-border rounded-xl px-4 py-2.5 text-foreground placeholder-gray-500 focus:outline-none focus:border-primary"
                           />
                         </div>
                       </div>
                     </div>
                   )}
                   {selectedVeiculoId && (
-                    <div className="pt-4 border-t border-[#333333] space-y-4">
+                    <div className="pt-4 border-t border-border space-y-4">
                       {/* Destaque para KM de Entrada */}
                       <div className="bg-gradient-to-r from-amber-500/10 to-orange-500/10 border border-amber-500/50 rounded-xl p-4">
                         <div className="flex items-center gap-2 mb-3">
@@ -1182,7 +1182,7 @@ function OrdensPageContent() {
                           onChange={(e) => setKmEntrada(e.target.value)}
                           placeholder="Ex: 45000"
                           max={9999999}
-                          className="w-full bg-[#1a1a1a] border-2 border-amber-500/30 rounded-xl px-4 py-3 text-[#E8E8E8] placeholder-gray-500 focus:outline-none focus:border-amber-500 transition-colors"
+                          className="w-full bg-card border-2 border-amber-500/30 rounded-xl px-4 py-3 text-foreground placeholder-gray-500 focus:outline-none focus:border-amber-500 transition-colors"
                         />
                         <div className="flex items-center gap-1.5 mt-2">
                           <AlertCircle className="w-3.5 h-3.5 text-amber-400" />
@@ -1190,12 +1190,12 @@ function OrdensPageContent() {
                         </div>
                       </div>
                       <div>
-                        <label className="block text-sm font-medium text-[#9E9E9E] mb-2">Data e Hora do Agendamento</label>
+                        <label className="block text-sm font-medium text-muted mb-2">Data e Hora do Agendamento</label>
                         <input
                           type="datetime-local"
                           value={dataAgendada}
                           onChange={(e) => setDataAgendada(e.target.value)}
-                          className="w-full bg-[#121212] border border-[#333333] rounded-xl px-4 py-3 text-[#E8E8E8] placeholder-gray-400 focus:outline-none focus:border-[#43A047] [color-scheme:dark]"
+                          className="w-full bg-background border border-border rounded-xl px-4 py-3 text-foreground placeholder-gray-400 focus:outline-none focus:border-primary [color-scheme:dark]"
                         />
                       </div>
                     </div>
@@ -1208,13 +1208,13 @@ function OrdensPageContent() {
                 <div className="space-y-4">
                   {/* Produtos do Estoque */}
                   <div>
-                    <h3 className="text-sm font-medium text-[#9E9E9E] mb-2">Produtos do Estoque</h3>
+                    <h3 className="text-sm font-medium text-muted mb-2">Produtos do Estoque</h3>
                     <input
                       type="text"
                       placeholder="Buscar produto..."
                       value={searchProduto}
                       onChange={(e) => setSearchProduto(e.target.value)}
-                      className="w-full bg-[#121212] border border-[#333333] rounded-xl px-4 py-2 text-[#E8E8E8] placeholder-gray-500 focus:outline-none focus:border-[#43A047] mb-2"
+                      className="w-full bg-background border border-border rounded-xl px-4 py-2 text-foreground placeholder-gray-500 focus:outline-none focus:border-primary mb-2"
                     />
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-2 max-h-[150px] overflow-y-auto">
                       {produtos
@@ -1225,12 +1225,12 @@ function OrdensPageContent() {
                           key={produto.id}
                           onClick={() => addProduto(produto)}
                           disabled={selectedProdutos.some(p => p.produtoId === produto.id)}
-                          className="p-3 bg-[#121212] border border-[#333333] rounded-xl text-left hover:border-blue-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                          className="p-3 bg-background border border-border rounded-xl text-left hover:border-blue-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                         >
                           <div className="flex items-center justify-between">
                             <div className="flex items-center gap-2">
                               <Package size={16} className="text-blue-400" />
-                              <span className="text-[#E8E8E8] text-sm truncate">{capitalize(produto.nome)}</span>
+                              <span className="text-foreground text-sm truncate">{capitalize(produto.nome)}</span>
                             </div>
                             <span className="text-blue-400 text-sm font-medium">{formatCurrency(produto.precoVenda)}</span>
                           </div>
@@ -1241,14 +1241,14 @@ function OrdensPageContent() {
 
                   {/* Produtos Selecionados */}
                   {selectedProdutos.length > 0 && (
-                    <div className="pt-4 border-t border-[#333333]">
-                      <h4 className="text-xs text-[#9E9E9E] mb-2">Produtos Selecionados</h4>
+                    <div className="pt-4 border-t border-border">
+                      <h4 className="text-xs text-muted mb-2">Produtos Selecionados</h4>
                       <div className="space-y-2">
                         {selectedProdutos.map((item) => {
                           const produto = produtos.find(p => p.id === item.produtoId);
                           return (
                             <div key={item.produtoId} className="flex items-center justify-between p-3 bg-blue-500/10 border border-blue-500/20 rounded-xl">
-                              <span className="text-[#E8E8E8] text-sm">{capitalize(produto?.nome || '')}</span>
+                              <span className="text-foreground text-sm">{capitalize(produto?.nome || '')}</span>
                               <div className="flex items-center gap-3">
                                 <input
                                   type="number"
@@ -1261,7 +1261,7 @@ function OrdensPageContent() {
                                       p.produtoId === item.produtoId ? { ...p, quantidade: qtd } : p
                                     ));
                                   }}
-                                  className="w-16 bg-[#121212] border border-[#333333] rounded px-2 py-1 text-[#E8E8E8] text-sm text-center"
+                                  className="w-16 bg-background border border-border rounded px-2 py-1 text-foreground text-sm text-center"
                                 />
                                 <span className="text-blue-400 w-20 text-right">{formatCurrency(item.precoUnitario * item.quantidade)}</span>
                                 <button
@@ -1279,15 +1279,15 @@ function OrdensPageContent() {
                   )}
 
                   {/* Serviços Extras */}
-                  <div className="pt-4 border-t border-[#333333]">
-                    <h3 className="text-sm font-medium text-[#9E9E9E] mb-2">Serviços Extras (mão de obra, etc)</h3>
+                  <div className="pt-4 border-t border-border">
+                    <h3 className="text-sm font-medium text-muted mb-2">Serviços Extras (mão de obra, etc)</h3>
                     <div className="flex gap-2 mb-2">
                       <input
                         type="text"
                         placeholder="Descrição do serviço"
                         value={novoServicoExtra.descricao}
                         onChange={(e) => setNovoServicoExtra({ ...novoServicoExtra, descricao: e.target.value })}
-                        className="flex-1 bg-[#121212] border border-[#333333] rounded-xl px-4 py-2 text-[#E8E8E8] placeholder-gray-500 focus:outline-none focus:border-[#43A047]"
+                        className="flex-1 bg-background border border-border rounded-xl px-4 py-2 text-foreground placeholder-gray-500 focus:outline-none focus:border-primary"
                         maxLength={100}
                       />
                       <input
@@ -1295,13 +1295,13 @@ function OrdensPageContent() {
                         placeholder="Valor"
                         value={novoServicoExtra.valor}
                         onChange={(e) => setNovoServicoExtra({ ...novoServicoExtra, valor: e.target.value })}
-                        className="w-28 bg-[#121212] border border-[#333333] rounded-xl px-4 py-2 text-[#E8E8E8] placeholder-gray-500 focus:outline-none focus:border-[#43A047]"
+                        className="w-28 bg-background border border-border rounded-xl px-4 py-2 text-foreground placeholder-gray-500 focus:outline-none focus:border-primary"
                         min="0"
                         step="0.01"
                       />
                       <button
                         onClick={addServicoExtra}
-                        className="px-4 py-2 bg-gradient-to-r from-[#43A047] to-[#1B5E20] rounded-xl text-white hover:shadow-lg transition-all"
+                        className="px-4 py-2 bg-gradient-to-r from-primary to-primary-dark rounded-xl text-white hover:shadow-lg transition-all"
                       >
                         <Plus size={20} />
                       </button>
@@ -1310,9 +1310,9 @@ function OrdensPageContent() {
                       <div className="space-y-2">
                         {servicosExtras.map((extra, index) => (
                           <div key={index} className="flex items-center justify-between p-3 bg-green-500/10 border border-green-500/20 rounded-xl">
-                            <span className="text-[#E8E8E8]">{extra.descricao}</span>
+                            <span className="text-foreground">{extra.descricao}</span>
                             <div className="flex items-center gap-3">
-                              <span className="text-[#43A047]">{formatCurrency(extra.valor)}</span>
+                              <span className="text-primary">{formatCurrency(extra.valor)}</span>
                               <button
                                 onClick={() => removeServicoExtra(index)}
                                 className="p-1 hover:bg-red-500/10 rounded text-red-500"
@@ -1331,29 +1331,29 @@ function OrdensPageContent() {
               {/* Step 3: Review */}
               {step === 3 && (
                 <div className="space-y-4">
-                  <div className="p-4 bg-[#121212] rounded-xl">
-                    <h3 className="text-sm font-medium text-[#9E9E9E] mb-2">Veiculo</h3>
+                  <div className="p-4 bg-background rounded-xl">
+                    <h3 className="text-sm font-medium text-muted mb-2">Veiculo</h3>
                     {selectedVeiculoId && (() => {
                       const veiculo = veiculos.find(v => v.id === selectedVeiculoId);
                       return veiculo ? (
                         <div>
-                          <p className="text-[#E8E8E8] font-bold">{formatPlate(veiculo.placa)} - {capitalize(veiculo.marca)} {capitalize(veiculo.modelo)}</p>
-                          <p className="text-sm text-[#9E9E9E]">{capitalize(veiculo.cliente.nome)}</p>
-                          {kmEntrada && <p className="text-sm text-[#9E9E9E]">KM: {kmEntrada}</p>}
-                          {dataAgendada && <p className="text-sm text-[#9E9E9E]">Agendamento: {new Date(dataAgendada).toLocaleString('pt-BR')}</p>}
+                          <p className="text-foreground font-bold">{formatPlate(veiculo.placa)} - {capitalize(veiculo.marca)} {capitalize(veiculo.modelo)}</p>
+                          <p className="text-sm text-muted">{capitalize(veiculo.cliente.nome)}</p>
+                          {kmEntrada && <p className="text-sm text-muted">KM: {kmEntrada}</p>}
+                          {dataAgendada && <p className="text-sm text-muted">Agendamento: {new Date(dataAgendada).toLocaleString('pt-BR')}</p>}
                         </div>
                       ) : null;
                     })()}
                   </div>
 
                   {selectedProdutos.length > 0 && (
-                    <div className="p-4 bg-[#121212] rounded-xl">
-                      <h3 className="text-sm font-medium text-[#9E9E9E] mb-2">Produtos</h3>
+                    <div className="p-4 bg-background rounded-xl">
+                      <h3 className="text-sm font-medium text-muted mb-2">Produtos</h3>
                       {selectedProdutos.map((item) => {
                         const produto = produtos.find(p => p.id === item.produtoId);
                         return (
                           <div key={item.produtoId} className="flex justify-between py-1">
-                            <span className="text-[#E8E8E8]">{capitalize(produto?.nome || '')} x{item.quantidade}</span>
+                            <span className="text-foreground">{capitalize(produto?.nome || '')} x{item.quantidade}</span>
                             <span className="text-blue-400">{formatCurrency(item.precoUnitario * item.quantidade)}</span>
                           </div>
                         );
@@ -1362,42 +1362,42 @@ function OrdensPageContent() {
                   )}
 
                   {servicosExtras.length > 0 && (
-                    <div className="p-4 bg-[#121212] rounded-xl">
-                      <h3 className="text-sm font-medium text-[#9E9E9E] mb-2">Servicos Extras</h3>
+                    <div className="p-4 bg-background rounded-xl">
+                      <h3 className="text-sm font-medium text-muted mb-2">Servicos Extras</h3>
                       {servicosExtras.map((extra, index) => (
                         <div key={index} className="flex justify-between py-1">
-                          <span className="text-[#E8E8E8]">{extra.descricao}</span>
-                          <span className="text-[#43A047]">{formatCurrency(extra.valor)}</span>
+                          <span className="text-foreground">{extra.descricao}</span>
+                          <span className="text-primary">{formatCurrency(extra.valor)}</span>
                         </div>
                       ))}
                     </div>
                   )}
 
-                  <div className="p-4 bg-[#121212] rounded-xl">
-                    <label className="block text-sm font-medium text-[#9E9E9E] mb-2">Observacoes</label>
+                  <div className="p-4 bg-background rounded-xl">
+                    <label className="block text-sm font-medium text-muted mb-2">Observacoes</label>
                     <textarea
                       value={observacoes}
                       onChange={(e) => setObservacoes(e.target.value)}
                       placeholder="Observacoes adicionais..."
                       rows={3}
-                      className="w-full bg-[#1E1E1E] border border-[#333333] rounded-xl px-4 py-3 text-[#E8E8E8] placeholder-gray-400 focus:outline-none focus:border-[#43A047] resize-none"
+                      className="w-full bg-card border border-border rounded-xl px-4 py-3 text-foreground placeholder-gray-400 focus:outline-none focus:border-primary resize-none"
                     />
                   </div>
 
                   <div className="p-4 bg-green-500/10 border border-green-500/20 rounded-xl">
                     <div className="flex justify-between items-center">
-                      <span className="text-lg font-bold text-[#E8E8E8]">Total</span>
-                      <span className="text-2xl font-bold text-[#43A047]">{formatCurrency(calcularTotal())}</span>
+                      <span className="text-lg font-bold text-foreground">Total</span>
+                      <span className="text-2xl font-bold text-primary">{formatCurrency(calcularTotal())}</span>
                     </div>
                   </div>
                 </div>
               )}
             </div>
 
-            <div className="p-6 border-t border-[#333333] flex gap-3 justify-between">
+            <div className="p-6 border-t border-border flex gap-3 justify-between">
               <button
                 onClick={() => step > 1 ? setStep(step - 1) : (setShowModal(false), setEditingOrdem(null))}
-                className="px-6 py-3 border border-[#333333] rounded-xl text-[#9E9E9E] hover:bg-[#121212] transition-colors"
+                className="px-6 py-3 border border-border rounded-xl text-muted hover:bg-background transition-colors"
               >
                 {step > 1 ? 'Voltar' : 'Cancelar'}
               </button>
@@ -1453,7 +1453,7 @@ function OrdensPageContent() {
                     setStep(step + 1);
                   }}
                   disabled={saving}
-                  className="px-6 py-3 bg-gradient-to-r from-[#43A047] to-[#1B5E20] rounded-xl text-white font-medium hover:opacity-90 transition-opacity disabled:opacity-50"
+                  className="px-6 py-3 bg-gradient-to-r from-primary to-primary-dark rounded-xl text-white font-medium hover:opacity-90 transition-opacity disabled:opacity-50"
                 >
                   {saving ? 'Salvando...' : 'Próximo'}
                 </button>
@@ -1461,7 +1461,7 @@ function OrdensPageContent() {
                 <button
                   onClick={handleSubmit}
                   disabled={saving}
-                  className="px-6 py-3 bg-gradient-to-r from-[#43A047] to-[#1B5E20] rounded-xl text-white font-medium hover:opacity-90 transition-opacity disabled:opacity-50"
+                  className="px-6 py-3 bg-gradient-to-r from-primary to-primary-dark rounded-xl text-white font-medium hover:opacity-90 transition-opacity disabled:opacity-50"
                 >
                   {saving
                     ? (editingOrdem ? 'Salvando...' : 'Criando...')
@@ -1477,7 +1477,7 @@ function OrdensPageContent() {
       {/* Modal Detalhes */}
       {showDetailModal && selectedOrdem && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-[#1a1a1a] border border-zinc-800 rounded-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto shadow-2xl shadow-black/50">
+          <div className="bg-card border border-zinc-800 rounded-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto shadow-2xl shadow-black/50">
             <div className="p-6 border-b border-zinc-800 flex items-center justify-between">
               <div>
                 <h2 className="text-xl font-semibold text-white">O.S. #{selectedOrdem.numero.slice(-8).toUpperCase()}</h2>
@@ -1492,69 +1492,69 @@ function OrdensPageContent() {
                   })()}
                 </div>
               </div>
-              <button onClick={() => setShowDetailModal(false)} className="p-2 hover:bg-[#2A2A2A] rounded-lg text-[#9E9E9E] hover:text-[#E8E8E8] transition-colors">
+              <button onClick={() => setShowDetailModal(false)} className="p-2 hover:bg-background-secondary rounded-lg text-muted hover:text-foreground transition-colors">
                 <X size={20} />
               </button>
             </div>
             <div className="p-6 space-y-4">
               {/* Vehicle & Client Info */}
               <div className="grid grid-cols-2 gap-4">
-                <div className="p-4 bg-[#121212] rounded-xl">
-                  <div className="flex items-center gap-2 text-[#9E9E9E] mb-2">
+                <div className="p-4 bg-background rounded-xl">
+                  <div className="flex items-center gap-2 text-muted mb-2">
                     <Car size={16} />
                     <span className="text-xs">Veiculo</span>
                   </div>
-                  <p className="text-[#E8E8E8] font-bold">{formatPlate(selectedOrdem.veiculo.placa)}</p>
-                  <p className="text-sm text-[#9E9E9E]">{capitalize(selectedOrdem.veiculo.marca)} {capitalize(selectedOrdem.veiculo.modelo)}</p>
+                  <p className="text-foreground font-bold">{formatPlate(selectedOrdem.veiculo.placa)}</p>
+                  <p className="text-sm text-muted">{capitalize(selectedOrdem.veiculo.marca)} {capitalize(selectedOrdem.veiculo.modelo)}</p>
                 </div>
-                <div className="p-4 bg-[#121212] rounded-xl">
-                  <div className="flex items-center gap-2 text-[#9E9E9E] mb-2">
+                <div className="p-4 bg-background rounded-xl">
+                  <div className="flex items-center gap-2 text-muted mb-2">
                     <User size={16} />
                     <span className="text-xs">Cliente</span>
                   </div>
-                  <p className="text-[#E8E8E8] font-bold">{capitalize(selectedOrdem.veiculo.cliente.nome)}</p>
-                  <p className="text-sm text-[#9E9E9E]">{selectedOrdem.veiculo.cliente.telefone}</p>
+                  <p className="text-foreground font-bold">{capitalize(selectedOrdem.veiculo.cliente.nome)}</p>
+                  <p className="text-sm text-muted">{selectedOrdem.veiculo.cliente.telefone}</p>
                 </div>
               </div>
 
               {/* Dates */}
               <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                <div className="p-4 bg-[#121212] rounded-xl">
-                  <p className="text-xs text-[#9E9E9E] mb-1">Criada em</p>
-                  <p className="text-[#E8E8E8]">{formatDateTime(selectedOrdem.createdAt)}</p>
+                <div className="p-4 bg-background rounded-xl">
+                  <p className="text-xs text-muted mb-1">Criada em</p>
+                  <p className="text-foreground">{formatDateTime(selectedOrdem.createdAt)}</p>
                 </div>
                 {selectedOrdem.dataAgendada && (
-                  <div className="p-4 bg-[#121212] rounded-xl">
-                    <p className="text-xs text-[#9E9E9E] mb-1">Agendada para</p>
-                    <p className="text-[#E8E8E8]">{formatDateTime(selectedOrdem.dataAgendada)}</p>
+                  <div className="p-4 bg-background rounded-xl">
+                    <p className="text-xs text-muted mb-1">Agendada para</p>
+                    <p className="text-foreground">{formatDateTime(selectedOrdem.dataAgendada)}</p>
                   </div>
                 )}
                 {selectedOrdem.dataInicio && (
-                  <div className="p-4 bg-[#121212] rounded-xl">
-                    <p className="text-xs text-[#9E9E9E] mb-1">Iniciada em</p>
-                    <p className="text-[#E8E8E8]">{formatDateTime(selectedOrdem.dataInicio)}</p>
+                  <div className="p-4 bg-background rounded-xl">
+                    <p className="text-xs text-muted mb-1">Iniciada em</p>
+                    <p className="text-foreground">{formatDateTime(selectedOrdem.dataInicio)}</p>
                   </div>
                 )}
                 {selectedOrdem.dataConclusao && (
-                  <div className="p-4 bg-[#121212] rounded-xl">
-                    <p className="text-xs text-[#9E9E9E] mb-1">Concluida em</p>
-                    <p className="text-[#E8E8E8]">{formatDateTime(selectedOrdem.dataConclusao)}</p>
+                  <div className="p-4 bg-background rounded-xl">
+                    <p className="text-xs text-muted mb-1">Concluida em</p>
+                    <p className="text-foreground">{formatDateTime(selectedOrdem.dataConclusao)}</p>
                   </div>
                 )}
               </div>
 
               {/* Serviços Extras */}
               {selectedOrdem.servicosExtras.length > 0 && (
-                <div className="p-4 bg-[#121212] rounded-xl">
-                  <h3 className="text-sm font-medium text-[#9E9E9E] mb-3 flex items-center gap-2">
-                    <Wrench size={16} className="text-[#43A047]" />
+                <div className="p-4 bg-background rounded-xl">
+                  <h3 className="text-sm font-medium text-muted mb-3 flex items-center gap-2">
+                    <Wrench size={16} className="text-primary" />
                     Serviços Extras
                   </h3>
                   <div className="space-y-2">
                     {selectedOrdem.servicosExtras.map((item, index) => (
                       <div key={item.id || index} className="flex justify-between text-sm">
-                        <span className="text-[#E8E8E8]">{item.descricao}</span>
-                        <span className="text-[#43A047]">{formatCurrency(item.valor)}</span>
+                        <span className="text-foreground">{item.descricao}</span>
+                        <span className="text-primary">{formatCurrency(item.valor)}</span>
                       </div>
                     ))}
                   </div>
@@ -1563,15 +1563,15 @@ function OrdensPageContent() {
 
               {/* Products */}
               {selectedOrdem.itensProduto.length > 0 && (
-                <div className="p-4 bg-[#121212] rounded-xl">
-                  <h3 className="text-sm font-medium text-[#9E9E9E] mb-3 flex items-center gap-2">
+                <div className="p-4 bg-background rounded-xl">
+                  <h3 className="text-sm font-medium text-muted mb-3 flex items-center gap-2">
                     <Package size={16} className="text-blue-400" />
                     Produtos
                   </h3>
                   <div className="space-y-2">
                     {selectedOrdem.itensProduto.map((item) => (
                       <div key={item.id} className="flex justify-between text-sm">
-                        <span className="text-[#E8E8E8]">{item.produtoNome} x{item.quantidade}</span>
+                        <span className="text-foreground">{item.produtoNome} x{item.quantidade}</span>
                         <span className="text-blue-400">{formatCurrency(item.subtotal)}</span>
                       </div>
                     ))}
@@ -1581,21 +1581,21 @@ function OrdensPageContent() {
 
               {/* Observations */}
               {selectedOrdem.observacoes && (
-                <div className="p-4 bg-[#121212] rounded-xl">
-                  <p className="text-xs text-[#9E9E9E] mb-1">Observacoes</p>
-                  <p className="text-[#E8E8E8]">{selectedOrdem.observacoes}</p>
+                <div className="p-4 bg-background rounded-xl">
+                  <p className="text-xs text-muted mb-1">Observacoes</p>
+                  <p className="text-foreground">{selectedOrdem.observacoes}</p>
                 </div>
               )}
 
               {/* Total */}
               <div className="p-4 bg-green-500/10 border border-green-500/20 rounded-xl">
                 <div className="flex justify-between items-center">
-                  <span className="text-lg font-bold text-[#E8E8E8]">Total</span>
-                  <span className="text-2xl font-bold text-[#43A047]">{formatCurrency(selectedOrdem.total)}</span>
+                  <span className="text-lg font-bold text-foreground">Total</span>
+                  <span className="text-2xl font-bold text-primary">{formatCurrency(selectedOrdem.total)}</span>
                 </div>
               </div>
             </div>
-            <div className="p-6 border-t border-[#333333] flex gap-3 justify-end">
+            <div className="p-6 border-t border-border flex gap-3 justify-end">
               {(selectedOrdem.status === 'AGENDADO' || selectedOrdem.status === 'EM_ANDAMENTO' || selectedOrdem.status === 'AGUARDANDO_PECAS') && (
                 <button
                   onClick={() => {
@@ -1622,14 +1622,14 @@ function OrdensPageContent() {
               )}
               <button
                 onClick={() => downloadOrdemPDF(selectedOrdem, empresaConfig || undefined)}
-                className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-[#43A047] to-[#1B5E20] rounded-xl text-white font-medium hover:opacity-90 transition-opacity"
+                className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-primary to-primary-dark rounded-xl text-white font-medium hover:opacity-90 transition-opacity"
               >
                 <FileDown size={18} />
                 Baixar PDF
               </button>
               <button
                 onClick={() => setShowDetailModal(false)}
-                className="px-6 py-3 border border-[#333333] rounded-xl text-[#9E9E9E] hover:bg-[#121212] transition-colors"
+                className="px-6 py-3 border border-border rounded-xl text-muted hover:bg-background transition-colors"
               >
                 Fechar
               </button>
@@ -1641,7 +1641,7 @@ function OrdensPageContent() {
       {/* Modal Confirmar Exclusao */}
       {showDeleteConfirm && selectedOrdem && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-[#1a1a1a] border border-zinc-800 rounded-2xl w-full max-w-md shadow-2xl shadow-black/50">
+          <div className="bg-card border border-zinc-800 rounded-2xl w-full max-w-md shadow-2xl shadow-black/50">
             <div className="p-6 border-b border-zinc-800">
               <h2 className="text-xl font-semibold text-white">Confirmar Exclusao</h2>
             </div>
@@ -1684,7 +1684,7 @@ function OrdensPageContent() {
       {/* Modal Confirmar Conclusao */}
       {showConcluirConfirm && selectedOrdem && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-[#1a1a1a] border border-zinc-800 rounded-2xl w-full max-w-md shadow-2xl shadow-black/50">
+          <div className="bg-card border border-zinc-800 rounded-2xl w-full max-w-md shadow-2xl shadow-black/50">
             <div className="p-6 border-b border-zinc-800">
               <h2 className="text-xl font-semibold text-white">Concluir O.S.</h2>
             </div>
@@ -1700,7 +1700,7 @@ function OrdensPageContent() {
               </div>
 
               {/* Resumo dos itens */}
-              <div className="bg-[#121212] rounded-xl p-4 mb-4 space-y-2">
+              <div className="bg-background rounded-xl p-4 mb-4 space-y-2">
                 {selectedOrdem.itensProduto.length > 0 && (
                   <div>
                     <p className="text-xs text-zinc-500 mb-1">Produtos</p>
@@ -1749,7 +1749,7 @@ function OrdensPageContent() {
                           ? method.value === 'CREDITO_PESSOAL'
                             ? 'bg-amber-500/20 border-amber-500 text-amber-400'
                             : 'bg-emerald-500/20 border-emerald-500 text-emerald-400'
-                          : 'bg-[#121212] border-zinc-700 text-zinc-400 hover:border-zinc-600'
+                          : 'bg-background border-zinc-700 text-zinc-400 hover:border-zinc-600'
                       }`}
                     >
                       <span>{method.icon}</span>
@@ -1767,7 +1767,7 @@ function OrdensPageContent() {
                     type="date"
                     value={dataPagamentoPrevistaConcluir}
                     onChange={(e) => setDataPagamentoPrevistaConcluir(e.target.value)}
-                    className="w-full px-4 py-3 bg-[#121212] rounded-xl border border-amber-500/30 text-white placeholder:text-zinc-500 focus:outline-none focus:border-amber-500/50"
+                    className="w-full px-4 py-3 bg-background rounded-xl border border-amber-500/30 text-white placeholder:text-zinc-500 focus:outline-none focus:border-amber-500/50"
                   />
                 </div>
               )}
@@ -1784,7 +1784,7 @@ function OrdensPageContent() {
                       setDescontoConcluir(val);
                     }}
                     placeholder="0"
-                    className="w-24 px-4 py-3 bg-[#121212] rounded-xl border border-zinc-700 text-white text-center placeholder:text-zinc-500 focus:outline-none focus:border-amber-500/50"
+                    className="w-24 px-4 py-3 bg-background rounded-xl border border-zinc-700 text-white text-center placeholder:text-zinc-500 focus:outline-none focus:border-amber-500/50"
                   />
                   <span className="text-zinc-500">%</span>
                   {parseFloat(descontoConcluir.replace(',', '.')) > 0 && (

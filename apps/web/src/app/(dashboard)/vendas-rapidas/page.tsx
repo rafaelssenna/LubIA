@@ -290,7 +290,7 @@ export default function VendasRapidasPage() {
       <div className="p-8 space-y-6">
         {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="bg-[#1E1E1E] rounded-2xl p-6 border border-white/10">
+          <div className="bg-card rounded-2xl p-6 border border-white/10">
             <div className="flex items-center gap-4">
               <div className="w-12 h-12 bg-blue-500/10 rounded-xl flex items-center justify-center">
                 <Receipt size={24} className="text-blue-400" />
@@ -302,7 +302,7 @@ export default function VendasRapidasPage() {
             </div>
           </div>
 
-          <div className="bg-[#1E1E1E] rounded-2xl p-6 border border-white/10">
+          <div className="bg-card rounded-2xl p-6 border border-white/10">
             <div className="flex items-center gap-4">
               <div className="w-12 h-12 bg-emerald-500/10 rounded-xl flex items-center justify-center">
                 <Clock size={24} className="text-emerald-400" />
@@ -314,7 +314,7 @@ export default function VendasRapidasPage() {
             </div>
           </div>
 
-          <div className="bg-[#1E1E1E] rounded-2xl p-6 border border-white/10">
+          <div className="bg-card rounded-2xl p-6 border border-white/10">
             <div className="flex items-center gap-4">
               <div className="w-12 h-12 bg-amber-500/10 rounded-xl flex items-center justify-center">
                 <DollarSign size={24} className="text-amber-400" />
@@ -336,12 +336,12 @@ export default function VendasRapidasPage() {
               placeholder="Buscar por número ou cliente..."
               value={busca}
               onChange={(e) => setBusca(e.target.value)}
-              className="w-full pl-12 pr-4 py-3 bg-[#1E1E1E] rounded-xl border border-white/10 text-white placeholder:text-white/40 focus:outline-none focus:border-[#43A047]/50"
+              className="w-full pl-12 pr-4 py-3 bg-card rounded-xl border border-white/10 text-white placeholder:text-white/40 focus:outline-none focus:border-primary/50"
             />
           </div>
           <button
             onClick={() => setShowNovaVenda(true)}
-            className="flex items-center gap-2 px-6 py-3 bg-[#43A047] text-white rounded-xl hover:bg-[#388E3C] transition-colors"
+            className="flex items-center gap-2 px-6 py-3 bg-primary text-white rounded-xl hover:bg-primary-dark transition-colors"
           >
             <Plus size={20} />
             Nova Venda
@@ -349,7 +349,7 @@ export default function VendasRapidasPage() {
         </div>
 
         {/* Lista de Vendas */}
-        <div className="bg-[#1E1E1E] rounded-2xl border border-white/10 overflow-hidden">
+        <div className="bg-card rounded-2xl border border-white/10 overflow-hidden">
           {loading ? (
             <div className="p-8 text-center text-white/60">Carregando...</div>
           ) : vendas.length === 0 ? (
@@ -374,7 +374,7 @@ export default function VendasRapidasPage() {
                   {vendas.map((venda) => (
                     <tr key={venda.id} className="border-b border-white/5 hover:bg-white/5 transition-colors">
                       <td className="p-4">
-                        <span className="text-[#43A047] font-mono font-medium">{venda.numero}</span>
+                        <span className="text-primary font-mono font-medium">{venda.numero}</span>
                       </td>
                       <td className="p-4 text-white">
                         {venda.nomeCliente || <span className="text-white/40">Balcão</span>}
@@ -432,7 +432,7 @@ export default function VendasRapidasPage() {
       {/* Modal Nova Venda */}
       {showNovaVenda && (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-[#1E1E1E] rounded-2xl w-full max-w-3xl max-h-[90vh] overflow-hidden flex flex-col">
+          <div className="bg-card rounded-2xl w-full max-w-3xl max-h-[90vh] overflow-hidden flex flex-col">
             {/* Header */}
             <div className="flex items-center justify-between p-6 border-b border-white/10">
               <h2 className="text-xl font-semibold text-white">Nova Venda Rápida</h2>
@@ -457,7 +457,7 @@ export default function VendasRapidasPage() {
                   value={nomeCliente}
                   onChange={(e) => setNomeCliente(e.target.value)}
                   placeholder="Ex: João"
-                  className="w-full px-4 py-3 bg-[#121212] rounded-xl border border-white/10 text-white placeholder:text-white/40 focus:outline-none focus:border-[#43A047]/50"
+                  className="w-full px-4 py-3 bg-background rounded-xl border border-white/10 text-white placeholder:text-white/40 focus:outline-none focus:border-primary/50"
                 />
               </div>
 
@@ -471,11 +471,11 @@ export default function VendasRapidasPage() {
                     value={buscaProduto}
                     onChange={(e) => setBuscaProduto(e.target.value)}
                     placeholder="Buscar por código ou nome..."
-                    className="w-full pl-12 pr-4 py-3 bg-[#121212] rounded-xl border border-white/10 text-white placeholder:text-white/40 focus:outline-none focus:border-[#43A047]/50"
+                    className="w-full pl-12 pr-4 py-3 bg-background rounded-xl border border-white/10 text-white placeholder:text-white/40 focus:outline-none focus:border-primary/50"
                   />
                   {/* Dropdown de resultados */}
                   {produtos.length > 0 && (
-                    <div className="absolute top-full left-0 right-0 mt-2 bg-[#252525] rounded-xl border border-white/10 max-h-60 overflow-y-auto z-10">
+                    <div className="absolute top-full left-0 right-0 mt-2 bg-background-secondary rounded-xl border border-white/10 max-h-60 overflow-y-auto z-10">
                       {produtos.map((produto) => {
                         const isGranel = UNIDADES_GRANEL.includes(produto.unidade);
                         const unidadeLabel = produto.unidade === 'LITRO' ? 'L' : produto.unidade === 'KG' ? 'kg' : produto.unidade === 'METRO' ? 'm' : 'un';
@@ -507,7 +507,7 @@ export default function VendasRapidasPage() {
                     </div>
                   )}
                   {loadingProdutos && (
-                    <div className="absolute top-full left-0 right-0 mt-2 bg-[#252525] rounded-xl border border-white/10 p-4 text-center text-white/60">
+                    <div className="absolute top-full left-0 right-0 mt-2 bg-background-secondary rounded-xl border border-white/10 p-4 text-center text-white/60">
                       Buscando...
                     </div>
                   )}
@@ -518,7 +518,7 @@ export default function VendasRapidasPage() {
               <div>
                 <label className="block text-sm text-white/60 mb-2">Itens da Venda</label>
                 {itensVenda.length === 0 ? (
-                  <div className="bg-[#121212] rounded-xl border border-white/10 p-8 text-center text-white/40">
+                  <div className="bg-background rounded-xl border border-white/10 p-8 text-center text-white/40">
                     <Package size={32} className="mx-auto mb-2 opacity-50" />
                     <p>Nenhum produto adicionado</p>
                   </div>
@@ -532,7 +532,7 @@ export default function VendasRapidasPage() {
                       return (
                         <div
                           key={item.produtoId}
-                          className="flex items-center gap-4 bg-[#121212] rounded-xl border border-white/10 p-4"
+                          className="flex items-center gap-4 bg-background rounded-xl border border-white/10 p-4"
                         >
                           <div className="flex-1">
                             <p className="text-white font-medium">{item.produtoNome}</p>
@@ -558,7 +558,7 @@ export default function VendasRapidasPage() {
                               }}
                               step={step}
                               min={step}
-                              className="w-16 text-center bg-[#1E1E1E] border border-white/10 rounded-lg py-1 text-white focus:outline-none focus:border-[#43A047]/50"
+                              className="w-16 text-center bg-card border border-white/10 rounded-lg py-1 text-white focus:outline-none focus:border-primary/50"
                             />
                             <button
                               onClick={() => atualizarQuantidade(item.produtoId, item.quantidade + step)}
@@ -592,7 +592,7 @@ export default function VendasRapidasPage() {
                   onChange={(e) => setObservacoes(e.target.value)}
                   placeholder="Ex: Troco para R$100"
                   rows={2}
-                  className="w-full px-4 py-3 bg-[#121212] rounded-xl border border-white/10 text-white placeholder:text-white/40 focus:outline-none focus:border-[#43A047]/50 resize-none"
+                  className="w-full px-4 py-3 bg-background rounded-xl border border-white/10 text-white placeholder:text-white/40 focus:outline-none focus:border-primary/50 resize-none"
                 />
               </div>
 
@@ -615,8 +615,8 @@ export default function VendasRapidasPage() {
                         formaPagamento === method.value
                           ? method.value === 'CREDITO_PESSOAL'
                             ? 'bg-amber-500/20 border-amber-500 text-amber-400'
-                            : 'bg-[#43A047]/20 border-[#43A047] text-[#43A047]'
-                          : 'bg-[#121212] border-white/10 text-white/60 hover:border-white/20'
+                            : 'bg-primary/20 border-primary text-primary'
+                          : 'bg-background border-white/10 text-white/60 hover:border-white/20'
                       }`}
                     >
                       <span>{method.icon}</span>
@@ -634,7 +634,7 @@ export default function VendasRapidasPage() {
                     type="date"
                     value={dataPagamentoPrevista}
                     onChange={(e) => setDataPagamentoPrevista(e.target.value)}
-                    className="w-full px-4 py-3 bg-[#121212] rounded-xl border border-amber-500/30 text-white focus:outline-none focus:border-amber-500/50"
+                    className="w-full px-4 py-3 bg-background rounded-xl border border-amber-500/30 text-white focus:outline-none focus:border-amber-500/50"
                   />
                 </div>
               )}
@@ -651,7 +651,7 @@ export default function VendasRapidasPage() {
                       setDesconto(val);
                     }}
                     placeholder="0"
-                    className="w-24 px-4 py-3 bg-[#121212] rounded-xl border border-white/10 text-white text-center placeholder:text-white/40 focus:outline-none focus:border-amber-500/50"
+                    className="w-24 px-4 py-3 bg-background rounded-xl border border-white/10 text-white text-center placeholder:text-white/40 focus:outline-none focus:border-amber-500/50"
                   />
                   <span className="text-white/40">%</span>
                   {descontoPercent > 0 && (
@@ -664,7 +664,7 @@ export default function VendasRapidasPage() {
             </div>
 
             {/* Footer */}
-            <div className="p-6 border-t border-white/10 bg-[#121212]">
+            <div className="p-6 border-t border-white/10 bg-background">
               <div className="flex items-center justify-between">
                 <div className="space-y-1">
                   {descontoPercent > 0 ? (
@@ -713,7 +713,7 @@ export default function VendasRapidasPage() {
                     onClick={finalizarVenda}
                     disabled={saving || itensVenda.length === 0 || !formaPagamento || (formaPagamento === 'CREDITO_PESSOAL' && !nomeCliente)}
                     className={`px-6 py-3 text-white rounded-xl transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 ${
-                      formaPagamento === 'CREDITO_PESSOAL' ? 'bg-amber-500 hover:bg-amber-600' : 'bg-[#43A047] hover:bg-[#388E3C]'
+                      formaPagamento === 'CREDITO_PESSOAL' ? 'bg-amber-500 hover:bg-amber-600' : 'bg-primary hover:bg-primary-dark'
                     }`}
                   >
                     {saving ? (
@@ -743,7 +743,7 @@ export default function VendasRapidasPage() {
       {/* Modal Detalhes */}
       {showDetalhes && vendaSelecionada && (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-[#1E1E1E] rounded-2xl w-full max-w-lg max-h-[90vh] overflow-hidden flex flex-col">
+          <div className="bg-card rounded-2xl w-full max-w-lg max-h-[90vh] overflow-hidden flex flex-col">
             {/* Header */}
             <div className="flex items-center justify-between p-6 border-b border-white/10">
               <div>
@@ -774,7 +774,7 @@ export default function VendasRapidasPage() {
                 <p className="text-white/60 text-sm mb-2">Itens</p>
                 <div className="space-y-2">
                   {vendaSelecionada.itens.map((item, idx) => (
-                    <div key={idx} className="flex items-center justify-between bg-[#121212] rounded-xl p-3">
+                    <div key={idx} className="flex items-center justify-between bg-background rounded-xl p-3">
                       <div>
                         <p className="text-white font-medium">{item.produtoNome}</p>
                         <p className="text-white/60 text-sm">{item.quantidade}x {formatCurrency(item.precoUnitario)}</p>
@@ -794,7 +794,7 @@ export default function VendasRapidasPage() {
             </div>
 
             {/* Footer */}
-            <div className="p-6 border-t border-white/10 bg-[#121212]">
+            <div className="p-6 border-t border-white/10 bg-background">
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-white/60 text-sm">Total</p>

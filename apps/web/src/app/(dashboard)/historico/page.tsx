@@ -133,7 +133,7 @@ export default function HistoricoPage() {
       <div className="flex-1 p-6 overflow-y-auto custom-scrollbar">
         {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-          <div className="bg-[#1a1a1a] border border-zinc-800/50 rounded-2xl p-5">
+          <div className="bg-card border border-zinc-800/50 rounded-2xl p-5">
             <div className="flex items-center gap-4">
               <div className="w-12 h-12 rounded-xl bg-emerald-500/10 flex items-center justify-center">
                 <Receipt size={24} className="text-emerald-400" />
@@ -144,7 +144,7 @@ export default function HistoricoPage() {
               </div>
             </div>
           </div>
-          <div className="bg-[#1a1a1a] border border-zinc-800/50 rounded-2xl p-5">
+          <div className="bg-card border border-zinc-800/50 rounded-2xl p-5">
             <div className="flex items-center gap-4">
               <div className="w-12 h-12 rounded-xl bg-green-500/10 flex items-center justify-center">
                 <DollarSign size={24} className="text-green-400" />
@@ -158,7 +158,7 @@ export default function HistoricoPage() {
         </div>
 
         {/* Search and Filters */}
-        <div className="bg-[#1a1a1a] border border-zinc-800/50 rounded-2xl p-4 mb-6">
+        <div className="bg-card border border-zinc-800/50 rounded-2xl p-4 mb-6">
           <div className="flex flex-col md:flex-row gap-4">
             {/* Search */}
             <div className="flex-1 relative">
@@ -257,7 +257,7 @@ export default function HistoricoPage() {
         </div>
 
         {/* Results List */}
-        <div className="bg-[#1a1a1a] border border-zinc-800/50 rounded-2xl overflow-hidden">
+        <div className="bg-card border border-zinc-800/50 rounded-2xl overflow-hidden">
           {loading ? (
             <div className="p-8 text-center text-zinc-500">
               <div className="animate-spin w-8 h-8 border-2 border-emerald-500 border-t-transparent rounded-full mx-auto mb-2"></div>
@@ -358,7 +358,7 @@ export default function HistoricoPage() {
 
         {/* Pagination */}
         {totalPages > 1 && (
-          <div className="flex items-center justify-between mt-4 bg-[#1a1a1a] border border-zinc-800/50 rounded-2xl px-6 py-4">
+          <div className="flex items-center justify-between mt-4 bg-card border border-zinc-800/50 rounded-2xl px-6 py-4">
             <p className="text-sm text-zinc-400">
               Mostrando {((page - 1) * 20) + 1} - {Math.min(page * 20, total)} de {total} registros
             </p>

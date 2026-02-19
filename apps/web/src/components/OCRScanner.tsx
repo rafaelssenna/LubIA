@@ -138,9 +138,9 @@ export default function OCRScanner({ type, onResult, onClose }: OCRScannerProps)
 
   return (
     <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4">
-      <div className="bg-[#1F1F1F] border border-[#333333] rounded-2xl w-full max-w-lg animate-fade-in">
+      <div className="bg-card border border-border rounded-2xl w-full max-w-lg animate-fade-in">
         {/* Header */}
-        <div className="p-6 border-b border-[#333333] flex items-center justify-between">
+        <div className="p-6 border-b border-border flex items-center justify-between">
           <div>
             <h2 className="text-xl font-semibold text-white">{titles[type]}</h2>
             <p className="text-sm text-[#6B7280] mt-1">{descriptions[type]}</p>
@@ -148,7 +148,7 @@ export default function OCRScanner({ type, onResult, onClose }: OCRScannerProps)
           {onClose && (
             <button
               onClick={onClose}
-              className="p-2 hover:bg-[#333333] rounded-lg transition-colors text-[#94a3b8]"
+              className="p-2 hover:bg-border rounded-lg transition-colors text-[#94a3b8]"
             >
               <X size={20} />
             </button>
@@ -175,7 +175,7 @@ export default function OCRScanner({ type, onResult, onClose }: OCRScannerProps)
                 </button>
                 <button
                   onClick={stopCamera}
-                  className="px-6 py-3 border border-[#333333] rounded-xl text-[#94a3b8] hover:bg-[#333333] transition-colors"
+                  className="px-6 py-3 border border-border rounded-xl text-[#94a3b8] hover:bg-border transition-colors"
                 >
                   Cancelar
                 </button>
@@ -184,7 +184,7 @@ export default function OCRScanner({ type, onResult, onClose }: OCRScannerProps)
           ) : preview ? (
             <div className="space-y-4">
               {isPdf ? (
-                <div className="w-full rounded-xl p-8 bg-[#2a2a2a] flex flex-col items-center justify-center gap-3">
+                <div className="w-full rounded-xl p-8 bg-background-secondary flex flex-col items-center justify-center gap-3">
                   <FileText size={48} className="text-red-400" />
                   <p className="text-white font-medium">{pdfName}</p>
                   <p className="text-sm text-[#6B7280]">Arquivo PDF</p>
@@ -240,7 +240,7 @@ export default function OCRScanner({ type, onResult, onClose }: OCRScannerProps)
 
               <button
                 onClick={reset}
-                className="w-full px-6 py-3 border border-[#333333] rounded-xl text-[#94a3b8] hover:bg-[#333333] transition-colors"
+                className="w-full px-6 py-3 border border-border rounded-xl text-[#94a3b8] hover:bg-border transition-colors"
               >
                 Nova Leitura
               </button>
@@ -250,7 +250,7 @@ export default function OCRScanner({ type, onResult, onClose }: OCRScannerProps)
               {/* Upload area */}
               <div
                 onClick={() => fileInputRef.current?.click()}
-                className="border-2 border-dashed border-[#333333] rounded-xl p-8 text-center cursor-pointer hover:border-[#22c55e]/50 transition-colors"
+                className="border-2 border-dashed border-border rounded-xl p-8 text-center cursor-pointer hover:border-[#22c55e]/50 transition-colors"
               >
                 <Upload className="mx-auto mb-4 text-[#6B7280]" size={40} />
                 <p className="text-[#94a3b8]">
@@ -270,9 +270,9 @@ export default function OCRScanner({ type, onResult, onClose }: OCRScannerProps)
               />
 
               <div className="flex items-center gap-4">
-                <div className="flex-1 h-px bg-[#333333]" />
+                <div className="flex-1 h-px bg-border" />
                 <span className="text-[#6B7280] text-sm">ou</span>
-                <div className="flex-1 h-px bg-[#333333]" />
+                <div className="flex-1 h-px bg-border" />
               </div>
 
               <button

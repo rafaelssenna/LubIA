@@ -55,12 +55,12 @@ export default function LoginPage() {
               className="h-40 w-auto brightness-0 invert"
             />
           </div>
-          <p className="text-[#9E9E9E] text-xl">Sistema de Gestão de Oficinas</p>
+          <p className="text-muted text-xl">Sistema de Gestão de Oficinas</p>
         </div>
 
         {/* Form */}
-        <div className="bg-[#1E1E1E] border border-[#333333] rounded-2xl p-8">
-          <h2 className="text-2xl font-bold text-[#E8E8E8] mb-6">Entrar</h2>
+        <div className="bg-card border border-border rounded-2xl p-8">
+          <h2 className="text-2xl font-bold text-foreground mb-6">Entrar</h2>
 
           {error && (
             <div className="mb-4 p-3 bg-red-500/10 border border-red-500/30 rounded-xl flex items-center gap-2 text-red-400">
@@ -71,7 +71,7 @@ export default function LoginPage() {
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-[#9E9E9E] mb-2">
+              <label className="block text-sm font-medium text-muted mb-2">
                 Email
               </label>
               <input
@@ -80,13 +80,13 @@ export default function LoginPage() {
                 onChange={(e) => setEmail(e.target.value)}
                 required
                 autoComplete="email"
-                className="w-full bg-[#121212] border border-[#333333] rounded-xl px-4 py-3 text-[#E8E8E8] focus:outline-none focus:border-[#43A047] transition-colors"
+                className="w-full bg-background border border-border rounded-xl px-4 py-3 text-foreground focus:outline-none focus:border-primary transition-colors"
                 placeholder="seu@email.com"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-[#9E9E9E] mb-2">
+              <label className="block text-sm font-medium text-muted mb-2">
                 Senha
               </label>
               <input
@@ -95,7 +95,7 @@ export default function LoginPage() {
                 onChange={(e) => setSenha(e.target.value)}
                 required
                 autoComplete="current-password"
-                className="w-full bg-[#121212] border border-[#333333] rounded-xl px-4 py-3 text-[#E8E8E8] focus:outline-none focus:border-[#43A047] transition-colors"
+                className="w-full bg-background border border-border rounded-xl px-4 py-3 text-foreground focus:outline-none focus:border-primary transition-colors"
                 placeholder="********"
               />
             </div>
@@ -103,7 +103,7 @@ export default function LoginPage() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-[#43A047] to-[#1B5E20] rounded-xl text-white font-medium hover:opacity-90 disabled:opacity-50 transition-opacity mt-6"
+              className="w-full flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-primary to-primary-dark rounded-xl text-white font-medium hover:opacity-90 disabled:opacity-50 transition-opacity mt-6"
             >
               {loading ? (
                 <Loader2 className="animate-spin" size={20} />
@@ -117,7 +117,7 @@ export default function LoginPage() {
           <div className="mt-6 text-center">
             <Link
               href="/cadastro"
-              className="inline-flex items-center gap-2 text-[#9E9E9E] hover:text-[#43A047] transition-colors"
+              className="inline-flex items-center gap-2 text-muted hover:text-primary transition-colors"
             >
               <UserPlus size={16} />
               Criar uma conta
@@ -128,15 +128,15 @@ export default function LoginPage() {
         {/* Link para clientes */}
         <Link
           href="/consulta"
-          className="mt-6 block bg-[#1E1E1E] border border-[#333333] rounded-2xl p-4 hover:border-[#43A047]/50 transition-all group"
+          className="mt-6 block bg-card border border-border rounded-2xl p-4 hover:border-primary/50 transition-all group"
         >
           <div className="flex items-center gap-4">
             <div className="p-3 bg-blue-500/10 rounded-xl group-hover:bg-blue-500/20 transition-colors">
               <Car size={24} className="text-blue-400" />
             </div>
             <div>
-              <p className="text-[#E8E8E8] font-medium">Sou cliente</p>
-              <p className="text-sm text-[#9E9E9E]">Ver status do meu veiculo</p>
+              <p className="text-foreground font-medium">Sou cliente</p>
+              <p className="text-sm text-muted">Ver status do meu veiculo</p>
             </div>
           </div>
         </Link>

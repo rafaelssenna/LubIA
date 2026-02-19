@@ -163,8 +163,8 @@ export default function Dashboard() {
       <div className="flex items-center justify-center h-[60vh]">
         <div className="flex flex-col items-center gap-4">
           <div className="relative">
-            <div className="w-16 h-16 border-4 border-[#43A047]/20 rounded-full"></div>
-            <div className="absolute top-0 left-0 w-16 h-16 border-4 border-transparent border-t-[#43A047] rounded-full animate-spin"></div>
+            <div className="w-16 h-16 border-4 border-primary/20 rounded-full"></div>
+            <div className="absolute top-0 left-0 w-16 h-16 border-4 border-transparent border-t-primary rounded-full animate-spin"></div>
           </div>
           <p className="text-zinc-400 animate-pulse">Carregando dashboard...</p>
         </div>
@@ -243,7 +243,7 @@ export default function Dashboard() {
         {/* Grid de 3 colunas: Serviços, Vendas, A Receber */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Serviços de Hoje */}
-          <div className="bg-[#1a1a1a] rounded-2xl border border-zinc-800/50 overflow-hidden">
+          <div className="bg-card rounded-2xl border border-zinc-800/50 overflow-hidden">
             <div className="p-4 border-b border-zinc-800 flex items-center justify-between">
               <div>
                 <h2 className="text-lg font-bold text-white flex items-center gap-2">
@@ -311,7 +311,7 @@ export default function Dashboard() {
           </div>
 
           {/* Vendas de Hoje */}
-          <div className="bg-[#1a1a1a] rounded-2xl border border-zinc-800/50 overflow-hidden">
+          <div className="bg-card rounded-2xl border border-zinc-800/50 overflow-hidden">
             <div className="p-4 border-b border-zinc-800 flex items-center justify-between">
               <div>
                 <h2 className="text-lg font-bold text-white flex items-center gap-2">
@@ -380,7 +380,7 @@ export default function Dashboard() {
           </div>
 
           {/* A Receber */}
-          <div className="bg-[#1a1a1a] rounded-2xl border border-zinc-800/50 overflow-hidden">
+          <div className="bg-card rounded-2xl border border-zinc-800/50 overflow-hidden">
             <div className="p-4 border-b border-zinc-800 flex items-center justify-between">
               <div>
                 <h2 className="text-lg font-bold text-white flex items-center gap-2">
@@ -458,7 +458,7 @@ export default function Dashboard() {
 
         {/* Lembretes - Barra horizontal */}
         {lembretes && lembretes.count > 0 && (
-          <div className="bg-[#1a1a1a] rounded-2xl border border-cyan-500/20 overflow-hidden">
+          <div className="bg-card rounded-2xl border border-cyan-500/20 overflow-hidden">
             <div className="p-3 border-b border-zinc-800 flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <div className="p-2 bg-cyan-500/10 rounded-lg">

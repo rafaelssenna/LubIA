@@ -95,7 +95,7 @@ const getUrgenciaConfig = (urgencia: string) => {
       };
     default:
       return {
-        color: 'bg-gray-500/10 text-gray-400 border-[#333333]',
+        color: 'bg-gray-500/10 text-gray-400 border-border',
         barColor: 'bg-gray-500',
         label: urgencia,
       };
@@ -464,12 +464,12 @@ export default function LembretesPage() {
                 placeholder="Buscar por cliente ou placa..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full bg-[#1a1a1a] border border-zinc-800/50 rounded-xl pl-10 pr-4 py-3 text-sm text-white placeholder-zinc-500 focus:outline-none focus:border-cyan-500/50 focus:ring-2 focus:ring-cyan-500/20 transition-all duration-200"
+                className="w-full bg-card border border-zinc-800/50 rounded-xl pl-10 pr-4 py-3 text-sm text-white placeholder-zinc-500 focus:outline-none focus:border-cyan-500/50 focus:ring-2 focus:ring-cyan-500/20 transition-all duration-200"
               />
             </div>
             <button
               onClick={() => { setLoading(true); fetchLembretes(); }}
-              className="p-3 bg-[#1a1a1a] border border-zinc-800/50 rounded-xl text-zinc-400 hover:border-cyan-500/40 hover:text-cyan-400 transition-all duration-200"
+              className="p-3 bg-card border border-zinc-800/50 rounded-xl text-zinc-400 hover:border-cyan-500/40 hover:text-cyan-400 transition-all duration-200"
               title="Atualizar"
             >
               <RefreshCw size={20} className={loading ? 'animate-spin' : ''} />
@@ -496,7 +496,7 @@ export default function LembretesPage() {
             </button>
             <button
               onClick={openNewModal}
-              className="flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-[#43A047] to-[#2E7D32] hover:from-[#2E7D32] hover:to-[#43A047] text-white font-semibold rounded-xl transition-all duration-300 shadow-lg shadow-[#43A047]/25 hover:shadow-[#43A047]/40 hover:scale-[1.02]"
+              className="flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-primary to-[#2E7D32] hover:from-[#2E7D32] hover:to-primary text-white font-semibold rounded-xl transition-all duration-300 shadow-lg shadow-primary/25 hover:shadow-primary/40 hover:scale-[1.02]"
             >
               <Plus size={20} />
               <span className="hidden md:inline">Novo Lembrete</span>
@@ -505,7 +505,7 @@ export default function LembretesPage() {
         </div>
 
         {/* Lista de Lembretes */}
-        <div className="bg-[#1a1a1a] rounded-2xl border border-zinc-800/50 overflow-hidden">
+        <div className="bg-card rounded-2xl border border-zinc-800/50 overflow-hidden">
           {loading ? (
             <div className="p-12 text-center">
               <div className="relative w-12 h-12 mx-auto mb-4">
@@ -547,7 +547,7 @@ export default function LembretesPage() {
                           <span className="text-zinc-400 text-sm truncate">
                             {capitalize(lembrete.veiculo.marca)} {capitalize(lembrete.veiculo.modelo)} {lembrete.veiculo.ano}
                           </span>
-                          <span className="px-2 py-0.5 bg-[#43A047]/10 rounded-lg text-xs text-[#43A047] border border-[#43A047]/20 flex-shrink-0">
+                          <span className="px-2 py-0.5 bg-primary/10 rounded-lg text-xs text-primary border border-primary/20 flex-shrink-0">
                             {formatPlate(lembrete.veiculo.placa)}
                           </span>
                         </div>
@@ -630,7 +630,7 @@ export default function LembretesPage() {
       {/* Modal Novo Lembrete */}
       {showModal && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-[#1a1a1a] border border-zinc-800/50 rounded-2xl w-full max-w-lg shadow-2xl shadow-black/50">
+          <div className="bg-card border border-zinc-800/50 rounded-2xl w-full max-w-lg shadow-2xl shadow-black/50">
             <div className="p-6 border-b border-zinc-800/50 flex items-center justify-between">
               <h2 className="text-xl font-bold text-white">Novo Lembrete</h2>
               <button onClick={() => setShowModal(false)} className="p-2 hover:bg-zinc-800 rounded-lg text-zinc-400 hover:text-white transition-colors">
@@ -717,7 +717,7 @@ export default function LembretesPage() {
               <button
                 onClick={handleSubmit}
                 disabled={saving}
-                className="px-6 py-3 bg-gradient-to-r from-[#43A047] to-[#2E7D32] hover:from-[#2E7D32] hover:to-[#43A047] rounded-xl text-white font-semibold transition-all duration-300 shadow-lg shadow-[#43A047]/25 disabled:opacity-50"
+                className="px-6 py-3 bg-gradient-to-r from-primary to-[#2E7D32] hover:from-[#2E7D32] hover:to-primary rounded-xl text-white font-semibold transition-all duration-300 shadow-lg shadow-primary/25 disabled:opacity-50"
               >
                 {saving ? 'Salvando...' : 'Criar Lembrete'}
               </button>
@@ -729,7 +729,7 @@ export default function LembretesPage() {
       {/* Modal Confirmar Exclusao */}
       {showDeleteConfirm && deletingLembrete && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-[#1a1a1a] border border-zinc-800/50 rounded-2xl w-full max-w-md shadow-2xl shadow-black/50">
+          <div className="bg-card border border-zinc-800/50 rounded-2xl w-full max-w-md shadow-2xl shadow-black/50">
             <div className="p-6">
               <div className="w-14 h-14 mx-auto mb-4 bg-red-500/10 rounded-2xl flex items-center justify-center border border-red-500/20">
                 <Trash2 className="text-red-400" size={28} />

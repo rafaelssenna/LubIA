@@ -296,7 +296,7 @@ export default function VeiculosPage() {
               placeholder="Buscar por placa, marca ou modelo..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full bg-[#1a1a1a] border border-zinc-800/50 rounded-xl pl-11 pr-4 py-3 text-sm text-white placeholder-zinc-500 focus:outline-none focus:border-purple-500/50 focus:ring-1 focus:ring-purple-500/20 transition-all duration-200"
+              className="w-full bg-card border border-zinc-800/50 rounded-xl pl-11 pr-4 py-3 text-sm text-white placeholder-zinc-500 focus:outline-none focus:border-purple-500/50 focus:ring-1 focus:ring-purple-500/20 transition-all duration-200"
             />
           </div>
           <button
@@ -304,7 +304,7 @@ export default function VeiculosPage() {
               resetForm();
               setShowModal(true);
             }}
-            className="flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-[#43A047] to-[#2E7D32] hover:from-[#2E7D32] hover:to-[#43A047] text-white font-semibold rounded-xl transition-all duration-300 shadow-lg shadow-[#43A047]/25 hover:shadow-[#43A047]/40 hover:scale-[1.02]"
+            className="flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-primary to-[#2E7D32] hover:from-[#2E7D32] hover:to-primary text-white font-semibold rounded-xl transition-all duration-300 shadow-lg shadow-primary/25 hover:shadow-primary/40 hover:scale-[1.02]"
           >
             <Plus size={18} />
             Novo Veiculo
@@ -313,14 +313,14 @@ export default function VeiculosPage() {
 
         {/* Grid de Veiculos */}
         {veiculos.length === 0 ? (
-          <div className="bg-[#1a1a1a] rounded-2xl border border-zinc-800/50 p-12 text-center">
+          <div className="bg-card rounded-2xl border border-zinc-800/50 p-12 text-center">
             <div className="p-4 bg-zinc-800/50 rounded-full w-fit mx-auto mb-4">
               <Car className="h-8 w-8 text-zinc-600" />
             </div>
             <p className="text-zinc-400">Nenhum veiculo encontrado</p>
             <button
               onClick={() => setShowModal(true)}
-              className="inline-flex items-center gap-2 mt-4 text-[#43A047] hover:text-[#66BB6A] transition-colors"
+              className="inline-flex items-center gap-2 mt-4 text-primary hover:text-primary-light transition-colors"
             >
               Cadastrar veiculo
               <ArrowRight className="h-4 w-4" />
@@ -329,7 +329,7 @@ export default function VeiculosPage() {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
             {veiculos.map((veiculo) => (
-              <div key={veiculo.id} className="group bg-[#1a1a1a] border border-zinc-800/50 rounded-2xl p-5 hover:border-purple-500/30 transition-all duration-300">
+              <div key={veiculo.id} className="group bg-card border border-zinc-800/50 rounded-2xl p-5 hover:border-purple-500/30 transition-all duration-300">
                 <div className="flex items-start justify-between mb-4">
                   <div className="flex items-center gap-3">
                     <div className="p-3 rounded-xl bg-gradient-to-br from-purple-500 to-purple-600 shadow-lg shadow-purple-500/25 group-hover:scale-110 transition-transform duration-300">
@@ -371,7 +371,7 @@ export default function VeiculosPage() {
                 <div className="flex gap-2">
                   <button
                     onClick={() => router.push(`/ordens?veiculoId=${veiculo.id}`)}
-                    className="flex-1 flex items-center justify-center gap-2 py-2.5 bg-gradient-to-r from-[#43A047] to-[#2E7D32] rounded-xl text-white text-sm font-medium hover:shadow-lg hover:shadow-[#43A047]/25 transition-all duration-300"
+                    className="flex-1 flex items-center justify-center gap-2 py-2.5 bg-gradient-to-r from-primary to-[#2E7D32] rounded-xl text-white text-sm font-medium hover:shadow-lg hover:shadow-primary/25 transition-all duration-300"
                   >
                     <ClipboardList size={16} />
                     Nova O.S.
@@ -405,7 +405,7 @@ export default function VeiculosPage() {
       {/* Modal Novo Veiculo */}
       {showModal && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-[#1a1a1a] border border-zinc-800 rounded-2xl w-full max-w-md max-h-[90vh] overflow-y-auto shadow-2xl shadow-black/50">
+          <div className="bg-card border border-zinc-800 rounded-2xl w-full max-w-md max-h-[90vh] overflow-y-auto shadow-2xl shadow-black/50">
             <div className="p-6 border-b border-zinc-800 flex items-center justify-between">
               <div>
                 <h2 className="text-xl font-semibold text-white">Novo Veiculo</h2>
@@ -530,7 +530,7 @@ export default function VeiculosPage() {
               <button
                 onClick={handleSubmit}
                 disabled={saving}
-                className="px-6 py-3 bg-gradient-to-r from-[#43A047] to-[#2E7D32] rounded-xl text-white font-medium hover:shadow-lg hover:shadow-[#43A047]/25 transition-all duration-300 disabled:opacity-50"
+                className="px-6 py-3 bg-gradient-to-r from-primary to-[#2E7D32] rounded-xl text-white font-medium hover:shadow-lg hover:shadow-primary/25 transition-all duration-300 disabled:opacity-50"
               >
                 {saving ? 'Salvando...' : 'Cadastrar'}
               </button>
@@ -542,7 +542,7 @@ export default function VeiculosPage() {
       {/* Modal Editar Veiculo */}
       {showEditModal && selectedVeiculo && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-[#1a1a1a] border border-zinc-800 rounded-2xl w-full max-w-md max-h-[90vh] overflow-y-auto shadow-2xl shadow-black/50">
+          <div className="bg-card border border-zinc-800 rounded-2xl w-full max-w-md max-h-[90vh] overflow-y-auto shadow-2xl shadow-black/50">
             <div className="p-6 border-b border-zinc-800 flex items-center justify-between">
               <div>
                 <h2 className="text-xl font-semibold text-white">Editar Veiculo</h2>
@@ -646,7 +646,7 @@ export default function VeiculosPage() {
               <button
                 onClick={handleEditSubmit}
                 disabled={saving}
-                className="px-6 py-3 bg-gradient-to-r from-[#43A047] to-[#2E7D32] rounded-xl text-white font-medium hover:shadow-lg hover:shadow-[#43A047]/25 transition-all duration-300 disabled:opacity-50"
+                className="px-6 py-3 bg-gradient-to-r from-primary to-[#2E7D32] rounded-xl text-white font-medium hover:shadow-lg hover:shadow-primary/25 transition-all duration-300 disabled:opacity-50"
               >
                 {saving ? 'Salvando...' : 'Salvar Alteracoes'}
               </button>
@@ -658,7 +658,7 @@ export default function VeiculosPage() {
       {/* Modal Confirmar Exclusao */}
       {showDeleteConfirm && selectedVeiculo && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-[#1a1a1a] border border-zinc-800 rounded-2xl w-full max-w-md shadow-2xl shadow-black/50">
+          <div className="bg-card border border-zinc-800 rounded-2xl w-full max-w-md shadow-2xl shadow-black/50">
             <div className="p-6 border-b border-zinc-800">
               <h2 className="text-xl font-semibold text-white">Confirmar Exclusao</h2>
             </div>

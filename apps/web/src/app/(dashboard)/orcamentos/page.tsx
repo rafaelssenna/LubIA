@@ -616,7 +616,7 @@ function OrcamentosPageContent() {
       </div>
 
       {/* Actions Bar */}
-      <div className="flex flex-col lg:flex-row gap-4 items-start lg:items-center justify-between bg-[#1a1a1a] rounded-2xl p-4 border border-zinc-800/50">
+      <div className="flex flex-col lg:flex-row gap-4 items-start lg:items-center justify-between bg-card rounded-2xl p-4 border border-zinc-800/50">
         <div className="flex flex-col sm:flex-row gap-3 flex-1 w-full lg:w-auto">
           <div className="relative flex-1 min-w-[280px]">
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-zinc-500" />
@@ -651,7 +651,7 @@ function OrcamentosPageContent() {
 
       {/* Orçamentos List */}
       {orcamentos.length === 0 ? (
-        <div className="flex flex-col items-center justify-center py-20 bg-[#1a1a1a] rounded-2xl border border-zinc-800/50">
+        <div className="flex flex-col items-center justify-center py-20 bg-card rounded-2xl border border-zinc-800/50">
           <div className="p-6 bg-zinc-800/50 rounded-full mb-6">
             <FileText className="h-12 w-12 text-zinc-600" />
           </div>
@@ -674,7 +674,7 @@ function OrcamentosPageContent() {
             return (
               <div
                 key={orcamento.id}
-                className="group bg-[#1a1a1a] hover:bg-[#1e1e1e] rounded-2xl border border-zinc-800/50 hover:border-zinc-700/50 transition-all duration-300 overflow-hidden"
+                className="group bg-card hover:bg-card rounded-2xl border border-zinc-800/50 hover:border-zinc-700/50 transition-all duration-300 overflow-hidden"
               >
                 <div className="p-6">
                   <div className="flex flex-col lg:flex-row lg:items-center gap-6">
@@ -795,7 +795,7 @@ function OrcamentosPageContent() {
 
       {/* Pagination */}
       {totalPages > 1 && (
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-4 bg-[#1a1a1a] rounded-2xl p-4 border border-zinc-800/50">
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-4 bg-card rounded-2xl p-4 border border-zinc-800/50">
           <p className="text-sm text-zinc-400">
             Mostrando <span className="text-white font-medium">{((currentPage - 1) * itemsPerPage) + 1}</span> a{' '}
             <span className="text-white font-medium">{Math.min(currentPage * itemsPerPage, totalItems)}</span> de{' '}
@@ -851,7 +851,7 @@ function OrcamentosPageContent() {
       {/* Create/Edit Modal */}
       {showModal && (
         <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-[#1a1a1a] rounded-2xl w-full max-w-2xl max-h-[90vh] overflow-hidden flex flex-col border border-zinc-800">
+          <div className="bg-card rounded-2xl w-full max-w-2xl max-h-[90vh] overflow-hidden flex flex-col border border-zinc-800">
             <div className="flex items-center justify-between p-6 border-b border-zinc-800">
               <div>
                 <h2 className="text-2xl font-bold text-white">
@@ -929,7 +929,7 @@ function OrcamentosPageContent() {
                             addProduto(produto);
                             setSearchProduto('');
                           }}
-                          className="w-full p-3 bg-[#1a1a1a] border border-zinc-700/50 rounded-xl text-left hover:border-[#E85D04]/50 hover:bg-[#E85D04]/5 transition-all"
+                          className="w-full p-3 bg-card border border-zinc-700/50 rounded-xl text-left hover:border-[#E85D04]/50 hover:bg-[#E85D04]/5 transition-all"
                         >
                           <div className="flex justify-between items-center">
                             <div>
@@ -966,7 +966,7 @@ function OrcamentosPageContent() {
                                 p.produtoId === sp.produtoId ? { ...p, quantidade: newQtd } : p
                               ));
                             }}
-                            className="w-20 px-3 py-2 bg-[#1a1a1a] border border-zinc-700/50 rounded-lg text-white text-center focus:outline-none focus:ring-2 focus:ring-[#E85D04]/50"
+                            className="w-20 px-3 py-2 bg-card border border-zinc-700/50 rounded-lg text-white text-center focus:outline-none focus:ring-2 focus:ring-[#E85D04]/50"
                           />
                           <span className="text-zinc-300 font-medium min-w-[100px] text-right">{formatCurrency(sp.precoUnitario * sp.quantidade)}</span>
                           <button
@@ -1075,7 +1075,7 @@ function OrcamentosPageContent() {
       {/* Detail Modal */}
       {showDetailModal && selectedOrcamento && (
         <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-[#1a1a1a] rounded-2xl w-full max-w-lg max-h-[90vh] overflow-hidden flex flex-col border border-zinc-800">
+          <div className="bg-card rounded-2xl w-full max-w-lg max-h-[90vh] overflow-hidden flex flex-col border border-zinc-800">
             <div className="flex items-center justify-between p-6 border-b border-zinc-800">
               <div>
                 <h2 className="text-2xl font-bold text-white">
@@ -1212,7 +1212,7 @@ function OrcamentosPageContent() {
       {/* Delete Confirmation Modal */}
       {showDeleteConfirm && selectedOrcamento && (
         <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-[#1a1a1a] rounded-2xl w-full max-w-sm p-6 border border-zinc-800">
+          <div className="bg-card rounded-2xl w-full max-w-sm p-6 border border-zinc-800">
             <div className="flex items-center gap-4 mb-6">
               <div className="p-4 bg-red-500/10 rounded-full">
                 <Trash2 className="h-8 w-8 text-red-500" />
@@ -1251,7 +1251,7 @@ function OrcamentosPageContent() {
       {/* Convert to O.S. Modal */}
       {showConvertModal && convertingOrcamento && (
         <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-[#1a1a1a] rounded-2xl w-full max-w-lg max-h-[90vh] overflow-hidden flex flex-col border border-zinc-800">
+          <div className="bg-card rounded-2xl w-full max-w-lg max-h-[90vh] overflow-hidden flex flex-col border border-zinc-800">
             <div className="flex items-center justify-between p-6 border-b border-zinc-800">
               <div>
                 <h2 className="text-2xl font-bold text-white">Converter em O.S.</h2>

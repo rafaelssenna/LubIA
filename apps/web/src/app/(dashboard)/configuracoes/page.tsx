@@ -571,8 +571,8 @@ export default function ConfiguracoesPage() {
       <div className="flex items-center justify-center h-[60vh]">
         <div className="flex flex-col items-center gap-4">
           <div className="relative">
-            <div className="w-16 h-16 border-4 border-[#43A047]/20 rounded-full"></div>
-            <div className="absolute top-0 left-0 w-16 h-16 border-4 border-transparent border-t-[#43A047] rounded-full animate-spin"></div>
+            <div className="w-16 h-16 border-4 border-primary/20 rounded-full"></div>
+            <div className="absolute top-0 left-0 w-16 h-16 border-4 border-transparent border-t-primary rounded-full animate-spin"></div>
           </div>
           <p className="text-zinc-400 animate-pulse">Carregando configuracoes...</p>
         </div>
@@ -586,7 +586,7 @@ export default function ConfiguracoesPage() {
 
       <div className="px-4 lg:px-8 space-y-8 max-w-4xl mx-auto">
         {/* Dados da Oficina */}
-        <div className="bg-[#1a1a1a] border border-zinc-800/50 rounded-2xl overflow-hidden">
+        <div className="bg-card border border-zinc-800/50 rounded-2xl overflow-hidden">
           <div className="p-6 border-b border-zinc-800/50 flex items-center gap-4">
             <div className="p-3 bg-blue-500/10 rounded-xl border border-blue-500/20">
               <Building2 size={22} className="text-blue-400" />
@@ -622,7 +622,7 @@ export default function ConfiguracoesPage() {
                 />
                 {buscandoCnpj && (
                   <div className="absolute right-3 top-1/2 -translate-y-1/2">
-                    <Loader2 size={18} className="animate-spin text-[#43A047]" />
+                    <Loader2 size={18} className="animate-spin text-primary" />
                   </div>
                 )}
               </div>
@@ -656,7 +656,7 @@ export default function ConfiguracoesPage() {
               <button
                 onClick={handleSaveConfig}
                 disabled={saving}
-                className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-[#43A047] to-[#2E7D32] hover:from-[#2E7D32] hover:to-[#43A047] rounded-xl text-white font-semibold transition-all duration-300 shadow-lg shadow-[#43A047]/25 disabled:opacity-50"
+                className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-primary to-primary-dark hover:from-primary-dark hover:to-primary rounded-xl text-white font-semibold transition-all duration-300 shadow-lg shadow-primary/25 disabled:opacity-50"
               >
                 {saving ? (
                   <Loader2 size={18} className="animate-spin" />
@@ -670,7 +670,7 @@ export default function ConfiguracoesPage() {
         </div>
 
         {/* Filiais/Fornecedores */}
-        <div className="bg-[#1a1a1a] border border-zinc-800/50 rounded-2xl overflow-hidden">
+        <div className="bg-card border border-zinc-800/50 rounded-2xl overflow-hidden">
           <div className="p-6 border-b border-zinc-800/50 flex items-center justify-between">
             <div className="flex items-center gap-4">
               <div className="p-3 bg-purple-500/10 rounded-xl border border-purple-500/20">
@@ -756,7 +756,7 @@ export default function ConfiguracoesPage() {
         {/* Modal Filial */}
         {showFilialModal && (
           <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-            <div className="bg-[#1a1a1a] border border-zinc-800/50 rounded-2xl w-full max-w-md shadow-2xl shadow-black/50">
+            <div className="bg-card border border-zinc-800/50 rounded-2xl w-full max-w-md shadow-2xl shadow-black/50">
               <div className="p-6 border-b border-zinc-800/50">
                 <h2 className="text-xl font-bold text-white">
                   {editingFilial ? 'Editar Filial' : 'Nova Filial'}
@@ -816,7 +816,7 @@ export default function ConfiguracoesPage() {
         {/* Modal Servico */}
         {showServicoModal && (
           <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-            <div className="bg-[#1a1a1a] border border-zinc-800/50 rounded-2xl w-full max-w-md shadow-2xl shadow-black/50">
+            <div className="bg-card border border-zinc-800/50 rounded-2xl w-full max-w-md shadow-2xl shadow-black/50">
               <div className="p-6 border-b border-zinc-800/50">
                 <h2 className="text-xl font-bold text-white">
                   {editingServico ? 'Editar Servico' : 'Novo Servico'}
@@ -864,7 +864,7 @@ export default function ConfiguracoesPage() {
         )}
 
         {/* Integracao WhatsApp */}
-        <div className="bg-[#1a1a1a] border border-zinc-800/50 rounded-2xl overflow-hidden">
+        <div className="bg-card border border-zinc-800/50 rounded-2xl overflow-hidden">
           <div className="p-6 border-b border-zinc-800/50 flex items-center justify-between">
             <div className="flex items-center gap-4">
               <div className="p-3 bg-[#25D366]/10 rounded-xl border border-[#25D366]/20">
@@ -925,7 +925,7 @@ export default function ConfiguracoesPage() {
                 {pairCode && (
                   <div className="mb-4">
                     <p className="text-sm text-zinc-400 mb-2">Ou use o codigo de pareamento:</p>
-                    <p className="text-2xl font-mono text-[#43A047] tracking-widest">{pairCode}</p>
+                    <p className="text-2xl font-mono text-primary tracking-widest">{pairCode}</p>
                   </div>
                 )}
                 <p className="text-sm text-zinc-500">
@@ -975,7 +975,7 @@ export default function ConfiguracoesPage() {
         </div>
 
         {/* Chatbot LoopIA */}
-        <div className="bg-[#1a1a1a] border border-zinc-800/50 rounded-2xl overflow-hidden">
+        <div className="bg-card border border-zinc-800/50 rounded-2xl overflow-hidden">
           <div className="p-6 border-b border-zinc-800/50 flex items-center justify-between">
             <div className="flex items-center gap-4">
               <div className="p-3 bg-purple-500/10 rounded-xl border border-purple-500/20">
@@ -989,7 +989,7 @@ export default function ConfiguracoesPage() {
             <button
               onClick={() => setChatbotEnabled(!chatbotEnabled)}
               className={`relative inline-flex h-7 w-12 items-center rounded-full transition-all duration-300 ${
-                chatbotEnabled ? 'bg-gradient-to-r from-[#43A047] to-[#2E7D32]' : 'bg-zinc-700'
+                chatbotEnabled ? 'bg-gradient-to-r from-primary to-primary-dark' : 'bg-zinc-700'
               }`}
             >
               <span
@@ -1029,7 +1029,7 @@ export default function ConfiguracoesPage() {
                         onClick={() => updateHorarioDia(dia.key, 'ativo', !chatbotHorario[dia.key].ativo)}
                         className={`w-5 h-5 rounded flex items-center justify-center border transition-all ${
                           chatbotHorario[dia.key].ativo
-                            ? 'bg-[#43A047] border-[#43A047]'
+                            ? 'bg-primary border-primary'
                             : 'bg-transparent border-zinc-600'
                         }`}
                       >
@@ -1183,7 +1183,7 @@ export default function ConfiguracoesPage() {
           <button
             onClick={handleSaveConfig}
             disabled={saving}
-            className="flex items-center gap-2 px-8 py-3 bg-gradient-to-r from-[#43A047] to-[#2E7D32] hover:from-[#2E7D32] hover:to-[#43A047] rounded-xl text-white font-semibold transition-all duration-300 shadow-lg shadow-[#43A047]/25 hover:shadow-[#43A047]/40 disabled:opacity-50"
+            className="flex items-center gap-2 px-8 py-3 bg-gradient-to-r from-primary to-primary-dark hover:from-primary-dark hover:to-primary rounded-xl text-white font-semibold transition-all duration-300 shadow-lg shadow-primary/25 hover:shadow-primary/40 disabled:opacity-50"
           >
             {saving ? (
               <Loader2 className="animate-spin" size={20} />
@@ -1195,7 +1195,7 @@ export default function ConfiguracoesPage() {
         </div>
 
         {/* Versao */}
-        <div className="bg-[#1a1a1a] border border-zinc-800/50 rounded-2xl p-6">
+        <div className="bg-card border border-zinc-800/50 rounded-2xl p-6">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
               <div className="p-3 bg-zinc-800/50 rounded-xl border border-zinc-700/50">

@@ -221,12 +221,12 @@ function UsuariosPageContent() {
               placeholder="Buscar por nome ou email..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-10 pr-4 py-3 bg-[#1a1a1a] border border-zinc-800/50 rounded-xl text-white placeholder-zinc-500 focus:outline-none focus:border-purple-500/50 focus:ring-2 focus:ring-purple-500/20 transition-all"
+              className="w-full pl-10 pr-4 py-3 bg-card border border-zinc-800/50 rounded-xl text-white placeholder-zinc-500 focus:outline-none focus:border-purple-500/50 focus:ring-2 focus:ring-purple-500/20 transition-all"
             />
           </div>
           <button
             onClick={openNewModal}
-            className="flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-[#43A047] to-[#2E7D32] hover:from-[#2E7D32] hover:to-[#43A047] text-white font-semibold rounded-xl transition-all duration-300 shadow-lg shadow-[#43A047]/25 hover:shadow-[#43A047]/40 hover:scale-[1.02]"
+            className="flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-primary to-[#2E7D32] hover:from-[#2E7D32] hover:to-primary text-white font-semibold rounded-xl transition-all duration-300 shadow-lg shadow-primary/25 hover:shadow-primary/40 hover:scale-[1.02]"
           >
             <Plus className="h-5 w-5" />
             <span>Novo Usuario</span>
@@ -234,7 +234,7 @@ function UsuariosPageContent() {
         </div>
 
         {/* Users List */}
-        <div className="bg-[#1a1a1a] rounded-2xl border border-zinc-800/50 overflow-hidden">
+        <div className="bg-card rounded-2xl border border-zinc-800/50 overflow-hidden">
           {filteredUsuarios.length === 0 ? (
             <div className="text-center py-12">
               <div className="p-4 bg-purple-500/10 rounded-2xl w-fit mx-auto mb-4 border border-purple-500/20">
@@ -243,7 +243,7 @@ function UsuariosPageContent() {
               <p className="text-white font-medium">Nenhum usuario encontrado</p>
               <button
                 onClick={openNewModal}
-                className="mt-4 text-[#43A047] hover:text-[#66BB6A] transition-colors"
+                className="mt-4 text-primary hover:text-primary-light transition-colors"
               >
                 Criar primeiro usuario
               </button>
@@ -334,8 +334,8 @@ function UsuariosPageContent() {
       {/* Create/Edit Modal */}
       {showModal && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-[#1a1a1a] border border-zinc-800/50 rounded-2xl w-full max-w-md overflow-hidden shadow-2xl shadow-black/50 max-h-[90vh] overflow-y-auto">
-            <div className="flex items-center justify-between p-6 border-b border-zinc-800/50 sticky top-0 bg-[#1a1a1a]">
+          <div className="bg-card border border-zinc-800/50 rounded-2xl w-full max-w-md overflow-hidden shadow-2xl shadow-black/50 max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between p-6 border-b border-zinc-800/50 sticky top-0 bg-card">
               <h2 className="text-xl font-bold text-white">
                 {editingUsuario ? 'Editar Usuario' : 'Novo Usuario'}
               </h2>
@@ -527,7 +527,7 @@ function UsuariosPageContent() {
               )}
             </div>
 
-            <div className="p-6 border-t border-zinc-800/50 flex justify-end gap-3 sticky bottom-0 bg-[#1a1a1a]">
+            <div className="p-6 border-t border-zinc-800/50 flex justify-end gap-3 sticky bottom-0 bg-card">
               <button
                 onClick={() => setShowModal(false)}
                 className="px-6 py-3 border border-zinc-700 rounded-xl text-zinc-300 hover:bg-zinc-800 transition-colors"
@@ -537,7 +537,7 @@ function UsuariosPageContent() {
               <button
                 onClick={handleSubmit}
                 disabled={saving}
-                className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-[#43A047] to-[#2E7D32] hover:from-[#2E7D32] hover:to-[#43A047] text-white font-semibold rounded-xl transition-all duration-300 shadow-lg shadow-[#43A047]/25 disabled:opacity-50"
+                className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-primary to-[#2E7D32] hover:from-[#2E7D32] hover:to-primary text-white font-semibold rounded-xl transition-all duration-300 shadow-lg shadow-primary/25 disabled:opacity-50"
               >
                 {saving && <Loader2 className="h-4 w-4 animate-spin" />}
                 {editingUsuario ? 'Salvar' : 'Criar Usuario'}
@@ -550,7 +550,7 @@ function UsuariosPageContent() {
       {/* Delete Confirmation Modal */}
       {showDeleteConfirm && selectedUsuario && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-[#1a1a1a] border border-zinc-800/50 rounded-2xl w-full max-w-sm shadow-2xl shadow-black/50">
+          <div className="bg-card border border-zinc-800/50 rounded-2xl w-full max-w-sm shadow-2xl shadow-black/50">
             <div className="p-6">
               <div className="w-14 h-14 mx-auto mb-4 bg-red-500/10 rounded-2xl flex items-center justify-center border border-red-500/20">
                 <Trash2 className="h-7 w-7 text-red-400" />

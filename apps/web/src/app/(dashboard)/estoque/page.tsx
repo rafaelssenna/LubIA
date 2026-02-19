@@ -83,7 +83,7 @@ const getCategoriaColor = (categoria: string) => {
     'oleo_lubrificante': 'bg-amber-500/10 text-amber-400',
     'aditivo': 'bg-blue-500/10 text-blue-400',
     'graxa': 'bg-purple-500/10 text-purple-400',
-    'filtro_oleo': 'bg-green-500/10 text-[#43A047]',
+    'filtro_oleo': 'bg-green-500/10 text-primary',
     'filtro_ar': 'bg-cyan-500/10 text-cyan-400',
     'filtro_ar_condicionado': 'bg-indigo-500/10 text-indigo-400',
     'filtro_combustivel': 'bg-orange-500/10 text-orange-400',
@@ -984,13 +984,13 @@ export default function EstoquePage() {
                 placeholder="Buscar produto..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full bg-[#1a1a1a] border border-zinc-800/50 rounded-xl pl-11 pr-4 py-3 text-sm text-white placeholder-zinc-500 focus:outline-none focus:border-amber-500/50 focus:ring-1 focus:ring-amber-500/20 transition-all duration-200"
+                className="w-full bg-card border border-zinc-800/50 rounded-xl pl-11 pr-4 py-3 text-sm text-white placeholder-zinc-500 focus:outline-none focus:border-amber-500/50 focus:ring-1 focus:ring-amber-500/20 transition-all duration-200"
               />
             </div>
             <select
               value={categoriaFilter}
               onChange={(e) => setCategoriaFilter(e.target.value)}
-              className="bg-[#1a1a1a] border border-zinc-800/50 rounded-xl px-4 py-3 text-zinc-400 focus:outline-none focus:border-amber-500/50 focus:ring-1 focus:ring-amber-500/20 transition-all duration-200"
+              className="bg-card border border-zinc-800/50 rounded-xl px-4 py-3 text-zinc-400 focus:outline-none focus:border-amber-500/50 focus:ring-1 focus:ring-amber-500/20 transition-all duration-200"
             >
               {categorias.map((cat) => (
                 <option key={cat.value} value={cat.value}>{cat.label}</option>
@@ -1014,12 +1014,12 @@ export default function EstoquePage() {
             <select
               value={ativoFilter}
               onChange={(e) => setAtivoFilter(e.target.value as 'todos' | 'ativos' | 'inativos')}
-              className={`bg-[#121212] border rounded-xl px-4 py-3 focus:outline-none focus:border-[#43A047]/50 focus:ring-1 focus:ring-[#43A047]/20 transition-all duration-200 ${
+              className={`bg-background border rounded-xl px-4 py-3 focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/20 transition-all duration-200 ${
                 ativoFilter === 'inativos'
                   ? 'border-red-500/50 text-red-400'
                   : ativoFilter === 'todos'
                     ? 'border-blue-500/50 text-blue-400'
-                    : 'border-[#333333] text-[#9E9E9E]'
+                    : 'border-border text-muted'
               }`}
               title="Filtrar por status"
             >
@@ -1030,7 +1030,7 @@ export default function EstoquePage() {
             <select
               value={filialFilter}
               onChange={(e) => setFilialFilter(e.target.value)}
-              className="bg-[#121212] border border-[#333333] rounded-xl px-4 py-3 text-[#9E9E9E] focus:outline-none focus:border-[#43A047]/50 focus:ring-1 focus:ring-[#43A047]/20 transition-all duration-200"
+              className="bg-background border border-border rounded-xl px-4 py-3 text-muted focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/20 transition-all duration-200"
               title="Filtrar por filial/fornecedor"
             >
               <option value="">Todas Filiais</option>
@@ -1045,7 +1045,7 @@ export default function EstoquePage() {
           <div className="flex gap-3">
             <button
               onClick={exportToCSV}
-              className="flex items-center gap-2 px-4 py-3 border border-[#333333] rounded-xl text-[#9E9E9E] hover:bg-[#121212] hover:text-[#E8E8E8] transition-all duration-200"
+              className="flex items-center gap-2 px-4 py-3 border border-border rounded-xl text-muted hover:bg-background hover:text-foreground transition-all duration-200"
               title="Exportar para Excel"
             >
               <FileSpreadsheet size={20} />
@@ -1053,7 +1053,7 @@ export default function EstoquePage() {
             </button>
             <button
               onClick={exportToPDF}
-              className="flex items-center gap-2 px-4 py-3 border border-[#333333] rounded-xl text-[#9E9E9E] hover:bg-[#121212] hover:text-[#E8E8E8] transition-all duration-200"
+              className="flex items-center gap-2 px-4 py-3 border border-border rounded-xl text-muted hover:bg-background hover:text-foreground transition-all duration-200"
               title="Exportar para PDF"
             >
               <Download size={20} />
@@ -1072,7 +1072,7 @@ export default function EstoquePage() {
             </button>
             <button
               onClick={() => setShowModal(true)}
-              className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-[#43A047] to-[#1B5E20] rounded-xl text-white font-medium hover:shadow-lg hover:shadow-green-500/10 hover:scale-[1.02] active:scale-[0.98] transition-all duration-200"
+              className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-primary to-primary-dark rounded-xl text-white font-medium hover:shadow-lg hover:shadow-green-500/10 hover:scale-[1.02] active:scale-[0.98] transition-all duration-200"
             >
               <Plus size={20} />
               Novo Produto
@@ -1081,14 +1081,14 @@ export default function EstoquePage() {
         </div>
 
         {/* Tabela de Produtos */}
-        <div className="bg-[#1E1E1E] border border-[#333333] rounded-2xl overflow-hidden">
+        <div className="bg-card border border-border rounded-2xl overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead>
-                <tr className="border-b border-[#333333]">
+                <tr className="border-b border-border">
                   <th className="text-left px-6 py-4 text-sm font-medium text-[#6B7280]">Código</th>
                   <th
-                    className="text-left px-6 py-4 text-sm font-medium text-[#6B7280] cursor-pointer hover:text-[#E8E8E8] transition-all duration-200 select-none"
+                    className="text-left px-6 py-4 text-sm font-medium text-[#6B7280] cursor-pointer hover:text-foreground transition-all duration-200 select-none"
                     onClick={() => handleSort('nome')}
                   >
                     <div className="flex items-center gap-1">
@@ -1099,7 +1099,7 @@ export default function EstoquePage() {
                   <th className="text-left px-6 py-4 text-sm font-medium text-[#6B7280]">Categoria</th>
                   <th className="text-left px-6 py-4 text-sm font-medium text-[#6B7280]">Filial</th>
                   <th
-                    className="text-right px-6 py-4 text-sm font-medium text-[#6B7280] cursor-pointer hover:text-[#E8E8E8] transition-all duration-200 select-none"
+                    className="text-right px-6 py-4 text-sm font-medium text-[#6B7280] cursor-pointer hover:text-foreground transition-all duration-200 select-none"
                     onClick={() => handleSort('quantidade')}
                   >
                     <div className="flex items-center justify-end gap-1">
@@ -1108,7 +1108,7 @@ export default function EstoquePage() {
                     </div>
                   </th>
                   <th
-                    className="text-right px-6 py-4 text-sm font-medium text-[#6B7280] cursor-pointer hover:text-[#E8E8E8] transition-all duration-200 select-none"
+                    className="text-right px-6 py-4 text-sm font-medium text-[#6B7280] cursor-pointer hover:text-foreground transition-all duration-200 select-none"
                     onClick={() => handleSort('precoCompra')}
                   >
                     <div className="flex items-center justify-end gap-1">
@@ -1117,7 +1117,7 @@ export default function EstoquePage() {
                     </div>
                   </th>
                   <th
-                    className="text-right px-6 py-4 text-sm font-medium text-[#6B7280] cursor-pointer hover:text-[#E8E8E8] transition-all duration-200 select-none"
+                    className="text-right px-6 py-4 text-sm font-medium text-[#6B7280] cursor-pointer hover:text-foreground transition-all duration-200 select-none"
                     onClick={() => handleSort('precoVenda')}
                   >
                     <div className="flex items-center justify-end gap-1">
@@ -1141,14 +1141,14 @@ export default function EstoquePage() {
                   </tr>
                 ) : (
                   paginatedProducts.map((produto) => (
-                    <tr key={produto.id} className={`border-b border-[#333333]/50 hover:bg-[#121212] transition-all duration-200 ${!produto.ativo ? 'opacity-60' : ''}`}>
+                    <tr key={produto.id} className={`border-b border-border/50 hover:bg-background transition-all duration-200 ${!produto.ativo ? 'opacity-60' : ''}`}>
                       <td className="px-6 py-4">
-                        <span className="text-sm font-mono text-[#9E9E9E]">{produto.codigo}</span>
+                        <span className="text-sm font-mono text-muted">{produto.codigo}</span>
                       </td>
                       <td className="px-6 py-4">
                         <div className="flex items-center gap-2">
                           <div>
-                            <p className="text-[#E8E8E8] font-medium">{produto.nome}</p>
+                            <p className="text-foreground font-medium">{produto.nome}</p>
                             <p className="text-xs text-[#6B7280]">{produto.marca}</p>
                           </div>
                           {!produto.ativo && (
@@ -1164,13 +1164,13 @@ export default function EstoquePage() {
                           {getCategoriaLabel(produto.categoria)}
                         </span>
                       </td>
-                      <td className="px-6 py-4 text-[#9E9E9E] text-sm">
+                      <td className="px-6 py-4 text-muted text-sm">
                         {produto.filialNome || '-'}
                       </td>
                       <td className="px-6 py-4 text-right">
                         <div className="flex flex-col items-end gap-0.5">
                           <div className="flex items-center gap-2">
-                            <span className={`font-bold ${produto.estoqueBaixo ? 'text-red-400' : 'text-[#E8E8E8]'}`}>
+                            <span className={`font-bold ${produto.estoqueBaixo ? 'text-red-400' : 'text-foreground'}`}>
                               {produto.quantidade}
                             </span>
                             <span className="text-xs text-[#6B7280]">{produto.unidade === 'UNIDADE' ? 'un' : produto.unidade}</span>
@@ -1185,21 +1185,21 @@ export default function EstoquePage() {
                           )}
                         </div>
                       </td>
-                      <td className="px-6 py-4 text-right text-[#9E9E9E]">
+                      <td className="px-6 py-4 text-right text-muted">
                         {produto.precoCompraAtual.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
                       </td>
-                      <td className="px-6 py-4 text-right text-[#43A047] font-bold">
+                      <td className="px-6 py-4 text-right text-primary font-bold">
                         {produto.precoVenda.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
                       </td>
                       <td className="px-6 py-4">
-                        <div className="flex items-center justify-center gap-1 bg-[#121212] rounded-lg p-1">
+                        <div className="flex items-center justify-center gap-1 bg-background rounded-lg p-1">
                           <button
                             onClick={() => {
                               setSelectedProduto(produto);
                               setMovTipo('ENTRADA');
                               setShowMovModal(true);
                             }}
-                            className="p-2 hover:bg-[#43A047]/10 rounded-md transition-all duration-200 text-[#66BB6A] hover:text-[#43A047]"
+                            className="p-2 hover:bg-primary/10 rounded-md transition-all duration-200 text-primary-light hover:text-primary"
                             title="Entrada"
                           >
                             <ArrowDownCircle size={18} />
@@ -1210,14 +1210,14 @@ export default function EstoquePage() {
                               setMovTipo('SAIDA');
                               setShowMovModal(true);
                             }}
-                            className="p-2 hover:bg-red-500/10 rounded-md transition-all duration-200 text-[#66BB6A] hover:text-red-400"
+                            className="p-2 hover:bg-red-500/10 rounded-md transition-all duration-200 text-primary-light hover:text-red-400"
                             title="Saída"
                           >
                             <ArrowUpCircle size={18} />
                           </button>
                           <button
                             onClick={() => openHistoryModal(produto)}
-                            className="p-2 hover:bg-blue-500/10 rounded-md transition-all duration-200 text-[#66BB6A] hover:text-blue-400"
+                            className="p-2 hover:bg-blue-500/10 rounded-md transition-all duration-200 text-primary-light hover:text-blue-400"
                             title="Histórico"
                           >
                             <History size={16} />
@@ -1226,8 +1226,8 @@ export default function EstoquePage() {
                             onClick={() => handleToggleAtivo(produto)}
                             className={`p-2 rounded-md transition-all duration-200 ${
                               produto.ativo
-                                ? 'hover:bg-orange-500/10 text-[#66BB6A] hover:text-orange-400'
-                                : 'hover:bg-green-500/10 text-orange-400 hover:text-[#43A047]'
+                                ? 'hover:bg-orange-500/10 text-primary-light hover:text-orange-400'
+                                : 'hover:bg-green-500/10 text-orange-400 hover:text-primary'
                             }`}
                             title={produto.ativo ? 'Desativar' : 'Ativar'}
                           >
@@ -1235,7 +1235,7 @@ export default function EstoquePage() {
                           </button>
                           <button
                             onClick={() => openEditModal(produto)}
-                            className="p-2 hover:bg-[#d4dbc8] rounded-md transition-all duration-200 text-[#66BB6A] hover:text-[#E8E8E8]"
+                            className="p-2 hover:bg-[#d4dbc8] rounded-md transition-all duration-200 text-primary-light hover:text-foreground"
                             title="Editar"
                           >
                             <Edit size={16} />
@@ -1245,7 +1245,7 @@ export default function EstoquePage() {
                               setDeletingProduto(produto);
                               setShowDeleteConfirm(true);
                             }}
-                            className="p-2 hover:bg-red-500/10 rounded-md transition-all duration-200 text-[#66BB6A] hover:text-red-400"
+                            className="p-2 hover:bg-red-500/10 rounded-md transition-all duration-200 text-primary-light hover:text-red-400"
                             title="Excluir"
                           >
                             <Trash2 size={16} />
@@ -1261,7 +1261,7 @@ export default function EstoquePage() {
 
           {/* Pagination */}
           {totalPages > 1 && (
-            <div className="px-6 py-4 border-t border-[#333333] flex items-center justify-between">
+            <div className="px-6 py-4 border-t border-border flex items-center justify-between">
               <p className="text-sm text-[#6B7280]">
                 Mostrando {((currentPage - 1) * itemsPerPage) + 1} a {Math.min(currentPage * itemsPerPage, processedProducts.length)} de {processedProducts.length} produtos
               </p>
@@ -1269,7 +1269,7 @@ export default function EstoquePage() {
                 <button
                   onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
                   disabled={currentPage === 1}
-                  className="p-2 border border-[#333333] rounded-lg text-[#9E9E9E] hover:bg-[#121212] hover:text-[#E8E8E8] disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
+                  className="p-2 border border-border rounded-lg text-muted hover:bg-background hover:text-foreground disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
                 >
                   <ChevronLeft size={18} />
                 </button>
@@ -1291,8 +1291,8 @@ export default function EstoquePage() {
                         onClick={() => setCurrentPage(pageNum)}
                         className={`w-8 h-8 rounded-lg text-sm font-medium transition-all duration-200 ${
                           currentPage === pageNum
-                            ? 'bg-gradient-to-r from-[#43A047] to-[#1B5E20] text-white shadow-lg shadow-green-500/10'
-                            : 'text-[#9E9E9E] hover:bg-[#121212] hover:text-[#E8E8E8]'
+                            ? 'bg-gradient-to-r from-primary to-primary-dark text-white shadow-lg shadow-green-500/10'
+                            : 'text-muted hover:bg-background hover:text-foreground'
                         }`}
                       >
                         {pageNum}
@@ -1303,7 +1303,7 @@ export default function EstoquePage() {
                 <button
                   onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
                   disabled={currentPage === totalPages}
-                  className="p-2 border border-[#333333] rounded-lg text-[#9E9E9E] hover:bg-[#121212] hover:text-[#E8E8E8] disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
+                  className="p-2 border border-border rounded-lg text-muted hover:bg-background hover:text-foreground disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
                 >
                   <ChevronRight size={18} />
                 </button>
@@ -1316,51 +1316,51 @@ export default function EstoquePage() {
       {/* Modal Novo Produto */}
       {showModal && (
         <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-[#1E1E1E] border border-[#333333] rounded-2xl w-full max-w-lg animate-fade-in max-h-[90vh] overflow-y-auto shadow-2xl">
-            <div className="p-6 border-b border-[#333333]">
-              <h2 className="text-xl font-semibold text-[#E8E8E8]">Novo Produto</h2>
+          <div className="bg-card border border-border rounded-2xl w-full max-w-lg animate-fade-in max-h-[90vh] overflow-y-auto shadow-2xl">
+            <div className="p-6 border-b border-border">
+              <h2 className="text-xl font-semibold text-foreground">Novo Produto</h2>
               <p className="text-sm text-[#6B7280] mt-1">Cadastre um novo produto no estoque</p>
             </div>
             <div className="p-6 space-y-4">
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-[#9E9E9E] mb-2">Código</label>
+                  <label className="block text-sm font-medium text-muted mb-2">Código</label>
                   <input
                     type="text"
                     value={form.codigo}
                     onChange={(e) => setForm({ ...form, codigo: e.target.value })}
                     placeholder="Ex: OL-5W30-1L"
-                    className="w-full bg-[#121212] border border-[#333333] rounded-xl px-4 py-3 text-[#E8E8E8] placeholder-[#616161] focus:outline-none focus:border-[#43A047]/50 focus:ring-1 focus:ring-[#43A047]/20 transition-all duration-200"
+                    className="w-full bg-background border border-border rounded-xl px-4 py-3 text-foreground placeholder-[#616161] focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/20 transition-all duration-200"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-[#9E9E9E] mb-2">Marca</label>
+                  <label className="block text-sm font-medium text-muted mb-2">Marca</label>
                   <input
                     type="text"
                     value={form.marca}
                     onChange={(e) => setForm({ ...form, marca: e.target.value })}
                     placeholder="Ex: Mobil"
-                    className="w-full bg-[#121212] border border-[#333333] rounded-xl px-4 py-3 text-[#E8E8E8] placeholder-[#616161] focus:outline-none focus:border-[#43A047]/50 focus:ring-1 focus:ring-[#43A047]/20 transition-all duration-200"
+                    className="w-full bg-background border border-border rounded-xl px-4 py-3 text-foreground placeholder-[#616161] focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/20 transition-all duration-200"
                   />
                 </div>
               </div>
               <div>
-                <label className="block text-sm font-medium text-[#9E9E9E] mb-2">Nome do Produto</label>
+                <label className="block text-sm font-medium text-muted mb-2">Nome do Produto</label>
                 <input
                   type="text"
                   value={form.nome}
                   onChange={(e) => setForm({ ...form, nome: e.target.value })}
                   placeholder="Ex: Óleo Mobil Super 5W30 1L"
-                  className="w-full bg-[#121212] border border-[#333333] rounded-xl px-4 py-3 text-[#E8E8E8] placeholder-[#616161] focus:outline-none focus:border-[#43A047]/50 focus:ring-1 focus:ring-[#43A047]/20 transition-all duration-200"
+                  className="w-full bg-background border border-border rounded-xl px-4 py-3 text-foreground placeholder-[#616161] focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/20 transition-all duration-200"
                 />
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-[#9E9E9E] mb-2">Categoria</label>
+                  <label className="block text-sm font-medium text-muted mb-2">Categoria</label>
                   <select
                     value={form.categoria}
                     onChange={(e) => setForm({ ...form, categoria: e.target.value })}
-                    className="w-full bg-[#121212] border border-[#333333] rounded-xl px-4 py-3 text-[#E8E8E8] focus:outline-none focus:border-[#43A047]/50 focus:ring-1 focus:ring-[#43A047]/20 transition-all duration-200"
+                    className="w-full bg-background border border-border rounded-xl px-4 py-3 text-foreground focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/20 transition-all duration-200"
                   >
                     {categorias.filter(c => c.value).map((cat) => (
                       <option key={cat.value} value={cat.value}>{cat.label}</option>
@@ -1368,7 +1368,7 @@ export default function EstoquePage() {
                   </select>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-[#9E9E9E] mb-2">Unidade</label>
+                  <label className="block text-sm font-medium text-muted mb-2">Unidade</label>
                   <select
                     value={form.unidade}
                     onChange={(e) => {
@@ -1377,7 +1377,7 @@ export default function EstoquePage() {
                       const autoVolume = ['LITRO', 'KG', 'METRO'].includes(newUnidade) ? '1' : '';
                       setForm({ ...form, unidade: newUnidade, volumeUnidade: autoVolume });
                     }}
-                    className="w-full bg-[#121212] border border-[#333333] rounded-xl px-4 py-3 text-[#E8E8E8] focus:outline-none focus:border-[#43A047]/50 focus:ring-1 focus:ring-[#43A047]/20 transition-all duration-200"
+                    className="w-full bg-background border border-border rounded-xl px-4 py-3 text-foreground focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/20 transition-all duration-200"
                   >
                     <option value="LITRO">Litro</option>
                     <option value="UNIDADE">Unidade</option>
@@ -1388,7 +1388,7 @@ export default function EstoquePage() {
               </div>
               {['LITRO', 'KG', 'METRO'].includes(form.unidade) && (
                 <div>
-                  <label className="block text-sm font-medium text-[#9E9E9E] mb-2">
+                  <label className="block text-sm font-medium text-muted mb-2">
                     Volume por Unidade {form.unidade === 'LITRO' ? '(Litros)' : form.unidade === 'KG' ? '(Kg)' : '(Metros)'}
                   </label>
                   <input
@@ -1398,7 +1398,7 @@ export default function EstoquePage() {
                     value={form.volumeUnidade}
                     onChange={(e) => setForm({ ...form, volumeUnidade: e.target.value })}
                     placeholder="Ex: 5 para galão de 5L"
-                    className="w-full bg-[#121212] border border-[#333333] rounded-xl px-4 py-3 text-[#E8E8E8] placeholder-[#616161] focus:outline-none focus:border-[#43A047]/50 focus:ring-1 focus:ring-[#43A047]/20 transition-all duration-200"
+                    className="w-full bg-background border border-border rounded-xl px-4 py-3 text-foreground placeholder-[#616161] focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/20 transition-all duration-200"
                   />
                   <p className="text-xs text-[#6B7280] mt-1">
                     Usado para calcular preço proporcional na venda a granel
@@ -1407,56 +1407,56 @@ export default function EstoquePage() {
               )}
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-[#9E9E9E] mb-2">Quantidade Inicial</label>
+                  <label className="block text-sm font-medium text-muted mb-2">Quantidade Inicial</label>
                   <input
                     type="number"
                     value={form.quantidade}
                     onChange={(e) => setForm({ ...form, quantidade: e.target.value })}
                     placeholder="0"
-                    className="w-full bg-[#121212] border border-[#333333] rounded-xl px-4 py-3 text-[#E8E8E8] placeholder-[#616161] focus:outline-none focus:border-[#43A047]/50 focus:ring-1 focus:ring-[#43A047]/20 transition-all duration-200"
+                    className="w-full bg-background border border-border rounded-xl px-4 py-3 text-foreground placeholder-[#616161] focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/20 transition-all duration-200"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-[#9E9E9E] mb-2">Estoque Mínimo</label>
+                  <label className="block text-sm font-medium text-muted mb-2">Estoque Mínimo</label>
                   <input
                     type="number"
                     value={form.estoqueMinimo}
                     onChange={(e) => setForm({ ...form, estoqueMinimo: e.target.value })}
                     placeholder="5"
-                    className="w-full bg-[#121212] border border-[#333333] rounded-xl px-4 py-3 text-[#E8E8E8] placeholder-[#616161] focus:outline-none focus:border-[#43A047]/50 focus:ring-1 focus:ring-[#43A047]/20 transition-all duration-200"
+                    className="w-full bg-background border border-border rounded-xl px-4 py-3 text-foreground placeholder-[#616161] focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/20 transition-all duration-200"
                   />
                 </div>
               </div>
               <div className="grid grid-cols-3 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-[#9E9E9E] mb-2">Preço Compra</label>
+                  <label className="block text-sm font-medium text-muted mb-2">Preço Compra</label>
                   <input
                     type="number"
                     step="0.01"
                     value={form.precoCompra}
                     onChange={(e) => setForm({ ...form, precoCompra: e.target.value })}
                     placeholder="0.00"
-                    className="w-full bg-[#121212] border border-[#333333] rounded-xl px-4 py-3 text-[#E8E8E8] placeholder-[#616161] focus:outline-none focus:border-[#43A047]/50 focus:ring-1 focus:ring-[#43A047]/20 transition-all duration-200"
+                    className="w-full bg-background border border-border rounded-xl px-4 py-3 text-foreground placeholder-[#616161] focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/20 transition-all duration-200"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-[#9E9E9E] mb-2">Preço Venda</label>
+                  <label className="block text-sm font-medium text-muted mb-2">Preço Venda</label>
                   <input
                     type="number"
                     step="0.01"
                     value={form.precoVenda}
                     onChange={(e) => setForm({ ...form, precoVenda: e.target.value })}
                     placeholder="0.00"
-                    className="w-full bg-[#121212] border border-[#333333] rounded-xl px-4 py-3 text-[#E8E8E8] placeholder-[#616161] focus:outline-none focus:border-[#43A047]/50 focus:ring-1 focus:ring-[#43A047]/20 transition-all duration-200"
+                    className="w-full bg-background border border-border rounded-xl px-4 py-3 text-foreground placeholder-[#616161] focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/20 transition-all duration-200"
                   />
                 </div>
               </div>
               <div>
-                <label className="block text-sm font-medium text-[#9E9E9E] mb-2">Filial/Fornecedor</label>
+                <label className="block text-sm font-medium text-muted mb-2">Filial/Fornecedor</label>
                 <select
                   value={form.filialId}
                   onChange={(e) => setForm({ ...form, filialId: e.target.value })}
-                  className="w-full bg-[#121212] border border-[#333333] rounded-xl px-4 py-3 text-[#E8E8E8] focus:outline-none focus:border-[#43A047]/50 focus:ring-1 focus:ring-[#43A047]/20 transition-all duration-200"
+                  className="w-full bg-background border border-border rounded-xl px-4 py-3 text-foreground focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/20 transition-all duration-200"
                 >
                   <option value="">Selecione uma filial</option>
                   {filiais.map((filial) => (
@@ -1472,16 +1472,16 @@ export default function EstoquePage() {
                 )}
               </div>
             </div>
-            <div className="p-6 border-t border-[#333333] flex gap-3 justify-end">
+            <div className="p-6 border-t border-border flex gap-3 justify-end">
               <button
                 onClick={() => setShowModal(false)}
-                className="px-6 py-3 border border-[#333333] rounded-xl text-[#9E9E9E] hover:bg-[#121212] hover:text-[#E8E8E8] transition-all duration-200"
+                className="px-6 py-3 border border-border rounded-xl text-muted hover:bg-background hover:text-foreground transition-all duration-200"
               >
                 Cancelar
               </button>
               <button
                 onClick={handleSubmit}
-                className="px-6 py-3 bg-gradient-to-r from-[#43A047] to-[#1B5E20] rounded-xl text-white font-medium hover:shadow-lg hover:shadow-green-500/10 hover:scale-[1.02] active:scale-[0.98] transition-all duration-200"
+                className="px-6 py-3 bg-gradient-to-r from-primary to-primary-dark rounded-xl text-white font-medium hover:shadow-lg hover:shadow-green-500/10 hover:scale-[1.02] active:scale-[0.98] transition-all duration-200"
               >
                 Cadastrar Produto
               </button>
@@ -1493,9 +1493,9 @@ export default function EstoquePage() {
       {/* Modal Movimentação */}
       {showMovModal && selectedProduto && (
         <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-[#1E1E1E] border border-[#333333] rounded-2xl w-full max-w-md animate-fade-in shadow-2xl">
-            <div className="p-6 border-b border-[#333333]">
-              <h2 className="text-xl font-semibold text-[#E8E8E8]">
+          <div className="bg-card border border-border rounded-2xl w-full max-w-md animate-fade-in shadow-2xl">
+            <div className="p-6 border-b border-border">
+              <h2 className="text-xl font-semibold text-foreground">
                 {movTipo === 'ENTRADA' ? 'Entrada de Estoque' : 'Saída de Estoque'}
               </h2>
               <p className="text-sm text-[#6B7280] mt-1">{selectedProduto.nome}</p>
@@ -1503,27 +1503,27 @@ export default function EstoquePage() {
             </div>
             <div className="p-6 space-y-4">
               <div>
-                <label className="block text-sm font-medium text-[#9E9E9E] mb-2">Quantidade</label>
+                <label className="block text-sm font-medium text-muted mb-2">Quantidade</label>
                 <input
                   type="number"
                   value={movQuantidade}
                   onChange={(e) => setMovQuantidade(e.target.value)}
                   placeholder="0"
-                  className="w-full bg-[#121212] border border-[#333333] rounded-xl px-4 py-3 text-[#E8E8E8] placeholder-[#616161] focus:outline-none focus:border-[#43A047]/50 focus:ring-1 focus:ring-[#43A047]/20 transition-all duration-200"
+                  className="w-full bg-background border border-border rounded-xl px-4 py-3 text-foreground placeholder-[#616161] focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/20 transition-all duration-200"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-[#9E9E9E] mb-2">Motivo (opcional)</label>
+                <label className="block text-sm font-medium text-muted mb-2">Motivo (opcional)</label>
                 <input
                   type="text"
                   value={movMotivo}
                   onChange={(e) => setMovMotivo(e.target.value)}
                   placeholder="Ex: Compra NF 12345"
-                  className="w-full bg-[#121212] border border-[#333333] rounded-xl px-4 py-3 text-[#E8E8E8] placeholder-[#616161] focus:outline-none focus:border-[#43A047]/50 focus:ring-1 focus:ring-[#43A047]/20 transition-all duration-200"
+                  className="w-full bg-background border border-border rounded-xl px-4 py-3 text-foreground placeholder-[#616161] focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/20 transition-all duration-200"
                 />
               </div>
             </div>
-            <div className="p-6 border-t border-[#333333] flex gap-3 justify-end">
+            <div className="p-6 border-t border-border flex gap-3 justify-end">
               <button
                 onClick={() => {
                   setShowMovModal(false);
@@ -1531,7 +1531,7 @@ export default function EstoquePage() {
                   setMovQuantidade('');
                   setMovMotivo('');
                 }}
-                className="px-6 py-3 border border-[#333333] rounded-xl text-[#9E9E9E] hover:bg-[#121212] hover:text-[#E8E8E8] transition-all duration-200"
+                className="px-6 py-3 border border-border rounded-xl text-muted hover:bg-background hover:text-foreground transition-all duration-200"
               >
                 Cancelar
               </button>
@@ -1539,7 +1539,7 @@ export default function EstoquePage() {
                 onClick={handleMovimentacao}
                 className={`px-6 py-3 rounded-xl text-white font-medium hover:scale-[1.02] active:scale-[0.98] transition-all duration-200 ${
                   movTipo === 'ENTRADA'
-                    ? 'bg-gradient-to-r from-[#43A047] to-[#1B5E20] hover:shadow-lg hover:shadow-green-500/10'
+                    ? 'bg-gradient-to-r from-primary to-primary-dark hover:shadow-lg hover:shadow-green-500/10'
                     : 'bg-gradient-to-r from-red-500 to-red-700 hover:shadow-lg hover:shadow-red-500/25'
                 }`}
               >
@@ -1616,11 +1616,11 @@ export default function EstoquePage() {
       {/* Modal para revisar itens da NF */}
       {showOcrItems && ocrItems.length > 0 && (
         <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-[#1E1E1E] border border-[#333333] rounded-2xl shadow-2xl w-full max-w-5xl animate-fade-in max-h-[90vh] overflow-hidden flex flex-col">
-            <div className="p-6 border-b border-[#333333]">
+          <div className="bg-card border border-border rounded-2xl shadow-2xl w-full max-w-5xl animate-fade-in max-h-[90vh] overflow-hidden flex flex-col">
+            <div className="p-6 border-b border-border">
               <div className="flex items-start justify-between">
                 <div>
-                  <h2 className="text-xl font-semibold text-[#E8E8E8]">Itens da Nota Fiscal</h2>
+                  <h2 className="text-xl font-semibold text-foreground">Itens da Nota Fiscal</h2>
                   <p className="text-sm text-[#6B7280] mt-1">
                     {ocrResult?.numeroNF && `NF: ${ocrResult.numeroNF} • `}
                     {ocrResult?.fornecedor && `${ocrResult.fornecedor} • `}
@@ -1644,7 +1644,7 @@ export default function EstoquePage() {
                       ? item.existingProduct
                         ? 'bg-amber-500/10 border-amber-300'
                         : 'bg-green-500/10 border-green-300'
-                      : 'bg-[#121212] border-[#333333]'
+                      : 'bg-background border-border'
                   }`}
                 >
                   {item.existingProduct && (
@@ -1655,7 +1655,7 @@ export default function EstoquePage() {
                           <span className="text-amber-400 text-sm font-medium">Produto já existe no estoque</span>
                         </div>
                         <label className="flex items-center gap-2 cursor-pointer">
-                          <span className="text-xs text-[#9E9E9E]">
+                          <span className="text-xs text-muted">
                             {item.updateExisting ? 'Atualizar qtd' : 'Criar novo'}
                           </span>
                           <input
@@ -1670,11 +1670,11 @@ export default function EstoquePage() {
                           />
                         </label>
                       </div>
-                      <p className="text-xs text-[#9E9E9E] mt-1">
-                        <span className="text-[#E8E8E8]">{item.existingProduct.nome}</span>
+                      <p className="text-xs text-muted mt-1">
+                        <span className="text-foreground">{item.existingProduct.nome}</span>
                         {' • '}Estoque atual: <span className="text-amber-400">{item.existingProduct.quantidade} {item.existingProduct.unidade}</span>
                         {item.updateExisting && (
-                          <span> → <span className="text-[#43A047]">{item.existingProduct.quantidade + (item.quantidade || 0)} {item.existingProduct.unidade}</span></span>
+                          <span> → <span className="text-primary">{item.existingProduct.quantidade + (item.quantidade || 0)} {item.existingProduct.unidade}</span></span>
                         )}
                       </p>
                     </div>
@@ -1688,7 +1688,7 @@ export default function EstoquePage() {
                         newItems[index].selected = e.target.checked;
                         setOcrItems(newItems);
                       }}
-                      className="mt-1 w-5 h-5 accent-[#43A047]"
+                      className="mt-1 w-5 h-5 accent-primary"
                     />
                     <div className="flex-1 space-y-4">
                       <div>
@@ -1701,7 +1701,7 @@ export default function EstoquePage() {
                             newItems[index].descricao = e.target.value;
                             setOcrItems(newItems);
                           }}
-                          className="w-full bg-[#1E1E1E] border border-[#333333] rounded-lg px-3 py-2 text-[#E8E8E8] text-sm focus:outline-none focus:border-[#43A047]/50 focus:ring-1 focus:ring-[#43A047]/20 transition-all duration-200"
+                          className="w-full bg-card border border-border rounded-lg px-3 py-2 text-foreground text-sm focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/20 transition-all duration-200"
                         />
                       </div>
                       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -1714,7 +1714,7 @@ export default function EstoquePage() {
                               newItems[index].categoria = e.target.value;
                               setOcrItems(newItems);
                             }}
-                            className="w-full bg-[#1E1E1E] border border-[#333333] rounded-lg px-3 py-2 text-[#E8E8E8] text-sm focus:outline-none focus:border-[#43A047]/50 focus:ring-1 focus:ring-[#43A047]/20 transition-all duration-200"
+                            className="w-full bg-card border border-border rounded-lg px-3 py-2 text-foreground text-sm focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/20 transition-all duration-200"
                           >
                             {categorias.filter(c => c.value).map(cat => (
                               <option key={cat.value} value={cat.value}>{cat.label}</option>
@@ -1730,7 +1730,7 @@ export default function EstoquePage() {
                               newItems[index].unidade = e.target.value;
                               setOcrItems(newItems);
                             }}
-                            className="w-full bg-[#1E1E1E] border border-[#333333] rounded-lg px-3 py-2 text-[#E8E8E8] text-sm focus:outline-none focus:border-[#43A047]/50 focus:ring-1 focus:ring-[#43A047]/20 transition-all duration-200"
+                            className="w-full bg-card border border-border rounded-lg px-3 py-2 text-foreground text-sm focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/20 transition-all duration-200"
                           >
                             <option value="LITRO">Litro</option>
                             <option value="UNIDADE">Unidade</option>
@@ -1750,7 +1750,7 @@ export default function EstoquePage() {
                                 newItems[index].semVolume = false;
                                 setOcrItems(newItems);
                               }}
-                              className="w-full bg-[#1E1E1E] border border-[#333333] rounded-lg px-3 py-2 text-[#6B7280] text-sm hover:border-[#43A047]/50 transition-colors text-left"
+                              className="w-full bg-card border border-border rounded-lg px-3 py-2 text-[#6B7280] text-sm hover:border-primary/50 transition-colors text-left"
                             >
                               Sem volume
                             </button>
@@ -1767,7 +1767,7 @@ export default function EstoquePage() {
                                   setOcrItems(newItems);
                                 }}
                                 placeholder="Ex: 1"
-                                className="flex-1 bg-[#1E1E1E] border border-[#333333] rounded-lg px-3 py-2 text-[#E8E8E8] text-sm focus:outline-none focus:border-[#43A047]/50"
+                                className="flex-1 bg-card border border-border rounded-lg px-3 py-2 text-foreground text-sm focus:outline-none focus:border-primary/50"
                               />
                               <button
                                 type="button"
@@ -1778,7 +1778,7 @@ export default function EstoquePage() {
                                   setOcrItems(newItems);
                                 }}
                                 title="Produto sem volume"
-                                className="px-2 bg-[#1E1E1E] border border-[#333333] rounded-lg text-[#6B7280] text-xs hover:border-amber-500/50 hover:text-amber-400 transition-colors"
+                                className="px-2 bg-card border border-border rounded-lg text-[#6B7280] text-xs hover:border-amber-500/50 hover:text-amber-400 transition-colors"
                               >
                                 N/A
                               </button>
@@ -1795,7 +1795,7 @@ export default function EstoquePage() {
                               newItems[index].codigo = e.target.value;
                               setOcrItems(newItems);
                             }}
-                            className="w-full bg-[#1E1E1E] border border-[#333333] rounded-lg px-3 py-2 text-[#E8E8E8] text-sm focus:outline-none focus:border-[#43A047]/50 focus:ring-1 focus:ring-[#43A047]/20 transition-all duration-200"
+                            className="w-full bg-card border border-border rounded-lg px-3 py-2 text-foreground text-sm focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/20 transition-all duration-200"
                           />
                         </div>
                       </div>
@@ -1810,7 +1810,7 @@ export default function EstoquePage() {
                               newItems[index].quantidade = parseFloat(e.target.value) || 0;
                               setOcrItems(newItems);
                             }}
-                            className="w-full bg-[#1E1E1E] border border-[#333333] rounded-lg px-3 py-2 text-[#E8E8E8] text-sm focus:outline-none focus:border-[#43A047]/50 focus:ring-1 focus:ring-[#43A047]/20 transition-all duration-200"
+                            className="w-full bg-card border border-border rounded-lg px-3 py-2 text-foreground text-sm focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/20 transition-all duration-200"
                           />
                         </div>
                         <div>
@@ -1824,7 +1824,7 @@ export default function EstoquePage() {
                               newItems[index].precoCompra = parseFloat(e.target.value) || 0;
                               setOcrItems(newItems);
                             }}
-                            className="w-full bg-[#1E1E1E] border border-[#333333] rounded-lg px-3 py-2 text-[#E8E8E8] text-sm focus:outline-none focus:border-[#43A047]/50 focus:ring-1 focus:ring-[#43A047]/20 transition-all duration-200"
+                            className="w-full bg-card border border-border rounded-lg px-3 py-2 text-foreground text-sm focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/20 transition-all duration-200"
                           />
                         </div>
                         <div>
@@ -1844,10 +1844,10 @@ export default function EstoquePage() {
                               newItems[index].precoVenda = parseFloat(e.target.value) || 0;
                               setOcrItems(newItems);
                             }}
-                            className={`w-full bg-[#1E1E1E] rounded-lg px-3 py-2 text-[#E8E8E8] text-sm focus:outline-none ${
+                            className={`w-full bg-card rounded-lg px-3 py-2 text-foreground text-sm focus:outline-none ${
                               item.selected && !item.updateExisting && !item.precoVenda
                                 ? 'border-2 border-red-500 focus:border-red-500'
-                                : 'border border-[#333333] focus:border-[#43A047]'
+                                : 'border border-border focus:border-primary'
                             }`}
                             placeholder={item.selected && !item.updateExisting ? 'Obrigatório' : '0.00'}
                           />
@@ -1862,7 +1862,7 @@ export default function EstoquePage() {
                               newItems[index].estoqueMinimo = parseFloat(e.target.value) || 0;
                               setOcrItems(newItems);
                             }}
-                            className="w-full bg-[#1E1E1E] border border-[#333333] rounded-lg px-3 py-2 text-[#E8E8E8] text-sm focus:outline-none focus:border-[#43A047]/50 focus:ring-1 focus:ring-[#43A047]/20 transition-all duration-200"
+                            className="w-full bg-card border border-border rounded-lg px-3 py-2 text-foreground text-sm focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/20 transition-all duration-200"
                           />
                         </div>
                       </div>
@@ -1871,14 +1871,14 @@ export default function EstoquePage() {
                 </div>
               ))}
             </div>
-            <div className="p-6 border-t border-[#333333] flex gap-3 justify-between">
+            <div className="p-6 border-t border-border flex gap-3 justify-between">
               <button
                 onClick={() => {
                   setShowOcrItems(false);
                   setOcrItems([]);
                   setOcrResult(null);
                 }}
-                className="px-6 py-3 border border-[#333333] rounded-xl text-[#9E9E9E] hover:bg-[#121212] hover:text-[#E8E8E8] transition-all duration-200"
+                className="px-6 py-3 border border-border rounded-xl text-muted hover:bg-background hover:text-foreground transition-all duration-200"
               >
                 Cancelar
               </button>
@@ -1957,7 +1957,7 @@ export default function EstoquePage() {
                   ocrItems.filter(i => i.selected).length === 0 ||
                   ocrItems.some(i => i.selected && !i.updateExisting && !i.precoVenda)
                 }
-                className="px-6 py-3 bg-gradient-to-r from-[#43A047] to-[#1B5E20] rounded-xl text-white font-medium hover:opacity-90 transition-opacity disabled:opacity-50"
+                className="px-6 py-3 bg-gradient-to-r from-primary to-primary-dark rounded-xl text-white font-medium hover:opacity-90 transition-opacity disabled:opacity-50"
               >
                 {savingOcr
                   ? 'Salvando...'
@@ -1973,48 +1973,48 @@ export default function EstoquePage() {
       {/* Modal Editar Produto */}
       {showEditModal && editingProduto && (
         <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-[#1E1E1E] border border-[#333333] rounded-2xl shadow-2xl w-full max-w-lg animate-fade-in max-h-[90vh] overflow-y-auto">
-            <div className="p-6 border-b border-[#333333]">
-              <h2 className="text-xl font-semibold text-[#E8E8E8]">Editar Produto</h2>
+          <div className="bg-card border border-border rounded-2xl shadow-2xl w-full max-w-lg animate-fade-in max-h-[90vh] overflow-y-auto">
+            <div className="p-6 border-b border-border">
+              <h2 className="text-xl font-semibold text-foreground">Editar Produto</h2>
               <p className="text-sm text-[#6B7280] mt-1">Atualize as informações do produto</p>
             </div>
             <div className="p-6 space-y-4">
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-[#9E9E9E] mb-2">Código</label>
+                  <label className="block text-sm font-medium text-muted mb-2">Código</label>
                   <input
                     type="text"
                     value={editingForm.codigo}
                     onChange={(e) => setEditingForm({ ...editingForm, codigo: e.target.value })}
-                    className="w-full bg-[#121212] border border-[#333333] rounded-xl px-4 py-3 text-[#E8E8E8] placeholder-[#616161] focus:outline-none focus:border-[#43A047]/50 focus:ring-1 focus:ring-[#43A047]/20 transition-all duration-200"
+                    className="w-full bg-background border border-border rounded-xl px-4 py-3 text-foreground placeholder-[#616161] focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/20 transition-all duration-200"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-[#9E9E9E] mb-2">Marca</label>
+                  <label className="block text-sm font-medium text-muted mb-2">Marca</label>
                   <input
                     type="text"
                     value={editingForm.marca}
                     onChange={(e) => setEditingForm({ ...editingForm, marca: e.target.value })}
-                    className="w-full bg-[#121212] border border-[#333333] rounded-xl px-4 py-3 text-[#E8E8E8] placeholder-[#616161] focus:outline-none focus:border-[#43A047]/50 focus:ring-1 focus:ring-[#43A047]/20 transition-all duration-200"
+                    className="w-full bg-background border border-border rounded-xl px-4 py-3 text-foreground placeholder-[#616161] focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/20 transition-all duration-200"
                   />
                 </div>
               </div>
               <div>
-                <label className="block text-sm font-medium text-[#9E9E9E] mb-2">Nome do Produto</label>
+                <label className="block text-sm font-medium text-muted mb-2">Nome do Produto</label>
                 <input
                   type="text"
                   value={editingForm.nome}
                   onChange={(e) => setEditingForm({ ...editingForm, nome: e.target.value })}
-                  className="w-full bg-[#121212] border border-[#333333] rounded-xl px-4 py-3 text-[#E8E8E8] placeholder-[#616161] focus:outline-none focus:border-[#43A047]/50 focus:ring-1 focus:ring-[#43A047]/20 transition-all duration-200"
+                  className="w-full bg-background border border-border rounded-xl px-4 py-3 text-foreground placeholder-[#616161] focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/20 transition-all duration-200"
                 />
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-[#9E9E9E] mb-2">Categoria</label>
+                  <label className="block text-sm font-medium text-muted mb-2">Categoria</label>
                   <select
                     value={editingForm.categoria}
                     onChange={(e) => setEditingForm({ ...editingForm, categoria: e.target.value })}
-                    className="w-full bg-[#121212] border border-[#333333] rounded-xl px-4 py-3 text-[#E8E8E8] focus:outline-none focus:border-[#43A047]/50 focus:ring-1 focus:ring-[#43A047]/20 transition-all duration-200"
+                    className="w-full bg-background border border-border rounded-xl px-4 py-3 text-foreground focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/20 transition-all duration-200"
                   >
                     {categorias.filter(c => c.value).map((cat) => (
                       <option key={cat.value} value={cat.value}>{cat.label}</option>
@@ -2022,7 +2022,7 @@ export default function EstoquePage() {
                   </select>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-[#9E9E9E] mb-2">Unidade</label>
+                  <label className="block text-sm font-medium text-muted mb-2">Unidade</label>
                   <select
                     value={editingForm.unidade}
                     onChange={(e) => {
@@ -2031,7 +2031,7 @@ export default function EstoquePage() {
                       const autoVolume = ['LITRO', 'KG', 'METRO'].includes(newUnidade) && !editingForm.volumeUnidade ? '1' : editingForm.volumeUnidade;
                       setEditingForm({ ...editingForm, unidade: newUnidade, volumeUnidade: autoVolume });
                     }}
-                    className="w-full bg-[#121212] border border-[#333333] rounded-xl px-4 py-3 text-[#E8E8E8] focus:outline-none focus:border-[#43A047]/50 focus:ring-1 focus:ring-[#43A047]/20 transition-all duration-200"
+                    className="w-full bg-background border border-border rounded-xl px-4 py-3 text-foreground focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/20 transition-all duration-200"
                   >
                     <option value="LITRO">Litro</option>
                     <option value="UNIDADE">Unidade</option>
@@ -2042,7 +2042,7 @@ export default function EstoquePage() {
               </div>
               {['LITRO', 'KG', 'METRO'].includes(editingForm.unidade) && (
                 <div>
-                  <label className="block text-sm font-medium text-[#9E9E9E] mb-2">
+                  <label className="block text-sm font-medium text-muted mb-2">
                     Volume por Unidade {editingForm.unidade === 'LITRO' ? '(Litros)' : editingForm.unidade === 'KG' ? '(Kg)' : '(Metros)'}
                   </label>
                   <input
@@ -2052,58 +2052,58 @@ export default function EstoquePage() {
                     value={editingForm.volumeUnidade}
                     onChange={(e) => setEditingForm({ ...editingForm, volumeUnidade: e.target.value })}
                     placeholder="Ex: 5 para galão de 5L"
-                    className="w-full bg-[#121212] border border-[#333333] rounded-xl px-4 py-3 text-[#E8E8E8] placeholder-[#616161] focus:outline-none focus:border-[#43A047]/50 focus:ring-1 focus:ring-[#43A047]/20 transition-all duration-200"
+                    className="w-full bg-background border border-border rounded-xl px-4 py-3 text-foreground placeholder-[#616161] focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/20 transition-all duration-200"
                   />
                 </div>
               )}
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-[#9E9E9E] mb-2">Quantidade</label>
+                  <label className="block text-sm font-medium text-muted mb-2">Quantidade</label>
                   <input
                     type="number"
                     value={editingForm.quantidade}
                     onChange={(e) => setEditingForm({ ...editingForm, quantidade: e.target.value })}
-                    className="w-full bg-[#121212] border border-[#333333] rounded-xl px-4 py-3 text-[#E8E8E8] placeholder-[#616161] focus:outline-none focus:border-[#43A047]/50 focus:ring-1 focus:ring-[#43A047]/20 transition-all duration-200"
+                    className="w-full bg-background border border-border rounded-xl px-4 py-3 text-foreground placeholder-[#616161] focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/20 transition-all duration-200"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-[#9E9E9E] mb-2">Estoque Mínimo</label>
+                  <label className="block text-sm font-medium text-muted mb-2">Estoque Mínimo</label>
                   <input
                     type="number"
                     value={editingForm.estoqueMinimo}
                     onChange={(e) => setEditingForm({ ...editingForm, estoqueMinimo: e.target.value })}
-                    className="w-full bg-[#121212] border border-[#333333] rounded-xl px-4 py-3 text-[#E8E8E8] placeholder-[#616161] focus:outline-none focus:border-[#43A047]/50 focus:ring-1 focus:ring-[#43A047]/20 transition-all duration-200"
+                    className="w-full bg-background border border-border rounded-xl px-4 py-3 text-foreground placeholder-[#616161] focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/20 transition-all duration-200"
                   />
                 </div>
               </div>
               <div className="grid grid-cols-3 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-[#9E9E9E] mb-2">Preço Compra</label>
+                  <label className="block text-sm font-medium text-muted mb-2">Preço Compra</label>
                   <input
                     type="number"
                     step="0.01"
                     value={editingForm.precoCompra}
                     onChange={(e) => setEditingForm({ ...editingForm, precoCompra: e.target.value })}
-                    className="w-full bg-[#121212] border border-[#333333] rounded-xl px-4 py-3 text-[#E8E8E8] placeholder-[#616161] focus:outline-none focus:border-[#43A047]/50 focus:ring-1 focus:ring-[#43A047]/20 transition-all duration-200"
+                    className="w-full bg-background border border-border rounded-xl px-4 py-3 text-foreground placeholder-[#616161] focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/20 transition-all duration-200"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-[#9E9E9E] mb-2">Preço Venda</label>
+                  <label className="block text-sm font-medium text-muted mb-2">Preço Venda</label>
                   <input
                     type="number"
                     step="0.01"
                     value={editingForm.precoVenda}
                     onChange={(e) => setEditingForm({ ...editingForm, precoVenda: e.target.value })}
-                    className="w-full bg-[#121212] border border-[#333333] rounded-xl px-4 py-3 text-[#E8E8E8] placeholder-[#616161] focus:outline-none focus:border-[#43A047]/50 focus:ring-1 focus:ring-[#43A047]/20 transition-all duration-200"
+                    className="w-full bg-background border border-border rounded-xl px-4 py-3 text-foreground placeholder-[#616161] focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/20 transition-all duration-200"
                   />
                 </div>
               </div>
               <div>
-                <label className="block text-sm font-medium text-[#9E9E9E] mb-2">Filial/Fornecedor</label>
+                <label className="block text-sm font-medium text-muted mb-2">Filial/Fornecedor</label>
                 <select
                   value={editingForm.filialId}
                   onChange={(e) => setEditingForm({ ...editingForm, filialId: e.target.value })}
-                  className="w-full bg-[#121212] border border-[#333333] rounded-xl px-4 py-3 text-[#E8E8E8] focus:outline-none focus:border-[#43A047]/50 focus:ring-1 focus:ring-[#43A047]/20 transition-all duration-200"
+                  className="w-full bg-background border border-border rounded-xl px-4 py-3 text-foreground focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/20 transition-all duration-200"
                 >
                   <option value="">Selecione uma filial</option>
                   {filiais.map((filial) => (
@@ -2114,19 +2114,19 @@ export default function EstoquePage() {
                 </select>
               </div>
             </div>
-            <div className="p-6 border-t border-[#333333] flex gap-3 justify-end">
+            <div className="p-6 border-t border-border flex gap-3 justify-end">
               <button
                 onClick={() => {
                   setShowEditModal(false);
                   setEditingProduto(null);
                 }}
-                className="px-6 py-3 border border-[#333333] rounded-xl text-[#9E9E9E] hover:bg-[#121212] hover:text-[#E8E8E8] transition-all duration-200"
+                className="px-6 py-3 border border-border rounded-xl text-muted hover:bg-background hover:text-foreground transition-all duration-200"
               >
                 Cancelar
               </button>
               <button
                 onClick={handleEditSubmit}
-                className="px-6 py-3 bg-gradient-to-r from-[#43A047] to-[#1B5E20] rounded-xl text-white font-medium hover:shadow-lg hover:shadow-green-500/10 hover:scale-[1.02] active:scale-[0.98] transition-all duration-200"
+                className="px-6 py-3 bg-gradient-to-r from-primary to-primary-dark rounded-xl text-white font-medium hover:shadow-lg hover:shadow-green-500/10 hover:scale-[1.02] active:scale-[0.98] transition-all duration-200"
               >
                 Salvar Alterações
               </button>
@@ -2138,9 +2138,9 @@ export default function EstoquePage() {
       {/* Modal Confirmar Exclusão */}
       {showDeleteConfirm && deletingProduto && (
         <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-[#1E1E1E] border border-[#333333] rounded-2xl shadow-2xl w-full max-w-md animate-fade-in">
-            <div className="p-6 border-b border-[#333333]">
-              <h2 className="text-xl font-semibold text-[#E8E8E8]">Confirmar Exclusão</h2>
+          <div className="bg-card border border-border rounded-2xl shadow-2xl w-full max-w-md animate-fade-in">
+            <div className="p-6 border-b border-border">
+              <h2 className="text-xl font-semibold text-foreground">Confirmar Exclusão</h2>
             </div>
             <div className="p-6">
               <div className="flex items-center gap-4 mb-4">
@@ -2148,21 +2148,21 @@ export default function EstoquePage() {
                   <Trash2 size={24} className="text-red-400" />
                 </div>
                 <div>
-                  <p className="text-[#E8E8E8] font-medium">{deletingProduto.nome}</p>
+                  <p className="text-foreground font-medium">{deletingProduto.nome}</p>
                   <p className="text-sm text-[#6B7280]">{deletingProduto.codigo} • {deletingProduto.marca}</p>
                 </div>
               </div>
-              <p className="text-[#9E9E9E] text-sm">
+              <p className="text-muted text-sm">
                 Tem certeza que deseja excluir este produto? Esta ação não pode ser desfeita.
               </p>
             </div>
-            <div className="p-6 border-t border-[#333333] flex gap-3 justify-end">
+            <div className="p-6 border-t border-border flex gap-3 justify-end">
               <button
                 onClick={() => {
                   setShowDeleteConfirm(false);
                   setDeletingProduto(null);
                 }}
-                className="px-6 py-3 border border-[#333333] rounded-xl text-[#9E9E9E] hover:bg-[#121212] hover:text-[#E8E8E8] transition-all duration-200"
+                className="px-6 py-3 border border-border rounded-xl text-muted hover:bg-background hover:text-foreground transition-all duration-200"
               >
                 Cancelar
               </button>
@@ -2180,9 +2180,9 @@ export default function EstoquePage() {
       {/* Modal Histórico de Movimentações */}
       {showHistoryModal && historyProduto && (
         <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-[#1E1E1E] border border-[#333333] rounded-2xl shadow-2xl w-full max-w-2xl animate-fade-in max-h-[80vh] overflow-hidden flex flex-col">
-            <div className="p-6 border-b border-[#333333]">
-              <h2 className="text-xl font-semibold text-[#E8E8E8]">Histórico de Movimentações</h2>
+          <div className="bg-card border border-border rounded-2xl shadow-2xl w-full max-w-2xl animate-fade-in max-h-[80vh] overflow-hidden flex flex-col">
+            <div className="p-6 border-b border-border">
+              <h2 className="text-xl font-semibold text-foreground">Histórico de Movimentações</h2>
               <p className="text-sm text-[#6B7280] mt-1">{historyProduto.nome}</p>
               <p className="text-xs text-[#6B7280]">
                 {historyProduto.codigo} • Estoque atual: {historyProduto.quantidade} {historyProduto.unidade}
@@ -2212,7 +2212,7 @@ export default function EstoquePage() {
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-3">
                           {mov.tipo === 'ENTRADA' ? (
-                            <ArrowDownCircle size={20} className="text-[#43A047]" />
+                            <ArrowDownCircle size={20} className="text-primary" />
                           ) : mov.tipo === 'SAIDA' ? (
                             <ArrowUpCircle size={20} className="text-red-400" />
                           ) : (
@@ -2220,12 +2220,12 @@ export default function EstoquePage() {
                           )}
                           <div>
                             <p className={`font-medium ${
-                              mov.tipo === 'ENTRADA' ? 'text-[#43A047]' : mov.tipo === 'SAIDA' ? 'text-red-400' : 'text-blue-400'
+                              mov.tipo === 'ENTRADA' ? 'text-primary' : mov.tipo === 'SAIDA' ? 'text-red-400' : 'text-blue-400'
                             }`}>
                               {mov.tipo === 'ENTRADA' ? '+' : mov.tipo === 'SAIDA' ? '-' : ''}{mov.quantidade} {historyProduto.unidade}
                             </p>
                             {mov.motivo && (
-                              <p className="text-sm text-[#9E9E9E]">{mov.motivo}</p>
+                              <p className="text-sm text-muted">{mov.motivo}</p>
                             )}
                           </div>
                         </div>
@@ -2243,14 +2243,14 @@ export default function EstoquePage() {
                 </div>
               )}
             </div>
-            <div className="p-6 border-t border-[#333333] flex justify-end">
+            <div className="p-6 border-t border-border flex justify-end">
               <button
                 onClick={() => {
                   setShowHistoryModal(false);
                   setHistoryProduto(null);
                   setMovimentacoes([]);
                 }}
-                className="px-6 py-3 border border-[#333333] rounded-xl text-[#9E9E9E] hover:bg-[#121212] hover:text-[#E8E8E8] transition-all duration-200"
+                className="px-6 py-3 border border-border rounded-xl text-muted hover:bg-background hover:text-foreground transition-all duration-200"
               >
                 Fechar
               </button>

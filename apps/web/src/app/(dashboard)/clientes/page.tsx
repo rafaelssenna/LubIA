@@ -363,7 +363,7 @@ export default function ClientesPage() {
               placeholder="Buscar cliente por nome, telefone ou CPF/CNPJ..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full bg-[#1a1a1a] border border-zinc-800/50 rounded-xl pl-11 pr-4 py-3 text-sm text-white placeholder-zinc-500 focus:outline-none focus:border-blue-500/50 focus:ring-1 focus:ring-blue-500/20 transition-all duration-200"
+              className="w-full bg-card border border-zinc-800/50 rounded-xl pl-11 pr-4 py-3 text-sm text-white placeholder-zinc-500 focus:outline-none focus:border-blue-500/50 focus:ring-1 focus:ring-blue-500/20 transition-all duration-200"
             />
           </div>
           <button
@@ -372,7 +372,7 @@ export default function ClientesPage() {
               setEnderecoForm({ cep: '', rua: '', numero: '', complemento: '', bairro: '', cidade: '', uf: '' });
               setShowModal(true);
             }}
-            className="flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-[#43A047] to-[#2E7D32] hover:from-[#2E7D32] hover:to-[#43A047] text-white font-semibold rounded-xl transition-all duration-300 shadow-lg shadow-[#43A047]/25 hover:shadow-[#43A047]/40 hover:scale-[1.02]"
+            className="flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-primary to-[#2E7D32] hover:from-[#2E7D32] hover:to-primary text-white font-semibold rounded-xl transition-all duration-300 shadow-lg shadow-primary/25 hover:shadow-primary/40 hover:scale-[1.02]"
           >
             <Plus size={18} />
             Novo Cliente
@@ -380,7 +380,7 @@ export default function ClientesPage() {
         </div>
 
         {/* Lista de Clientes */}
-        <div className="bg-[#1a1a1a] rounded-2xl border border-zinc-800/50 overflow-hidden">
+        <div className="bg-card rounded-2xl border border-zinc-800/50 overflow-hidden">
           {clientes.length === 0 ? (
             <div className="p-12 text-center">
               <div className="p-4 bg-zinc-800/50 rounded-full w-fit mx-auto mb-4">
@@ -389,7 +389,7 @@ export default function ClientesPage() {
               <p className="text-zinc-400">Nenhum cliente encontrado</p>
               <button
                 onClick={() => setShowModal(true)}
-                className="inline-flex items-center gap-2 mt-4 text-[#43A047] hover:text-[#66BB6A] transition-colors"
+                className="inline-flex items-center gap-2 mt-4 text-primary hover:text-primary-light transition-colors"
               >
                 Cadastrar cliente
                 <ArrowRight className="h-4 w-4" />
@@ -468,7 +468,7 @@ export default function ClientesPage() {
       {/* Modal Novo Cliente */}
       {showModal && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-[#1a1a1a] border border-zinc-800 rounded-2xl w-full max-w-md shadow-2xl shadow-black/50">
+          <div className="bg-card border border-zinc-800 rounded-2xl w-full max-w-md shadow-2xl shadow-black/50">
             <div className="p-6 border-b border-zinc-800 flex items-center justify-between">
               <div>
                 <h2 className="text-xl font-semibold text-white">Novo Cliente</h2>
@@ -624,7 +624,7 @@ export default function ClientesPage() {
               <button
                 onClick={handleSubmit}
                 disabled={saving}
-                className="px-6 py-3 bg-gradient-to-r from-[#43A047] to-[#2E7D32] rounded-xl text-white font-medium hover:shadow-lg hover:shadow-[#43A047]/25 transition-all duration-300 disabled:opacity-50"
+                className="px-6 py-3 bg-gradient-to-r from-primary to-[#2E7D32] rounded-xl text-white font-medium hover:shadow-lg hover:shadow-primary/25 transition-all duration-300 disabled:opacity-50"
               >
                 {saving ? 'Salvando...' : 'Cadastrar'}
               </button>
@@ -636,7 +636,7 @@ export default function ClientesPage() {
       {/* Modal Editar Cliente */}
       {showEditModal && selectedCliente && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-[#1a1a1a] border border-zinc-800 rounded-2xl w-full max-w-md shadow-2xl shadow-black/50">
+          <div className="bg-card border border-zinc-800 rounded-2xl w-full max-w-md shadow-2xl shadow-black/50">
             <div className="p-6 border-b border-zinc-800 flex items-center justify-between">
               <div>
                 <h2 className="text-xl font-semibold text-white">Editar Cliente</h2>
@@ -789,7 +789,7 @@ export default function ClientesPage() {
               <button
                 onClick={handleEditSubmit}
                 disabled={saving}
-                className="px-6 py-3 bg-gradient-to-r from-[#43A047] to-[#2E7D32] rounded-xl text-white font-medium hover:shadow-lg hover:shadow-[#43A047]/25 transition-all duration-300 disabled:opacity-50"
+                className="px-6 py-3 bg-gradient-to-r from-primary to-[#2E7D32] rounded-xl text-white font-medium hover:shadow-lg hover:shadow-primary/25 transition-all duration-300 disabled:opacity-50"
               >
                 {saving ? 'Salvando...' : 'Salvar Alteracoes'}
               </button>
@@ -801,7 +801,7 @@ export default function ClientesPage() {
       {/* Modal Confirmar Exclusao */}
       {showDeleteConfirm && selectedCliente && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-[#1a1a1a] border border-zinc-800 rounded-2xl w-full max-w-md shadow-2xl shadow-black/50">
+          <div className="bg-card border border-zinc-800 rounded-2xl w-full max-w-md shadow-2xl shadow-black/50">
             <div className="p-6 border-b border-zinc-800">
               <h2 className="text-xl font-semibold text-white">Confirmar Exclusao</h2>
             </div>
@@ -853,7 +853,7 @@ export default function ClientesPage() {
       {/* Modal Detalhes do Cliente */}
       {showDetailModal && selectedCliente && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-[#1a1a1a] border border-zinc-800 rounded-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto shadow-2xl shadow-black/50">
+          <div className="bg-card border border-zinc-800 rounded-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto shadow-2xl shadow-black/50">
             <div className="p-6 border-b border-zinc-800 flex items-center justify-between">
               <div className="flex items-center gap-4">
                 <div className="w-14 h-14 bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl flex items-center justify-center text-white text-2xl font-bold shadow-lg shadow-blue-500/25">
