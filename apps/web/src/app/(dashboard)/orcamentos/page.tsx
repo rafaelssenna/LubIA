@@ -957,8 +957,8 @@ function OrcamentosPageContent() {
                           </span>
                           <input
                             type="number"
-                            min={isGranel ? "0.1" : "1"}
-                            step={isGranel ? "0.1" : "1"}
+                            min={isGranel ? "0.01" : "1"}
+                            step={isGranel ? "any" : "1"}
                             value={sp.quantidade}
                             onChange={(e) => {
                               const newQtd = parseFloat(e.target.value) || (isGranel ? 0.1 : 1);
