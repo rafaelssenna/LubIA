@@ -30,7 +30,7 @@ export async function GET(request: NextRequest) {
         OR: [
           { nome: { contains: query, mode: 'insensitive' } },
           { telefone: { contains: query } },
-          { cpfCnpj: { contains: query } },
+          { cpf: { contains: query } },
         ],
       },
       take: 5,
@@ -42,7 +42,7 @@ export async function GET(request: NextRequest) {
         tipo: 'cliente',
         id: c.id,
         titulo: c.nome,
-        subtitulo: c.telefone || c.cpfCnpj || '',
+        subtitulo: c.telefone || c.cpf || '',
       });
     });
 
