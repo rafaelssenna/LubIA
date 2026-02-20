@@ -619,9 +619,13 @@ function DevolucoesPageContent() {
                             </div>
 
                             {/* Produto de troca */}
-                            {tipoDevolucao === 'TROCA' && selected && (
+                            {tipoDevolucao === 'TROCA' && (
                               <div className="mt-4 pt-4 border-t border-white/10">
-                                {selected.produtoTrocaId ? (
+                                {!selected ? (
+                                  <p className="text-sm text-blue-400/70 italic">
+                                    Marque o item acima para selecionar o produto de troca
+                                  </p>
+                                ) : selected.produtoTrocaId ? (
                                   <div className="flex items-center justify-between bg-blue-500/10 rounded-lg p-3">
                                     <div>
                                       <p className="text-sm text-muted">Trocar por:</p>
@@ -651,21 +655,24 @@ function DevolucoesPageContent() {
                                   </div>
                                 ) : (
                                   <div className="relative">
-                                    <Search
-                                      size={16}
-                                      className="absolute left-3 top-1/2 -translate-y-1/2 text-foreground-muted"
-                                    />
-                                    <input
-                                      type="text"
-                                      value={selectedItemForTroca === item.id ? buscaProduto : ''}
-                                      onChange={(e) => {
-                                        setSelectedItemForTroca(item.id);
-                                        setBuscaProduto(e.target.value);
-                                      }}
-                                      onFocus={() => setSelectedItemForTroca(item.id)}
-                                      placeholder="Buscar produto para troca..."
-                                      className="w-full pl-10 pr-4 py-2 bg-background rounded-lg border border-white/10 text-foreground text-sm placeholder:text-foreground-muted focus:outline-none focus:border-blue-500/50"
-                                    />
+                                    <p className="text-sm text-muted mb-2">Selecione o produto para troca:</p>
+                                    <div className="relative">
+                                      <Search
+                                        size={16}
+                                        className="absolute left-3 top-1/2 -translate-y-1/2 text-foreground-muted"
+                                      />
+                                      <input
+                                        type="text"
+                                        value={selectedItemForTroca === item.id ? buscaProduto : ''}
+                                        onChange={(e) => {
+                                          setSelectedItemForTroca(item.id);
+                                          setBuscaProduto(e.target.value);
+                                        }}
+                                        onFocus={() => setSelectedItemForTroca(item.id)}
+                                        placeholder="Buscar produto para troca..."
+                                        className="w-full pl-10 pr-4 py-2 bg-blue-500/10 rounded-lg border border-blue-500/30 text-foreground text-sm placeholder:text-foreground-muted focus:outline-none focus:border-blue-500/50"
+                                      />
+                                    </div>
                                     {/* Dropdown produtos */}
                                     {selectedItemForTroca === item.id && produtos.length > 0 && (
                                       <div className="absolute top-full left-0 right-0 mt-1 bg-background-secondary rounded-lg border border-white/10 max-h-40 overflow-y-auto z-10">
