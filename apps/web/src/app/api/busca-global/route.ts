@@ -17,7 +17,7 @@ export async function GET(request: NextRequest) {
     }
 
     const results: Array<{
-      tipo: 'cliente' | 'veiculo' | 'ordem';
+      tipo: 'cliente' | 'veiculo' | 'ordem' | 'produto';
       id: number;
       titulo: string;
       subtitulo: string;
@@ -103,9 +103,33 @@ export async function GET(request: NextRequest) {
       });
     });
 
-    // Ordenar resultados: clientes primeiro, depois veículos, depois ordens
+    // Buscar produtos
+    const produtos = await prisma.produto.findMany({
+      where: {
+        empresaId: session.empresaId,
+        ativo: true,
+        OR: [
+          { nome: { contains: query, mode: 'insensitive' } },
+          { codigo: { contains: query, mode: 'insensitive' } },
+          { marca: { contains: query, mode: 'insensitive' } },
+        ],
+      },
+      take: 5,
+      orderBy: { nome: 'asc' },
+    });
+
+    produtos.forEach((p) => {
+      results.push({
+        tipo: 'produto',
+        id: p.id,
+        titulo: `${p.codigo} - ${p.nome}`,
+        subtitulo: `${p.marca} • Qtd: ${p.quantidade}`,
+      });
+    });
+
+    // Ordenar resultados
     results.sort((a, b) => {
-      const order = { cliente: 0, veiculo: 1, ordem: 2 };
+      const order = { cliente: 0, veiculo: 1, ordem: 2, produto: 3 };
       return order[a.tipo] - order[b.tipo];
     });
 

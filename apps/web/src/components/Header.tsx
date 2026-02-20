@@ -1,6 +1,6 @@
 'use client';
 
-import { Search, User, ChevronDown, Sparkles, LogOut, Users, Car, FileText, Loader2 } from 'lucide-react';
+import { Search, User, ChevronDown, Sparkles, LogOut, Users, Car, FileText, Loader2, Package } from 'lucide-react';
 import { useState, useEffect, useRef } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useRouter } from 'next/navigation';
@@ -11,7 +11,7 @@ interface HeaderProps {
 }
 
 interface SearchResult {
-  tipo: 'cliente' | 'veiculo' | 'ordem';
+  tipo: 'cliente' | 'veiculo' | 'ordem' | 'produto';
   id: number;
   titulo: string;
   subtitulo: string;
@@ -78,6 +78,9 @@ export default function Header({ title, subtitle }: HeaderProps) {
       case 'ordem':
         router.push(`/ordens?id=${result.id}`);
         break;
+      case 'produto':
+        router.push(`/estoque?id=${result.id}`);
+        break;
     }
   };
 
@@ -86,6 +89,7 @@ export default function Header({ title, subtitle }: HeaderProps) {
       case 'cliente': return <Users size={16} className="text-blue-400" />;
       case 'veiculo': return <Car size={16} className="text-green-400" />;
       case 'ordem': return <FileText size={16} className="text-amber-400" />;
+      case 'produto': return <Package size={16} className="text-purple-400" />;
       default: return <Search size={16} />;
     }
   };
