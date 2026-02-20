@@ -975,7 +975,8 @@ export default function EstoquePage() {
         )}
 
         {/* Toolbar */}
-        <div className="flex flex-col md:flex-row gap-4 justify-between">
+        <div className="bg-card border border-border rounded-2xl p-4">
+          <div className="flex flex-col md:flex-row gap-4 justify-between">
           <div className="flex gap-3 flex-1">
             <div className="relative flex-1 max-w-md">
               <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-foreground-muted" size={18} />
@@ -1001,7 +1002,7 @@ export default function EstoquePage() {
               className={`flex items-center gap-2 px-4 py-3 rounded-xl transition-all duration-200 ${
                 showOnlyLowStock
                   ? 'bg-red-500/10 border border-red-500/50 text-red-400'
-                  : 'border border-border text-foreground-muted hover:bg-zinc-800 hover:text-foreground'
+                  : 'border border-border text-foreground-muted hover:bg-background-secondary hover:text-foreground'
               }`}
               title="Filtrar estoque baixo"
             >
@@ -1078,6 +1079,7 @@ export default function EstoquePage() {
               Novo Produto
             </button>
           </div>
+          </div>
         </div>
 
         {/* Tabela de Produtos */}
@@ -1086,9 +1088,9 @@ export default function EstoquePage() {
             <table className="w-full">
               <thead>
                 <tr className="border-b border-border">
-                  <th className="text-left px-6 py-4 text-sm font-medium text-[#6B7280]">Código</th>
+                  <th className="text-left px-6 py-4 text-sm font-medium text-muted">Código</th>
                   <th
-                    className="text-left px-6 py-4 text-sm font-medium text-[#6B7280] cursor-pointer hover:text-foreground transition-all duration-200 select-none"
+                    className="text-left px-6 py-4 text-sm font-medium text-muted cursor-pointer hover:text-foreground transition-all duration-200 select-none"
                     onClick={() => handleSort('nome')}
                   >
                     <div className="flex items-center gap-1">
@@ -1096,10 +1098,10 @@ export default function EstoquePage() {
                       <SortIcon column="nome" />
                     </div>
                   </th>
-                  <th className="text-left px-6 py-4 text-sm font-medium text-[#6B7280]">Categoria</th>
-                  <th className="text-left px-6 py-4 text-sm font-medium text-[#6B7280]">Filial</th>
+                  <th className="text-left px-6 py-4 text-sm font-medium text-muted">Categoria</th>
+                  <th className="text-left px-6 py-4 text-sm font-medium text-muted">Filial</th>
                   <th
-                    className="text-right px-6 py-4 text-sm font-medium text-[#6B7280] cursor-pointer hover:text-foreground transition-all duration-200 select-none"
+                    className="text-right px-6 py-4 text-sm font-medium text-muted cursor-pointer hover:text-foreground transition-all duration-200 select-none"
                     onClick={() => handleSort('quantidade')}
                   >
                     <div className="flex items-center justify-end gap-1">
@@ -1108,7 +1110,7 @@ export default function EstoquePage() {
                     </div>
                   </th>
                   <th
-                    className="text-right px-6 py-4 text-sm font-medium text-[#6B7280] cursor-pointer hover:text-foreground transition-all duration-200 select-none"
+                    className="text-right px-6 py-4 text-sm font-medium text-muted cursor-pointer hover:text-foreground transition-all duration-200 select-none"
                     onClick={() => handleSort('precoCompra')}
                   >
                     <div className="flex items-center justify-end gap-1">
@@ -1117,7 +1119,7 @@ export default function EstoquePage() {
                     </div>
                   </th>
                   <th
-                    className="text-right px-6 py-4 text-sm font-medium text-[#6B7280] cursor-pointer hover:text-foreground transition-all duration-200 select-none"
+                    className="text-right px-6 py-4 text-sm font-medium text-muted cursor-pointer hover:text-foreground transition-all duration-200 select-none"
                     onClick={() => handleSort('precoVenda')}
                   >
                     <div className="flex items-center justify-end gap-1">
@@ -1125,17 +1127,17 @@ export default function EstoquePage() {
                       <SortIcon column="precoVenda" />
                     </div>
                   </th>
-                  <th className="text-center px-6 py-4 text-sm font-medium text-[#6B7280]">Ações</th>
+                  <th className="text-center px-6 py-4 text-sm font-medium text-muted">Ações</th>
                 </tr>
               </thead>
               <tbody>
                 {loading ? (
                   <tr>
-                    <td colSpan={7} className="text-center py-8 text-[#6B7280]">Carregando...</td>
+                    <td colSpan={7} className="text-center py-8 text-muted">Carregando...</td>
                   </tr>
                 ) : paginatedProducts.length === 0 ? (
                   <tr>
-                    <td colSpan={7} className="text-center py-8 text-[#6B7280]">
+                    <td colSpan={7} className="text-center py-8 text-muted">
                       {showOnlyLowStock ? 'Nenhum produto com estoque baixo' : 'Nenhum produto encontrado'}
                     </td>
                   </tr>
@@ -1149,7 +1151,7 @@ export default function EstoquePage() {
                         <div className="flex items-center gap-2">
                           <div>
                             <p className="text-foreground font-medium">{produto.nome}</p>
-                            <p className="text-xs text-[#6B7280]">{produto.marca}</p>
+                            <p className="text-xs text-muted">{produto.marca}</p>
                           </div>
                           {!produto.ativo && (
                             <span className="px-2 py-0.5 bg-red-500/10 text-red-400 text-xs rounded-full flex items-center gap-1">
@@ -1173,7 +1175,7 @@ export default function EstoquePage() {
                             <span className={`font-bold ${produto.estoqueBaixo ? 'text-red-400' : 'text-foreground'}`}>
                               {produto.quantidade}
                             </span>
-                            <span className="text-xs text-[#6B7280]">{produto.unidade === 'UNIDADE' ? 'un' : produto.unidade}</span>
+                            <span className="text-xs text-muted">{produto.unidade === 'UNIDADE' ? 'un' : produto.unidade}</span>
                             {produto.estoqueBaixo && (
                               <AlertTriangle size={14} className="text-red-400" />
                             )}
@@ -1235,7 +1237,7 @@ export default function EstoquePage() {
                           </button>
                           <button
                             onClick={() => openEditModal(produto)}
-                            className="p-2 hover:bg-[#d4dbc8] rounded-md transition-all duration-200 text-primary-light hover:text-foreground"
+                            className="p-2 hover:bg-background-secondary rounded-md transition-all duration-200 text-primary-light hover:text-foreground"
                             title="Editar"
                           >
                             <Edit size={16} />
@@ -1262,7 +1264,7 @@ export default function EstoquePage() {
           {/* Pagination */}
           {totalPages > 1 && (
             <div className="px-6 py-4 border-t border-border flex items-center justify-between">
-              <p className="text-sm text-[#6B7280]">
+              <p className="text-sm text-muted">
                 Mostrando {((currentPage - 1) * itemsPerPage) + 1} a {Math.min(currentPage * itemsPerPage, processedProducts.length)} de {processedProducts.length} produtos
               </p>
               <div className="flex items-center gap-2">
@@ -1319,7 +1321,7 @@ export default function EstoquePage() {
           <div className="bg-card border border-border rounded-2xl w-full max-w-lg animate-fade-in max-h-[90vh] overflow-y-auto shadow-2xl">
             <div className="p-6 border-b border-border">
               <h2 className="text-xl font-semibold text-foreground">Novo Produto</h2>
-              <p className="text-sm text-[#6B7280] mt-1">Cadastre um novo produto no estoque</p>
+              <p className="text-sm text-muted mt-1">Cadastre um novo produto no estoque</p>
             </div>
             <div className="p-6 space-y-4">
               <div className="grid grid-cols-2 gap-4">
@@ -1400,7 +1402,7 @@ export default function EstoquePage() {
                     placeholder="Ex: 5 para galão de 5L"
                     className="w-full bg-background border border-border rounded-xl px-4 py-3 text-foreground placeholder-[#616161] focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/20 transition-all duration-200"
                   />
-                  <p className="text-xs text-[#6B7280] mt-1">
+                  <p className="text-xs text-muted mt-1">
                     Usado para calcular preço proporcional na venda a granel
                   </p>
                 </div>
@@ -1466,7 +1468,7 @@ export default function EstoquePage() {
                   ))}
                 </select>
                 {filiais.length === 0 && (
-                  <p className="text-xs text-[#6B7280] mt-1">
+                  <p className="text-xs text-muted mt-1">
                     Nenhuma filial cadastrada. Cadastre em Configurações.
                   </p>
                 )}
@@ -1498,8 +1500,8 @@ export default function EstoquePage() {
               <h2 className="text-xl font-semibold text-foreground">
                 {movTipo === 'ENTRADA' ? 'Entrada de Estoque' : 'Saída de Estoque'}
               </h2>
-              <p className="text-sm text-[#6B7280] mt-1">{selectedProduto.nome}</p>
-              <p className="text-xs text-[#6B7280]">Estoque atual: {selectedProduto.quantidade} {selectedProduto.unidade}</p>
+              <p className="text-sm text-muted mt-1">{selectedProduto.nome}</p>
+              <p className="text-xs text-muted">Estoque atual: {selectedProduto.quantidade} {selectedProduto.unidade}</p>
             </div>
             <div className="p-6 space-y-4">
               <div>
@@ -1621,7 +1623,7 @@ export default function EstoquePage() {
               <div className="flex items-start justify-between">
                 <div>
                   <h2 className="text-xl font-semibold text-foreground">Itens da Nota Fiscal</h2>
-                  <p className="text-sm text-[#6B7280] mt-1">
+                  <p className="text-sm text-muted mt-1">
                     {ocrResult?.numeroNF && `NF: ${ocrResult.numeroNF} • `}
                     {ocrResult?.fornecedor && `${ocrResult.fornecedor} • `}
                     {ocrItems.filter(i => i.selected).length} itens selecionados
@@ -1629,7 +1631,7 @@ export default function EstoquePage() {
                 </div>
                 {ocrResult?.cnpj && (
                   <div className="text-right">
-                    <p className="text-xs text-[#6B7280]">CNPJ Fornecedor</p>
+                    <p className="text-xs text-muted">CNPJ Fornecedor</p>
                     <p className="text-sm font-mono text-amber-400">{ocrResult.cnpj}</p>
                   </div>
                 )}
@@ -1692,7 +1694,7 @@ export default function EstoquePage() {
                     />
                     <div className="flex-1 space-y-4">
                       <div>
-                        <label className="block text-xs text-[#6B7280] mb-1">Descrição</label>
+                        <label className="block text-xs text-muted mb-1">Descrição</label>
                         <input
                           type="text"
                           value={item.descricao}
@@ -1706,7 +1708,7 @@ export default function EstoquePage() {
                       </div>
                       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                         <div>
-                          <label className="block text-xs text-[#6B7280] mb-1">Categoria</label>
+                          <label className="block text-xs text-muted mb-1">Categoria</label>
                           <select
                             value={item.categoria}
                             onChange={(e) => {
@@ -1722,7 +1724,7 @@ export default function EstoquePage() {
                           </select>
                         </div>
                         <div>
-                          <label className="block text-xs text-[#6B7280] mb-1">Unidade</label>
+                          <label className="block text-xs text-muted mb-1">Unidade</label>
                           <select
                             value={item.unidade}
                             onChange={(e) => {
@@ -1739,7 +1741,7 @@ export default function EstoquePage() {
                           </select>
                         </div>
                         <div>
-                          <label className="block text-xs text-[#6B7280] mb-1">
+                          <label className="block text-xs text-muted mb-1">
                             Volume (L/kg/un)
                           </label>
                           {item.semVolume ? (
@@ -1750,7 +1752,7 @@ export default function EstoquePage() {
                                 newItems[index].semVolume = false;
                                 setOcrItems(newItems);
                               }}
-                              className="w-full bg-card border border-border rounded-lg px-3 py-2 text-[#6B7280] text-sm hover:border-primary/50 transition-colors text-left"
+                              className="w-full bg-card border border-border rounded-lg px-3 py-2 text-muted text-sm hover:border-primary/50 transition-colors text-left"
                             >
                               Sem volume
                             </button>
@@ -1778,7 +1780,7 @@ export default function EstoquePage() {
                                   setOcrItems(newItems);
                                 }}
                                 title="Produto sem volume"
-                                className="px-2 bg-card border border-border rounded-lg text-[#6B7280] text-xs hover:border-amber-500/50 hover:text-amber-400 transition-colors"
+                                className="px-2 bg-card border border-border rounded-lg text-muted text-xs hover:border-amber-500/50 hover:text-amber-400 transition-colors"
                               >
                                 N/A
                               </button>
@@ -1786,7 +1788,7 @@ export default function EstoquePage() {
                           )}
                         </div>
                         <div>
-                          <label className="block text-xs text-[#6B7280] mb-1">Código</label>
+                          <label className="block text-xs text-muted mb-1">Código</label>
                           <input
                             type="text"
                             value={item.codigo}
@@ -1801,7 +1803,7 @@ export default function EstoquePage() {
                       </div>
                       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                         <div>
-                          <label className="block text-xs text-[#6B7280] mb-1">Quantidade</label>
+                          <label className="block text-xs text-muted mb-1">Quantidade</label>
                           <input
                             type="number"
                             value={item.quantidade}
@@ -1814,7 +1816,7 @@ export default function EstoquePage() {
                           />
                         </div>
                         <div>
-                          <label className="block text-xs text-[#6B7280] mb-1">Preço Compra</label>
+                          <label className="block text-xs text-muted mb-1">Preço Compra</label>
                           <input
                             type="number"
                             step="0.01"
@@ -1831,7 +1833,7 @@ export default function EstoquePage() {
                           <label className={`block text-xs mb-1 ${
                             item.selected && !item.updateExisting && !item.precoVenda
                               ? 'text-red-400'
-                              : 'text-[#6B7280]'
+                              : 'text-muted'
                           }`}>
                             Preço Venda {item.selected && !item.updateExisting && <span className="text-red-400">*</span>}
                           </label>
@@ -1853,7 +1855,7 @@ export default function EstoquePage() {
                           />
                         </div>
                         <div>
-                          <label className="block text-xs text-[#6B7280] mb-1">Est. Mínimo</label>
+                          <label className="block text-xs text-muted mb-1">Est. Mínimo</label>
                           <input
                             type="number"
                             value={item.estoqueMinimo}
@@ -1976,7 +1978,7 @@ export default function EstoquePage() {
           <div className="bg-card border border-border rounded-2xl shadow-2xl w-full max-w-lg animate-fade-in max-h-[90vh] overflow-y-auto">
             <div className="p-6 border-b border-border">
               <h2 className="text-xl font-semibold text-foreground">Editar Produto</h2>
-              <p className="text-sm text-[#6B7280] mt-1">Atualize as informações do produto</p>
+              <p className="text-sm text-muted mt-1">Atualize as informações do produto</p>
             </div>
             <div className="p-6 space-y-4">
               <div className="grid grid-cols-2 gap-4">
@@ -2149,7 +2151,7 @@ export default function EstoquePage() {
                 </div>
                 <div>
                   <p className="text-foreground font-medium">{deletingProduto.nome}</p>
-                  <p className="text-sm text-[#6B7280]">{deletingProduto.codigo} • {deletingProduto.marca}</p>
+                  <p className="text-sm text-muted">{deletingProduto.codigo} • {deletingProduto.marca}</p>
                 </div>
               </div>
               <p className="text-muted text-sm">
@@ -2183,16 +2185,16 @@ export default function EstoquePage() {
           <div className="bg-card border border-border rounded-2xl shadow-2xl w-full max-w-2xl animate-fade-in max-h-[80vh] overflow-hidden flex flex-col">
             <div className="p-6 border-b border-border">
               <h2 className="text-xl font-semibold text-foreground">Histórico de Movimentações</h2>
-              <p className="text-sm text-[#6B7280] mt-1">{historyProduto.nome}</p>
-              <p className="text-xs text-[#6B7280]">
+              <p className="text-sm text-muted mt-1">{historyProduto.nome}</p>
+              <p className="text-xs text-muted">
                 {historyProduto.codigo} • Estoque atual: {historyProduto.quantidade} {historyProduto.unidade}
               </p>
             </div>
             <div className="flex-1 overflow-y-auto p-6">
               {loadingHistory ? (
-                <div className="text-center py-8 text-[#6B7280]">Carregando...</div>
+                <div className="text-center py-8 text-muted">Carregando...</div>
               ) : movimentacoes.length === 0 ? (
-                <div className="text-center py-8 text-[#6B7280]">
+                <div className="text-center py-8 text-muted">
                   <History size={40} className="mx-auto mb-3 opacity-50" />
                   <p>Nenhuma movimentação registrada</p>
                 </div>
@@ -2230,10 +2232,10 @@ export default function EstoquePage() {
                           </div>
                         </div>
                         <div className="text-right">
-                          <p className="text-sm text-[#6B7280]">
+                          <p className="text-sm text-muted">
                             {new Date(mov.createdAt).toLocaleDateString('pt-BR')}
                           </p>
-                          <p className="text-xs text-[#6B7280]">
+                          <p className="text-xs text-muted">
                             {new Date(mov.createdAt).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}
                           </p>
                         </div>
