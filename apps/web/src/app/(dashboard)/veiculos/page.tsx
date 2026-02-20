@@ -3,7 +3,7 @@
 import Header from '@/components/Header';
 import { Plus, Search, Car, User, ClipboardList, X, Camera, Edit, Trash2, Gauge, ArrowRight, Users } from 'lucide-react';
 import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import OCRScanner from '@/components/OCRScanner';
 import { useToast } from '@/components/Toast';
 import { capitalize, formatPlate } from '@/utils/format';
@@ -30,6 +30,7 @@ interface Veiculo {
 export default function VeiculosPage() {
   const toast = useToast();
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [veiculos, setVeiculos] = useState<Veiculo[]>([]);
   const [clientes, setClientes] = useState<Cliente[]>([]);
   const [loading, setLoading] = useState(true);
@@ -40,6 +41,7 @@ export default function VeiculosPage() {
   const [showOCR, setShowOCR] = useState(false);
   const [selectedVeiculo, setSelectedVeiculo] = useState<Veiculo | null>(null);
   const [saving, setSaving] = useState(false);
+  const [urlIdHandled, setUrlIdHandled] = useState(false);
 
   const [form, setForm] = useState({
     placa: '',
@@ -81,6 +83,21 @@ export default function VeiculosPage() {
     fetchVeiculos();
     fetchClientes();
   }, [searchTerm]);
+
+  // Handle URL id parameter from global search
+  useEffect(() => {
+    const idParam = searchParams.get('id');
+    if (idParam && !loading && veiculos.length > 0 && !urlIdHandled) {
+      const veiculoId = parseInt(idParam);
+      const veiculo = veiculos.find(v => v.id === veiculoId);
+      if (veiculo) {
+        openEditModal(veiculo);
+        setUrlIdHandled(true);
+        // Clean URL without reload
+        window.history.replaceState({}, '', '/veiculos');
+      }
+    }
+  }, [searchParams, loading, veiculos, urlIdHandled]);
 
   const resetForm = () => {
     setForm({

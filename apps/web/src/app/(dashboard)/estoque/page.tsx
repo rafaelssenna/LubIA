@@ -26,6 +26,7 @@ import {
   Sparkles,
 } from 'lucide-react';
 import { useState, useEffect } from 'react';
+import { useSearchParams } from 'next/navigation';
 import OCRScanner from '@/components/OCRScanner';
 import { useToast } from '@/components/Toast';
 
@@ -361,8 +362,10 @@ const findBestMatch = (descricao: string, produtos: Produto[]): Produto | null =
 
 export default function EstoquePage() {
   const toast = useToast();
+  const searchParams = useSearchParams();
   const [produtos, setProdutos] = useState<Produto[]>([]);
   const [loading, setLoading] = useState(true);
+  const [urlIdHandled, setUrlIdHandled] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [categoriaFilter, setCategoriaFilter] = useState('');
   const [showModal, setShowModal] = useState(false);
@@ -497,6 +500,23 @@ export default function EstoquePage() {
   useEffect(() => {
     setCurrentPage(1);
   }, [searchTerm, categoriaFilter, showOnlyLowStock, sortBy, sortOrder, ativoFilter, filialFilter]);
+
+  // Handle URL id parameter from global search
+  useEffect(() => {
+    const idParam = searchParams.get('id');
+    if (idParam && !loading && produtos.length > 0 && !urlIdHandled) {
+      const produtoId = parseInt(idParam);
+      const produto = produtos.find(p => p.id === produtoId);
+      if (produto) {
+        setHistoryProduto(produto);
+        setShowHistoryModal(true);
+        fetchMovimentacoes(produto.id);
+        setUrlIdHandled(true);
+        // Clean URL without reload
+        window.history.replaceState({}, '', '/estoque');
+      }
+    }
+  }, [searchParams, loading, produtos, urlIdHandled]);
 
   // Fetch movimentações for history
   const fetchMovimentacoes = async (produtoId: number) => {

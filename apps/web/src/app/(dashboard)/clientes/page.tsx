@@ -3,6 +3,7 @@
 import Header from '@/components/Header';
 import { Plus, Search, Phone, Car, Eye, MessageCircle, X, Edit, Trash2, User, Mail, MapPin, CreditCard, Loader2, Users, ArrowRight } from 'lucide-react';
 import { useState, useEffect } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { useToast } from '@/components/Toast';
 import { capitalize, formatCpfCnpj, formatPhone, formatPlate } from '@/utils/format';
 
@@ -26,6 +27,7 @@ interface Cliente {
 
 export default function ClientesPage() {
   const toast = useToast();
+  const searchParams = useSearchParams();
   const [clientes, setClientes] = useState<Cliente[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
@@ -35,6 +37,7 @@ export default function ClientesPage() {
   const [showDetailModal, setShowDetailModal] = useState(false);
   const [selectedCliente, setSelectedCliente] = useState<Cliente | null>(null);
   const [saving, setSaving] = useState(false);
+  const [urlIdHandled, setUrlIdHandled] = useState(false);
 
   const [form, setForm] = useState({
     nome: '',
@@ -165,6 +168,21 @@ export default function ClientesPage() {
   useEffect(() => {
     fetchClientes();
   }, [searchTerm]);
+
+  // Handle URL id parameter from global search
+  useEffect(() => {
+    const idParam = searchParams.get('id');
+    if (idParam && !loading && clientes.length > 0 && !urlIdHandled) {
+      const clienteId = parseInt(idParam);
+      const cliente = clientes.find(c => c.id === clienteId);
+      if (cliente) {
+        viewDetails(cliente);
+        setUrlIdHandled(true);
+        // Clean URL without reload
+        window.history.replaceState({}, '', '/clientes');
+      }
+    }
+  }, [searchParams, loading, clientes, urlIdHandled]);
 
   const handleSubmit = async () => {
     if (!form.nome || !form.telefone) {

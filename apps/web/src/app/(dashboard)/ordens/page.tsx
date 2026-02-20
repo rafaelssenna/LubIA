@@ -260,6 +260,21 @@ function OrdensPageContent() {
     }
   }, [searchParams]);
 
+  // Handle URL id parameter from global search
+  useEffect(() => {
+    const idParam = searchParams.get('id');
+    if (idParam && !loading && ordens.length > 0) {
+      const ordemId = parseInt(idParam);
+      const ordem = ordens.find(o => o.id === ordemId);
+      if (ordem) {
+        setSelectedOrdem(ordem);
+        setShowDetailModal(true);
+        // Clean URL without reload
+        router.replace('/ordens');
+      }
+    }
+  }, [searchParams, loading, ordens]);
+
   const openNewModal = (presetDate?: string) => {
     fetchVeiculos();
     fetchProdutos();
