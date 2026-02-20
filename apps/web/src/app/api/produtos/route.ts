@@ -275,10 +275,34 @@ export async function POST(request: NextRequest) {
             mensagem: `Estoque atualizado: ${atualizacoes.join(', ')}`
           }, { status: 200 });
         } else {
-          // Código igual mas nome diferente - continua para criar novo produto
-          console.log('[PRODUTOS API] Código existe mas nome diferente - criando novo produto');
+          // Código igual mas nome diferente - gerar código único
+          console.log('[PRODUTOS API] Código existe mas nome diferente - gerando código único');
           console.log('[PRODUTOS API] Nome existente:', existing.nome);
           console.log('[PRODUTOS API] Nome novo:', body.nome);
+
+          // Buscar todos os códigos que começam com o código base para encontrar o próximo número
+          const codigoBase = body.codigo;
+          const produtosComMesmoCodigo = await prisma.produto.findMany({
+            where: {
+              empresaId: session.empresaId,
+              codigo: { startsWith: codigoBase }
+            },
+            select: { codigo: true }
+          });
+
+          // Encontrar o maior sufixo numérico
+          let maiorSufixo = 1;
+          produtosComMesmoCodigo.forEach(p => {
+            const match = p.codigo.match(new RegExp(`^${codigoBase}-(\\d+)$`));
+            if (match) {
+              const num = parseInt(match[1]);
+              if (num >= maiorSufixo) maiorSufixo = num + 1;
+            }
+          });
+
+          // Gerar novo código
+          body.codigo = `${codigoBase}-${maiorSufixo}`;
+          console.log('[PRODUTOS API] Novo código gerado:', body.codigo);
         }
       }
     }
