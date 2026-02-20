@@ -1060,26 +1060,30 @@ export default function EstoquePage() {
               <Download size={20} />
               <span className="hidden md:inline">PDF</span>
             </button>
-            <button
-              onClick={() => setShowOCR(true)}
-              className="group relative flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 rounded-xl text-white font-medium hover:shadow-lg hover:shadow-purple-500/30 hover:scale-[1.02] active:scale-[0.98] transition-all duration-200 overflow-hidden"
-              title="Escanear nota fiscal com IA"
-            >
-              <div className="absolute inset-0 bg-gradient-to-r from-blue-400 to-purple-400 opacity-0 group-hover:opacity-20 transition-opacity" />
-              <Sparkles size={18} className="text-yellow-300 animate-pulse" />
-              <FileText size={20} />
-              <span>Escanear NF</span>
-              <span className="text-xs bg-white/20 px-2 py-0.5 rounded-full">IA</span>
-            </button>
-            <button
-              onClick={() => setShowModal(true)}
-              className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-primary to-primary-dark rounded-xl text-white font-medium hover:shadow-lg hover:shadow-green-500/10 hover:scale-[1.02] active:scale-[0.98] transition-all duration-200"
-            >
-              <Plus size={20} />
-              Novo Produto
-            </button>
           </div>
           </div>
+        </div>
+
+        {/* Action Buttons */}
+        <div className="flex justify-end gap-3">
+          <button
+            onClick={() => setShowOCR(true)}
+            className="group relative flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 rounded-xl text-white font-medium hover:shadow-lg hover:shadow-purple-500/30 hover:scale-[1.02] active:scale-[0.98] transition-all duration-200 overflow-hidden"
+            title="Escanear nota fiscal com IA"
+          >
+            <div className="absolute inset-0 bg-gradient-to-r from-blue-400 to-purple-400 opacity-0 group-hover:opacity-20 transition-opacity" />
+            <Sparkles size={18} className="text-yellow-300 animate-pulse" />
+            <FileText size={20} />
+            <span>Escanear NF</span>
+            <span className="text-xs bg-white/20 px-2 py-0.5 rounded-full">IA</span>
+          </button>
+          <button
+            onClick={() => setShowModal(true)}
+            className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-primary to-primary-dark rounded-xl text-white font-medium hover:shadow-lg hover:shadow-green-500/10 hover:scale-[1.02] active:scale-[0.98] transition-all duration-200"
+          >
+            <Plus size={20} />
+            Novo Produto
+          </button>
         </div>
 
         {/* Tabela de Produtos */}
