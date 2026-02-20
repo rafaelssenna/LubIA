@@ -114,11 +114,16 @@ export default function OCRScanner({ type, onResult, onClose }: OCRScannerProps)
 
       const data = await response.json();
 
-      if (data.success) {
-        setResult(data.data);
-        onResult(data.data);
+      if (data.success && data.data) {
+        // Verifica se há erro dentro do resultado (ex: OCR não conseguiu processar)
+        if (data.data.erro) {
+          setError(data.data.erro);
+        } else {
+          setResult(data.data);
+          onResult(data.data);
+        }
       } else {
-        setError(data.message || 'Erro ao processar imagem');
+        setError(data.error || data.message || 'Erro ao processar imagem');
       }
     } catch {
       setError('Erro ao conectar com o servidor');

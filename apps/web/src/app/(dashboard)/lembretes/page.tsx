@@ -380,7 +380,6 @@ export default function LembretesPage() {
               filterStatus === 'vencido' ? 'border-red-500 ring-2 ring-red-500/30' : 'border-red-500/20 hover:border-red-500/40'
             }`}
           >
-            <div className="absolute top-0 right-0 w-32 h-32 bg-red-500/10 rounded-full blur-3xl group-hover:scale-150 transition-transform duration-500"></div>
             <div className="relative">
               <div className="flex items-center justify-between mb-4">
                 <div className="p-3 bg-red-500/20 rounded-xl">

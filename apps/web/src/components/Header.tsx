@@ -1,6 +1,6 @@
 'use client';
 
-import { Bell, Search, User, ChevronDown, Sparkles, LogOut } from 'lucide-react';
+import { Search, User, ChevronDown, Sparkles, LogOut } from 'lucide-react';
 import { useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 
@@ -10,27 +10,11 @@ interface HeaderProps {
 }
 
 export default function Header({ title, subtitle }: HeaderProps) {
-  const [showNotifications, setShowNotifications] = useState(false);
   const [showProfile, setShowProfile] = useState(false);
   const { user, logout } = useAuth();
 
-  const notifications = [
-    { id: 1, text: 'Veículo ABC-1234 pronto para entrega', time: '5 min', type: 'success' },
-    { id: 2, text: 'Lembrete: Troca de óleo - João Silva', time: '1h', type: 'warning' },
-    { id: 3, text: 'Nova O.S. criada #1234', time: '2h', type: 'info' },
-  ];
-
-  const getTypeColor = (type: string) => {
-    switch (type) {
-      case 'success': return 'bg-success/10 border-l-success';
-      case 'warning': return 'bg-warning/10 border-l-warning';
-      case 'info': return 'bg-info/10 border-l-info';
-      default: return 'bg-muted/10 border-l-muted';
-    }
-  };
-
   return (
-    <header className="glass border-b border-border px-4 md:px-8 py-5">
+    <header className="bg-card border-b border-border px-4 md:px-8 py-5">
       <div className="flex items-center justify-between gap-4 flex-wrap md:flex-nowrap">
         {/* Title */}
         <div className="animate-fade-in">
@@ -53,45 +37,6 @@ export default function Header({ title, subtitle }: HeaderProps) {
               placeholder="Buscar cliente, placa, O.S..."
               className="bg-background border border-border rounded-2xl pl-11 pr-4 py-3 w-64 xl:w-80 text-sm text-foreground placeholder-muted focus:outline-none focus:border-primary/50 focus:bg-card transition-all duration-300 focus:shadow-lg focus:shadow-primary/10"
             />
-          </div>
-
-          {/* Notifications */}
-          <div className="relative">
-            <button
-              onClick={() => setShowNotifications(!showNotifications)}
-              className="relative p-3 rounded-2xl bg-background border border-border hover:border-primary/50 hover:bg-primary/10 transition-all duration-300 group"
-            >
-              <Bell size={20} className="text-muted group-hover:text-primary transition-colors" />
-              <span className="absolute -top-1 -right-1 w-5 h-5 bg-gradient-to-r from-danger to-danger-dark rounded-full text-xs text-white flex items-center justify-center font-bold shadow-lg shadow-danger/30 animate-pulse">
-                3
-              </span>
-            </button>
-
-            {showNotifications && (
-              <div className="absolute right-0 top-full mt-3 w-96 glass-card rounded-2xl shadow-2xl z-50 animate-fade-in overflow-hidden">
-                <div className="p-5 border-b border-border flex items-center justify-between">
-                  <h3 className="font-bold text-foreground text-lg">Notificações</h3>
-                  <span className="text-xs text-primary font-medium">3 novas</span>
-                </div>
-                <div className="max-h-80 overflow-y-auto custom-scrollbar">
-                  {notifications.map((notif, index) => (
-                    <div
-                      key={notif.id}
-                      className={`p-4 border-b border-border/50 hover:bg-background cursor-pointer transition-all duration-300 border-l-2 ${getTypeColor(notif.type)}`}
-                      style={{ animationDelay: `${index * 0.1}s` }}
-                    >
-                      <p className="text-sm text-foreground font-medium">{notif.text}</p>
-                      <p className="text-xs text-muted mt-2">{notif.time} atrás</p>
-                    </div>
-                  ))}
-                </div>
-                <div className="p-4 text-center bg-background">
-                  <button className="text-sm text-primary hover:text-foreground font-medium transition-colors">
-                    Ver todas as notificações
-                  </button>
-                </div>
-              </div>
-            )}
           </div>
 
           {/* Profile */}

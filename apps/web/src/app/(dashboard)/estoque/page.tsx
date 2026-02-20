@@ -602,6 +602,9 @@ export default function EstoquePage() {
           filialId: '',
         });
         fetchProdutos();
+      } else {
+        const data = await res.json();
+        toast.error(data.error || 'Erro ao cadastrar produto');
       }
     } catch (error) {
       console.error('Erro ao cadastrar produto:', error);
