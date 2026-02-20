@@ -234,8 +234,41 @@ export async function POST(request: NextRequest) {
       const existing = await prisma.produto.findFirst({
         where: { codigo: body.codigo, empresaId: session.empresaId }
       });
+
       if (existing) {
-        return NextResponse.json({ error: 'Código já cadastrado' }, { status: 400 });
+        // Produto já existe - atualizar quantidade, preços e outros dados
+        const novaQuantidade = Number(existing.quantidade) + (body.quantidade || 0);
+        const novoPrecoCompra = body.precoCompra > 0 ? body.precoCompra : Number(existing.precoCompraAtual);
+        const novoPrecoVenda = body.precoVenda > 0 ? body.precoVenda : Number(existing.precoVenda);
+
+        const produtoAtualizado = await prisma.produto.update({
+          where: { id: existing.id },
+          data: {
+            quantidade: novaQuantidade,
+            precoCompraAtual: novoPrecoCompra,
+            precoVenda: novoPrecoVenda,
+            ...(body.filialId && { filialId: body.filialId }),
+          },
+        });
+
+        console.log('[PRODUTOS API] Produto existente atualizado! ID:', existing.id);
+        console.log('[PRODUTOS API] Quantidade anterior:', Number(existing.quantidade), '-> Nova:', novaQuantidade);
+        console.log('========================================');
+
+        // Monta mensagem detalhada
+        const atualizacoes = [`+${body.quantidade || 0} unidades`];
+        if (body.precoCompra > 0 && body.precoCompra !== Number(existing.precoCompraAtual)) {
+          atualizacoes.push(`preço compra: R$ ${body.precoCompra.toFixed(2)}`);
+        }
+        if (body.precoVenda > 0 && body.precoVenda !== Number(existing.precoVenda)) {
+          atualizacoes.push(`preço venda: R$ ${body.precoVenda.toFixed(2)}`);
+        }
+
+        return NextResponse.json({
+          data: produtoAtualizado,
+          atualizado: true,
+          mensagem: `Estoque atualizado: ${atualizacoes.join(', ')}`
+        }, { status: 200 });
       }
     }
 

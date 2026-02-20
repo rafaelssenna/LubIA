@@ -583,8 +583,13 @@ export default function EstoquePage() {
         }),
       });
 
+      const result = await res.json();
       if (res.ok) {
-        toast.success('Produto cadastrado com sucesso!');
+        if (result.atualizado) {
+          toast.success(result.mensagem || 'Estoque atualizado com sucesso!');
+        } else {
+          toast.success('Produto cadastrado com sucesso!');
+        }
         setShowModal(false);
         setForm({
           codigo: '',
@@ -603,8 +608,7 @@ export default function EstoquePage() {
         });
         fetchProdutos();
       } else {
-        const data = await res.json();
-        toast.error(data.error || 'Erro ao cadastrar produto');
+        toast.error(result.error || 'Erro ao cadastrar produto');
       }
     } catch (error) {
       console.error('Erro ao cadastrar produto:', error);
