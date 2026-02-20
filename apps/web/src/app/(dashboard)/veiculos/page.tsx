@@ -2,7 +2,7 @@
 
 import Header from '@/components/Header';
 import { Plus, Search, Car, User, ClipboardList, X, Camera, Edit, Trash2, Gauge, ArrowRight, Users } from 'lucide-react';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import OCRScanner from '@/components/OCRScanner';
 import { useToast } from '@/components/Toast';
@@ -27,7 +27,7 @@ interface Veiculo {
   cliente: Cliente;
 }
 
-export default function VeiculosPage() {
+function VeiculosPageContent() {
   const toast = useToast();
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -724,5 +724,23 @@ export default function VeiculosPage() {
         />
       )}
     </div>
+  );
+}
+
+export default function VeiculosPage() {
+  return (
+    <Suspense fallback={
+      <div className="flex items-center justify-center h-[60vh]">
+        <div className="flex flex-col items-center gap-4">
+          <div className="relative">
+            <div className="w-16 h-16 border-4 border-green-500/20 rounded-full"></div>
+            <div className="absolute top-0 left-0 w-16 h-16 border-4 border-transparent border-t-green-500 rounded-full animate-spin"></div>
+          </div>
+          <p className="text-muted animate-pulse">Carregando...</p>
+        </div>
+      </div>
+    }>
+      <VeiculosPageContent />
+    </Suspense>
   );
 }

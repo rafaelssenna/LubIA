@@ -2,7 +2,7 @@
 
 import Header from '@/components/Header';
 import { Plus, Search, Phone, Car, Eye, MessageCircle, X, Edit, Trash2, User, Mail, MapPin, CreditCard, Loader2, Users, ArrowRight } from 'lucide-react';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { useToast } from '@/components/Toast';
 import { capitalize, formatCpfCnpj, formatPhone, formatPlate } from '@/utils/format';
@@ -25,7 +25,7 @@ interface Cliente {
   veiculos?: Veiculo[];
 }
 
-export default function ClientesPage() {
+function ClientesPageContent() {
   const toast = useToast();
   const searchParams = useSearchParams();
   const [clientes, setClientes] = useState<Cliente[]>([]);
@@ -974,5 +974,23 @@ export default function ClientesPage() {
         </div>
       )}
     </div>
+  );
+}
+
+export default function ClientesPage() {
+  return (
+    <Suspense fallback={
+      <div className="flex items-center justify-center h-[60vh]">
+        <div className="flex flex-col items-center gap-4">
+          <div className="relative">
+            <div className="w-16 h-16 border-4 border-blue-500/20 rounded-full"></div>
+            <div className="absolute top-0 left-0 w-16 h-16 border-4 border-transparent border-t-blue-500 rounded-full animate-spin"></div>
+          </div>
+          <p className="text-muted animate-pulse">Carregando...</p>
+        </div>
+      </div>
+    }>
+      <ClientesPageContent />
+    </Suspense>
   );
 }
