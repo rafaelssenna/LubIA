@@ -61,9 +61,9 @@ export default function LoginPage() {
             <Image
               src={theme === 'light' ? '/logo.tema.claro.png' : '/logo.png'}
               alt="LoopIA"
-              width={600}
-              height={192}
-              className="h-48 w-auto"
+              width={400}
+              height={120}
+              className="h-28 w-auto object-contain"
             />
           </div>
           <p className="text-muted text-xl">Sistema de Gestão de Oficinas</p>
