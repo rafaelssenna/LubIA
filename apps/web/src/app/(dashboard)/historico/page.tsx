@@ -168,7 +168,7 @@ export default function HistoricoPage() {
                 placeholder="Buscar por número, cliente ou placa..."
                 value={busca}
                 onChange={(e) => setBusca(e.target.value)}
-                className="w-full pl-11 pr-4 py-3 bg-zinc-900/50 border border-border rounded-xl text-foreground placeholder:text-zinc-600 focus:outline-none focus:border-emerald-500/50 transition-colors"
+                className="w-full pl-11 pr-4 py-3 bg-background-secondary border border-border rounded-xl text-foreground placeholder:text-zinc-500 focus:outline-none focus:border-emerald-500/50 transition-colors"
               />
             </div>
 
@@ -179,7 +179,7 @@ export default function HistoricoPage() {
                 className={`px-4 py-2.5 rounded-xl text-sm font-medium transition-all ${
                   tipoFilter === 'todos'
                     ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30'
-                    : 'bg-zinc-900 text-muted border border-border hover:border-border'
+                    : 'bg-background-secondary text-muted border border-border hover:border-border'
                 }`}
               >
                 Todos
@@ -189,7 +189,7 @@ export default function HistoricoPage() {
                 className={`px-4 py-2.5 rounded-xl text-sm font-medium transition-all flex items-center gap-2 ${
                   tipoFilter === 'os'
                     ? 'bg-blue-500/20 text-blue-400 border border-blue-500/30'
-                    : 'bg-zinc-900 text-muted border border-border hover:border-border'
+                    : 'bg-background-secondary text-muted border border-border hover:border-border'
                 }`}
               >
                 <ClipboardList size={16} />
@@ -200,7 +200,7 @@ export default function HistoricoPage() {
                 className={`px-4 py-2.5 rounded-xl text-sm font-medium transition-all flex items-center gap-2 ${
                   tipoFilter === 'vendas'
                     ? 'bg-purple-500/20 text-purple-400 border border-purple-500/30'
-                    : 'bg-zinc-900 text-muted border border-border hover:border-border'
+                    : 'bg-background-secondary text-muted border border-border hover:border-border'
                 }`}
               >
                 <ShoppingCart size={16} />
@@ -214,7 +214,7 @@ export default function HistoricoPage() {
               className={`px-4 py-2.5 rounded-xl text-sm font-medium transition-all flex items-center gap-2 ${
                 showFilters || hasActiveFilters
                   ? 'bg-amber-500/20 text-amber-400 border border-amber-500/30'
-                  : 'bg-zinc-900 text-muted border border-border hover:border-border'
+                  : 'bg-background-secondary text-muted border border-border hover:border-border'
               }`}
             >
               <Filter size={16} />
@@ -231,7 +231,7 @@ export default function HistoricoPage() {
                   type="date"
                   value={dataInicio}
                   onChange={(e) => setDataInicio(e.target.value)}
-                  className="px-4 py-2.5 bg-zinc-900 border border-border rounded-xl text-foreground focus:outline-none focus:border-emerald-500/50"
+                  className="px-4 py-2.5 bg-background-secondary border border-border rounded-xl text-foreground focus:outline-none focus:border-emerald-500/50"
                 />
               </div>
               <div>
@@ -240,7 +240,7 @@ export default function HistoricoPage() {
                   type="date"
                   value={dataFim}
                   onChange={(e) => setDataFim(e.target.value)}
-                  className="px-4 py-2.5 bg-zinc-900 border border-border rounded-xl text-foreground focus:outline-none focus:border-emerald-500/50"
+                  className="px-4 py-2.5 bg-background-secondary border border-border rounded-xl text-foreground focus:outline-none focus:border-emerald-500/50"
                 />
               </div>
               {hasActiveFilters && (
@@ -269,7 +269,7 @@ export default function HistoricoPage() {
               <p>Nenhum registro encontrado</p>
             </div>
           ) : (
-            <div className="divide-y divide-zinc-800/50">
+            <div className="divide-y divide-border">
               {items.map((item) => {
                 const pagamento = item.formaPagamento
                   ? formaPagamentoConfig[item.formaPagamento]
@@ -279,7 +279,7 @@ export default function HistoricoPage() {
                 return (
                   <div
                     key={`${item.tipo}-${item.id}`}
-                    className="p-4 hover:bg-zinc-900/30 transition-colors"
+                    className="p-4 hover:bg-background-secondary/50 transition-colors"
                   >
                     <div className="flex items-center justify-between gap-4">
                       <div className="flex items-center gap-4 min-w-0 flex-1">
@@ -366,7 +366,7 @@ export default function HistoricoPage() {
               <button
                 onClick={() => setPage((p) => Math.max(1, p - 1))}
                 disabled={page === 1}
-                className="p-2 bg-zinc-900 border border-border rounded-lg text-foreground-muted hover:text-foreground hover:border-emerald-500/30 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                className="p-2 bg-background-secondary border border-border rounded-lg text-foreground-muted hover:text-foreground hover:border-emerald-500/30 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <ChevronLeft size={18} />
               </button>
@@ -376,7 +376,7 @@ export default function HistoricoPage() {
               <button
                 onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
                 disabled={page === totalPages}
-                className="p-2 bg-zinc-900 border border-border rounded-lg text-foreground-muted hover:text-foreground hover:border-emerald-500/30 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                className="p-2 bg-background-secondary border border-border rounded-lg text-foreground-muted hover:text-foreground hover:border-emerald-500/30 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <ChevronRight size={18} />
               </button>

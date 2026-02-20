@@ -625,13 +625,13 @@ function OrcamentosPageContent() {
               placeholder="Buscar por número, cliente ou telefone..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-12 pr-4 py-3 bg-background-secondary border border-border/50 rounded-xl text-white placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-[#E85D04]/50 focus:border-[#E85D04]/50 transition-all"
+              className="w-full pl-12 pr-4 py-3 bg-background-secondary border border-border/50 rounded-xl text-foreground placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-[#E85D04]/50 focus:border-[#E85D04]/50 transition-all"
             />
           </div>
           <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
-            className="px-4 py-3 bg-background-secondary border border-border/50 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-[#E85D04]/50 cursor-pointer min-w-[160px]"
+            className="px-4 py-3 bg-background-secondary border border-border/50 rounded-xl text-foreground focus:outline-none focus:ring-2 focus:ring-[#E85D04]/50 cursor-pointer min-w-[160px]"
           >
             <option value="">Todos os status</option>
             <option value="PENDENTE">Pendente</option>
@@ -652,14 +652,14 @@ function OrcamentosPageContent() {
       {/* Orçamentos List */}
       {orcamentos.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-20 bg-card rounded-2xl border border-border">
-          <div className="p-6 bg-zinc-800/50 rounded-full mb-6">
+          <div className="p-6 bg-background-secondary/50 rounded-full mb-6">
             <FileText className="h-12 w-12 text-zinc-600" />
           </div>
           <h3 className="text-xl font-semibold text-foreground mb-2">Nenhum orçamento encontrado</h3>
           <p className="text-muted mb-6">Comece criando seu primeiro orçamento</p>
           <button
             onClick={openNewModal}
-            className="flex items-center gap-2 px-6 py-3 bg-[#E85D04] hover:bg-[#E85D04]/90 text-white font-medium rounded-xl transition-colors"
+            className="flex items-center gap-2 px-6 py-3 bg-[#E85D04] hover:bg-[#E85D04]/90 text-foreground font-medium rounded-xl transition-colors"
           >
             <Plus className="h-5 w-5" />
             Criar Orçamento
@@ -695,7 +695,7 @@ function OrcamentosPageContent() {
                         <User className="h-5 w-5 text-primary" />
                       </div>
                       <div className="flex-1 min-w-0">
-                        <p className="text-white font-medium truncate">
+                        <p className="text-foreground font-medium truncate">
                           {orcamento.nomeCliente || 'Cliente não informado'}
                         </p>
                         <div className="flex items-center gap-1.5 text-sm text-muted">
@@ -715,7 +715,7 @@ function OrcamentosPageContent() {
 
                     {/* Total */}
                     <div className="flex flex-col items-end min-w-[140px]">
-                      <span className="text-2xl font-bold text-white">{formatCurrency(orcamento.total)}</span>
+                      <span className="text-2xl font-bold text-foreground">{formatCurrency(orcamento.total)}</span>
                       <span className="text-xs text-foreground-muted">
                         {orcamento.itensProduto.length + orcamento.servicosExtras.length} itens
                       </span>
@@ -728,7 +728,7 @@ function OrcamentosPageContent() {
                           setSelectedOrcamento(orcamento);
                           setShowDetailModal(true);
                         }}
-                        className="p-2.5 text-muted hover:text-white hover:bg-zinc-800 rounded-xl transition-all"
+                        className="p-2.5 text-muted hover:text-white hover:bg-background-secondary rounded-xl transition-all"
                         title="Ver detalhes"
                       >
                         <Eye className="h-5 w-5" />
@@ -797,15 +797,15 @@ function OrcamentosPageContent() {
       {totalPages > 1 && (
         <div className="flex flex-col sm:flex-row items-center justify-between gap-4 bg-card rounded-2xl p-4 border border-border">
           <p className="text-sm text-muted">
-            Mostrando <span className="text-white font-medium">{((currentPage - 1) * itemsPerPage) + 1}</span> a{' '}
-            <span className="text-white font-medium">{Math.min(currentPage * itemsPerPage, totalItems)}</span> de{' '}
-            <span className="text-white font-medium">{totalItems}</span> orçamentos
+            Mostrando <span className="text-foreground font-medium">{((currentPage - 1) * itemsPerPage) + 1}</span> a{' '}
+            <span className="text-foreground font-medium">{Math.min(currentPage * itemsPerPage, totalItems)}</span> de{' '}
+            <span className="text-foreground font-medium">{totalItems}</span> orçamentos
           </p>
           <div className="flex items-center gap-2">
             <button
               onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
               disabled={currentPage === 1}
-              className="px-4 py-2 bg-zinc-800 hover:bg-zinc-700 text-white rounded-xl disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              className="px-4 py-2 bg-background-secondary hover:bg-background-secondary/80 text-foreground rounded-xl disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             >
               Anterior
             </button>
@@ -828,7 +828,7 @@ function OrcamentosPageContent() {
                     className={`w-10 h-10 rounded-xl font-medium transition-colors ${
                       currentPage === page
                         ? 'bg-[#E85D04] text-white'
-                        : 'bg-zinc-800 text-muted hover:bg-zinc-700 hover:text-white'
+                        : 'bg-background-secondary text-muted hover:bg-background-secondary/80 hover:text-foreground'
                     }`}
                   >
                     {page}
@@ -839,7 +839,7 @@ function OrcamentosPageContent() {
             <button
               onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
               disabled={currentPage === totalPages}
-              className="px-4 py-2 bg-zinc-800 hover:bg-zinc-700 text-white rounded-xl disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              className="px-4 py-2 bg-background-secondary hover:bg-background-secondary/80 text-foreground rounded-xl disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             >
               Próximo
             </button>
@@ -854,7 +854,7 @@ function OrcamentosPageContent() {
           <div className="bg-card rounded-2xl w-full max-w-2xl max-h-[90vh] overflow-hidden flex flex-col border border-border">
             <div className="flex items-center justify-between p-6 border-b border-border">
               <div>
-                <h2 className="text-2xl font-bold text-white">
+                <h2 className="text-2xl font-bold text-foreground">
                   {editingOrcamento ? 'Editar Orçamento' : 'Novo Orçamento'}
                 </h2>
                 <p className="text-sm text-muted mt-1">
@@ -863,7 +863,7 @@ function OrcamentosPageContent() {
               </div>
               <button
                 onClick={() => setShowModal(false)}
-                className="p-2 hover:bg-zinc-800 rounded-xl transition-colors"
+                className="p-2 hover:bg-background-secondary rounded-xl transition-colors"
               >
                 <X className="h-6 w-6 text-muted" />
               </button>
@@ -881,7 +881,7 @@ function OrcamentosPageContent() {
                     value={nomeCliente}
                     onChange={(e) => setNomeCliente(e.target.value)}
                     placeholder="Nome (opcional)"
-                    className="w-full px-4 py-3 bg-background-secondary border border-border/50 rounded-xl text-white placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-[#E85D04]/50 focus:border-[#E85D04]/50 transition-all"
+                    className="w-full px-4 py-3 bg-background-secondary border border-border/50 rounded-xl text-foreground placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-[#E85D04]/50 focus:border-[#E85D04]/50 transition-all"
                   />
                 </div>
                 <div>
@@ -894,7 +894,7 @@ function OrcamentosPageContent() {
                     value={telefoneCliente}
                     onChange={(e) => setTelefoneCliente(e.target.value)}
                     placeholder="(11) 99999-9999"
-                    className="w-full px-4 py-3 bg-background-secondary border border-border/50 rounded-xl text-white placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-[#E85D04]/50 focus:border-[#E85D04]/50 transition-all"
+                    className="w-full px-4 py-3 bg-background-secondary border border-border/50 rounded-xl text-foreground placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-[#E85D04]/50 focus:border-[#E85D04]/50 transition-all"
                   />
                 </div>
               </div>
@@ -911,7 +911,7 @@ function OrcamentosPageContent() {
                     placeholder="Buscar produto..."
                     value={searchProduto}
                     onChange={(e) => setSearchProduto(e.target.value)}
-                    className="w-full pl-11 pr-4 py-3 bg-background-secondary border border-border/50 rounded-xl text-white placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-[#E85D04]/50 focus:border-[#E85D04]/50 transition-all"
+                    className="w-full pl-11 pr-4 py-3 bg-background-secondary border border-border/50 rounded-xl text-foreground placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-[#E85D04]/50 focus:border-[#E85D04]/50 transition-all"
                   />
                 </div>
                 {searchProduto && (
@@ -933,7 +933,7 @@ function OrcamentosPageContent() {
                         >
                           <div className="flex justify-between items-center">
                             <div>
-                              <p className="text-white font-medium">{produto.nome}</p>
+                              <p className="text-foreground font-medium">{produto.nome}</p>
                               <p className="text-xs text-muted">{produto.codigo}</p>
                             </div>
                             <span className="text-[#E85D04] font-bold">{formatCurrency(produto.precoVenda)}</span>
@@ -951,7 +951,7 @@ function OrcamentosPageContent() {
                       return (
                         <div key={sp.produtoId} className="flex items-center gap-3 p-3 bg-background-secondary rounded-xl border border-border/50">
                           <Package className="h-5 w-5 text-[#E85D04]" />
-                          <span className="flex-1 text-white font-medium">
+                          <span className="flex-1 text-foreground font-medium">
                             {produto?.nome}
                             {isGranel && <span className="ml-2 text-xs text-amber-400">(Granel)</span>}
                           </span>
@@ -966,7 +966,7 @@ function OrcamentosPageContent() {
                                 p.produtoId === sp.produtoId ? { ...p, quantidade: newQtd } : p
                               ));
                             }}
-                            className="w-20 px-3 py-2 bg-card border border-border/50 rounded-lg text-white text-center focus:outline-none focus:ring-2 focus:ring-[#E85D04]/50"
+                            className="w-20 px-3 py-2 bg-card border border-border/50 rounded-lg text-foreground text-center focus:outline-none focus:ring-2 focus:ring-[#E85D04]/50"
                           />
                           <span className="text-muted font-medium min-w-[100px] text-right">{formatCurrency(sp.precoUnitario * sp.quantidade)}</span>
                           <button
@@ -993,14 +993,14 @@ function OrcamentosPageContent() {
                     placeholder="Descrição do serviço..."
                     value={novoServicoExtra.descricao}
                     onChange={(e) => setNovoServicoExtra({ ...novoServicoExtra, descricao: e.target.value })}
-                    className="flex-1 px-4 py-3 bg-background-secondary border border-border/50 rounded-xl text-white placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-[#E85D04]/50 focus:border-[#E85D04]/50 transition-all"
+                    className="flex-1 px-4 py-3 bg-background-secondary border border-border/50 rounded-xl text-foreground placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-[#E85D04]/50 focus:border-[#E85D04]/50 transition-all"
                   />
                   <input
                     type="number"
                     placeholder="Valor"
                     value={novoServicoExtra.valor}
                     onChange={(e) => setNovoServicoExtra({ ...novoServicoExtra, valor: e.target.value })}
-                    className="w-32 px-4 py-3 bg-background-secondary border border-border/50 rounded-xl text-white placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-[#E85D04]/50 focus:border-[#E85D04]/50 transition-all"
+                    className="w-32 px-4 py-3 bg-background-secondary border border-border/50 rounded-xl text-foreground placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-[#E85D04]/50 focus:border-[#E85D04]/50 transition-all"
                   />
                   <button
                     onClick={addServicoExtra}
@@ -1015,7 +1015,7 @@ function OrcamentosPageContent() {
                     {servicosExtras.map((servico, index) => (
                       <div key={index} className="flex items-center gap-3 p-3 bg-background-secondary rounded-xl border border-border/50">
                         <DollarSign className="h-5 w-5 text-emerald-400" />
-                        <span className="flex-1 text-white font-medium">{servico.descricao}</span>
+                        <span className="flex-1 text-foreground font-medium">{servico.descricao}</span>
                         <span className="text-muted font-medium">{formatCurrency(servico.valor)}</span>
                         <button
                           onClick={() => removeServicoExtra(index)}
@@ -1038,7 +1038,7 @@ function OrcamentosPageContent() {
                   value={observacoes}
                   onChange={(e) => setObservacoes(e.target.value)}
                   rows={3}
-                  className="w-full px-4 py-3 bg-background-secondary border border-border/50 rounded-xl text-white placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-[#E85D04]/50 focus:border-[#E85D04]/50 transition-all resize-none"
+                  className="w-full px-4 py-3 bg-background-secondary border border-border/50 rounded-xl text-foreground placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-[#E85D04]/50 focus:border-[#E85D04]/50 transition-all resize-none"
                   placeholder="Observações adicionais (opcional)..."
                 />
               </div>
@@ -1046,7 +1046,7 @@ function OrcamentosPageContent() {
               {/* Total */}
               <div className="p-5 bg-gradient-to-r from-[#E85D04]/20 to-[#E85D04]/10 rounded-xl border border-[#E85D04]/30">
                 <div className="flex justify-between items-center">
-                  <span className="text-lg font-medium text-white">Total do Orçamento:</span>
+                  <span className="text-lg font-medium text-foreground">Total do Orçamento:</span>
                   <span className="text-3xl font-bold text-[#E85D04]">{formatCurrency(calcularTotal())}</span>
                 </div>
               </div>
@@ -1078,7 +1078,7 @@ function OrcamentosPageContent() {
           <div className="bg-card rounded-2xl w-full max-w-lg max-h-[90vh] overflow-hidden flex flex-col border border-border">
             <div className="flex items-center justify-between p-6 border-b border-border">
               <div>
-                <h2 className="text-2xl font-bold text-white">
+                <h2 className="text-2xl font-bold text-foreground">
                   {selectedOrcamento.numero}
                 </h2>
                 <p className="text-sm text-muted mt-1">{formatDate(selectedOrcamento.createdAt)}</p>
@@ -1088,7 +1088,7 @@ function OrcamentosPageContent() {
                   setShowDetailModal(false);
                   setSelectedOrcamento(null);
                 }}
-                className="p-2 hover:bg-zinc-800 rounded-xl transition-colors"
+                className="p-2 hover:bg-background-secondary rounded-xl transition-colors"
               >
                 <X className="h-6 w-6 text-muted" />
               </button>
@@ -1106,11 +1106,11 @@ function OrcamentosPageContent() {
               {/* Cliente */}
               <div className="p-4 bg-background-secondary rounded-xl">
                 <div className="flex items-center gap-4">
-                  <div className="p-3 bg-zinc-700 rounded-xl">
+                  <div className="p-3 bg-background-secondary rounded-xl">
                     <User className="h-6 w-6 text-muted" />
                   </div>
                   <div>
-                    <p className="text-white font-semibold text-lg">{selectedOrcamento.nomeCliente || 'Cliente não informado'}</p>
+                    <p className="text-foreground font-semibold text-lg">{selectedOrcamento.nomeCliente || 'Cliente não informado'}</p>
                     <p className="text-muted flex items-center gap-2 mt-1">
                       <Phone className="h-4 w-4" />
                       {formatPhone(selectedOrcamento.telefoneCliente)}
@@ -1130,10 +1130,10 @@ function OrcamentosPageContent() {
                     {selectedOrcamento.itensProduto.map((item) => (
                       <div key={item.id} className="flex justify-between items-center p-4 bg-background-secondary rounded-xl">
                         <div>
-                          <p className="text-white font-medium">{item.produtoNome}</p>
+                          <p className="text-foreground font-medium">{item.produtoNome}</p>
                           <p className="text-sm text-muted">{item.quantidade}x {formatCurrency(item.precoUnitario)}</p>
                         </div>
-                        <span className="text-white font-bold">{formatCurrency(item.subtotal)}</span>
+                        <span className="text-foreground font-bold">{formatCurrency(item.subtotal)}</span>
                       </div>
                     ))}
                   </div>
@@ -1150,8 +1150,8 @@ function OrcamentosPageContent() {
                   <div className="space-y-2">
                     {selectedOrcamento.servicosExtras.map((servico, idx) => (
                       <div key={idx} className="flex justify-between items-center p-4 bg-background-secondary rounded-xl">
-                        <span className="text-white font-medium">{servico.descricao}</span>
-                        <span className="text-white font-bold">{formatCurrency(servico.valor)}</span>
+                        <span className="text-foreground font-medium">{servico.descricao}</span>
+                        <span className="text-foreground font-bold">{formatCurrency(servico.valor)}</span>
                       </div>
                     ))}
                   </div>
@@ -1161,7 +1161,7 @@ function OrcamentosPageContent() {
               {/* Total */}
               <div className="p-5 bg-gradient-to-r from-[#E85D04]/20 to-[#E85D04]/10 rounded-xl border border-[#E85D04]/30">
                 <div className="flex justify-between items-center">
-                  <span className="text-lg font-medium text-white">Total:</span>
+                  <span className="text-lg font-medium text-foreground">Total:</span>
                   <span className="text-3xl font-bold text-[#E85D04]">{formatCurrency(selectedOrcamento.total)}</span>
                 </div>
               </div>
@@ -1170,7 +1170,7 @@ function OrcamentosPageContent() {
               <div className="grid grid-cols-2 gap-3">
                 <button
                   onClick={() => downloadOrcamentoPDF(selectedOrcamento as any, empresaConfig || undefined)}
-                  className="flex items-center justify-center gap-2 px-4 py-3 bg-[#E85D04] hover:bg-[#E85D04]/90 text-white font-medium rounded-xl transition-colors"
+                  className="flex items-center justify-center gap-2 px-4 py-3 bg-[#E85D04] hover:bg-[#E85D04]/90 text-foreground font-medium rounded-xl transition-colors"
                 >
                   <FileDown className="h-5 w-5" />
                   Baixar PDF
@@ -1179,7 +1179,7 @@ function OrcamentosPageContent() {
                   <button
                     onClick={() => sendWhatsApp(selectedOrcamento)}
                     disabled={sendingWhatsApp === selectedOrcamento.id}
-                    className="flex items-center justify-center gap-2 px-4 py-3 bg-green-600 hover:bg-green-700 text-white font-medium rounded-xl transition-colors disabled:opacity-50"
+                    className="flex items-center justify-center gap-2 px-4 py-3 bg-green-600 hover:bg-green-700 text-foreground font-medium rounded-xl transition-colors disabled:opacity-50"
                   >
                     {sendingWhatsApp === selectedOrcamento.id ? (
                       <Loader2 className="h-5 w-5 animate-spin" />
@@ -1198,7 +1198,7 @@ function OrcamentosPageContent() {
                     setShowDetailModal(false);
                     openConvertModal(selectedOrcamento);
                   }}
-                  className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-purple-600 hover:bg-purple-700 text-white font-medium rounded-xl transition-colors"
+                  className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-purple-600 hover:bg-purple-700 text-foreground font-medium rounded-xl transition-colors"
                 >
                   <ArrowRight className="h-5 w-5" />
                   Converter em O.S.
@@ -1231,7 +1231,7 @@ function OrcamentosPageContent() {
                   setShowDeleteConfirm(false);
                   setSelectedOrcamento(null);
                 }}
-                className="flex-1 px-4 py-3 border border-border text-white rounded-xl hover:bg-zinc-800 transition-colors font-medium"
+                className="flex-1 px-4 py-3 border border-border text-white rounded-xl hover:bg-background-secondary transition-colors font-medium"
               >
                 Cancelar
               </button>
@@ -1254,7 +1254,7 @@ function OrcamentosPageContent() {
           <div className="bg-card rounded-2xl w-full max-w-lg max-h-[90vh] overflow-hidden flex flex-col border border-border">
             <div className="flex items-center justify-between p-6 border-b border-border">
               <div>
-                <h2 className="text-2xl font-bold text-white">Converter em O.S.</h2>
+                <h2 className="text-2xl font-bold text-foreground">Converter em O.S.</h2>
                 <p className="text-sm text-muted mt-1">
                   {convertingOrcamento.numero} - {convertingOrcamento.nomeCliente || 'Cliente não informado'}
                 </p>
@@ -1264,7 +1264,7 @@ function OrcamentosPageContent() {
                   setShowConvertModal(false);
                   setConvertingOrcamento(null);
                 }}
-                className="p-2 hover:bg-zinc-800 rounded-xl transition-colors"
+                className="p-2 hover:bg-background-secondary rounded-xl transition-colors"
               >
                 <X className="h-6 w-6 text-muted" />
               </button>
@@ -1316,7 +1316,7 @@ function OrcamentosPageContent() {
                         placeholder="Buscar por placa, modelo ou cliente..."
                         value={searchVeiculo}
                         onChange={(e) => setSearchVeiculo(e.target.value)}
-                        className="w-full pl-12 pr-4 py-3 bg-background-secondary border border-border rounded-xl text-white placeholder-zinc-500 focus:outline-none focus:border-purple-500"
+                        className="w-full pl-12 pr-4 py-3 bg-background-secondary border border-border rounded-xl text-foreground placeholder-zinc-500 focus:outline-none focus:border-purple-500"
                       />
                     </div>
                   </div>
@@ -1382,7 +1382,7 @@ function OrcamentosPageContent() {
                           value={quickNome}
                           onChange={(e) => setQuickNome(e.target.value)}
                           placeholder="Nome do cliente"
-                          className="w-full px-4 py-2.5 bg-background-secondary border border-border rounded-xl text-white placeholder-zinc-500 focus:outline-none focus:border-emerald-500"
+                          className="w-full px-4 py-2.5 bg-background-secondary border border-border rounded-xl text-foreground placeholder-zinc-500 focus:outline-none focus:border-emerald-500"
                         />
                       </div>
                       <div>
@@ -1392,7 +1392,7 @@ function OrcamentosPageContent() {
                           value={quickTelefone}
                           onChange={(e) => setQuickTelefone(e.target.value)}
                           placeholder="(00) 00000-0000"
-                          className="w-full px-4 py-2.5 bg-background-secondary border border-border rounded-xl text-white placeholder-zinc-500 focus:outline-none focus:border-emerald-500"
+                          className="w-full px-4 py-2.5 bg-background-secondary border border-border rounded-xl text-foreground placeholder-zinc-500 focus:outline-none focus:border-emerald-500"
                         />
                       </div>
                     </div>
@@ -1423,7 +1423,7 @@ function OrcamentosPageContent() {
                           value={quickMarca}
                           onChange={(e) => setQuickMarca(e.target.value)}
                           placeholder="Fiat"
-                          className="w-full px-4 py-2.5 bg-background-secondary border border-border rounded-xl text-white placeholder-zinc-500 focus:outline-none focus:border-emerald-500"
+                          className="w-full px-4 py-2.5 bg-background-secondary border border-border rounded-xl text-foreground placeholder-zinc-500 focus:outline-none focus:border-emerald-500"
                         />
                       </div>
                       <div>
@@ -1433,7 +1433,7 @@ function OrcamentosPageContent() {
                           value={quickModelo}
                           onChange={(e) => setQuickModelo(e.target.value)}
                           placeholder="Uno"
-                          className="w-full px-4 py-2.5 bg-background-secondary border border-border rounded-xl text-white placeholder-zinc-500 focus:outline-none focus:border-emerald-500"
+                          className="w-full px-4 py-2.5 bg-background-secondary border border-border rounded-xl text-foreground placeholder-zinc-500 focus:outline-none focus:border-emerald-500"
                         />
                       </div>
                       <div>
@@ -1444,7 +1444,7 @@ function OrcamentosPageContent() {
                           onChange={(e) => setQuickCilindrada(e.target.value)}
                           placeholder="1.0"
                           maxLength={20}
-                          className="w-full px-4 py-2.5 bg-background-secondary border border-border rounded-xl text-white placeholder-zinc-500 focus:outline-none focus:border-emerald-500"
+                          className="w-full px-4 py-2.5 bg-background-secondary border border-border rounded-xl text-foreground placeholder-zinc-500 focus:outline-none focus:border-emerald-500"
                         />
                       </div>
                     </div>
@@ -1454,7 +1454,7 @@ function OrcamentosPageContent() {
                   <button
                     onClick={handleQuickRegister}
                     disabled={creatingQuick}
-                    className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-medium rounded-xl transition-colors disabled:opacity-50"
+                    className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-emerald-600 hover:bg-emerald-700 text-foreground font-medium rounded-xl transition-colors disabled:opacity-50"
                   >
                     {creatingQuick ? (
                       <Loader2 className="h-5 w-5 animate-spin" />
@@ -1485,7 +1485,7 @@ function OrcamentosPageContent() {
                     setShowConvertModal(false);
                     setConvertingOrcamento(null);
                   }}
-                  className="flex-1 px-4 py-3 border border-border text-white rounded-xl hover:bg-zinc-800 transition-colors font-medium"
+                  className="flex-1 px-4 py-3 border border-border text-white rounded-xl hover:bg-background-secondary transition-colors font-medium"
                 >
                   Cancelar
                 </button>
