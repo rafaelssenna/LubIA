@@ -985,13 +985,13 @@ export default function EstoquePage() {
                 placeholder="Buscar produto..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full bg-card border border-border rounded-xl pl-11 pr-4 py-3 text-sm text-foreground placeholder-zinc-500 focus:outline-none focus:border-amber-500/50 focus:ring-1 focus:ring-amber-500/20 transition-all duration-200"
+                className="w-full bg-background-secondary border border-border rounded-xl pl-11 pr-4 py-3 text-sm text-foreground placeholder-zinc-500 focus:outline-none focus:border-amber-500/50 focus:ring-1 focus:ring-amber-500/20 transition-all duration-200"
               />
             </div>
             <select
               value={categoriaFilter}
               onChange={(e) => setCategoriaFilter(e.target.value)}
-              className="bg-card border border-border rounded-xl px-4 py-3 text-muted focus:outline-none focus:border-amber-500/50 focus:ring-1 focus:ring-amber-500/20 transition-all duration-200"
+              className="bg-background-secondary border border-border rounded-xl px-4 py-3 text-foreground focus:outline-none focus:border-amber-500/50 focus:ring-1 focus:ring-amber-500/20 transition-all duration-200"
             >
               {categorias.map((cat) => (
                 <option key={cat.value} value={cat.value}>{cat.label}</option>
@@ -1015,12 +1015,12 @@ export default function EstoquePage() {
             <select
               value={ativoFilter}
               onChange={(e) => setAtivoFilter(e.target.value as 'todos' | 'ativos' | 'inativos')}
-              className={`bg-background border rounded-xl px-4 py-3 focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/20 transition-all duration-200 ${
+              className={`bg-background-secondary border rounded-xl px-4 py-3 focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/20 transition-all duration-200 ${
                 ativoFilter === 'inativos'
                   ? 'border-red-500/50 text-red-400'
                   : ativoFilter === 'todos'
                     ? 'border-blue-500/50 text-blue-400'
-                    : 'border-border text-muted'
+                    : 'border-border text-foreground'
               }`}
               title="Filtrar por status"
             >
@@ -1031,7 +1031,7 @@ export default function EstoquePage() {
             <select
               value={filialFilter}
               onChange={(e) => setFilialFilter(e.target.value)}
-              className="bg-background border border-border rounded-xl px-4 py-3 text-muted focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/20 transition-all duration-200"
+              className="bg-background-secondary border border-border rounded-xl px-4 py-3 text-foreground focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/20 transition-all duration-200"
               title="Filtrar por filial/fornecedor"
             >
               <option value="">Todas Filiais</option>
