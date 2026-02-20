@@ -79,12 +79,16 @@ export async function GET(request: NextRequest) {
         OR: [
           { id: !isNaN(parseInt(query)) ? parseInt(query) : undefined },
           { veiculo: { placa: { contains: query, mode: 'insensitive' } } },
-          { cliente: { nome: { contains: query, mode: 'insensitive' } } },
+          { veiculo: { cliente: { nome: { contains: query, mode: 'insensitive' } } } },
         ],
       },
       include: {
-        cliente: { select: { nome: true } },
-        veiculo: { select: { placa: true } },
+        veiculo: {
+          select: {
+            placa: true,
+            cliente: { select: { nome: true } }
+          }
+        },
       },
       take: 5,
       orderBy: { createdAt: 'desc' },
@@ -95,7 +99,7 @@ export async function GET(request: NextRequest) {
         tipo: 'ordem',
         id: o.id,
         titulo: `O.S. #${o.id} - ${o.veiculo?.placa || 'Sem placa'}`,
-        subtitulo: `${o.cliente?.nome || 'Cliente'} • ${o.status}`,
+        subtitulo: `${o.veiculo?.cliente?.nome || 'Cliente'} • ${o.status}`,
       });
     });
 
