@@ -26,9 +26,9 @@ export const metadata: Metadata = {
     siteName: "LoopIA",
     images: [
       {
-        url: "https://www.loopia.app.br/logo.png",
-        width: 800,
-        height: 600,
+        url: "https://www.loopia.app.br/logo.opengraph.png",
+        width: 1200,
+        height: 630,
         alt: "LoopIA Logo",
       },
     ],
@@ -39,7 +39,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "LoopIA - Gestao de Oficinas",
     description: "Sistema inteligente para gestao de oficinas mecanicas",
-    images: ["https://www.loopia.app.br/logo.png"],
+    images: ["https://www.loopia.app.br/logo.opengraph.png"],
   },
 };
 
