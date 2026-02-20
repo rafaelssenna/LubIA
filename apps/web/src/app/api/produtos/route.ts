@@ -236,39 +236,50 @@ export async function POST(request: NextRequest) {
       });
 
       if (existing) {
-        // Produto já existe - atualizar quantidade, preços e outros dados
-        const novaQuantidade = Number(existing.quantidade) + (body.quantidade || 0);
-        const novoPrecoCompra = body.precoCompra > 0 ? body.precoCompra : Number(existing.precoCompraAtual);
-        const novoPrecoVenda = body.precoVenda > 0 ? body.precoVenda : Number(existing.precoVenda);
+        // Verificar se o nome é igual (normaliza para comparação)
+        const nomeExistente = existing.nome?.toLowerCase().trim() || '';
+        const nomeNovo = body.nome?.toLowerCase().trim() || '';
 
-        const produtoAtualizado = await prisma.produto.update({
-          where: { id: existing.id },
-          data: {
-            quantidade: novaQuantidade,
-            precoCompraAtual: novoPrecoCompra,
-            precoVenda: novoPrecoVenda,
-            ...(body.filialId && { filialId: body.filialId }),
-          },
-        });
+        if (nomeExistente === nomeNovo) {
+          // Código E nome iguais - atualizar quantidade, preços e outros dados
+          const novaQuantidade = Number(existing.quantidade) + (body.quantidade || 0);
+          const novoPrecoCompra = body.precoCompra > 0 ? body.precoCompra : Number(existing.precoCompraAtual);
+          const novoPrecoVenda = body.precoVenda > 0 ? body.precoVenda : Number(existing.precoVenda);
 
-        console.log('[PRODUTOS API] Produto existente atualizado! ID:', existing.id);
-        console.log('[PRODUTOS API] Quantidade anterior:', Number(existing.quantidade), '-> Nova:', novaQuantidade);
-        console.log('========================================');
+          const produtoAtualizado = await prisma.produto.update({
+            where: { id: existing.id },
+            data: {
+              quantidade: novaQuantidade,
+              precoCompraAtual: novoPrecoCompra,
+              precoVenda: novoPrecoVenda,
+              ...(body.filialId && { filialId: body.filialId }),
+            },
+          });
 
-        // Monta mensagem detalhada
-        const atualizacoes = [`+${body.quantidade || 0} unidades`];
-        if (body.precoCompra > 0 && body.precoCompra !== Number(existing.precoCompraAtual)) {
-          atualizacoes.push(`preço compra: R$ ${body.precoCompra.toFixed(2)}`);
+          console.log('[PRODUTOS API] Produto existente atualizado! ID:', existing.id);
+          console.log('[PRODUTOS API] Quantidade anterior:', Number(existing.quantidade), '-> Nova:', novaQuantidade);
+          console.log('========================================');
+
+          // Monta mensagem detalhada
+          const atualizacoes = [`+${body.quantidade || 0} unidades`];
+          if (body.precoCompra > 0 && body.precoCompra !== Number(existing.precoCompraAtual)) {
+            atualizacoes.push(`preço compra: R$ ${body.precoCompra.toFixed(2)}`);
+          }
+          if (body.precoVenda > 0 && body.precoVenda !== Number(existing.precoVenda)) {
+            atualizacoes.push(`preço venda: R$ ${body.precoVenda.toFixed(2)}`);
+          }
+
+          return NextResponse.json({
+            data: produtoAtualizado,
+            atualizado: true,
+            mensagem: `Estoque atualizado: ${atualizacoes.join(', ')}`
+          }, { status: 200 });
+        } else {
+          // Código igual mas nome diferente - continua para criar novo produto
+          console.log('[PRODUTOS API] Código existe mas nome diferente - criando novo produto');
+          console.log('[PRODUTOS API] Nome existente:', existing.nome);
+          console.log('[PRODUTOS API] Nome novo:', body.nome);
         }
-        if (body.precoVenda > 0 && body.precoVenda !== Number(existing.precoVenda)) {
-          atualizacoes.push(`preço venda: R$ ${body.precoVenda.toFixed(2)}`);
-        }
-
-        return NextResponse.json({
-          data: produtoAtualizado,
-          atualizado: true,
-          mensagem: `Estoque atualizado: ${atualizacoes.join(', ')}`
-        }, { status: 200 });
       }
     }
 
