@@ -4,10 +4,12 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
-import { LogIn, Loader2, AlertCircle, UserPlus, Car } from 'lucide-react';
+import { LogIn, Loader2, AlertCircle, UserPlus, Car, Sun, Moon } from 'lucide-react';
+import { useTheme } from '@/contexts/ThemeContext';
 
 export default function LoginPage() {
   const router = useRouter();
+  const { theme, toggleTheme } = useTheme();
   const [email, setEmail] = useState('');
   const [senha, setSenha] = useState('');
   const [loading, setLoading] = useState(false);
@@ -42,17 +44,26 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4">
+    <div className="min-h-screen flex items-center justify-center p-4 relative">
+      {/* Botão de tema */}
+      <button
+        onClick={toggleTheme}
+        className="absolute top-4 right-4 p-3 rounded-xl bg-card border border-border hover:border-primary/50 transition-all"
+        title={theme === 'dark' ? 'Tema Claro' : 'Tema Escuro'}
+      >
+        {theme === 'dark' ? <Sun size={20} className="text-amber-400" /> : <Moon size={20} className="text-primary" />}
+      </button>
+
       <div className="w-full max-w-md">
         {/* Logo */}
         <div className="text-center mb-12">
           <div className="flex items-center justify-center mb-6">
             <Image
-              src="/logo.png"
+              src={theme === 'light' ? '/logo.tema.claro.png' : '/logo.png'}
               alt="LoopIA"
               width={500}
               height={160}
-              className="h-40 w-auto brightness-0 invert"
+              className="h-40 w-auto"
             />
           </div>
           <p className="text-muted text-xl">Sistema de Gestão de Oficinas</p>

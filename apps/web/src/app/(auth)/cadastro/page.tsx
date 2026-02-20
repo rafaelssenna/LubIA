@@ -3,7 +3,9 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import Image from 'next/image';
 import { UserPlus, Loader2, AlertCircle, ArrowLeft } from 'lucide-react';
+import { useTheme } from '@/contexts/ThemeContext';
 
 // Formatar CNPJ enquanto digita: 00.000.000/0000-00
 function formatCnpj(value: string): string {
@@ -25,6 +27,7 @@ function formatTelefone(value: string): string {
 
 export default function CadastroPage() {
   const router = useRouter();
+  const { theme } = useTheme();
   const [nome, setNome] = useState('');
   const [email, setEmail] = useState('');
   const [senha, setSenha] = useState('');
@@ -142,11 +145,14 @@ export default function CadastroPage() {
       <div className="w-full max-w-md">
         {/* Logo */}
         <div className="text-center mb-8">
-          <div className="flex items-center justify-center gap-3 mb-2">
-            <div className="w-12 h-12 bg-gradient-to-br from-primary to-primary-dark rounded-2xl flex items-center justify-center">
-              <span className="text-2xl font-bold text-white">L</span>
-            </div>
-            <h1 className="text-3xl font-bold text-foreground">Loop<span className="text-primary">IA</span></h1>
+          <div className="flex items-center justify-center mb-4">
+            <Image
+              src={theme === 'light' ? '/logo.tema.claro.png' : '/logo.png'}
+              alt="LoopIA"
+              width={280}
+              height={90}
+              className="h-20 w-auto"
+            />
           </div>
           <p className="text-muted">Sistema de Gestão de Oficinas</p>
         </div>
