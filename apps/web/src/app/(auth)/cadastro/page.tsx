@@ -149,9 +149,9 @@ export default function CadastroPage() {
             <Image
               src={theme === 'light' ? '/logo.tema.claro.png' : '/logo.png'}
               alt="LoopIA"
-              width={280}
-              height={90}
-              className="h-20 w-auto"
+              width={336}
+              height={108}
+              className="h-24 w-auto"
             />
           </div>
           <p className="text-muted">Sistema de Gestão de Oficinas</p>

@@ -18,9 +18,9 @@ export default function PublicLayout({
           <Image
             src={theme === 'light' ? '/logo.tema.claro.png' : '/logo.png'}
             alt="LoopIA"
-            width={320}
-            height={100}
-            className="h-24 w-auto"
+            width={384}
+            height={120}
+            className="h-28 w-auto"
           />
         </div>
       </header>
