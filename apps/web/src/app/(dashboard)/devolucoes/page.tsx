@@ -98,6 +98,14 @@ interface ItemParaDevolver {
   quantidadeTroca?: number;
 }
 
+interface VendaResumo {
+  id: number;
+  numero: string;
+  nomeCliente: string | null;
+  total: number;
+  createdAt: string;
+}
+
 function DevolucoesPageContent() {
   const { showToast } = useToast();
   const searchParams = useSearchParams();
@@ -134,6 +142,10 @@ function DevolucoesPageContent() {
   // Modal for viewing devolução details
   const [showDetalhes, setShowDetalhes] = useState(false);
   const [devolucaoSelecionada, setDevolucaoSelecionada] = useState<Devolucao | null>(null);
+
+  // States for recent vendas
+  const [ultimasVendas, setUltimasVendas] = useState<VendaResumo[]>([]);
+  const [loadingUltimasVendas, setLoadingUltimasVendas] = useState(true);
 
   // Handle URL parameter from vendas-rapidas page
   useEffect(() => {
@@ -173,6 +185,54 @@ function DevolucoesPageContent() {
   useEffect(() => {
     fetchDevolucoes();
   }, [page, filtroTipo]);
+
+  // Fetch recent vendas for quick access
+  const fetchUltimasVendas = async () => {
+    setLoadingUltimasVendas(true);
+    try {
+      const res = await fetch('/api/vendas-rapidas?limit=5');
+      const data = await res.json();
+      if (data.data) {
+        setUltimasVendas(data.data);
+      }
+    } catch (error) {
+      console.error('Erro ao carregar últimas vendas:', error);
+    } finally {
+      setLoadingUltimasVendas(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchUltimasVendas();
+  }, []);
+
+  // Select venda from recent list
+  const selecionarVenda = async (vendaId: number) => {
+    setSearchingVenda(true);
+    setVendaError(null);
+    setVenda(null);
+
+    try {
+      const res = await fetch(`/api/vendas-rapidas/${vendaId}`);
+      const data = await res.json();
+
+      if (res.ok) {
+        const itensDisponiveis = data.itens.filter((i: ItemVenda) => i.quantidadeDisponivel > 0);
+        if (itensDisponiveis.length === 0) {
+          setVendaError('Todos os itens desta venda já foram devolvidos');
+          return;
+        }
+        setVenda(data);
+        setStep('itens');
+      } else {
+        setVendaError(data.error || 'Erro ao buscar venda');
+      }
+    } catch (error) {
+      setVendaError('Erro ao conectar com o servidor');
+    } finally {
+      setSearchingVenda(false);
+    }
+  };
 
   // Search venda by number
   const buscarVenda = async () => {
@@ -461,6 +521,37 @@ function DevolucoesPageContent() {
                     </p>
                   )}
                 </div>
+
+                {/* Últimas Vendas */}
+                <div className="mt-6 pt-6 border-t border-white/10">
+                  <p className="text-sm text-muted mb-3">Últimas vendas:</p>
+                  {loadingUltimasVendas ? (
+                    <div className="flex items-center justify-center py-4">
+                      <Loader2 className="w-5 h-5 animate-spin text-primary" />
+                    </div>
+                  ) : ultimasVendas.length === 0 ? (
+                    <p className="text-muted text-sm text-center py-4">Nenhuma venda encontrada</p>
+                  ) : (
+                    <div className="space-y-2">
+                      {ultimasVendas.map((v) => (
+                        <button
+                          key={v.id}
+                          onClick={() => selecionarVenda(v.id)}
+                          disabled={searchingVenda}
+                          className="w-full flex items-center justify-between p-3 bg-background rounded-xl border border-white/10 hover:border-primary/50 hover:bg-primary/5 transition-all text-left disabled:opacity-50"
+                        >
+                          <div>
+                            <p className="text-primary font-mono font-medium">{v.numero}</p>
+                            <p className="text-muted text-sm">
+                              {v.nomeCliente || 'Balcão'} • {formatDate(v.createdAt)}
+                            </p>
+                          </div>
+                          <p className="text-emerald-400 font-medium">{formatCurrency(v.total)}</p>
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
               </div>
             )}
 
@@ -626,32 +717,77 @@ function DevolucoesPageContent() {
                                     Marque o item acima para selecionar o produto de troca
                                   </p>
                                 ) : selected.produtoTrocaId ? (
-                                  <div className="flex items-center justify-between bg-blue-500/10 rounded-lg p-3">
-                                    <div>
-                                      <p className="text-sm text-muted">Trocar por:</p>
-                                      <p className="text-blue-400 font-medium">
-                                        {selected.produtoTrocaNome}
-                                      </p>
-                                    </div>
-                                    <button
-                                      onClick={() =>
-                                        setItensParaDevolver(
-                                          itensParaDevolver.map((i) =>
-                                            i.itemVendaId === item.id
-                                              ? {
-                                                  ...i,
-                                                  produtoTrocaId: undefined,
-                                                  produtoTrocaNome: undefined,
-                                                  quantidadeTroca: undefined,
-                                                }
-                                              : i
+                                  <div className="bg-blue-500/10 rounded-lg p-3 space-y-3">
+                                    <div className="flex items-center justify-between">
+                                      <div>
+                                        <p className="text-sm text-muted">Trocar por:</p>
+                                        <p className="text-blue-400 font-medium">
+                                          {selected.produtoTrocaNome}
+                                        </p>
+                                      </div>
+                                      <button
+                                        onClick={() =>
+                                          setItensParaDevolver(
+                                            itensParaDevolver.map((i) =>
+                                              i.itemVendaId === item.id
+                                                ? {
+                                                    ...i,
+                                                    produtoTrocaId: undefined,
+                                                    produtoTrocaNome: undefined,
+                                                    quantidadeTroca: undefined,
+                                                  }
+                                                : i
+                                            )
                                           )
-                                        )
-                                      }
-                                      className="text-red-400 hover:text-red-300"
-                                    >
-                                      <X size={18} />
-                                    </button>
+                                        }
+                                        className="text-red-400 hover:text-red-300"
+                                      >
+                                        <X size={18} />
+                                      </button>
+                                    </div>
+                                    {/* Quantidade de troca */}
+                                    <div className="flex items-center justify-between pt-2 border-t border-blue-500/20">
+                                      <span className="text-sm text-muted">Quantidade:</span>
+                                      <div className="flex items-center gap-2">
+                                        <button
+                                          onClick={() =>
+                                            setItensParaDevolver(
+                                              itensParaDevolver.map((i) =>
+                                                i.itemVendaId === item.id
+                                                  ? {
+                                                      ...i,
+                                                      quantidadeTroca: Math.max(1, (i.quantidadeTroca || 1) - 1),
+                                                    }
+                                                  : i
+                                              )
+                                            )
+                                          }
+                                          className="w-7 h-7 bg-blue-500/20 hover:bg-blue-500/30 rounded-lg flex items-center justify-center text-blue-400 transition-colors"
+                                        >
+                                          <Minus size={14} />
+                                        </button>
+                                        <span className="w-8 text-center text-blue-400 font-medium">
+                                          {selected.quantidadeTroca || 1}
+                                        </span>
+                                        <button
+                                          onClick={() =>
+                                            setItensParaDevolver(
+                                              itensParaDevolver.map((i) =>
+                                                i.itemVendaId === item.id
+                                                  ? {
+                                                      ...i,
+                                                      quantidadeTroca: (i.quantidadeTroca || 1) + 1,
+                                                    }
+                                                  : i
+                                              )
+                                            )
+                                          }
+                                          className="w-7 h-7 bg-blue-500/20 hover:bg-blue-500/30 rounded-lg flex items-center justify-center text-blue-400 transition-colors"
+                                        >
+                                          <Plus size={14} />
+                                        </button>
+                                      </div>
+                                    </div>
                                   </div>
                                 ) : (
                                   <div className="relative">
