@@ -64,8 +64,8 @@ interface Stats {
 }
 
 const tipoLabels: Record<string, string> = {
-  TROCA_OLEO: 'Troca de Oleo',
-  REVISAO: 'Revisao',
+  TROCA_OLEO: 'Troca de Óleo',
+  REVISAO: 'Revisão',
   FILTROS: 'Filtros',
   PNEUS: 'Pneus',
   FREIOS: 'Freios',
@@ -85,7 +85,7 @@ const getUrgenciaConfig = (urgencia: string) => {
       return {
         color: 'bg-amber-500/10 text-amber-400 border-amber-500/20',
         barColor: 'bg-amber-500',
-        label: 'Atencao',
+        label: 'Atenção',
       };
     case 'baixa':
       return {
@@ -152,7 +152,7 @@ export default function LembretesPage() {
       const data = await res.json();
       setVeiculos(data.data || []);
     } catch (error) {
-      console.error('Erro ao buscar veiculos:', error);
+      console.error('Erro ao buscar veículos:', error);
     }
   };
 
@@ -172,7 +172,7 @@ export default function LembretesPage() {
 
   const handleSubmit = async () => {
     if (!selectedVeiculoId || !dataLembrete) {
-      toast.warning('Selecione um veiculo e uma data');
+      toast.warning('Selecione um veículo e uma data');
       return;
     }
 
@@ -233,7 +233,7 @@ export default function LembretesPage() {
       });
 
       if (res.ok) {
-        toast.success('Lembrete excluido');
+        toast.success('Lembrete excluído');
         setShowDeleteConfirm(false);
         setDeletingLembrete(null);
         fetchLembretes();
@@ -248,10 +248,10 @@ export default function LembretesPage() {
   const sendWhatsApp = async (lembrete: Lembrete) => {
     const telefone = lembrete.veiculo.cliente.telefone.replace(/\D/g, '');
     const mensagem =
-      `Ola ${lembrete.veiculo.cliente.nome}! ` +
+      `Olá ${lembrete.veiculo.cliente.nome}! ` +
       `Estamos entrando em contato para lembrar da ${tipoLabels[lembrete.tipo] || lembrete.tipo} ` +
       `do seu ${lembrete.veiculo.marca} ${lembrete.veiculo.modelo} (${lembrete.veiculo.placa}). ` +
-      `Podemos agendar para voce?`;
+      `Podemos agendar para você?`;
 
     try {
       // Tentar enviar via API
@@ -269,7 +269,7 @@ export default function LembretesPage() {
       if (res.ok && data.success) {
         toast.success('Mensagem enviada via WhatsApp!');
         handleMarkAsSent(lembrete);
-      } else if (data.error?.includes('nao configurado') || data.error?.includes('nao esta conectado')) {
+      } else if (data.error?.includes('não configurado') || data.error?.includes('não está conectado')) {
         // Fallback para wa.me se API nao configurada
         openWhatsAppLink(telefone, mensagem);
         handleMarkAsSent(lembrete);
@@ -288,7 +288,7 @@ export default function LembretesPage() {
     window.open(`https://wa.me/55${telefone}?text=${msg}`, '_blank');
   };
 
-  // Gerar lembretes automaticos baseado no km
+  // Gerar lembretes automáticos baseado no km
   const handleGerarLembretes = async () => {
     setGenerating(true);
     try {
@@ -300,7 +300,7 @@ export default function LembretesPage() {
           toast.success(`${data.total} lembrete(s) gerado(s) automaticamente!`);
           fetchLembretes();
         } else {
-          toast.info('Nenhum veiculo precisando de lembrete no momento');
+          toast.info('Nenhum veículo precisando de lembrete no momento');
         }
       } else {
         toast.error(data.error || 'Erro ao gerar lembretes');
@@ -348,7 +348,7 @@ export default function LembretesPage() {
   const getDiasLabel = (dias: number) => {
     if (dias < 0) return `${Math.abs(dias)} dias atrasado`;
     if (dias === 0) return 'Hoje';
-    if (dias === 1) return 'Amanha';
+    if (dias === 1) return 'Amanhã';
     return `em ${dias} dias`;
   };
 
@@ -368,7 +368,7 @@ export default function LembretesPage() {
 
   return (
     <div className="space-y-8">
-      <Header title="Lembretes" subtitle="Gerencie lembretes de manutencao" />
+      <Header title="Lembretes" subtitle="Gerencie lembretes de manutenção" />
 
       <div className="px-4 lg:px-8 space-y-8">
         {/* Stats */}
@@ -429,7 +429,7 @@ export default function LembretesPage() {
                 <span className="text-xs font-medium text-cyan-400 bg-cyan-500/10 px-2 py-1 rounded-full">Urgentes</span>
               </div>
               <p className="text-4xl font-bold text-foreground mb-1">{stats.urgentes}</p>
-              <p className="text-sm text-muted">proximos 3 dias</p>
+              <p className="text-sm text-muted">próximos 3 dias</p>
             </div>
           </div>
 
@@ -480,7 +480,7 @@ export default function LembretesPage() {
               onClick={handleGerarLembretes}
               disabled={generating}
               className="flex items-center gap-2 px-4 py-3 bg-purple-500/10 border border-purple-500/30 rounded-xl text-purple-400 font-medium hover:bg-purple-500/20 hover:border-purple-500/50 disabled:opacity-50 transition-all duration-200"
-              title="Gerar lembretes automaticos baseado no km dos veiculos"
+              title="Gerar lembretes automáticos baseado no km dos veiculos"
             >
               {generating ? <Loader2 size={18} className="animate-spin" /> : <RefreshCw size={18} />}
               <span className="hidden md:inline">Gerar Auto</span>
@@ -520,7 +520,7 @@ export default function LembretesPage() {
                 <Bell className="h-8 w-8 text-cyan-400" />
               </div>
               <p className="text-foreground font-medium">Nenhum lembrete encontrado</p>
-              <p className="text-muted text-sm mt-1">Crie um novo lembrete de manutencao</p>
+              <p className="text-muted text-sm mt-1">Crie um novo lembrete de manutenção</p>
             </div>
           ) : (
             <div className="divide-y divide-zinc-800/50">
@@ -641,13 +641,13 @@ export default function LembretesPage() {
             <div className="p-6 space-y-4">
               {/* Veiculo */}
               <div>
-                <label className="block text-sm font-medium text-muted mb-2">Veiculo *</label>
+                <label className="block text-sm font-medium text-muted mb-2">Veículo *</label>
                 <select
                   value={selectedVeiculoId || ''}
                   onChange={(e) => setSelectedVeiculoId(parseInt(e.target.value))}
                   className="w-full bg-zinc-900/50 border border-border rounded-xl px-4 py-3 text-foreground focus:outline-none focus:border-cyan-500/50 focus:ring-2 focus:ring-cyan-500/20 transition-all"
                 >
-                  <option value="">Selecione um veiculo</option>
+                  <option value="">Selecione um veículo</option>
                   {veiculos.map((v) => (
                     <option key={v.id} value={v.id}>
                       {formatPlate(v.placa)} - {capitalize(v.marca)} {capitalize(v.modelo)} ({capitalize(v.cliente.nome)})
@@ -696,12 +696,12 @@ export default function LembretesPage() {
 
               {/* Mensagem */}
               <div>
-                <label className="block text-sm font-medium text-muted mb-2">Observacao (opcional)</label>
+                <label className="block text-sm font-medium text-muted mb-2">Observação (opcional)</label>
                 <textarea
                   value={mensagem}
                   onChange={(e) => setMensagem(e.target.value)}
                   rows={2}
-                  placeholder="Anotacoes sobre este lembrete..."
+                  placeholder="Anotações sobre este lembrete..."
                   className="w-full bg-zinc-900/50 border border-border rounded-xl px-4 py-3 text-white placeholder-zinc-500 focus:outline-none focus:border-cyan-500/50 focus:ring-2 focus:ring-cyan-500/20 transition-all resize-none"
                 />
               </div>
@@ -737,7 +737,7 @@ export default function LembretesPage() {
               <h3 className="text-xl font-bold text-foreground text-center mb-2">Excluir Lembrete?</h3>
               <p className="text-muted text-center text-sm">
                 O lembrete de {tipoLabels[deletingLembrete.tipo] || deletingLembrete.tipo} para{' '}
-                <strong className="text-foreground">{formatPlate(deletingLembrete.veiculo.placa)}</strong> sera excluido permanentemente.
+                <strong className="text-foreground">{formatPlate(deletingLembrete.veiculo.placa)}</strong> será excluído permanentemente.
               </p>
             </div>
             <div className="p-6 border-t border-border flex gap-3">

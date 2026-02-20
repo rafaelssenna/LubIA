@@ -66,18 +66,18 @@ const menuItems: MenuItem[] = [
     permission: 'cadastros',
     subItems: [
       { icon: Users, label: 'Clientes', href: '/clientes', permission: 'clientes' },
-      { icon: Car, label: 'Veiculos', href: '/veiculos', permission: 'veiculos' },
+      { icon: Car, label: 'Veículos', href: '/veiculos', permission: 'veiculos' },
     ],
   },
   {
     icon: Briefcase,
-    label: 'Operacoes',
+    label: 'Operações',
     href: '/ordens',
     permission: 'operacoes',
     subItems: [
       { icon: ClipboardList, label: 'Ordens', href: '/ordens', permission: 'ordens' },
-      { icon: FileText, label: 'Orcamentos', href: '/orcamentos', permission: 'orcamentos' },
-      { icon: ShoppingCart, label: 'Vendas Rapidas', href: '/vendas-rapidas', permission: 'vendas-rapidas' },
+      { icon: FileText, label: 'Orçamentos', href: '/orcamentos', permission: 'orcamentos' },
+      { icon: ShoppingCart, label: 'Vendas Rápidas', href: '/vendas-rapidas', permission: 'vendas-rapidas' },
     ],
   },
   {
@@ -87,7 +87,7 @@ const menuItems: MenuItem[] = [
     permission: 'financeiro',
     subItems: [
       { icon: Clock, label: 'Crédito Pessoal', href: '/a-receber', permission: 'a-receber' },
-      { icon: History, label: 'Historico', href: '/historico', permission: 'historico' },
+      { icon: History, label: 'Histórico', href: '/historico', permission: 'historico' },
     ],
   },
   { icon: Package, label: 'Estoque', href: '/estoque', permission: 'estoque' },
@@ -283,7 +283,7 @@ export default function Sidebar() {
 
       {/* Footer */}
       <div className="p-4 border-t border-border space-y-1.5">
-        {/* Usuarios e Configuracoes - apenas para ADMIN */}
+        {/* Usuários e Configurações - apenas para ADMIN */}
         {isAdmin && (
           <>
             <Link
@@ -293,10 +293,10 @@ export default function Sidebar() {
                   ? 'bg-sidebar-active text-sidebar-text-active shadow-lg shadow-black/10 ring-1 ring-primary/30'
                   : 'text-sidebar-text hover:bg-sidebar-hover hover:text-sidebar-text-active'
               } ${collapsed ? 'justify-center px-3' : ''}`}
-              title={collapsed ? 'Usuarios' : undefined}
+              title={collapsed ? 'Usuários' : undefined}
             >
               <UserCog size={20} className="group-hover:scale-110 transition-transform" />
-              {!collapsed && <span className="font-medium">Usuarios</span>}
+              {!collapsed && <span className="font-medium">Usuários</span>}
             </Link>
             <Link
               href="/configuracoes"
@@ -305,7 +305,7 @@ export default function Sidebar() {
                   ? 'bg-warning/10 text-warning ring-1 ring-warning/30'
                   : 'text-sidebar-text hover:bg-sidebar-hover hover:text-sidebar-text-active'
               } ${collapsed ? 'justify-center px-3' : ''}`}
-              title={collapsed ? (configIncomplete ? 'Configuracoes - Preencha os dados!' : 'Configuracoes') : undefined}
+              title={collapsed ? (configIncomplete ? 'Configurações - Preencha os dados!' : 'Configurações') : undefined}
             >
               {configIncomplete ? (
                 <div className="relative">
@@ -318,7 +318,7 @@ export default function Sidebar() {
               )}
               {!collapsed && (
                 <span className="font-medium flex items-center gap-2">
-                  Configuracoes
+                  Configurações
                   {configIncomplete && (
                     <span className="text-xs bg-warning/20 px-2 py-0.5 rounded-full animate-pulse">
                       Pendente

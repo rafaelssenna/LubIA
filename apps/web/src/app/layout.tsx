@@ -17,11 +17,11 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://www.loopia.app.br"),
-  title: "LoopIA - Gestao de Oficinas",
-  description: "Sistema inteligente para gestao de oficinas mecanicas",
+  title: "LoopIA - Gestão de Oficinas",
+  description: "Sistema inteligente para gestão de oficinas mecânicas",
   openGraph: {
-    title: "LoopIA - Gestao de Oficinas",
-    description: "Sistema inteligente para gestao de oficinas mecanicas",
+    title: "LoopIA - Gestão de Oficinas",
+    description: "Sistema inteligente para gestão de oficinas mecânicas",
     url: "https://www.loopia.app.br",
     siteName: "LoopIA",
     images: [
@@ -37,8 +37,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "LoopIA - Gestao de Oficinas",
-    description: "Sistema inteligente para gestao de oficinas mecanicas",
+    title: "LoopIA - Gestão de Oficinas",
+    description: "Sistema inteligente para gestão de oficinas mecânicas",
     images: ["https://www.loopia.app.br/logo.opengraph.png"],
   },
 };

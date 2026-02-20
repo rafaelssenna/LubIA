@@ -885,7 +885,7 @@ export default function EstoquePage() {
 
   return (
     <div className="space-y-8">
-      <Header title="Controle de Estoque" subtitle="Gerencie produtos e movimentacoes" />
+      <Header title="Controle de Estoque" subtitle="Gerencie produtos e movimentações" />
 
       <div className="px-4 lg:px-8 space-y-8">
         {/* Stats Cards */}

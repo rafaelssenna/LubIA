@@ -565,7 +565,7 @@ function OrdensPageContent() {
 
   return (
     <div className="space-y-8">
-      <Header title="Ordens de Servico" subtitle="Gerencie suas O.S." />
+      <Header title="Ordens de Serviço" subtitle="Gerencie suas O.S." />
 
       <div className="px-4 lg:px-8 space-y-8">
         {/* Stats Cards */}
@@ -1374,11 +1374,11 @@ function OrdensPageContent() {
                   )}
 
                   <div className="p-4 bg-background rounded-xl">
-                    <label className="block text-sm font-medium text-muted mb-2">Observacoes</label>
+                    <label className="block text-sm font-medium text-muted mb-2">Observações</label>
                     <textarea
                       value={observacoes}
                       onChange={(e) => setObservacoes(e.target.value)}
-                      placeholder="Observacoes adicionais..."
+                      placeholder="Observações adicionais..."
                       rows={3}
                       className="w-full bg-card border border-border rounded-xl px-4 py-3 text-foreground placeholder-gray-400 focus:outline-none focus:border-primary resize-none"
                     />
@@ -1582,7 +1582,7 @@ function OrdensPageContent() {
               {/* Observations */}
               {selectedOrdem.observacoes && (
                 <div className="p-4 bg-background rounded-xl">
-                  <p className="text-xs text-muted mb-1">Observacoes</p>
+                  <p className="text-xs text-muted mb-1">Observações</p>
                   <p className="text-foreground">{selectedOrdem.observacoes}</p>
                 </div>
               )}
@@ -1656,7 +1656,7 @@ function OrdensPageContent() {
                 </div>
               </div>
               <p className="text-muted text-sm">
-                Tem certeza que deseja excluir esta O.S.? Esta acao nao pode ser desfeita.
+                Tem certeza que deseja excluir esta O.S.? Esta ação não pode ser desfeita.
               </p>
             </div>
             <div className="p-6 border-t border-border flex gap-3 justify-end">

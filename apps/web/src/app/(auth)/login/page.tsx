@@ -147,7 +147,7 @@ export default function LoginPage() {
             </div>
             <div>
               <p className="text-foreground font-medium">Sou cliente</p>
-              <p className="text-sm text-muted">Ver status do meu veiculo</p>
+              <p className="text-sm text-muted">Ver status do meu veículo</p>
             </div>
           </div>
         </Link>

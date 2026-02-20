@@ -228,7 +228,7 @@ export default function VeiculosPage() {
             <div className="w-16 h-16 border-4 border-purple-500/20 rounded-full"></div>
             <div className="absolute top-0 left-0 w-16 h-16 border-4 border-transparent border-t-purple-500 rounded-full animate-spin"></div>
           </div>
-          <p className="text-muted animate-pulse">Carregando veiculos...</p>
+          <p className="text-muted animate-pulse">Carregando veículos...</p>
         </div>
       </div>
     );
@@ -236,7 +236,7 @@ export default function VeiculosPage() {
 
   return (
     <div className="space-y-8">
-      <Header title="Veiculos" subtitle="Cadastro de veiculos" />
+      <Header title="Veículos" subtitle="Cadastro de veículos" />
 
       <div className="px-4 lg:px-8 space-y-8">
         {/* Stats Cards */}
@@ -252,7 +252,7 @@ export default function VeiculosPage() {
                 <span className="text-xs font-medium text-purple-400 bg-purple-500/10 px-2 py-1 rounded-full">Total</span>
               </div>
               <p className="text-4xl font-bold text-foreground mb-1">{veiculos.length}</p>
-              <p className="text-sm text-muted">veiculos cadastrados</p>
+              <p className="text-sm text-muted">veículos cadastrados</p>
             </div>
           </div>
 
@@ -267,7 +267,7 @@ export default function VeiculosPage() {
                 <span className="text-xs font-medium text-blue-400 bg-blue-500/10 px-2 py-1 rounded-full">Clientes</span>
               </div>
               <p className="text-4xl font-bold text-foreground mb-1">{clientes.length}</p>
-              <p className="text-sm text-muted">proprietarios</p>
+              <p className="text-sm text-muted">proprietários</p>
             </div>
           </div>
 
@@ -307,7 +307,7 @@ export default function VeiculosPage() {
             className="flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-primary to-[#2E7D32] hover:from-[#2E7D32] hover:to-primary text-white font-semibold rounded-xl transition-all duration-300 shadow-lg shadow-primary/25 hover:shadow-primary/40 hover:scale-[1.02]"
           >
             <Plus size={18} />
-            Novo Veiculo
+            Novo Veículo
           </button>
         </div>
 
@@ -317,12 +317,12 @@ export default function VeiculosPage() {
             <div className="p-4 bg-zinc-800/50 rounded-full w-fit mx-auto mb-4">
               <Car className="h-8 w-8 text-zinc-600" />
             </div>
-            <p className="text-muted">Nenhum veiculo encontrado</p>
+            <p className="text-muted">Nenhum veículo encontrado</p>
             <button
               onClick={() => setShowModal(true)}
               className="inline-flex items-center gap-2 mt-4 text-primary hover:text-primary-light transition-colors"
             >
-              Cadastrar veiculo
+              Cadastrar veículo
               <ArrowRight className="h-4 w-4" />
             </button>
           </div>
@@ -337,7 +337,7 @@ export default function VeiculosPage() {
                     </div>
                     <div>
                       <h3 className="font-bold text-foreground">{capitalize(veiculo.marca)} {capitalize(veiculo.modelo)}</h3>
-                      <p className="text-sm text-muted">{veiculo.ano || 'Ano nao informado'}</p>
+                      <p className="text-sm text-muted">{veiculo.ano || 'Ano não informado'}</p>
                     </div>
                   </div>
                   <span className="px-3 py-1.5 bg-emerald-500/10 text-emerald-400 rounded-lg text-sm font-mono font-bold border border-emerald-500/20">
@@ -348,7 +348,7 @@ export default function VeiculosPage() {
                 <div className="space-y-2 mb-4">
                   <div className="flex items-center justify-between text-sm p-3 rounded-xl bg-primary/10 border border-primary/20">
                     <span className="text-muted flex items-center gap-2">
-                      <User size={14} className="text-primary" /> Proprietario
+                      <User size={14} className="text-primary" /> Proprietário
                     </span>
                     <span className="text-foreground">{capitalize(veiculo.cliente.nome)}</span>
                   </div>
@@ -402,14 +402,14 @@ export default function VeiculosPage() {
         )}
       </div>
 
-      {/* Modal Novo Veiculo */}
+      {/* Modal Novo Veículo */}
       {showModal && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
           <div className="bg-card border border-border rounded-2xl w-full max-w-md max-h-[90vh] overflow-y-auto shadow-2xl shadow-black/50">
             <div className="p-6 border-b border-border flex items-center justify-between">
               <div>
-                <h2 className="text-xl font-semibold text-foreground">Novo Veiculo</h2>
-                <p className="text-sm text-muted mt-1">Cadastre um novo veiculo</p>
+                <h2 className="text-xl font-semibold text-foreground">Novo Veículo</h2>
+                <p className="text-sm text-muted mt-1">Cadastre um novo veículo</p>
               </div>
               <button onClick={() => setShowModal(false)} className="p-2 hover:bg-zinc-800 rounded-xl text-muted hover:text-foreground transition-all duration-200">
                 <X size={20} />
@@ -443,7 +443,7 @@ export default function VeiculosPage() {
                     type="button"
                     onClick={() => setShowOCR(true)}
                     className="px-4 py-3 bg-gradient-to-r from-purple-500 to-purple-600 rounded-xl text-white hover:shadow-lg hover:shadow-purple-500/25 transition-all duration-300"
-                    title="Ler placa com camera"
+                    title="Ler placa com câmera"
                   >
                     <Camera size={20} />
                   </button>
@@ -539,14 +539,14 @@ export default function VeiculosPage() {
         </div>
       )}
 
-      {/* Modal Editar Veiculo */}
+      {/* Modal Editar Veículo */}
       {showEditModal && selectedVeiculo && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
           <div className="bg-card border border-border rounded-2xl w-full max-w-md max-h-[90vh] overflow-y-auto shadow-2xl shadow-black/50">
             <div className="p-6 border-b border-border flex items-center justify-between">
               <div>
-                <h2 className="text-xl font-semibold text-foreground">Editar Veiculo</h2>
-                <p className="text-sm text-muted mt-1">Atualize as informacoes do veiculo</p>
+                <h2 className="text-xl font-semibold text-foreground">Editar Veículo</h2>
+                <p className="text-sm text-muted mt-1">Atualize as informações do veículo</p>
               </div>
               <button onClick={() => setShowEditModal(false)} className="p-2 hover:bg-zinc-800 rounded-xl text-muted hover:text-foreground transition-all duration-200">
                 <X size={20} />
@@ -648,19 +648,19 @@ export default function VeiculosPage() {
                 disabled={saving}
                 className="px-6 py-3 bg-gradient-to-r from-primary to-[#2E7D32] rounded-xl text-white font-medium hover:shadow-lg hover:shadow-primary/25 transition-all duration-300 disabled:opacity-50"
               >
-                {saving ? 'Salvando...' : 'Salvar Alteracoes'}
+                {saving ? 'Salvando...' : 'Salvar Alterações'}
               </button>
             </div>
           </div>
         </div>
       )}
 
-      {/* Modal Confirmar Exclusao */}
+      {/* Modal Confirmar Exclusão */}
       {showDeleteConfirm && selectedVeiculo && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
           <div className="bg-card border border-border rounded-2xl w-full max-w-md shadow-2xl shadow-black/50">
             <div className="p-6 border-b border-border">
-              <h2 className="text-xl font-semibold text-foreground">Confirmar Exclusao</h2>
+              <h2 className="text-xl font-semibold text-foreground">Confirmar Exclusão</h2>
             </div>
             <div className="p-6">
               <div className="flex items-center gap-4 mb-4">
@@ -673,7 +673,7 @@ export default function VeiculosPage() {
                 </div>
               </div>
               <p className="text-muted text-sm">
-                Tem certeza que deseja excluir este veiculo? Esta acao nao pode ser desfeita.
+                Tem certeza que deseja excluir este veículo? Esta ação não pode ser desfeita.
               </p>
             </div>
             <div className="p-6 border-t border-border flex gap-3 justify-end">
@@ -691,7 +691,7 @@ export default function VeiculosPage() {
                 disabled={saving}
                 className="px-6 py-3 bg-gradient-to-r from-red-500 to-red-700 rounded-xl text-white font-medium hover:shadow-lg hover:shadow-red-500/25 transition-all duration-300 disabled:opacity-50"
               >
-                {saving ? 'Excluindo...' : 'Excluir Veiculo'}
+                {saving ? 'Excluindo...' : 'Excluir Veículo'}
               </button>
             </div>
           </div>

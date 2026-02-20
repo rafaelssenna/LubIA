@@ -48,9 +48,9 @@ interface ConsultaResult {
 
 const statusConfig: Record<string, { label: string; color: string; icon: any; bg: string; step: number }> = {
   AGENDADO: { label: 'Agendado', color: 'text-blue-400', icon: Calendar, bg: 'bg-blue-500/10', step: 1 },
-  AGUARDANDO_PECAS: { label: 'Aguardando Pecas', color: 'text-amber-400', icon: Pause, bg: 'bg-amber-500/10', step: 2 },
+  AGUARDANDO_PECAS: { label: 'Aguardando Peças', color: 'text-amber-400', icon: Pause, bg: 'bg-amber-500/10', step: 2 },
   EM_ANDAMENTO: { label: 'Em Andamento', color: 'text-purple-400', icon: Play, bg: 'bg-purple-500/10', step: 2 },
-  CONCLUIDO: { label: 'Concluido', color: 'text-primary', icon: CheckCircle, bg: 'bg-green-500/10', step: 3 },
+  CONCLUIDO: { label: 'Concluído', color: 'text-primary', icon: CheckCircle, bg: 'bg-green-500/10', step: 3 },
   CANCELADO: { label: 'Cancelado', color: 'text-red-500', icon: XCircle, bg: 'bg-red-500/10', step: 0 },
   ENTREGUE: { label: 'Entregue', color: 'text-cyan-400', icon: Truck, bg: 'bg-cyan-500/10', step: 4 },
 };
@@ -59,7 +59,7 @@ const statusConfig: Record<string, { label: string; color: string; icon: any; bg
 const progressSteps = [
   { step: 1, label: 'Agendado', icon: Calendar, color: 'blue' },
   { step: 2, label: 'Em Andamento', icon: Wrench, color: 'purple' },
-  { step: 3, label: 'Concluido', icon: CheckCircle, color: 'green' },
+  { step: 3, label: 'Concluído', icon: CheckCircle, color: 'green' },
   { step: 4, label: 'Entregue', icon: Truck, color: 'cyan' },
 ];
 
@@ -115,7 +115,7 @@ export default function ConsultaPage() {
 
       setResult(data);
     } catch {
-      setError('Erro de conexao. Tente novamente.');
+      setError('Erro de conexão. Tente novamente.');
     } finally {
       setLoading(false);
     }
@@ -196,10 +196,10 @@ export default function ConsultaPage() {
       {/* Titulo */}
       <div className="text-center mb-8">
         <h1 className="text-2xl font-bold text-foreground mb-2">
-          Consulte o status do seu veiculo
+          Consulte o status do seu veículo
         </h1>
         <p className="text-muted">
-          Digite a placa para ver o historico de servicos
+          Digite a placa para ver o histórico de serviços
         </p>
       </div>
 
@@ -536,7 +536,7 @@ export default function ConsultaPage() {
 
               {/* Progress Steps */}
               <div className="relative">
-                {/* Linha de conexao */}
+                {/* Linha de conexão */}
                 <div className="absolute top-6 left-0 right-0 h-1 bg-border mx-8" />
                 <div
                   className="absolute top-6 left-0 h-1 bg-gradient-to-r from-primary to-primary mx-8 transition-all duration-500"
@@ -586,28 +586,28 @@ export default function ConsultaPage() {
                   <p>Agendado para: <span className="text-blue-400">{formatDate(ordemAtiva.dataAgendada)}</span></p>
                 )}
                 {ordemAtiva.status === 'AGUARDANDO_PECAS' && (
-                  <p className="text-amber-400">Aguardando chegada de pecas</p>
+                  <p className="text-amber-400">Aguardando chegada de peças</p>
                 )}
                 {ordemAtiva.status === 'EM_ANDAMENTO' && (
-                  <p className="text-purple-400">Seu veiculo esta sendo atendido</p>
+                  <p className="text-purple-400">Seu veículo está sendo atendido</p>
                 )}
                 {ordemAtiva.status === 'CONCLUIDO' && (
-                  <p className="text-primary">Servico concluido! Aguardando retirada</p>
+                  <p className="text-primary">Serviço concluído! Aguardando retirada</p>
                 )}
               </div>
             </div>
           )}
 
-          {/* Historico de Servicos */}
+          {/* Histórico de Serviços */}
           <div>
             <h3 className="text-lg font-semibold text-foreground mb-4 flex items-center gap-2">
               <Clock size={20} className="text-primary" />
-              Historico de Servicos
+              Histórico de Serviços
             </h3>
 
             {result.ordens.length === 0 ? (
               <div className="bg-card border border-border rounded-2xl p-8 text-center">
-                <p className="text-muted">Nenhum servico encontrado para este veiculo</p>
+                <p className="text-muted">Nenhum serviço encontrado para este veículo</p>
               </div>
             ) : (
               <div className="space-y-3">
@@ -655,7 +655,7 @@ export default function ConsultaPage() {
                         <div className="text-right text-xs text-muted whitespace-nowrap">
                           {ordem.dataConclusao ? (
                             <div>
-                              <p className="text-primary">Concluido</p>
+                              <p className="text-primary">Concluído</p>
                               <p>{formatDate(ordem.dataConclusao)}</p>
                             </div>
                           ) : ordem.dataAgendada ? (
@@ -681,7 +681,7 @@ export default function ConsultaPage() {
       {!result && !error && !loading && (
         <div className="text-center text-muted mt-12">
           <Car size={48} className="mx-auto mb-4 opacity-30" />
-          <p>Digite a placa do seu veiculo acima para consultar</p>
+          <p>Digite a placa do seu veículo acima para consultar</p>
         </div>
       )}
     </div>

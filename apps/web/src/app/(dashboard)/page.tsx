@@ -174,7 +174,7 @@ export default function Dashboard() {
 
   return (
     <div className="space-y-8">
-      <Header title="Dashboard" subtitle="Visao geral da oficina" />
+      <Header title="Dashboard" subtitle="Visão geral da oficina" />
 
       <div className="px-4 lg:px-8 space-y-8">
         {/* Stats Cards */}
@@ -202,7 +202,7 @@ export default function Dashboard() {
                 <div className="p-3 bg-purple-500/20 rounded-xl">
                   <Car className="h-6 w-6 text-purple-400" />
                 </div>
-                <span className="text-xs font-medium text-purple-400 bg-purple-500/10 px-2 py-1 rounded-full">Veiculos</span>
+                <span className="text-xs font-medium text-purple-400 bg-purple-500/10 px-2 py-1 rounded-full">Veículos</span>
               </div>
               <p className="text-4xl font-bold text-foreground mb-1">{stats?.veiculos || 0}</p>
               <p className="text-sm text-muted">registrados</p>
@@ -217,10 +217,10 @@ export default function Dashboard() {
                 <div className="p-3 bg-emerald-500/20 rounded-xl">
                   <ClipboardList className="h-6 w-6 text-emerald-400" />
                 </div>
-                <span className="text-xs font-medium text-emerald-400 bg-emerald-500/10 px-2 py-1 rounded-full">O.S. Mes</span>
+                <span className="text-xs font-medium text-emerald-400 bg-emerald-500/10 px-2 py-1 rounded-full">O.S. Mês</span>
               </div>
               <p className="text-4xl font-bold text-foreground mb-1">{stats?.ordensMes || 0}</p>
-              <p className="text-sm text-muted">ordens de servico</p>
+              <p className="text-sm text-muted">ordens de serviço</p>
             </div>
           </div>
 
@@ -235,7 +235,7 @@ export default function Dashboard() {
                 <span className="text-xs font-medium text-amber-400 bg-amber-500/10 px-2 py-1 rounded-full">Faturamento</span>
               </div>
               <p className="text-3xl font-bold text-foreground mb-1">{formatCurrency(stats?.faturamento || 0)}</p>
-              <p className="text-sm text-muted">este mes</p>
+              <p className="text-sm text-muted">este mês</p>
             </div>
           </div>
         </div>
@@ -248,7 +248,7 @@ export default function Dashboard() {
               <div>
                 <h2 className="text-lg font-bold text-foreground flex items-center gap-2">
                   <Calendar className="h-5 w-5 text-emerald-400" />
-                  Servicos de Hoje
+                  Serviços de Hoje
                 </h2>
                 <p className="text-xs text-foreground-muted mt-0.5">
                   {servicosHoje.length} agendamento{servicosHoje.length !== 1 ? 's' : ''}
@@ -267,7 +267,7 @@ export default function Dashboard() {
               {servicosHoje.length === 0 ? (
                 <div className="p-8 text-center">
                   <Calendar className="h-8 w-8 text-muted mx-auto mb-2" />
-                  <p className="text-sm text-foreground-muted">Nenhum servico hoje</p>
+                  <p className="text-sm text-foreground-muted">Nenhum serviço hoje</p>
                 </div>
               ) : (
                 <div className="divide-y divide-zinc-800/50">
@@ -388,7 +388,7 @@ export default function Dashboard() {
                   Crédito Pessoal
                 </h2>
                 <p className="text-xs text-foreground-muted mt-0.5">
-                  {aReceber?.count || 0} pendencia{(aReceber?.count || 0) !== 1 ? 's' : ''} - {formatCurrency(aReceber?.total || 0)}
+                  {aReceber?.count || 0} pendência{(aReceber?.count || 0) !== 1 ? 's' : ''} - {formatCurrency(aReceber?.total || 0)}
                 </p>
               </div>
               <Link
@@ -404,7 +404,7 @@ export default function Dashboard() {
               {!aReceber || aReceber.itens.length === 0 ? (
                 <div className="p-8 text-center">
                   <CheckCircle className="h-8 w-8 text-emerald-500 mx-auto mb-2" />
-                  <p className="text-sm text-foreground-muted">Nenhuma pendencia!</p>
+                  <p className="text-sm text-foreground-muted">Nenhuma pendência!</p>
                 </div>
               ) : (
                 <div className="divide-y divide-zinc-800/50">
@@ -449,7 +449,7 @@ export default function Dashboard() {
                 href="/a-receber"
                 className="flex items-center justify-center gap-2 text-xs text-muted hover:text-amber-400 transition-colors"
               >
-                Gerenciar pendencias
+                Gerenciar pendências
                 <ArrowRight className="h-3 w-3" />
               </Link>
             </div>

@@ -37,7 +37,7 @@ interface Config {
   // Chatbot
   chatbotEnabled: boolean;
   chatbotNome: string | null;
-  chatbotHorario: string | null;
+  chatbotHorário: string | null;
   chatbotBoasVindas: string | null;
 }
 
@@ -66,20 +66,20 @@ interface Filial {
   ativo: boolean;
 }
 
-interface DiaHorario {
+interface DiaHorário {
   ativo: boolean;
   abertura: string;
   fechamento: string;
 }
 
-interface HorarioSemana {
-  seg: DiaHorario;
-  ter: DiaHorario;
-  qua: DiaHorario;
-  qui: DiaHorario;
-  sex: DiaHorario;
-  sab: DiaHorario;
-  dom: DiaHorario;
+interface HorárioSemana {
+  seg: DiaHorário;
+  ter: DiaHorário;
+  qua: DiaHorário;
+  qui: DiaHorário;
+  sex: DiaHorário;
+  sab: DiaHorário;
+  dom: DiaHorário;
 }
 
 const DIAS_SEMANA = [
@@ -99,7 +99,7 @@ const HORARIOS = [
   '18:00', '18:30', '19:00', '19:30', '20:00', '20:30', '21:00', '21:30', '22:00',
 ];
 
-const horarioPadrao: HorarioSemana = {
+const horarioPadrao: HorárioSemana = {
   seg: { ativo: true, abertura: '08:00', fechamento: '18:00' },
   ter: { ativo: true, abertura: '08:00', fechamento: '18:00' },
   qua: { ativo: true, abertura: '08:00', fechamento: '18:00' },
@@ -110,7 +110,7 @@ const horarioPadrao: HorarioSemana = {
 };
 
 // Converter horário estruturado para string legível
-function horarioParaString(horario: HorarioSemana): string {
+function horarioParaString(horario: HorárioSemana): string {
   const grupos: { dias: string[]; abertura: string; fechamento: string }[] = [];
 
   for (const dia of DIAS_SEMANA) {
@@ -134,7 +134,7 @@ function horarioParaString(horario: HorarioSemana): string {
 }
 
 // Tentar converter string para horário estruturado (fallback para padrão)
-function stringParaHorario(str: string): HorarioSemana {
+function stringParaHorário(str: string): HorárioSemana {
   // Por simplicidade, sempre retorna o padrão - a string é só para exibição
   return { ...horarioPadrao };
 }
@@ -157,7 +157,7 @@ function formatTelefone(value: string): string {
   return `(${cleaned.slice(0, 2)}) ${cleaned.slice(2, 7)}-${cleaned.slice(7)}`;
 }
 
-export default function ConfiguracoesPage() {
+export default function ConfiguraçõesPage() {
   const toast = useToast();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -174,7 +174,7 @@ export default function ConfiguracoesPage() {
   const [nomeOficina, setNomeOficina] = useState('');
   const [cnpj, setCnpj] = useState('');
   const [telefone, setTelefone] = useState('');
-  const [endereco, setEndereco] = useState('');
+  const [endereco, setEndereço] = useState('');
   const [buscandoCnpj, setBuscandoCnpj] = useState(false);
 
   // Buscar dados da empresa pelo CNPJ na Receita Federal
@@ -197,7 +197,7 @@ export default function ConfiguracoesPage() {
         }
         if (data.logradouro && !endereco) {
           const end = `${data.logradouro}, ${data.numero || 'S/N'}${data.complemento ? ` - ${data.complemento}` : ''}, ${data.bairro} - ${data.municipio}/${data.uf}`;
-          setEndereco(end);
+          setEndereço(end);
         }
         toast.success('Dados da empresa carregados!');
       }
@@ -221,11 +221,11 @@ export default function ConfiguracoesPage() {
   // Chatbot states
   const [chatbotEnabled, setChatbotEnabled] = useState(true);
   const [chatbotNome, setChatbotNome] = useState('LoopIA');
-  const [chatbotHorario, setChatbotHorario] = useState<HorarioSemana>(horarioPadrao);
+  const [chatbotHorário, setChatbotHorário] = useState<HorárioSemana>(horarioPadrao);
   const [chatbotBoasVindas, setChatbotBoasVindas] = useState('Olá! Sou a LoopIA, assistente virtual da oficina. Como posso ajudar?');
 
   // Serviços do banco
-  const [servicos, setServicos] = useState<Servico[]>([]);
+  const [servicos, setServiços] = useState<Servico[]>([]);
   const [showServicoModal, setShowServicoModal] = useState(false);
   const [editingServico, setEditingServico] = useState<Servico | null>(null);
   const [servicoForm, setServicoForm] = useState({ nome: '' });
@@ -239,8 +239,8 @@ export default function ConfiguracoesPage() {
   const [savingFilial, setSavingFilial] = useState(false);
 
   // Atualizar dia específico do horário
-  const updateHorarioDia = (dia: keyof HorarioSemana, campo: keyof DiaHorario, valor: boolean | string) => {
-    setChatbotHorario(prev => ({
+  const updateHorárioDia = (dia: keyof HorárioSemana, campo: keyof DiaHorário, valor: boolean | string) => {
+    setChatbotHorário(prev => ({
       ...prev,
       [dia]: { ...prev[dia], [campo]: valor },
     }));
@@ -255,20 +255,20 @@ export default function ConfiguracoesPage() {
         setNomeOficina(data.data.nomeOficina || '');
         setCnpj(data.data.cnpj || '');
         setTelefone(data.data.telefone || '');
-        setEndereco(data.data.endereco || '');
+        setEndereço(data.data.endereco || '');
         // Chatbot
         setChatbotEnabled(data.data.chatbotEnabled ?? true);
         setChatbotNome(data.data.chatbotNome || 'LoopIA');
         // Tentar carregar horário salvo como JSON, senão usar padrão
         try {
-          const horarioSalvo = data.data.chatbotHorario;
+          const horarioSalvo = data.data.chatbotHorário;
           if (horarioSalvo && horarioSalvo.startsWith('{')) {
-            setChatbotHorario(JSON.parse(horarioSalvo));
+            setChatbotHorário(JSON.parse(horarioSalvo));
           } else {
-            setChatbotHorario(horarioPadrao);
+            setChatbotHorário(horarioPadrao);
           }
         } catch {
-          setChatbotHorario(horarioPadrao);
+          setChatbotHorário(horarioPadrao);
         }
         setChatbotBoasVindas(data.data.chatbotBoasVindas || 'Olá! Sou a LoopIA, assistente virtual da oficina.');
       }
@@ -279,12 +279,12 @@ export default function ConfiguracoesPage() {
     }
   };
 
-  const fetchServicos = async () => {
+  const fetchServiços = async () => {
     try {
       const res = await fetch('/api/servicos');
       const data = await res.json();
       if (data.data) {
-        setServicos(data.data);
+        setServiços(data.data);
       }
     } catch (error) {
       console.error('Erro ao buscar servicos:', error);
@@ -318,7 +318,7 @@ export default function ConfiguracoesPage() {
         setShowServicoModal(false);
         setEditingServico(null);
         setServicoForm({ nome: '' });
-        fetchServicos();
+        fetchServiços();
       } else {
         const data = await res.json();
         toast.error(data.error || 'Erro ao salvar serviço');
@@ -337,7 +337,7 @@ export default function ConfiguracoesPage() {
       const res = await fetch(`/api/servicos/${servico.id}`, { method: 'DELETE' });
       if (res.ok) {
         toast.success('Serviço excluído!');
-        fetchServicos();
+        fetchServiços();
       } else {
         const data = await res.json();
         toast.error(data.error || 'Erro ao excluir serviço');
@@ -449,7 +449,7 @@ export default function ConfiguracoesPage() {
 
   useEffect(() => {
     fetchConfig();
-    fetchServicos();
+    fetchServiços();
     fetchFiliais();
     checkWhatsAppStatus();
   }, []);
@@ -487,19 +487,19 @@ export default function ConfiguracoesPage() {
           endereco,
           chatbotEnabled,
           chatbotNome,
-          chatbotHorario: JSON.stringify(chatbotHorario),
+          chatbotHorário: JSON.stringify(chatbotHorário),
           chatbotBoasVindas,
         }),
       });
 
       if (res.ok) {
-        toast.success('Configuracoes salvas com sucesso!');
+        toast.success('Configurações salvas com sucesso!');
         fetchConfig();
       } else {
-        toast.error('Erro ao salvar configuracoes');
+        toast.error('Erro ao salvar configurações');
       }
     } catch (error) {
-      toast.error('Erro ao salvar configuracoes');
+      toast.error('Erro ao salvar configurações');
     } finally {
       setSaving(false);
     }
@@ -521,7 +521,7 @@ export default function ConfiguracoesPage() {
         setQrCode(data.qrcode);
         setPairCode(data.paircode);
       } else if (data.status === 'connected') {
-        toast.success('WhatsApp ja esta conectado!');
+        toast.success('WhatsApp já está conectado!');
         checkWhatsAppStatus();
       } else if (data.status === 'connecting' || data.status === 'disconnected') {
         // Instância existe mas precisa reconectar - buscar status para obter QR
@@ -574,7 +574,7 @@ export default function ConfiguracoesPage() {
             <div className="w-16 h-16 border-4 border-primary/20 rounded-full"></div>
             <div className="absolute top-0 left-0 w-16 h-16 border-4 border-transparent border-t-primary rounded-full animate-spin"></div>
           </div>
-          <p className="text-muted animate-pulse">Carregando configuracoes...</p>
+          <p className="text-muted animate-pulse">Carregando configurações...</p>
         </div>
       </div>
     );
@@ -582,7 +582,7 @@ export default function ConfiguracoesPage() {
 
   return (
     <div className="space-y-8">
-      <Header title="Configuracoes" subtitle="Configure o sistema" />
+      <Header title="Configurações" subtitle="Configure o sistema" />
 
       <div className="px-4 lg:px-8 space-y-8 max-w-4xl mx-auto">
         {/* Dados da Oficina */}
@@ -593,7 +593,7 @@ export default function ConfiguracoesPage() {
             </div>
             <div>
               <h2 className="text-lg font-bold text-foreground">Dados da Oficina</h2>
-              <p className="text-sm text-muted">Informacoes que aparecem nas O.S. e documentos</p>
+              <p className="text-sm text-muted">Informações que aparecem nas O.S. e documentos</p>
             </div>
           </div>
 
@@ -641,12 +641,12 @@ export default function ConfiguracoesPage() {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-muted mb-2">Endereco</label>
+              <label className="block text-sm font-medium text-muted mb-2">Endereço</label>
               <input
                 type="text"
                 value={endereco}
-                onChange={(e) => setEndereco(e.target.value)}
-                placeholder="Rua, numero, bairro"
+                onChange={(e) => setEndereço(e.target.value)}
+                placeholder="Rua, número, bairro"
                 className="w-full bg-zinc-900/50 border border-border rounded-xl px-4 py-3 text-foreground placeholder-zinc-500 focus:outline-none focus:border-blue-500/50 focus:ring-2 focus:ring-blue-500/20 transition-all"
               />
             </div>
@@ -819,17 +819,17 @@ export default function ConfiguracoesPage() {
             <div className="bg-card border border-border rounded-2xl w-full max-w-md shadow-2xl shadow-black/50">
               <div className="p-6 border-b border-border">
                 <h2 className="text-xl font-bold text-foreground">
-                  {editingServico ? 'Editar Servico' : 'Novo Servico'}
+                  {editingServico ? 'Editar Serviço' : 'Novo Serviço'}
                 </h2>
               </div>
               <div className="p-6">
                 <div>
-                  <label className="block text-sm font-medium text-muted mb-2">Nome do Servico</label>
+                  <label className="block text-sm font-medium text-muted mb-2">Nome do Serviço</label>
                   <input
                     type="text"
                     value={servicoForm.nome}
                     onChange={(e) => setServicoForm({ ...servicoForm, nome: e.target.value })}
-                    placeholder="Ex: Troca de Oleo"
+                    placeholder="Ex: Troca de Óleo"
                     className="w-full bg-zinc-900/50 border border-border rounded-xl px-4 py-3 text-foreground placeholder-zinc-500 focus:outline-none focus:border-purple-500/50 focus:ring-2 focus:ring-purple-500/20 transition-all"
                   />
                 </div>
@@ -863,7 +863,7 @@ export default function ConfiguracoesPage() {
           </div>
         )}
 
-        {/* Integracao WhatsApp */}
+        {/* Integração WhatsApp */}
         <div className="bg-card border border-border rounded-2xl overflow-hidden">
           <div className="p-6 border-b border-border flex items-center justify-between">
             <div className="flex items-center gap-4">
@@ -871,8 +871,8 @@ export default function ConfiguracoesPage() {
                 <MessageCircle size={22} className="text-[#25D366]" />
               </div>
               <div>
-                <h2 className="text-lg font-bold text-foreground">Integracao WhatsApp</h2>
-                <p className="text-sm text-muted">Envie lembretes e mensagens automaticas</p>
+                <h2 className="text-lg font-bold text-foreground">Integração WhatsApp</h2>
+                <p className="text-sm text-muted">Envie lembretes e mensagens automáticas</p>
               </div>
             </div>
             <div className="flex items-center gap-2">
@@ -924,12 +924,12 @@ export default function ConfiguracoesPage() {
                 </div>
                 {pairCode && (
                   <div className="mb-4">
-                    <p className="text-sm text-muted mb-2">Ou use o codigo de pareamento:</p>
+                    <p className="text-sm text-muted mb-2">Ou use o código de pareamento:</p>
                     <p className="text-2xl font-mono text-primary tracking-widest">{pairCode}</p>
                   </div>
                 )}
                 <p className="text-sm text-foreground-muted">
-                  Aguardando conexao... <Loader2 className="inline animate-spin ml-2" size={16} />
+                  Aguardando conexão... <Loader2 className="inline animate-spin ml-2" size={16} />
                 </p>
                 <button
                   onClick={() => { setQrCode(null); setPairCode(null); }}
@@ -945,7 +945,7 @@ export default function ConfiguracoesPage() {
                 </div>
                 <p className="text-foreground font-semibold mb-2">Conecte seu WhatsApp</p>
                 <p className="text-sm text-muted mb-6 max-w-md mx-auto">
-                  Ao conectar, voce podera enviar mensagens automaticas de lembretes e acompanhamento para seus clientes.
+                  Ao conectar, você poderá enviar mensagens automáticas de lembretes e acompanhamento para seus clientes.
                 </p>
                 <div className="flex items-center justify-center gap-4">
                   <button
@@ -983,7 +983,7 @@ export default function ConfiguracoesPage() {
               </div>
               <div>
                 <h2 className="text-lg font-bold text-foreground">Chatbot LoopIA</h2>
-                <p className="text-sm text-muted">Assistente virtual com inteligencia artificial</p>
+                <p className="text-sm text-muted">Assistente virtual com inteligência artificial</p>
               </div>
             </div>
             <button
@@ -1013,46 +1013,46 @@ export default function ConfiguracoesPage() {
                 />
               </div>
 
-              {/* Horario de Funcionamento */}
+              {/* Horário de Funcionamento */}
               <div>
-                <label className="block text-sm font-medium text-muted mb-2">Horario de Funcionamento</label>
+                <label className="block text-sm font-medium text-muted mb-2">Horário de Funcionamento</label>
                 <div className="bg-zinc-900/50 border border-border rounded-xl p-4 space-y-2">
                   {DIAS_SEMANA.map((dia) => (
                     <div
                       key={dia.key}
                       className={`flex items-center gap-3 p-2.5 rounded-lg transition-all ${
-                        chatbotHorario[dia.key].ativo ? 'bg-zinc-800/50' : 'bg-transparent opacity-50'
+                        chatbotHorário[dia.key].ativo ? 'bg-zinc-800/50' : 'bg-transparent opacity-50'
                       }`}
                     >
                       <button
                         type="button"
-                        onClick={() => updateHorarioDia(dia.key, 'ativo', !chatbotHorario[dia.key].ativo)}
+                        onClick={() => updateHorárioDia(dia.key, 'ativo', !chatbotHorário[dia.key].ativo)}
                         className={`w-5 h-5 rounded flex items-center justify-center border transition-all ${
-                          chatbotHorario[dia.key].ativo
+                          chatbotHorário[dia.key].ativo
                             ? 'bg-primary border-primary'
                             : 'bg-transparent border-zinc-600'
                         }`}
                       >
-                        {chatbotHorario[dia.key].ativo && (
+                        {chatbotHorário[dia.key].ativo && (
                           <CheckCircle size={14} className="text-white" />
                         )}
                       </button>
                       <span className="w-20 text-sm text-foreground">{dia.label}</span>
-                      {chatbotHorario[dia.key].ativo && (
+                      {chatbotHorário[dia.key].ativo && (
                         <>
                           <select
-                            value={chatbotHorario[dia.key].abertura}
-                            onChange={(e) => updateHorarioDia(dia.key, 'abertura', e.target.value)}
+                            value={chatbotHorário[dia.key].abertura}
+                            onChange={(e) => updateHorárioDia(dia.key, 'abertura', e.target.value)}
                             className="bg-zinc-800 border border-border rounded-lg px-2 py-1 text-sm text-foreground focus:outline-none focus:border-purple-500"
                           >
                             {HORARIOS.map((h) => (
                               <option key={h} value={h}>{h}</option>
                             ))}
                           </select>
-                          <span className="text-foreground-muted">as</span>
+                          <span className="text-foreground-muted">às</span>
                           <select
-                            value={chatbotHorario[dia.key].fechamento}
-                            onChange={(e) => updateHorarioDia(dia.key, 'fechamento', e.target.value)}
+                            value={chatbotHorário[dia.key].fechamento}
+                            onChange={(e) => updateHorárioDia(dia.key, 'fechamento', e.target.value)}
                             className="bg-zinc-800 border border-border rounded-lg px-2 py-1 text-sm text-foreground focus:outline-none focus:border-purple-500"
                           >
                             {HORARIOS.map((h) => (
@@ -1061,22 +1061,22 @@ export default function ConfiguracoesPage() {
                           </select>
                         </>
                       )}
-                      {!chatbotHorario[dia.key].ativo && (
+                      {!chatbotHorário[dia.key].ativo && (
                         <span className="text-sm text-foreground-muted">Fechado</span>
                       )}
                     </div>
                   ))}
                 </div>
                 <p className="mt-2 text-xs text-muted">
-                  Resumo: {horarioParaString(chatbotHorario) || 'Nenhum dia selecionado'}
+                  Resumo: {horarioParaString(chatbotHorário) || 'Nenhum dia selecionado'}
                 </p>
               </div>
 
-              {/* Servicos do Sistema */}
+              {/* Serviços do Sistema */}
               <div>
                 <div className="flex items-center justify-between mb-2">
                   <label className="block text-sm font-medium text-muted">
-                    Servicos que a LoopIA conhece
+                    Serviços que a LoopIA conhece
                   </label>
                   <button
                     onClick={() => {
@@ -1087,7 +1087,7 @@ export default function ConfiguracoesPage() {
                     className="flex items-center gap-1.5 px-3 py-1.5 bg-purple-500/10 border border-purple-500/30 rounded-lg text-purple-400 text-xs font-medium hover:bg-purple-500/20 transition-all"
                   >
                     <Plus size={14} />
-                    Novo Servico
+                    Novo Serviço
                   </button>
                 </div>
                 <div className="bg-zinc-900/50 border border-border rounded-xl p-4">
@@ -1128,16 +1128,16 @@ export default function ConfiguracoesPage() {
                   ) : (
                     <div className="text-center py-4">
                       <Wrench size={24} className="text-zinc-500 mx-auto mb-2" />
-                      <p className="text-sm text-muted">Nenhum servico cadastrado</p>
+                      <p className="text-sm text-muted">Nenhum serviço cadastrado</p>
                       <p className="text-xs text-foreground-muted mt-1">
-                        Clique em "Novo Servico" para adicionar
+                        Clique em "Novo Serviço" para adicionar
                       </p>
                     </div>
                   )}
                 </div>
                 <p className="mt-2 text-xs text-foreground-muted flex items-center gap-1">
                   <DollarSign size={12} />
-                  A LoopIA usa automaticamente os servicos e precos cadastrados aqui
+                  A LoopIA usa automaticamente os serviços e preços cadastrados aqui
                 </p>
               </div>
 
@@ -1146,7 +1146,7 @@ export default function ConfiguracoesPage() {
                 <textarea
                   value={chatbotBoasVindas}
                   onChange={(e) => setChatbotBoasVindas(e.target.value)}
-                  placeholder="Ola! Sou a LoopIA, assistente virtual da oficina..."
+                  placeholder="Olá! Sou a LoopIA, assistente virtual da oficina..."
                   rows={2}
                   className="w-full bg-zinc-900/50 border border-border rounded-xl px-4 py-3 text-foreground placeholder-zinc-500 focus:outline-none focus:border-purple-500/50 focus:ring-2 focus:ring-purple-500/20 transition-all resize-none"
                 />
@@ -1158,8 +1158,8 @@ export default function ConfiguracoesPage() {
                   <div>
                     <p className="text-sm text-foreground font-medium">Como funciona</p>
                     <p className="text-xs text-muted mt-1">
-                      A LoopIA responde automaticamente as mensagens recebidas no WhatsApp usando inteligencia artificial (Gemini).
-                      Ela conhece os servicos da oficina, precos, e dados dos clientes cadastrados.
+                      A LoopIA responde automaticamente as mensagens recebidas no WhatsApp usando inteligência artificial (Gemini).
+                      Ela conhece os serviços da oficina, preços, e dados dos clientes cadastrados.
                     </p>
                   </div>
                 </div>
@@ -1190,11 +1190,11 @@ export default function ConfiguracoesPage() {
             ) : (
               <Save size={20} />
             )}
-            {saving ? 'Salvando...' : 'Salvar Configuracoes'}
+            {saving ? 'Salvando...' : 'Salvar Configurações'}
           </button>
         </div>
 
-        {/* Versao */}
+        {/* Versão */}
         <div className="bg-card border border-border rounded-2xl p-6">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
@@ -1203,7 +1203,7 @@ export default function ConfiguracoesPage() {
               </div>
               <div>
                 <h3 className="font-bold text-foreground">Sobre o LubIA</h3>
-                <p className="text-sm text-muted">Versao 1.0.0 - Sistema de Gestao Inteligente para Oficinas</p>
+                <p className="text-sm text-muted">Versão 1.0.0 - Sistema de Gestão Inteligente para Oficinas</p>
               </div>
             </div>
             <span className="px-4 py-2 bg-emerald-500/10 text-emerald-400 text-xs font-semibold rounded-xl border border-emerald-500/20">

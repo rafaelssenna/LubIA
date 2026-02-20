@@ -141,7 +141,7 @@ export default function AReceberPage() {
             <div className="bg-gradient-to-br from-purple-500/10 to-purple-600/5 border border-purple-500/20 rounded-2xl p-5">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-purple-400/70">Ordens de Servico</p>
+                  <p className="text-sm text-purple-400/70">Ordens de Serviço</p>
                   <p className="text-2xl font-bold text-purple-400">{formatCurrency(stats.totalOrdens)}</p>
                   <p className="text-xs text-foreground-muted mt-1">{stats.ordens} ordens</p>
                 </div>
@@ -154,7 +154,7 @@ export default function AReceberPage() {
             <div className="bg-gradient-to-br from-blue-500/10 to-blue-600/5 border border-blue-500/20 rounded-2xl p-5">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-blue-400/70">Vendas Rapidas</p>
+                  <p className="text-sm text-blue-400/70">Vendas Rápidas</p>
                   <p className="text-2xl font-bold text-blue-400">{formatCurrency(stats.totalVendas)}</p>
                   <p className="text-xs text-foreground-muted mt-1">{stats.vendas} vendas</p>
                 </div>

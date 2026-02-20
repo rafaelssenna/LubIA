@@ -62,10 +62,10 @@ interface Stats {
 }
 
 const templates = [
-  { id: 1, nome: 'Confirmacao Agendamento', icon: Calendar, texto: 'Ola! Seu agendamento foi confirmado para {data}. Aguardamos voce!' },
-  { id: 2, nome: 'Veiculo Pronto', icon: CheckCheck, texto: 'Ola! Seu veiculo ja esta pronto para retirada. Pode passar quando quiser!' },
-  { id: 3, nome: 'Lembrete Revisao', icon: Bell, texto: 'Ola! Passando para lembrar que seu veiculo esta chegando na hora da revisao. Quer agendar?' },
-  { id: 4, nome: 'Orcamento', icon: FileText, texto: 'Segue o orcamento solicitado:\n\n{itens}\n\nTotal: R$ {total}\n\nConfirma o servico?' },
+  { id: 1, nome: 'Confirmação Agendamento', icon: Calendar, texto: 'Olá! Seu agendamento foi confirmado para {data}. Aguardamos você!' },
+  { id: 2, nome: 'Veículo Pronto', icon: CheckCheck, texto: 'Olá! Seu veículo já está pronto para retirada. Pode passar quando quiser!' },
+  { id: 3, nome: 'Lembrete Revisão', icon: Bell, texto: 'Olá! Passando para lembrar que seu veículo está chegando na hora da revisão. Quer agendar?' },
+  { id: 4, nome: 'Orçamento', icon: FileText, texto: 'Segue o orçamento solicitado:\n\n{itens}\n\nTotal: R$ {total}\n\nConfirma o serviço?' },
 ];
 
 export default function WhatsAppPage() {
@@ -225,7 +225,7 @@ export default function WhatsAppPage() {
 
   return (
     <div className="space-y-8">
-      <Header title="WhatsApp Business" subtitle="Central de comunicacao com clientes" />
+      <Header title="WhatsApp Business" subtitle="Central de comunicação com clientes" />
 
       <div className="px-4 lg:px-8 space-y-8">
         {/* Stats Rapidos */}
@@ -271,7 +271,7 @@ export default function WhatsAppPage() {
                 <span className="text-xs font-medium text-amber-400 bg-amber-500/10 px-2 py-1 rounded-full">Pendentes</span>
               </div>
               <p className="text-4xl font-bold text-foreground mb-1">{stats.naoLidas}</p>
-              <p className="text-sm text-muted">nao lidas</p>
+              <p className="text-sm text-muted">não lidas</p>
             </div>
           </div>
 
@@ -291,7 +291,7 @@ export default function WhatsAppPage() {
               >
                 {autoRefresh ? 'Auto ON' : 'Auto OFF'}
               </button>
-              <p className="text-sm text-zinc-400 mt-2">atualizacao</p>
+              <p className="text-sm text-zinc-400 mt-2">atualização</p>
             </div>
           </div>
         </div>
@@ -453,7 +453,7 @@ export default function WhatsAppPage() {
                   <div className="p-4 border-t border-border bg-zinc-900/50">
                     <p className="text-sm text-muted mb-3 flex items-center gap-2">
                       <Sparkles size={14} className="text-[#25D366]" />
-                      Templates rapidos:
+                      Templates rápidos:
                     </p>
                     <div className="flex flex-wrap gap-2">
                       {templates.map((template) => (
@@ -522,7 +522,7 @@ export default function WhatsAppPage() {
                   <div className="mt-6 p-4 bg-amber-500/10 border border-amber-500/20 rounded-xl flex items-center gap-3">
                     <AlertCircle size={20} className="text-amber-400" />
                     <p className="text-sm text-amber-200">
-                      Nenhuma conversa ainda. As conversas aparecerao quando clientes entrarem em contato.
+                      Nenhuma conversa ainda. As conversas aparecerão quando clientes entrarem em contato.
                     </p>
                   </div>
                 )}

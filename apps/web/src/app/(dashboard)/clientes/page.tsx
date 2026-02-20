@@ -44,7 +44,7 @@ export default function ClientesPage() {
     endereco: '',
   });
 
-  const [enderecoForm, setEnderecoForm] = useState({
+  const [enderecoForm, setEndereçoForm] = useState({
     cep: '',
     rua: '',
     numero: '',
@@ -65,7 +65,7 @@ export default function ClientesPage() {
       const res = await fetch(`/api/cep/${cepLimpo}`);
       const data = await res.json();
       if (res.ok) {
-        setEnderecoForm(prev => ({
+        setEndereçoForm(prev => ({
           ...prev,
           rua: data.logradouro || '',
           bairro: data.bairro || '',
@@ -80,7 +80,7 @@ export default function ClientesPage() {
     }
   };
 
-  const montarEndereco = () => {
+  const montarEndereço = () => {
     const partes = [];
     if (enderecoForm.rua) {
       let rua = enderecoForm.rua;
@@ -96,7 +96,7 @@ export default function ClientesPage() {
     return partes.join(' - ');
   };
 
-  const parseEndereco = (endereco: string) => {
+  const parseEndereço = (endereco: string) => {
     const result = {
       cep: '',
       rua: '',
@@ -174,7 +174,7 @@ export default function ClientesPage() {
 
     setSaving(true);
     try {
-      const enderecoCompleto = montarEndereco();
+      const enderecoCompleto = montarEndereço();
       const res = await fetch('/api/clientes', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -186,7 +186,7 @@ export default function ClientesPage() {
       if (res.ok) {
         setShowModal(false);
         setForm({ nome: '', telefone: '', email: '', cpf: '', endereco: '' });
-        setEnderecoForm({ cep: '', rua: '', numero: '', complemento: '', bairro: '', cidade: '', uf: '' });
+        setEndereçoForm({ cep: '', rua: '', numero: '', complemento: '', bairro: '', cidade: '', uf: '' });
         toast.success('Cliente cadastrado com sucesso!');
         fetchClientes();
       } else {
@@ -209,7 +209,7 @@ export default function ClientesPage() {
       cpf: cliente.cpf || '',
       endereco: cliente.endereco || '',
     });
-    setEnderecoForm(parseEndereco(cliente.endereco || ''));
+    setEndereçoForm(parseEndereço(cliente.endereco || ''));
     setShowEditModal(true);
   };
 
@@ -218,7 +218,7 @@ export default function ClientesPage() {
 
     setSaving(true);
     try {
-      const enderecoCompleto = montarEndereco() || form.endereco;
+      const enderecoCompleto = montarEndereço() || form.endereco;
       const res = await fetch(`/api/clientes/${selectedCliente.id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
@@ -231,7 +231,7 @@ export default function ClientesPage() {
         setShowEditModal(false);
         setSelectedCliente(null);
         setForm({ nome: '', telefone: '', email: '', cpf: '', endereco: '' });
-        setEnderecoForm({ cep: '', rua: '', numero: '', complemento: '', bairro: '', cidade: '', uf: '' });
+        setEndereçoForm({ cep: '', rua: '', numero: '', complemento: '', bairro: '', cidade: '', uf: '' });
         toast.success('Cliente atualizado com sucesso!');
         fetchClientes();
       } else {
@@ -321,7 +321,7 @@ export default function ClientesPage() {
             </div>
           </div>
 
-          {/* Total Veiculos */}
+          {/* Total Veículos */}
           <div className="group relative overflow-hidden bg-gradient-to-br from-purple-500/20 to-purple-500/5 rounded-2xl p-6 border border-purple-500/20 hover:border-purple-500/40 transition-all duration-300">
             <div className="absolute top-0 right-0 w-32 h-32 bg-purple-500/10 rounded-full blur-3xl group-hover:scale-150 transition-transform duration-500"></div>
             <div className="relative">
@@ -329,12 +329,12 @@ export default function ClientesPage() {
                 <div className="p-3 bg-purple-500/20 rounded-xl">
                   <Car className="h-6 w-6 text-purple-400" />
                 </div>
-                <span className="text-xs font-medium text-purple-400 bg-purple-500/10 px-2 py-1 rounded-full">Veiculos</span>
+                <span className="text-xs font-medium text-purple-400 bg-purple-500/10 px-2 py-1 rounded-full">Veículos</span>
               </div>
               <p className="text-4xl font-bold text-foreground mb-1">
                 {clientes.reduce((acc, c) => acc + c.veiculosCount, 0)}
               </p>
-              <p className="text-sm text-muted">veiculos registrados</p>
+              <p className="text-sm text-muted">veículos registrados</p>
             </div>
           </div>
 
@@ -369,7 +369,7 @@ export default function ClientesPage() {
           <button
             onClick={() => {
               setForm({ nome: '', telefone: '', email: '', cpf: '', endereco: '' });
-              setEnderecoForm({ cep: '', rua: '', numero: '', complemento: '', bairro: '', cidade: '', uf: '' });
+              setEndereçoForm({ cep: '', rua: '', numero: '', complemento: '', bairro: '', cidade: '', uf: '' });
               setShowModal(true);
             }}
             className="flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-primary to-[#2E7D32] hover:from-[#2E7D32] hover:to-primary text-white font-semibold rounded-xl transition-all duration-300 shadow-lg shadow-primary/25 hover:shadow-primary/40 hover:scale-[1.02]"
@@ -523,9 +523,9 @@ export default function ClientesPage() {
                   className="w-full bg-zinc-900 border border-border rounded-xl px-4 py-3 text-foreground placeholder-zinc-600 focus:outline-none focus:border-blue-500/50 focus:ring-1 focus:ring-blue-500/20 transition-all duration-200"
                 />
               </div>
-              {/* Endereco */}
+              {/* Endereço */}
               <div className="pt-2 border-t border-border">
-                <label className="block text-sm font-medium text-zinc-400 mb-3">Endereco</label>
+                <label className="block text-sm font-medium text-zinc-400 mb-3">Endereço</label>
                 <div className="space-y-3">
                   <div className="grid grid-cols-3 gap-3">
                     <div className="col-span-1">
@@ -535,7 +535,7 @@ export default function ClientesPage() {
                         onChange={(e) => {
                           const value = e.target.value.replace(/\D/g, '').slice(0, 8);
                           const formatted = value.length > 5 ? `${value.slice(0, 5)}-${value.slice(5)}` : value;
-                          setEnderecoForm({ ...enderecoForm, cep: formatted });
+                          setEndereçoForm({ ...enderecoForm, cep: formatted });
                           if (value.length === 8) buscarCep(value);
                         }}
                         placeholder="CEP"
@@ -546,7 +546,7 @@ export default function ClientesPage() {
                       <input
                         type="text"
                         value={enderecoForm.rua}
-                        onChange={(e) => setEnderecoForm({ ...enderecoForm, rua: e.target.value })}
+                        onChange={(e) => setEndereçoForm({ ...enderecoForm, rua: e.target.value })}
                         placeholder={buscandoCep ? 'Buscando...' : 'Rua'}
                         disabled={buscandoCep}
                         maxLength={100}
@@ -559,7 +559,7 @@ export default function ClientesPage() {
                       <input
                         type="text"
                         value={enderecoForm.numero}
-                        onChange={(e) => setEnderecoForm({ ...enderecoForm, numero: e.target.value })}
+                        onChange={(e) => setEndereçoForm({ ...enderecoForm, numero: e.target.value })}
                         placeholder="No"
                         maxLength={10}
                         className="w-full bg-zinc-900 border border-border rounded-xl px-4 py-3 text-foreground placeholder-zinc-600 focus:outline-none focus:border-blue-500/50 text-sm"
@@ -569,7 +569,7 @@ export default function ClientesPage() {
                       <input
                         type="text"
                         value={enderecoForm.complemento}
-                        onChange={(e) => setEnderecoForm({ ...enderecoForm, complemento: e.target.value })}
+                        onChange={(e) => setEndereçoForm({ ...enderecoForm, complemento: e.target.value })}
                         placeholder="Complemento"
                         maxLength={50}
                         className="w-full bg-zinc-900 border border-border rounded-xl px-4 py-3 text-foreground placeholder-zinc-600 focus:outline-none focus:border-blue-500/50 text-sm"
@@ -581,7 +581,7 @@ export default function ClientesPage() {
                       <input
                         type="text"
                         value={enderecoForm.bairro}
-                        onChange={(e) => setEnderecoForm({ ...enderecoForm, bairro: e.target.value })}
+                        onChange={(e) => setEndereçoForm({ ...enderecoForm, bairro: e.target.value })}
                         placeholder="Bairro"
                         disabled={buscandoCep}
                         maxLength={50}
@@ -592,7 +592,7 @@ export default function ClientesPage() {
                       <input
                         type="text"
                         value={enderecoForm.cidade}
-                        onChange={(e) => setEnderecoForm({ ...enderecoForm, cidade: e.target.value })}
+                        onChange={(e) => setEndereçoForm({ ...enderecoForm, cidade: e.target.value })}
                         placeholder="Cidade"
                         disabled={buscandoCep}
                         maxLength={50}
@@ -603,7 +603,7 @@ export default function ClientesPage() {
                       <input
                         type="text"
                         value={enderecoForm.uf}
-                        onChange={(e) => setEnderecoForm({ ...enderecoForm, uf: e.target.value.toUpperCase().slice(0, 2) })}
+                        onChange={(e) => setEndereçoForm({ ...enderecoForm, uf: e.target.value.toUpperCase().slice(0, 2) })}
                         placeholder="UF"
                         maxLength={2}
                         disabled={buscandoCep}
@@ -640,7 +640,7 @@ export default function ClientesPage() {
             <div className="p-6 border-b border-border flex items-center justify-between">
               <div>
                 <h2 className="text-xl font-semibold text-foreground">Editar Cliente</h2>
-                <p className="text-sm text-muted mt-1">Atualize as informacoes do cliente</p>
+                <p className="text-sm text-muted mt-1">Atualize as informações do cliente</p>
               </div>
               <button onClick={() => setShowEditModal(false)} className="p-2 hover:bg-zinc-800 rounded-xl text-muted hover:text-foreground transition-all duration-200">
                 <X size={20} />
@@ -688,9 +688,9 @@ export default function ClientesPage() {
                   className="w-full bg-zinc-900 border border-border rounded-xl px-4 py-3 text-foreground placeholder-zinc-600 focus:outline-none focus:border-blue-500/50 focus:ring-1 focus:ring-blue-500/20 transition-all duration-200"
                 />
               </div>
-              {/* Endereco */}
+              {/* Endereço */}
               <div className="pt-2 border-t border-border">
-                <label className="block text-sm font-medium text-muted mb-3">Endereco</label>
+                <label className="block text-sm font-medium text-muted mb-3">Endereço</label>
                 <div className="space-y-3">
                   <div className="grid grid-cols-3 gap-3">
                     <div className="col-span-1">
@@ -700,7 +700,7 @@ export default function ClientesPage() {
                         onChange={(e) => {
                           const value = e.target.value.replace(/\D/g, '').slice(0, 8);
                           const formatted = value.length > 5 ? `${value.slice(0, 5)}-${value.slice(5)}` : value;
-                          setEnderecoForm({ ...enderecoForm, cep: formatted });
+                          setEndereçoForm({ ...enderecoForm, cep: formatted });
                           if (value.length === 8) buscarCep(value);
                         }}
                         placeholder="CEP"
@@ -711,7 +711,7 @@ export default function ClientesPage() {
                       <input
                         type="text"
                         value={enderecoForm.rua}
-                        onChange={(e) => setEnderecoForm({ ...enderecoForm, rua: e.target.value })}
+                        onChange={(e) => setEndereçoForm({ ...enderecoForm, rua: e.target.value })}
                         placeholder={buscandoCep ? 'Buscando...' : 'Rua'}
                         disabled={buscandoCep}
                         maxLength={100}
@@ -724,7 +724,7 @@ export default function ClientesPage() {
                       <input
                         type="text"
                         value={enderecoForm.numero}
-                        onChange={(e) => setEnderecoForm({ ...enderecoForm, numero: e.target.value })}
+                        onChange={(e) => setEndereçoForm({ ...enderecoForm, numero: e.target.value })}
                         placeholder="No"
                         maxLength={10}
                         className="w-full bg-zinc-900 border border-border rounded-xl px-4 py-3 text-foreground placeholder-zinc-600 focus:outline-none focus:border-blue-500/50 text-sm"
@@ -734,7 +734,7 @@ export default function ClientesPage() {
                       <input
                         type="text"
                         value={enderecoForm.complemento}
-                        onChange={(e) => setEnderecoForm({ ...enderecoForm, complemento: e.target.value })}
+                        onChange={(e) => setEndereçoForm({ ...enderecoForm, complemento: e.target.value })}
                         placeholder="Complemento"
                         maxLength={50}
                         className="w-full bg-zinc-900 border border-border rounded-xl px-4 py-3 text-foreground placeholder-zinc-600 focus:outline-none focus:border-blue-500/50 text-sm"
@@ -746,7 +746,7 @@ export default function ClientesPage() {
                       <input
                         type="text"
                         value={enderecoForm.bairro}
-                        onChange={(e) => setEnderecoForm({ ...enderecoForm, bairro: e.target.value })}
+                        onChange={(e) => setEndereçoForm({ ...enderecoForm, bairro: e.target.value })}
                         placeholder="Bairro"
                         disabled={buscandoCep}
                         maxLength={50}
@@ -757,7 +757,7 @@ export default function ClientesPage() {
                       <input
                         type="text"
                         value={enderecoForm.cidade}
-                        onChange={(e) => setEnderecoForm({ ...enderecoForm, cidade: e.target.value })}
+                        onChange={(e) => setEndereçoForm({ ...enderecoForm, cidade: e.target.value })}
                         placeholder="Cidade"
                         disabled={buscandoCep}
                         maxLength={50}
@@ -768,7 +768,7 @@ export default function ClientesPage() {
                       <input
                         type="text"
                         value={enderecoForm.uf}
-                        onChange={(e) => setEnderecoForm({ ...enderecoForm, uf: e.target.value.toUpperCase().slice(0, 2) })}
+                        onChange={(e) => setEndereçoForm({ ...enderecoForm, uf: e.target.value.toUpperCase().slice(0, 2) })}
                         placeholder="UF"
                         maxLength={2}
                         disabled={buscandoCep}
@@ -791,19 +791,19 @@ export default function ClientesPage() {
                 disabled={saving}
                 className="px-6 py-3 bg-gradient-to-r from-primary to-[#2E7D32] rounded-xl text-white font-medium hover:shadow-lg hover:shadow-primary/25 transition-all duration-300 disabled:opacity-50"
               >
-                {saving ? 'Salvando...' : 'Salvar Alteracoes'}
+                {saving ? 'Salvando...' : 'Salvar Alterações'}
               </button>
             </div>
           </div>
         </div>
       )}
 
-      {/* Modal Confirmar Exclusao */}
+      {/* Modal Confirmar Exclusão */}
       {showDeleteConfirm && selectedCliente && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
           <div className="bg-card border border-border rounded-2xl w-full max-w-md shadow-2xl shadow-black/50">
             <div className="p-6 border-b border-border">
-              <h2 className="text-xl font-semibold text-foreground">Confirmar Exclusao</h2>
+              <h2 className="text-xl font-semibold text-foreground">Confirmar Exclusão</h2>
             </div>
             <div className="p-6">
               <div className="flex items-center gap-4 mb-4">
@@ -817,12 +817,12 @@ export default function ClientesPage() {
               </div>
               {selectedCliente.veiculosCount > 0 ? (
                 <div className="p-4 bg-amber-500/10 border border-amber-500/20 rounded-xl text-amber-400 text-sm">
-                  Este cliente possui {selectedCliente.veiculosCount} veiculo(s) cadastrado(s).
-                  Remova os veiculos primeiro para poder excluir o cliente.
+                  Este cliente possui {selectedCliente.veiculosCount} veículo(s) cadastrado(s).
+                  Remova os veículos primeiro para poder excluir o cliente.
                 </div>
               ) : (
                 <p className="text-muted text-sm">
-                  Tem certeza que deseja excluir este cliente? Esta acao nao pode ser desfeita.
+                  Tem certeza que deseja excluir este cliente? Esta ação não pode ser desfeita.
                 </p>
               )}
             </div>
@@ -880,7 +880,7 @@ export default function ClientesPage() {
                 <div className="p-4 bg-zinc-900 rounded-xl border border-border">
                   <div className="flex items-center gap-2 text-muted mb-1">
                     <Car size={14} className="text-purple-400" />
-                    <span className="text-xs">Veiculos</span>
+                    <span className="text-xs">Veículos</span>
                   </div>
                   <p className="text-foreground">{selectedCliente.veiculosCount}</p>
                 </div>
@@ -907,16 +907,16 @@ export default function ClientesPage() {
                 <div className="p-4 bg-zinc-900 rounded-xl border border-border">
                   <div className="flex items-center gap-2 text-muted mb-1">
                     <MapPin size={14} className="text-red-400" />
-                    <span className="text-xs">Endereco</span>
+                    <span className="text-xs">Endereço</span>
                   </div>
                   <p className="text-foreground">{selectedCliente.endereco}</p>
                 </div>
               )}
 
-              {/* Veiculos */}
+              {/* Veículos */}
               {selectedCliente.veiculos && selectedCliente.veiculos.length > 0 && (
                 <div>
-                  <h3 className="text-sm font-medium text-muted mb-3">Veiculos</h3>
+                  <h3 className="text-sm font-medium text-muted mb-3">Veículos</h3>
                   <div className="space-y-2">
                     {selectedCliente.veiculos.map((veiculo) => (
                       <div key={veiculo.id} className="p-4 bg-zinc-900 rounded-xl border border-border flex items-center justify-between">

@@ -86,13 +86,13 @@ export async function POST(request: NextRequest) {
 
     if (!config?.uazapiToken) {
       return NextResponse.json({
-        error: 'WhatsApp nao configurado',
+        error: 'WhatsApp não configurado',
       }, { status: 400 });
     }
 
     if (!config.whatsappConnected) {
       return NextResponse.json({
-        error: 'WhatsApp nao esta conectado',
+        error: 'WhatsApp não está conectado',
       }, { status: 400 });
     }
 
@@ -101,7 +101,7 @@ export async function POST(request: NextRequest) {
 
     if (!number) {
       return NextResponse.json({
-        error: 'Numero de telefone e obrigatorio',
+        error: 'Número de telefone é obrigatório',
       }, { status: 400 });
     }
 

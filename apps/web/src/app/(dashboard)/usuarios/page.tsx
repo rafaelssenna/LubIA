@@ -198,7 +198,7 @@ function UsuariosPageContent() {
             <div className="w-16 h-16 border-4 border-purple-500/20 rounded-full"></div>
             <div className="absolute top-0 left-0 w-16 h-16 border-4 border-transparent border-t-purple-500 rounded-full animate-spin"></div>
           </div>
-          <p className="text-muted animate-pulse">Carregando usuarios...</p>
+          <p className="text-muted animate-pulse">Carregando usuários...</p>
         </div>
       </div>
     );
@@ -207,8 +207,8 @@ function UsuariosPageContent() {
   return (
     <div className="space-y-8">
       <Header
-        title="Usuarios"
-        subtitle="Gerencie os usuarios da sua empresa"
+        title="Usuários"
+        subtitle="Gerencie os usuários da sua empresa"
       />
 
       <div className="px-4 lg:px-8 space-y-8">
@@ -229,7 +229,7 @@ function UsuariosPageContent() {
             className="flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-primary to-[#2E7D32] hover:from-[#2E7D32] hover:to-primary text-white font-semibold rounded-xl transition-all duration-300 shadow-lg shadow-primary/25 hover:shadow-primary/40 hover:scale-[1.02]"
           >
             <Plus className="h-5 w-5" />
-            <span>Novo Usuario</span>
+            <span>Novo Usuário</span>
           </button>
         </div>
 
@@ -240,12 +240,12 @@ function UsuariosPageContent() {
               <div className="p-4 bg-purple-500/10 rounded-2xl w-fit mx-auto mb-4 border border-purple-500/20">
                 <User className="h-8 w-8 text-purple-400" />
               </div>
-              <p className="text-foreground font-medium">Nenhum usuario encontrado</p>
+              <p className="text-foreground font-medium">Nenhum usuário encontrado</p>
               <button
                 onClick={openNewModal}
                 className="mt-4 text-primary hover:text-primary-light transition-colors"
               >
-                Criar primeiro usuario
+                Criar primeiro usuário
               </button>
             </div>
           ) : (
@@ -253,11 +253,11 @@ function UsuariosPageContent() {
               <table className="w-full">
                 <thead className="bg-zinc-900/50 border-b border-border">
                   <tr>
-                    <th className="text-left px-6 py-4 text-xs font-semibold text-muted uppercase tracking-wider">Usuario</th>
-                    <th className="text-left px-6 py-4 text-xs font-semibold text-muted uppercase tracking-wider">Nivel</th>
+                    <th className="text-left px-6 py-4 text-xs font-semibold text-muted uppercase tracking-wider">Usuário</th>
+                    <th className="text-left px-6 py-4 text-xs font-semibold text-muted uppercase tracking-wider">Nível</th>
                     <th className="text-left px-6 py-4 text-xs font-semibold text-muted uppercase tracking-wider">Status</th>
-                    <th className="text-left px-6 py-4 text-xs font-semibold text-muted uppercase tracking-wider">Ultimo Login</th>
-                    <th className="text-right px-6 py-4 text-xs font-semibold text-muted uppercase tracking-wider">Acoes</th>
+                    <th className="text-left px-6 py-4 text-xs font-semibold text-muted uppercase tracking-wider">Último Login</th>
+                    <th className="text-right px-6 py-4 text-xs font-semibold text-muted uppercase tracking-wider">Ações</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-zinc-800/50">
@@ -337,7 +337,7 @@ function UsuariosPageContent() {
           <div className="bg-card border border-border rounded-2xl w-full max-w-md overflow-hidden shadow-2xl shadow-black/50 max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between p-6 border-b border-border sticky top-0 bg-card">
               <h2 className="text-xl font-bold text-foreground">
-                {editingUsuario ? 'Editar Usuario' : 'Novo Usuario'}
+                {editingUsuario ? 'Editar Usuário' : 'Novo Usuário'}
               </h2>
               <button
                 onClick={() => setShowModal(false)}
@@ -389,7 +389,7 @@ function UsuariosPageContent() {
                     type={showPassword ? 'text' : 'password'}
                     value={senha}
                     onChange={(e) => setSenha(e.target.value)}
-                    placeholder={editingUsuario ? '........' : 'Minimo 6 caracteres'}
+                    placeholder={editingUsuario ? '........' : 'Mínimo 6 caracteres'}
                     className="w-full px-4 py-3 pr-10 bg-zinc-900/50 border border-border rounded-xl text-foreground placeholder-zinc-500 focus:outline-none focus:border-purple-500/50 focus:ring-2 focus:ring-purple-500/20 transition-all"
                   />
                   <button
@@ -405,7 +405,7 @@ function UsuariosPageContent() {
               {/* Role */}
               <div>
                 <label className="block text-sm font-medium text-muted mb-3">
-                  Nivel de Acesso
+                  Nível de Acesso
                 </label>
                 <div className="space-y-2">
                   {/* VENDEDOR */}
@@ -429,7 +429,7 @@ function UsuariosPageContent() {
                         <span className="font-medium text-foreground">Vendedor</span>
                         <span className="text-xs px-2 py-0.5 rounded-lg bg-orange-500/20 text-orange-400">VENDEDOR</span>
                       </div>
-                      <p className="text-xs text-muted mt-1">Clientes, Veiculos, Orcamentos, WhatsApp</p>
+                      <p className="text-xs text-muted mt-1">Clientes, Veículos, Orçamentos, WhatsApp</p>
                     </div>
                   </label>
 
@@ -479,7 +479,7 @@ function UsuariosPageContent() {
                         <span className="font-medium text-foreground">Gerente</span>
                         <span className="text-xs px-2 py-0.5 rounded-lg bg-blue-500/20 text-blue-400">GERENTE</span>
                       </div>
-                      <p className="text-xs text-muted mt-1">Tudo exceto Usuarios e Configuracoes</p>
+                      <p className="text-xs text-muted mt-1">Tudo exceto Usuários e Configurações</p>
                     </div>
                   </label>
 
@@ -521,7 +521,7 @@ function UsuariosPageContent() {
                     className="w-4 h-4 text-emerald-500 bg-zinc-700 border-zinc-600 rounded focus:ring-emerald-500"
                   />
                   <label htmlFor="ativo" className="text-sm text-muted">
-                    Usuario ativo
+                    Usuário ativo
                   </label>
                 </div>
               )}
@@ -540,7 +540,7 @@ function UsuariosPageContent() {
                 className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-primary to-[#2E7D32] hover:from-[#2E7D32] hover:to-primary text-white font-semibold rounded-xl transition-all duration-300 shadow-lg shadow-primary/25 disabled:opacity-50"
               >
                 {saving && <Loader2 className="h-4 w-4 animate-spin" />}
-                {editingUsuario ? 'Salvar' : 'Criar Usuario'}
+                {editingUsuario ? 'Salvar' : 'Criar Usuário'}
               </button>
             </div>
           </div>
@@ -555,10 +555,10 @@ function UsuariosPageContent() {
               <div className="w-14 h-14 mx-auto mb-4 bg-red-500/10 rounded-2xl flex items-center justify-center border border-red-500/20">
                 <Trash2 className="h-7 w-7 text-red-400" />
               </div>
-              <h3 className="text-xl font-bold text-foreground text-center mb-2">Excluir Usuario</h3>
+              <h3 className="text-xl font-bold text-foreground text-center mb-2">Excluir Usuário</h3>
               <p className="text-muted text-center text-sm mb-1">{selectedUsuario.nome}</p>
               <p className="text-foreground-muted text-center text-sm">
-                Tem certeza que deseja excluir este usuario? Esta acao nao pode ser desfeita.
+                Tem certeza que deseja excluir este usuario? Esta ação não pode ser desfeita.
               </p>
             </div>
             <div className="p-6 border-t border-border flex gap-3">
