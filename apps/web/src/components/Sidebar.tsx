@@ -26,6 +26,7 @@ import {
   FolderOpen,
   Briefcase,
   Wallet,
+  RotateCcw,
 } from 'lucide-react';
 import { useSidebar } from '@/contexts/SidebarContext';
 import { useAuth } from '@/contexts/AuthContext';
@@ -37,9 +38,9 @@ type RoleUsuario = 'ADMIN' | 'GERENTE' | 'ATENDENTE' | 'VENDEDOR';
 // Permissoes por role
 const ROLE_PERMISSIONS: Record<RoleUsuario, string[]> = {
   ADMIN: ['*'],
-  GERENTE: ['dashboard', 'cadastros', 'clientes', 'veiculos', 'operacoes', 'ordens', 'orcamentos', 'vendas-rapidas', 'financeiro', 'a-receber', 'historico', 'estoque', 'lembretes', 'whatsapp'],
-  ATENDENTE: ['dashboard', 'cadastros', 'clientes', 'veiculos', 'operacoes', 'ordens', 'orcamentos', 'vendas-rapidas', 'financeiro', 'a-receber', 'historico', 'whatsapp'],
-  VENDEDOR: ['cadastros', 'clientes', 'veiculos', 'operacoes', 'orcamentos', 'vendas-rapidas', 'financeiro', 'a-receber', 'historico', 'whatsapp'],
+  GERENTE: ['dashboard', 'cadastros', 'clientes', 'veiculos', 'operacoes', 'ordens', 'orcamentos', 'vendas-rapidas', 'devolucoes', 'financeiro', 'a-receber', 'historico', 'estoque', 'lembretes', 'whatsapp'],
+  ATENDENTE: ['dashboard', 'cadastros', 'clientes', 'veiculos', 'operacoes', 'ordens', 'orcamentos', 'vendas-rapidas', 'devolucoes', 'financeiro', 'a-receber', 'historico', 'whatsapp'],
+  VENDEDOR: ['cadastros', 'clientes', 'veiculos', 'operacoes', 'orcamentos', 'vendas-rapidas', 'devolucoes', 'financeiro', 'a-receber', 'historico', 'whatsapp'],
 };
 
 interface SubMenuItem {
@@ -78,6 +79,7 @@ const menuItems: MenuItem[] = [
       { icon: ClipboardList, label: 'Ordens', href: '/ordens', permission: 'ordens' },
       { icon: FileText, label: 'Orçamentos', href: '/orcamentos', permission: 'orcamentos' },
       { icon: ShoppingCart, label: 'Vendas Rápidas', href: '/vendas-rapidas', permission: 'vendas-rapidas' },
+      { icon: RotateCcw, label: 'Devoluções', href: '/devolucoes', permission: 'devolucoes' },
     ],
   },
   {

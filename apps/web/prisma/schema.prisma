@@ -24,20 +24,21 @@ model Empresa {
   updatedAt DateTime @updatedAt
 
   // Relações com todos os models
-  usuarios      Usuario[]
-  clientes      Cliente[]
-  veiculos      Veiculo[]
-  servicos      Servico[]
-  ordens        OrdemServico[]
-  orcamentos    Orcamento[]
-  lembretes     Lembrete[]
-  produtos      Produto[]
-  movimentacoes MovimentacaoEstoque[]
-  conversas     Conversa[]
-  mensagens     Mensagem[]
-  configuracao  Configuracao?
-  filiais       Filial[]
-  vendasRapidas VendaRapida[]
+  usuarios              Usuario[]
+  clientes              Cliente[]
+  veiculos              Veiculo[]
+  servicos              Servico[]
+  ordens                OrdemServico[]
+  orcamentos            Orcamento[]
+  lembretes             Lembrete[]
+  produtos              Produto[]
+  movimentacoes         MovimentacaoEstoque[]
+  conversas             Conversa[]
+  mensagens             Mensagem[]
+  configuracao          Configuracao?
+  filiais               Filial[]
+  vendasRapidas         VendaRapida[]
+  devolucoesVendaRapida DevolucaoVendaRapida[]
 
   @@map("empresas")
 }
@@ -351,6 +352,8 @@ model Produto {
   itensOrdem        ItemOrdemProduto[]
   itensOrcamento    ItemOrcamentoProduto[]
   itensVendaRapida  ItemVendaRapida[]
+  itensDevolvidos   ItemDevolucaoVendaRapida[] @relation("ProdutoDevolvido")
+  itensTrocados     ItemDevolucaoVendaRapida[] @relation("ProdutoTroca")
 
   @@unique([codigo, empresaId])
   @@index([empresaId])
@@ -585,6 +588,19 @@ model ItemOrcamentoProduto {
 // VENDAS RÁPIDAS (Balcão)
 // =============================================
 
+// Motivo da devolução
+enum MotivoDevolucao {
+  DEFEITO
+  ARREPENDIMENTO
+  OUTRO
+}
+
+// Tipo de devolução
+enum TipoDevolucao {
+  TROCA
+  REEMBOLSO
+}
+
 // Venda rápida - sem necessidade de cliente cadastrado
 model VendaRapida {
   id             Int             @id @default(autoincrement())
@@ -601,8 +617,9 @@ model VendaRapida {
   createdAt      DateTime        @default(now())
   updatedAt      DateTime        @updatedAt
 
-  empresa Empresa           @relation(fields: [empresaId], references: [id], onDelete: Cascade)
-  itens   ItemVendaRapida[]
+  empresa    Empresa                @relation(fields: [empresaId], references: [id], onDelete: Cascade)
+  itens      ItemVendaRapida[]
+  devolucoes DevolucaoVendaRapida[]
 
   @@unique([numero, empresaId])
   @@index([empresaId])
@@ -620,8 +637,56 @@ model ItemVendaRapida {
   desconto      Decimal     @db.Decimal(10, 2) @default(0)
   subtotal      Decimal     @db.Decimal(10, 2)
 
-  venda   VendaRapida @relation(fields: [vendaId], references: [id], onDelete: Cascade)
-  produto Produto     @relation(fields: [produtoId], references: [id])
+  venda      VendaRapida                @relation(fields: [vendaId], references: [id], onDelete: Cascade)
+  produto    Produto                    @relation(fields: [produtoId], references: [id])
+  devolucoes ItemDevolucaoVendaRapida[]
 
   @@map("itens_venda_rapida")
+}
+
+// =============================================
+// DEVOLUÇÕES DE VENDA RÁPIDA
+// =============================================
+
+// Devolução de venda rápida
+model DevolucaoVendaRapida {
+  id          Int              @id @default(autoincrement())
+  empresaId   Int
+  vendaId     Int
+  numero      String           // DEV-0001
+  tipo        TipoDevolucao
+  motivo      MotivoDevolucao
+  motivoOutro String?          // Quando motivo = OUTRO
+  observacoes String?
+  valorTotal  Decimal          @db.Decimal(10, 2) @default(0)
+  createdAt   DateTime         @default(now())
+
+  empresa Empresa                    @relation(fields: [empresaId], references: [id], onDelete: Cascade)
+  venda   VendaRapida                @relation(fields: [vendaId], references: [id], onDelete: Cascade)
+  itens   ItemDevolucaoVendaRapida[]
+
+  @@unique([numero, empresaId])
+  @@index([empresaId])
+  @@index([vendaId])
+  @@map("devolucoes_venda_rapida")
+}
+
+// Itens devolvidos
+model ItemDevolucaoVendaRapida {
+  id                  Int     @id @default(autoincrement())
+  devolucaoId         Int
+  itemVendaId         Int
+  produtoId           Int
+  quantidadeDevolvida Decimal @db.Decimal(10, 2)
+  valorUnitario       Decimal @db.Decimal(10, 2)
+  subtotal            Decimal @db.Decimal(10, 2)
+  produtoTrocaId      Int?    // Para TROCA: produto substituto
+  quantidadeTroca     Decimal? @db.Decimal(10, 2)
+
+  devolucao    DevolucaoVendaRapida @relation(fields: [devolucaoId], references: [id], onDelete: Cascade)
+  itemVenda    ItemVendaRapida      @relation(fields: [itemVendaId], references: [id])
+  produto      Produto              @relation("ProdutoDevolvido", fields: [produtoId], references: [id])
+  produtoTroca Produto?             @relation("ProdutoTroca", fields: [produtoTrocaId], references: [id])
+
+  @@map("itens_devolucao_venda_rapida")
 }

@@ -13,8 +13,10 @@ import {
   ChevronRight,
   Receipt,
   Clock,
+  RotateCcw,
 } from 'lucide-react';
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { useToast } from '@/components/Toast';
 
 interface Produto {
@@ -59,6 +61,7 @@ interface Stats {
 
 export default function VendasRapidasPage() {
   const { showToast } = useToast();
+  const router = useRouter();
   const [vendas, setVendas] = useState<VendaRapida[]>([]);
   const [stats, setStats] = useState<Stats>({ total: 0, hoje: 0, faturamentoHoje: 0 });
   const [loading, setLoading] = useState(true);
@@ -800,15 +803,28 @@ export default function VendasRapidasPage() {
                   <p className="text-muted text-sm">Total</p>
                   <p className="text-2xl font-bold text-emerald-400">{formatCurrency(vendaSelecionada.total)}</p>
                 </div>
-                <button
-                  onClick={() => {
-                    setShowDetalhes(false);
-                    setVendaSelecionada(null);
-                  }}
-                  className="px-6 py-3 bg-white/10 text-white rounded-xl hover:bg-white/20 transition-colors"
-                >
-                  Fechar
-                </button>
+                <div className="flex gap-3">
+                  <button
+                    onClick={() => {
+                      setShowDetalhes(false);
+                      setVendaSelecionada(null);
+                      router.push(`/devolucoes?venda=${vendaSelecionada.numero}`);
+                    }}
+                    className="px-4 py-3 bg-amber-500/20 text-amber-400 rounded-xl hover:bg-amber-500/30 transition-colors flex items-center gap-2"
+                  >
+                    <RotateCcw size={18} />
+                    Devolver
+                  </button>
+                  <button
+                    onClick={() => {
+                      setShowDetalhes(false);
+                      setVendaSelecionada(null);
+                    }}
+                    className="px-6 py-3 bg-white/10 text-white rounded-xl hover:bg-white/20 transition-colors"
+                  >
+                    Fechar
+                  </button>
+                </div>
               </div>
             </div>
           </div>
