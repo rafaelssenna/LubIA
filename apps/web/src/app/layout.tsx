@@ -16,26 +16,30 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://www.loopia.app.br"),
   title: "LoopIA - Gestao de Oficinas",
   description: "Sistema inteligente para gestao de oficinas mecanicas",
   openGraph: {
     title: "LoopIA - Gestao de Oficinas",
     description: "Sistema inteligente para gestao de oficinas mecanicas",
+    url: "https://www.loopia.app.br",
+    siteName: "LoopIA",
     images: [
       {
-        url: "/logo.png",
-        width: 1200,
-        height: 630,
+        url: "https://www.loopia.app.br/logo.png",
+        width: 800,
+        height: 600,
         alt: "LoopIA Logo",
       },
     ],
     type: "website",
+    locale: "pt_BR",
   },
   twitter: {
     card: "summary_large_image",
     title: "LoopIA - Gestao de Oficinas",
     description: "Sistema inteligente para gestao de oficinas mecanicas",
-    images: ["/logo.png"],
+    images: ["https://www.loopia.app.br/logo.png"],
   },
 };
 
