@@ -151,7 +151,7 @@ export default function CadastroPage() {
               alt="LoopIA"
               width={400}
               height={120}
-              className="w-auto object-contain h-[84px]"
+              className={`w-auto object-contain ${theme === 'light' ? 'h-[210px]' : 'h-[84px]'}`}
             />
           </div>
           <p className="text-muted">Sistema de Gestão de Oficinas</p>

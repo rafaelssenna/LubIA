@@ -20,7 +20,7 @@ export default function PublicLayout({
             alt="LoopIA"
             width={400}
             height={120}
-            className="w-auto object-contain h-[84px]"
+            className={`w-auto object-contain ${theme === 'light' ? 'h-[210px]' : 'h-[84px]'}`}
           />
         </div>
       </header>
