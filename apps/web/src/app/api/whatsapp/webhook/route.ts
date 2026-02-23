@@ -4,27 +4,6 @@ import { generateChatResponse, ChatResponse, ChatResponseList, ChatResponseButto
 
 const UAZAPI_URL = process.env.UAZAPI_URL || 'https://hia-clientes.uazapi.com';
 
-// Buffer de mensagens - aguarda 7 segundos para agrupar mensagens do mesmo usuário
-const MESSAGE_BUFFER_MS = 7000; // 7 segundos
-
-interface BufferedMessage {
-  text: string;
-  pushName: string;
-  tipoMensagem: TipoMensagem;
-  messageId?: string;
-  metadata?: any;
-}
-
-interface MessageBuffer {
-  messages: BufferedMessage[];
-  timer: NodeJS.Timeout | null;
-  processing: boolean;
-  empresaId: number;
-  token: string;
-}
-
-const messageBuffers = new Map<string, MessageBuffer>();
-
 // Tipo de mensagem baseado no enum do Prisma
 type TipoMensagem = 'TEXTO' | 'IMAGEM' | 'AUDIO' | 'VIDEO' | 'DOCUMENTO' | 'STICKER' | 'LOCALIZACAO';
 
@@ -260,32 +239,19 @@ async function sendChatResponse(
   }
 }
 
-// Função para processar mensagens do buffer
-async function processBufferedMessages(phoneNumber: string): Promise<void> {
-  const buffer = messageBuffers.get(phoneNumber);
-  if (!buffer || buffer.messages.length === 0 || buffer.processing) {
-    return;
-  }
-
-  buffer.processing = true;
-
+// Função para processar mensagem e gerar resposta IA
+async function processMessageAndRespond(
+  phoneNumber: string,
+  text: string,
+  pushName: string,
+  empresaId: number,
+  token: string
+): Promise<void> {
   try {
-    // Combinar todas as mensagens em uma só
-    const combinedText = buffer.messages.map(m => m.text).join(' ');
-    const pushName = buffer.messages[0].pushName;
+    console.log('[WEBHOOK] Processando mensagem para empresa', empresaId, ':', text.substring(0, 100));
 
-    // Usar empresaId e token armazenados no buffer
-    const { empresaId, token } = buffer;
-
-    console.log('[WEBHOOK] Processando buffer com', buffer.messages.length, 'mensagens para empresa', empresaId, ':', combinedText.substring(0, 100));
-
-    if (!token || !empresaId) {
-      console.error('[WEBHOOK] Token ou empresa não encontrado no buffer');
-      return;
-    }
-
-    // Gerar resposta com IA usando texto combinado
-    const aiResponse = await generateChatResponse(combinedText, phoneNumber, empresaId, pushName);
+    // Gerar resposta com IA
+    const aiResponse = await generateChatResponse(text, phoneNumber, empresaId, pushName);
 
     // Se resposta vazia, chatbot está desabilitado
     if (aiResponse.type === 'text' && !aiResponse.message) {
@@ -317,12 +283,9 @@ async function processBufferedMessages(phoneNumber: string): Promise<void> {
       );
     }
 
-    console.log('[WEBHOOK] Resposta enviada após buffer');
+    console.log('[WEBHOOK] Resposta enviada com sucesso');
   } catch (error: any) {
-    console.error('[WEBHOOK] Erro ao processar buffer:', error?.message);
-  } finally {
-    // Limpar buffer
-    messageBuffers.delete(phoneNumber);
+    console.error('[WEBHOOK] Erro ao processar mensagem:', error?.message);
   }
 }
 
@@ -497,43 +460,15 @@ export async function POST(request: NextRequest) {
         { type: message.type, mimetype: message.mimetype }
       );
 
-      // === BUFFER DE 7 SEGUNDOS ===
-      // Adicionar mensagem ao buffer e (re)iniciar timer
-      let buffer = messageBuffers.get(from);
-
-      // Se está processando, criar novo buffer para próximo ciclo
-      if (buffer?.processing) {
-        console.log('[WEBHOOK] Buffer em processamento, criando novo buffer para próxima mensagem');
-        buffer = { messages: [], timer: null, processing: false, empresaId, token: token! };
-        messageBuffers.set(from, buffer);
+      // Processar mensagem e responder imediatamente (sem buffer)
+      // O buffer em memória não funciona bem em serverless (Vercel)
+      if (token) {
+        // Aguardar processamento completo antes de retornar
+        // (necessário em serverless para evitar que a função seja encerrada)
+        await processMessageAndRespond(from, text, pushName, empresaId, token);
       }
 
-      if (!buffer) {
-        buffer = { messages: [], timer: null, processing: false, empresaId, token: token! };
-        messageBuffers.set(from, buffer);
-      }
-
-      // Adicionar mensagem ao buffer
-      buffer.messages.push({
-        text,
-        pushName,
-        tipoMensagem,
-        messageId,
-        metadata: { type: message.type, mimetype: message.mimetype }
-      });
-
-      // Cancelar timer anterior e iniciar novo
-      if (buffer.timer) {
-        clearTimeout(buffer.timer);
-      }
-
-      buffer.timer = setTimeout(() => {
-        processBufferedMessages(from);
-      }, MESSAGE_BUFFER_MS);
-
-      console.log('[WEBHOOK] Mensagem adicionada ao buffer (' + buffer.messages.length + '), aguardando', MESSAGE_BUFFER_MS / 1000, 'segundos...');
-
-      return NextResponse.json({ success: true, buffered: true, bufferSize: buffer.messages.length });
+      return NextResponse.json({ success: true, processed: true });
 
     } else if (event === 'connection' || data.status) {
       // Evento de conexão/desconexão
