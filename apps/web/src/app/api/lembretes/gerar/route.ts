@@ -48,6 +48,10 @@ export async function POST() {
     const diasAntecedencia = config?.lembreteAntecedencia || 7;
     const kmAntecedencia = 500; // Avisar 500km antes
 
+    // Data limite: não criar novo lembrete se já enviou um nos últimos 30 dias
+    const trintaDiasAtras = new Date();
+    trintaDiasAtras.setDate(trintaDiasAtras.getDate() - 30);
+
     // Buscar todos os veículos com km cadastrado da empresa
     const veiculos = await prisma.veiculo.findMany({
       where: {
@@ -69,8 +73,16 @@ export async function POST() {
         },
         lembretes: {
           where: {
-            enviado: false,
             tipo: 'TROCA_OLEO',
+            OR: [
+              // Lembrete pendente (não enviado)
+              { enviado: false },
+              // OU lembrete enviado nos últimos 30 dias (evita repetição)
+              {
+                enviado: true,
+                dataEnvio: { gte: trintaDiasAtras },
+              },
+            ],
           },
         },
       },
@@ -172,6 +184,10 @@ export async function GET() {
   try {
     const kmAntecedencia = 500;
 
+    // Data limite: verificar lembretes enviados nos últimos 30 dias
+    const trintaDiasAtras = new Date();
+    trintaDiasAtras.setDate(trintaDiasAtras.getDate() - 30);
+
     const veiculos = await prisma.veiculo.findMany({
       where: {
         empresaId: session.empresaId,
@@ -192,8 +208,14 @@ export async function GET() {
         },
         lembretes: {
           where: {
-            enviado: false,
             tipo: 'TROCA_OLEO',
+            OR: [
+              { enviado: false },
+              {
+                enviado: true,
+                dataEnvio: { gte: trintaDiasAtras },
+              },
+            ],
           },
         },
       },

@@ -255,6 +255,10 @@ export async function GET(request: NextRequest) {
       // ============================================
       const kmAntecedencia = 500;
 
+      // Data limite: não criar novo lembrete se já enviou um nos últimos 30 dias
+      const trintaDiasAtras = new Date();
+      trintaDiasAtras.setDate(trintaDiasAtras.getDate() - 30);
+
       const veiculos = await prisma.veiculo.findMany({
         where: {
           empresaId,
@@ -275,15 +279,29 @@ export async function GET(request: NextRequest) {
           },
           lembretes: {
             where: {
-              enviado: false,
               tipo: 'TROCA_OLEO',
+              OR: [
+                // Lembrete pendente (não enviado)
+                { enviado: false },
+                // OU lembrete enviado nos últimos 30 dias (evita repetição)
+                {
+                  enviado: true,
+                  dataEnvio: { gte: trintaDiasAtras },
+                },
+              ],
             },
           },
         },
       });
 
       for (const veiculo of veiculos) {
-        if (veiculo.lembretes.length > 0) continue;
+        // Pular se já tem lembrete pendente OU enviado recentemente
+        if (veiculo.lembretes.length > 0) {
+          const temPendente = veiculo.lembretes.some(l => !l.enviado);
+          const temRecente = veiculo.lembretes.some(l => l.enviado);
+          console.log(`[CRON LEMBRETES] Pulando veículo ${veiculo.id} - ${temPendente ? 'tem lembrete pendente' : 'já enviou nos últimos 30 dias'}`);
+          continue;
+        }
 
         const kmAtual = veiculo.kmAtual!;
         const kmInicial = veiculo.kmInicial || kmAtual; // Fallback para veículos antigos
@@ -372,24 +390,39 @@ export async function GET(request: NextRequest) {
       // Enviar mensagens
       for (const [telefone, grupo] of gruposPorCliente) {
         const mensagem = gerarMensagem(grupo);
-        const enviado = await sendWhatsAppMessage(
-          token,
-          telefone,
-          mensagem,
-          empresaId,
-          grupo.clienteNome
-        );
 
-        if (enviado) {
-          await prisma.lembrete.updateMany({
-            where: { id: { in: grupo.lembreteIds } },
-            data: {
-              enviado: true,
-              dataEnvio: new Date(),
-            },
-          });
-          resultadoGeral.mensagensEnviadas++;
-        } else {
+        try {
+          const enviado = await sendWhatsAppMessage(
+            token,
+            telefone,
+            mensagem,
+            empresaId,
+            grupo.clienteNome
+          );
+
+          if (enviado) {
+            // Marcar como enviado imediatamente após sucesso
+            try {
+              await prisma.lembrete.updateMany({
+                where: { id: { in: grupo.lembreteIds } },
+                data: {
+                  enviado: true,
+                  dataEnvio: new Date(),
+                },
+              });
+              resultadoGeral.mensagensEnviadas++;
+              console.log(`[CRON LEMBRETES] Mensagem enviada para ${telefone} (${grupo.lembreteIds.length} lembretes)`);
+            } catch (dbError: any) {
+              // CRÍTICO: Mensagem foi enviada mas DB falhou - logar para investigar
+              console.error(`[CRON LEMBRETES] CRÍTICO: Mensagem enviada para ${telefone} mas DB falhou:`, dbError?.message);
+              resultadoGeral.mensagensEnviadas++; // Contamos como enviada
+            }
+          } else {
+            console.log(`[CRON LEMBRETES] Falha ao enviar para ${telefone}`);
+            resultadoGeral.falhas++;
+          }
+        } catch (sendError: any) {
+          console.error(`[CRON LEMBRETES] Erro ao processar ${telefone}:`, sendError?.message);
           resultadoGeral.falhas++;
         }
 
