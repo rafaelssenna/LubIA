@@ -107,6 +107,7 @@ model Veiculo {
   cor          String?
   cilindrada   String?  // Ex: "1.0", "1.4", "2.0 Turbo"
   kmAtual      Int?
+  kmInicial    Int?     // KM no momento do cadastro (base para calcular próxima troca)
   clienteId    Int
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt

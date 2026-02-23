@@ -85,9 +85,10 @@ export async function POST() {
       }
 
       const kmAtual = veiculo.kmAtual!;
+      const kmInicial = veiculo.kmInicial || kmAtual; // Fallback para veículos antigos
       const ultimaOrdem = veiculo.ordens[0];
 
-      // Calcular próxima troca baseado na última ordem ou km atual
+      // Calcular próxima troca baseado na última ordem ou km inicial do cadastro
       let proximaTroca: number;
 
       if (ultimaOrdem) {
@@ -100,12 +101,13 @@ export async function POST() {
           // Se teve troca de óleo, próxima é 5000km depois
           proximaTroca = ultimaOrdem.kmEntrada + 5000;
         } else {
-          // Sem histórico de troca, usar próximo múltiplo de 5000
-          proximaTroca = Math.ceil(kmAtual / 5000) * 5000;
+          // Ordem sem troca de óleo, usar km inicial + 5000
+          proximaTroca = kmInicial + 5000;
         }
       } else {
-        // Sem histórico, usar próximo múltiplo de 5000
-        proximaTroca = Math.ceil(kmAtual / 5000) * 5000;
+        // Sem histórico de ordens, usar km inicial do cadastro + 5000
+        // Isso assume que a troca foi feita antes/durante o cadastro
+        proximaTroca = kmInicial + 5000;
       }
 
       const kmRestantes = proximaTroca - kmAtual;
@@ -211,6 +213,7 @@ export async function GET() {
 
     for (const veiculo of veiculos) {
       const kmAtual = veiculo.kmAtual!;
+      const kmInicial = veiculo.kmInicial || kmAtual;
       const ultimaOrdem = veiculo.ordens[0];
 
       let proximaTroca: number;
@@ -221,10 +224,11 @@ export async function GET() {
         if (temTrocaOleo) {
           proximaTroca = ultimaOrdem.kmEntrada + 5000;
         } else {
-          proximaTroca = Math.ceil(kmAtual / 5000) * 5000;
+          proximaTroca = kmInicial + 5000;
         }
       } else {
-        proximaTroca = Math.ceil(kmAtual / 5000) * 5000;
+        // Sem histórico, usar km inicial + 5000
+        proximaTroca = kmInicial + 5000;
       }
 
       const kmRestantes = proximaTroca - kmAtual;

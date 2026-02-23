@@ -286,6 +286,7 @@ export async function GET(request: NextRequest) {
         if (veiculo.lembretes.length > 0) continue;
 
         const kmAtual = veiculo.kmAtual!;
+        const kmInicial = veiculo.kmInicial || kmAtual; // Fallback para veículos antigos
         const ultimaOrdem = veiculo.ordens[0];
 
         let proximaTroca: number;
@@ -295,9 +296,10 @@ export async function GET(request: NextRequest) {
           );
           proximaTroca = temTrocaOleo
             ? ultimaOrdem.kmEntrada + 5000
-            : Math.ceil(kmAtual / 5000) * 5000;
+            : kmInicial + 5000;
         } else {
-          proximaTroca = Math.ceil(kmAtual / 5000) * 5000;
+          // Sem histórico, usar km inicial do cadastro + 5000
+          proximaTroca = kmInicial + 5000;
         }
 
         const kmRestantes = proximaTroca - kmAtual;

@@ -124,6 +124,8 @@ export async function POST(request: NextRequest) {
       }
     }
 
+    const kmAtual = body.kmAtual ? parseInt(body.kmAtual) : null;
+
     const veiculo = await prisma.veiculo.create({
       data: {
         placa: placaFormatted,
@@ -132,7 +134,8 @@ export async function POST(request: NextRequest) {
         ano: body.ano ? parseInt(body.ano) : null,
         cor: body.cor || null,
         cilindrada: body.cilindrada || null,
-        kmAtual: body.kmAtual ? parseInt(body.kmAtual) : null,
+        kmAtual: kmAtual,
+        kmInicial: kmAtual, // Salvar km inicial como base para calcular próxima troca
         clienteId: clienteId,
         empresaId: session.empresaId,
       },
