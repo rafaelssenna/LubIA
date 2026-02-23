@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { executeStockOperations, hasStockMovements, StockOperation } from '@/lib/estoque';
 import { getSession } from '@/lib/auth';
+import { parseDateTimeLocalToBrazil } from '@/lib/timezone';
 
 // Mapa de transições de status válidas
 const VALID_TRANSITIONS: Record<string, string[]> = {
@@ -171,9 +172,9 @@ export async function PUT(
     }
 
     if (veiculoId !== undefined) updateData.veiculoId = veiculoId;
-    if (dataAgendada !== undefined) updateData.dataAgendada = dataAgendada ? new Date(dataAgendada) : null;
-    if (dataInicio !== undefined) updateData.dataInicio = dataInicio ? new Date(dataInicio) : null;
-    if (dataConclusao !== undefined) updateData.dataConclusao = dataConclusao ? new Date(dataConclusao) : null;
+    if (dataAgendada !== undefined) updateData.dataAgendada = dataAgendada ? parseDateTimeLocalToBrazil(dataAgendada) : null;
+    if (dataInicio !== undefined) updateData.dataInicio = dataInicio ? parseDateTimeLocalToBrazil(dataInicio) : null;
+    if (dataConclusao !== undefined) updateData.dataConclusao = dataConclusao ? parseDateTimeLocalToBrazil(dataConclusao) : null;
     if (kmEntrada !== undefined) updateData.kmEntrada = kmEntrada;
     if (observacoes !== undefined) updateData.observacoes = observacoes;
     if (formaPagamento !== undefined) updateData.formaPagamento = formaPagamento;

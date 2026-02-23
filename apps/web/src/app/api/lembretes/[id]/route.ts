@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { parseDateToBrazil } from '@/lib/timezone';
 
 // GET - Buscar lembrete por ID
 export async function GET(
@@ -64,7 +65,7 @@ export async function PUT(
     const updateData: any = {};
 
     if (tipo !== undefined) updateData.tipo = tipo.toUpperCase();
-    if (dataLembrete !== undefined) updateData.dataLembrete = new Date(dataLembrete);
+    if (dataLembrete !== undefined) updateData.dataLembrete = parseDateToBrazil(dataLembrete);
     if (kmLembrete !== undefined) updateData.kmLembrete = kmLembrete;
     if (mensagem !== undefined) updateData.mensagem = mensagem;
     if (enviado !== undefined) {

@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { validateStock, executeStockOperations, StockOperation } from '@/lib/estoque';
 import { getSession } from '@/lib/auth';
+import { parseDateTimeLocalToBrazil } from '@/lib/timezone';
 
 // GET - Buscar todas as ordens de serviço
 export async function GET(request: NextRequest) {
@@ -305,7 +306,7 @@ export async function POST(request: NextRequest) {
         data: {
           numero: numeroFormatado,
           veiculoId,
-          dataAgendada: dataAgendada ? new Date(dataAgendada) : null,
+          dataAgendada: dataAgendada ? parseDateTimeLocalToBrazil(dataAgendada) : null,
           kmEntrada: kmEntradaNum,
           observacoes: observacoes || null,
           total,

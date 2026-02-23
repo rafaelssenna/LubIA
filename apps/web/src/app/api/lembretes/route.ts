@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { getSession } from '@/lib/auth';
+import { parseDateToBrazil } from '@/lib/timezone';
 
 // GET - Listar lembretes com filtros
 export async function GET(request: NextRequest) {
@@ -163,7 +164,7 @@ export async function POST(request: NextRequest) {
       data: {
         veiculoId,
         tipo: tipo.toUpperCase(),
-        dataLembrete: new Date(dataLembrete),
+        dataLembrete: parseDateToBrazil(dataLembrete),
         kmLembrete: kmLembrete || null,
         mensagem: mensagem || null,
         empresaId: session.empresaId,

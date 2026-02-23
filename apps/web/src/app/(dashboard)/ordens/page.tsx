@@ -12,6 +12,7 @@ import { useSearchParams, useRouter } from 'next/navigation';
 import { useToast } from '@/components/Toast';
 import { downloadOrdemPDF, EmpresaConfig } from '@/lib/pdfGenerator';
 import { capitalize, formatPlate } from '@/utils/format';
+import { formatDateToLocalInput, formatDateTimeBrazil, formatDateBrazil } from '@/lib/timezone';
 
 interface Cliente {
   id: number;
@@ -332,7 +333,7 @@ function OrdensPageContent() {
     setKmEntrada(ordem.kmEntrada?.toString() || '');
     setObservacoes(ordem.observacoes || '');
     setDataAgendada(ordem.dataAgendada
-      ? new Date(ordem.dataAgendada).toISOString().slice(0, 16)
+      ? formatDateToLocalInput(ordem.dataAgendada)
       : '');
     setServicosExtras(ordem.servicosExtras?.map(s => ({
       descricao: s.descricao,
@@ -497,12 +498,12 @@ function OrdensPageContent() {
 
   const formatDate = (date: string | null) => {
     if (!date) return '-';
-    return new Date(date).toLocaleDateString('pt-BR');
+    return formatDateBrazil(date);
   };
 
   const formatDateTime = (date: string | null) => {
     if (!date) return '-';
-    return new Date(date).toLocaleString('pt-BR');
+    return formatDateTimeBrazil(date);
   };
 
   const formatCurrency = (value: number) => {
