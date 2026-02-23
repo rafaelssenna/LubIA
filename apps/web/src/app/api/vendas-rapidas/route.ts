@@ -15,6 +15,7 @@ export async function GET(request: NextRequest) {
     const busca = searchParams.get('busca') || '';
     const dataInicio = searchParams.get('dataInicio');
     const dataFim = searchParams.get('dataFim');
+    const paraDevolver = searchParams.get('paraDevolver') === 'true';
     const page = Math.max(1, parseInt(searchParams.get('page') || '1'));
     const limit = Math.min(100, Math.max(1, parseInt(searchParams.get('limit') || '20')));
 
@@ -37,21 +38,40 @@ export async function GET(request: NextRequest) {
     }
 
     // Contagem total com filtros (para paginação)
-    const total = await prisma.vendaRapida.count({ where });
+    let total = await prisma.vendaRapida.count({ where });
 
-    const vendas = await prisma.vendaRapida.findMany({
+    let vendas = await prisma.vendaRapida.findMany({
       where,
       include: {
         itens: {
           include: {
             produto: true,
+            devolucoes: {
+              select: {
+                quantidadeDevolvida: true,
+              },
+            },
           },
         },
       },
       orderBy: { createdAt: 'desc' },
-      skip: (page - 1) * limit,
-      take: limit,
+      skip: paraDevolver ? 0 : (page - 1) * limit,
+      take: paraDevolver ? 50 : limit, // Busca mais para filtrar depois
     });
+
+    // Se paraDevolver, filtrar apenas vendas com itens disponíveis
+    if (paraDevolver) {
+      vendas = vendas.filter(venda => {
+        return venda.itens.some(item => {
+          const totalDevolvido = item.devolucoes.reduce(
+            (acc, dev) => acc + Number(dev.quantidadeDevolvida),
+            0
+          );
+          return Number(item.quantidade) > totalDevolvido;
+        });
+      }).slice(0, limit);
+      total = vendas.length;
+    }
 
     // Stats
     const hoje = new Date();

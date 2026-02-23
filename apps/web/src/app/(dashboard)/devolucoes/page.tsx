@@ -189,11 +189,11 @@ function DevolucoesPageContent() {
     fetchDevolucoes();
   }, [page, filtroTipo]);
 
-  // Fetch recent vendas for quick access
+  // Fetch recent vendas for quick access (only those with items available for return)
   const fetchUltimasVendas = async () => {
     setLoadingUltimasVendas(true);
     try {
-      const res = await fetch('/api/vendas-rapidas?limit=5');
+      const res = await fetch('/api/vendas-rapidas?limit=5&paraDevolver=true');
       const data = await res.json();
       if (data.data) {
         setUltimasVendas(data.data);
