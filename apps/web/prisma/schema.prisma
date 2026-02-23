@@ -650,16 +650,18 @@ model ItemVendaRapida {
 
 // Devolução de venda rápida
 model DevolucaoVendaRapida {
-  id          Int              @id @default(autoincrement())
-  empresaId   Int
-  vendaId     Int
-  numero      String           // DEV-0001
-  tipo        TipoDevolucao
-  motivo      MotivoDevolucao
-  motivoOutro String?          // Quando motivo = OUTRO
-  observacoes String?
-  valorTotal  Decimal          @db.Decimal(10, 2) @default(0)
-  createdAt   DateTime         @default(now())
+  id             Int              @id @default(autoincrement())
+  empresaId      Int
+  vendaId        Int
+  numero         String           // DEV-0001
+  tipo           TipoDevolucao
+  motivo         MotivoDevolucao
+  motivoOutro    String?          // Quando motivo = OUTRO
+  observacoes    String?
+  valorTotal     Decimal          @db.Decimal(10, 2) @default(0)  // Valor dos produtos devolvidos
+  valorTroca     Decimal          @db.Decimal(10, 2) @default(0)  // Valor dos produtos de troca
+  diferencaTroca Decimal          @db.Decimal(10, 2) @default(0)  // Diferença: positivo = cliente paga, negativo = cliente recebe
+  createdAt      DateTime         @default(now())
 
   empresa Empresa                    @relation(fields: [empresaId], references: [id], onDelete: Cascade)
   venda   VendaRapida                @relation(fields: [vendaId], references: [id], onDelete: Cascade)
@@ -673,15 +675,16 @@ model DevolucaoVendaRapida {
 
 // Itens devolvidos
 model ItemDevolucaoVendaRapida {
-  id                  Int     @id @default(autoincrement())
+  id                  Int      @id @default(autoincrement())
   devolucaoId         Int
   itemVendaId         Int
   produtoId           Int
-  quantidadeDevolvida Decimal @db.Decimal(10, 2)
-  valorUnitario       Decimal @db.Decimal(10, 2)
-  subtotal            Decimal @db.Decimal(10, 2)
-  produtoTrocaId      Int?    // Para TROCA: produto substituto
+  quantidadeDevolvida Decimal  @db.Decimal(10, 2)
+  valorUnitario       Decimal  @db.Decimal(10, 2)
+  subtotal            Decimal  @db.Decimal(10, 2)
+  produtoTrocaId      Int?     // Para TROCA: produto substituto
   quantidadeTroca     Decimal? @db.Decimal(10, 2)
+  precoTroca          Decimal? @db.Decimal(10, 2) // Preço unitário do produto de troca
 
   devolucao    DevolucaoVendaRapida @relation(fields: [devolucaoId], references: [id], onDelete: Cascade)
   itemVenda    ItemVendaRapida      @relation(fields: [itemVendaId], references: [id])

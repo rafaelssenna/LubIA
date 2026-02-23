@@ -26,6 +26,8 @@ interface Produto {
   nome: string;
   marca?: string;
   unidade?: string;
+  precoVenda?: number;
+  quantidade?: number;
 }
 
 interface ItemVenda {
@@ -96,6 +98,7 @@ interface ItemParaDevolver {
   produtoTrocaId?: number;
   produtoTrocaNome?: string;
   quantidadeTroca?: number;
+  precoTroca?: number; // Preço unitário do produto de troca
 }
 
 interface VendaResumo {
@@ -353,6 +356,7 @@ function DevolucoesPageContent() {
             produtoTrocaId: produto.id,
             produtoTrocaNome: produto.nome,
             quantidadeTroca: item.quantidade,
+            precoTroca: produto.precoVenda || 0,
           };
         }
         return item;
@@ -368,6 +372,15 @@ function DevolucoesPageContent() {
     (acc, item) => acc + item.quantidade * item.valorUnitario,
     0
   );
+
+  // Calculate total of exchange products (for TROCA)
+  const totalTroca = itensParaDevolver.reduce(
+    (acc, item) => acc + (item.quantidadeTroca || 0) * (item.precoTroca || 0),
+    0
+  );
+
+  // Difference: positive = customer pays, negative = customer receives
+  const diferencaTroca = totalTroca - totalDevolucao;
 
   // Submit devolução
   const confirmarDevolucao = async () => {
@@ -404,6 +417,7 @@ function DevolucoesPageContent() {
             valorUnitario: item.valorUnitario,
             produtoTrocaId: tipoDevolucao === 'TROCA' ? item.produtoTrocaId : null,
             quantidadeTroca: tipoDevolucao === 'TROCA' ? item.quantidadeTroca : null,
+            precoTroca: tipoDevolucao === 'TROCA' ? item.precoTroca : null,
           })),
         }),
       });
@@ -724,6 +738,9 @@ function DevolucoesPageContent() {
                                         <p className="text-blue-400 font-medium">
                                           {selected.produtoTrocaNome}
                                         </p>
+                                        <p className="text-emerald-400 text-sm">
+                                          {formatCurrency(selected.precoTroca || 0)} /un
+                                        </p>
                                       </div>
                                       <button
                                         onClick={() =>
@@ -735,6 +752,7 @@ function DevolucoesPageContent() {
                                                     produtoTrocaId: undefined,
                                                     produtoTrocaNome: undefined,
                                                     quantidadeTroca: undefined,
+                                                    precoTroca: undefined,
                                                   }
                                                 : i
                                             )
@@ -811,15 +829,20 @@ function DevolucoesPageContent() {
                                     </div>
                                     {/* Dropdown produtos */}
                                     {selectedItemForTroca === item.id && produtos.length > 0 && (
-                                      <div className="absolute top-full left-0 right-0 mt-1 bg-background-secondary rounded-lg border border-white/10 max-h-40 overflow-y-auto z-10">
+                                      <div className="absolute top-full left-0 right-0 mt-1 bg-background-secondary rounded-lg border border-white/10 max-h-48 overflow-y-auto z-10">
                                         {produtos.map((produto) => (
                                           <button
                                             key={produto.id}
                                             onClick={() => selecionarProdutoTroca(produto)}
-                                            className="w-full flex items-center justify-between p-2 hover:bg-white/10 transition-colors text-left text-sm"
+                                            className="w-full flex items-center justify-between p-2 hover:bg-white/10 transition-colors text-left text-sm gap-2"
                                           >
-                                            <span className="text-white">{produto.nome}</span>
-                                            <span className="text-muted">{produto.codigo}</span>
+                                            <div className="flex-1 min-w-0">
+                                              <p className="text-white truncate">{produto.nome}</p>
+                                              <p className="text-muted text-xs">{produto.codigo}</p>
+                                            </div>
+                                            <span className="text-emerald-400 font-medium whitespace-nowrap">
+                                              {formatCurrency(produto.precoVenda || 0)}
+                                            </span>
                                           </button>
                                         ))}
                                       </div>
@@ -854,12 +877,33 @@ function DevolucoesPageContent() {
                 {/* Footer */}
                 <div className="flex items-center justify-between pt-4 border-t border-white/10">
                   <div>
-                    <p className="text-muted text-sm">
-                      {tipoDevolucao === 'REEMBOLSO' ? 'Valor a reembolsar' : 'Valor da troca'}
-                    </p>
-                    <p className="text-2xl font-bold text-emerald-400">
-                      {formatCurrency(totalDevolucao)}
-                    </p>
+                    {tipoDevolucao === 'REEMBOLSO' ? (
+                      <>
+                        <p className="text-muted text-sm">Valor a reembolsar</p>
+                        <p className="text-2xl font-bold text-emerald-400">
+                          {formatCurrency(totalDevolucao)}
+                        </p>
+                      </>
+                    ) : (
+                      <div className="space-y-1">
+                        <div className="flex items-center gap-4 text-sm">
+                          <span className="text-muted">Devolvido:</span>
+                          <span className="text-white">{formatCurrency(totalDevolucao)}</span>
+                        </div>
+                        <div className="flex items-center gap-4 text-sm">
+                          <span className="text-muted">Novo produto:</span>
+                          <span className="text-white">{formatCurrency(totalTroca)}</span>
+                        </div>
+                        <div className="flex items-center gap-4 pt-1 border-t border-white/10">
+                          <span className="text-muted font-medium">
+                            {diferencaTroca > 0 ? 'Cliente paga:' : diferencaTroca < 0 ? 'Cliente recebe:' : 'Sem diferença'}
+                          </span>
+                          <span className={`text-xl font-bold ${diferencaTroca > 0 ? 'text-amber-400' : diferencaTroca < 0 ? 'text-emerald-400' : 'text-white'}`}>
+                            {diferencaTroca !== 0 ? formatCurrency(Math.abs(diferencaTroca)) : '-'}
+                          </span>
+                        </div>
+                      </div>
+                    )}
                   </div>
                   <div className="flex gap-3">
                     <button

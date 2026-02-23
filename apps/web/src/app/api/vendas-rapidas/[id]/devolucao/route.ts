@@ -11,6 +11,7 @@ interface ItemDevolucao {
   // For TROCA
   produtoTrocaId?: number;
   quantidadeTroca?: number;
+  precoTroca?: number; // Preço unitário do produto de troca
 }
 
 interface DevolucaoRequest {
@@ -145,11 +146,22 @@ export async function POST(
     }
     const numeroDevolucao = `DEV-${String(nextNumber).padStart(4, '0')}`;
 
-    // Calculate total value
+    // Calculate total value of returned products
     const valorTotal = itens.reduce(
       (acc, item) => acc + item.quantidadeDevolvida * item.valorUnitario,
       0
     );
+
+    // Calculate total value of exchange products (for TROCA)
+    const valorTroca = tipo === 'TROCA'
+      ? itens.reduce(
+          (acc, item) => acc + (item.quantidadeTroca || 0) * (item.precoTroca || 0),
+          0
+        )
+      : 0;
+
+    // Calculate difference: positive = customer pays, negative = customer receives
+    const diferencaTroca = valorTroca - valorTotal;
 
     // Create devolução in transaction
     const devolucao = await prisma.$transaction(async (tx) => {
@@ -164,6 +176,8 @@ export async function POST(
           motivoOutro: motivo === 'OUTRO' ? motivoOutro : null,
           observacoes,
           valorTotal,
+          valorTroca,
+          diferencaTroca,
           itens: {
             create: itens.map((item) => ({
               itemVendaId: item.itemVendaId,
@@ -173,6 +187,7 @@ export async function POST(
               subtotal: item.quantidadeDevolvida * item.valorUnitario,
               produtoTrocaId: tipo === 'TROCA' ? item.produtoTrocaId : null,
               quantidadeTroca: tipo === 'TROCA' ? item.quantidadeTroca : null,
+              precoTroca: tipo === 'TROCA' ? item.precoTroca : null,
             })),
           },
         },
