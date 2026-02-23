@@ -19,8 +19,17 @@ const publicPaths = [
 // Rotas de API que devem permanecer públicas (webhooks externos, cron jobs)
 const publicApiPaths = [
   '/api/whatsapp/webhook',
+  '/api/stripe/webhook',
   '/api/cron/',
   '/api/public/',
+];
+
+// Rotas acessíveis mesmo quando assinatura está bloqueada
+const subscriptionExemptPaths = [
+  '/assinatura',
+  '/api/stripe/',
+  '/api/auth/me',
+  '/api/auth/logout',
 ];
 
 export async function middleware(request: NextRequest) {
@@ -49,7 +58,44 @@ export async function middleware(request: NextRequest) {
 
   // Verificar validade do token
   try {
-    await jwtVerify(token, JWT_SECRET);
+    const { payload } = await jwtVerify(token, JWT_SECRET);
+
+    // Rotas isentas de verificação de assinatura
+    if (subscriptionExemptPaths.some(path => pathname.startsWith(path))) {
+      return NextResponse.next();
+    }
+
+    // Verificar status da assinatura
+    const subscriptionStatus = (payload as any).subscriptionStatus as string;
+    const trialEndsAt = (payload as any).trialEndsAt as string | undefined;
+
+    // Status que bloqueiam acesso
+    const blockedStatuses = ['UNPAID', 'CANCELED'];
+
+    if (blockedStatuses.includes(subscriptionStatus)) {
+      if (pathname.startsWith('/api/')) {
+        return NextResponse.json(
+          { error: 'Assinatura necessária', code: 'SUBSCRIPTION_REQUIRED' },
+          { status: 403 }
+        );
+      }
+      return NextResponse.redirect(new URL('/assinatura', request.url));
+    }
+
+    // Verificar se trial expirou
+    if (subscriptionStatus === 'TRIAL' && trialEndsAt) {
+      const trialEnd = new Date(trialEndsAt);
+      if (trialEnd < new Date()) {
+        if (pathname.startsWith('/api/')) {
+          return NextResponse.json(
+            { error: 'Período de teste expirado', code: 'TRIAL_EXPIRED' },
+            { status: 403 }
+          );
+        }
+        return NextResponse.redirect(new URL('/assinatura', request.url));
+      }
+    }
+
     return NextResponse.next();
   } catch {
     // Token inválido - limpar cookie e redirecionar

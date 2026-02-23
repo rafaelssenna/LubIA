@@ -14,6 +14,15 @@ datasource db {
 // MULTI-TENANCY: Empresa e Usuario
 // =============================================
 
+// Status da assinatura
+enum SubscriptionStatus {
+  TRIAL      // Período de teste (14 dias)
+  ACTIVE     // Assinatura ativa
+  PAST_DUE   // Pagamento falhou (período de graça)
+  CANCELED   // Cancelada
+  UNPAID     // Bloqueado - não pago
+}
+
 // Empresa (tenant) - cada oficina é uma empresa
 model Empresa {
   id        Int      @id @default(autoincrement())
@@ -22,6 +31,13 @@ model Empresa {
   ativo     Boolean  @default(true)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  // Campos de assinatura Stripe
+  stripeCustomerId     String?            @unique
+  stripeSubscriptionId String?            @unique
+  subscriptionStatus   SubscriptionStatus @default(TRIAL)
+  subscriptionEndsAt   DateTime?
+  trialEndsAt          DateTime?
 
   // Relações com todos os models
   usuarios              Usuario[]

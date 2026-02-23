@@ -18,6 +18,8 @@ export interface SessionPayload {
   empresaId: number;
   empresaNome: string;
   role: RoleUsuario;
+  subscriptionStatus: string;
+  trialEndsAt?: string;
   exp?: number;
 }
 

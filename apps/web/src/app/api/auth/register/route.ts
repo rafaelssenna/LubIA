@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { hashPassword, createSession, setSessionCookie } from '@/lib/auth';
+import { TRIAL_DAYS } from '@/lib/stripe';
 
 // POST - Cadastrar nova empresa e usuário
 export async function POST(request: NextRequest) {
@@ -53,12 +54,17 @@ export async function POST(request: NextRequest) {
 
     // Criar empresa e usuário em transação
     const result = await prisma.$transaction(async (tx) => {
-      // 1. Criar empresa
+      // 1. Criar empresa com período de trial
+      const trialEndsAt = new Date();
+      trialEndsAt.setDate(trialEndsAt.getDate() + TRIAL_DAYS);
+
       const empresa = await tx.empresa.create({
         data: {
           nome: nomeEmpresa,
           slug,
           ativo: true,
+          subscriptionStatus: 'TRIAL',
+          trialEndsAt,
         },
       });
 
@@ -146,6 +152,8 @@ export async function POST(request: NextRequest) {
       nome: result.usuario.nome,
       empresaNome: result.empresa.nome,
       role: 'ADMIN',
+      subscriptionStatus: 'TRIAL',
+      trialEndsAt: result.empresa.trialEndsAt?.toISOString(),
     });
 
     await setSessionCookie(token);

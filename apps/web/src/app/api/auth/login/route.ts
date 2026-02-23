@@ -49,7 +49,7 @@ export async function POST(request: NextRequest) {
       data: { lastLoginAt: new Date() },
     });
 
-    // Criar sessão JWT
+    // Criar sessão JWT (incluindo status da assinatura)
     const token = await createSession({
       userId: usuario.id,
       email: usuario.email,
@@ -57,6 +57,8 @@ export async function POST(request: NextRequest) {
       empresaId: usuario.empresaId,
       empresaNome: usuario.empresa.nome,
       role: usuario.role as 'ADMIN' | 'GERENTE' | 'ATENDENTE',
+      subscriptionStatus: usuario.empresa.subscriptionStatus,
+      trialEndsAt: usuario.empresa.trialEndsAt?.toISOString(),
     });
 
     // Salvar cookie

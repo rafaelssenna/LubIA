@@ -27,6 +27,7 @@ import {
   Briefcase,
   Wallet,
   RotateCcw,
+  CreditCard,
 } from 'lucide-react';
 import { useSidebar } from '@/contexts/SidebarContext';
 import { useAuth } from '@/contexts/AuthContext';
@@ -330,6 +331,22 @@ export default function Sidebar() {
               )}
             </Link>
           </>
+        )}
+
+        {/* Assinatura - para ADMIN */}
+        {isAdmin && (
+          <Link
+            href="/assinatura"
+            className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-300 group ${
+              pathname === '/assinatura'
+                ? 'bg-sidebar-active text-sidebar-text-active shadow-lg shadow-black/10 ring-1 ring-primary/30'
+                : 'text-sidebar-text hover:bg-sidebar-hover hover:text-sidebar-text-active'
+            } ${collapsed ? 'justify-center px-3' : ''}`}
+            title={collapsed ? 'Assinatura' : undefined}
+          >
+            <CreditCard size={20} className="group-hover:scale-110 transition-transform" />
+            {!collapsed && <span className="font-medium">Assinatura</span>}
+          </Link>
         )}
 
         {/* Theme Toggle */}
