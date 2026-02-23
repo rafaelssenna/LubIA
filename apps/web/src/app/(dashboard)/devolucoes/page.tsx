@@ -87,6 +87,13 @@ interface Devolucao {
   itens: ItemDevolucao[];
 }
 
+interface ProdutoTroca {
+  produtoId: number;
+  produtoNome: string;
+  quantidade: number;
+  preco: number;
+}
+
 interface ItemParaDevolver {
   itemVendaId: number;
   produtoId: number;
@@ -94,11 +101,8 @@ interface ItemParaDevolver {
   quantidade: number; // Quantidade a devolver
   maxQuantidade: number;
   valorUnitario: number;
-  // Para TROCA
-  produtoTrocaId?: number;
-  produtoTrocaNome?: string;
-  quantidadeTroca?: number;
-  precoTroca?: number; // Preço unitário do produto de troca
+  // Para TROCA - múltiplos produtos
+  produtosTroca: ProdutoTroca[];
 }
 
 interface VendaResumo {
@@ -298,6 +302,7 @@ function DevolucoesPageContent() {
           quantidade: item.quantidadeDisponivel,
           maxQuantidade: item.quantidadeDisponivel,
           valorUnitario: item.valorUnitario,
+          produtosTroca: [],
         },
       ]);
     }
@@ -344,27 +349,70 @@ function DevolucoesPageContent() {
     return () => clearTimeout(timer);
   }, [buscaProduto]);
 
-  // Select product for TROCA
+  // Select product for TROCA - adiciona ao array
   const selecionarProdutoTroca = (produto: any) => {
     if (selectedItemForTroca === null) return;
 
     setItensParaDevolver(
       itensParaDevolver.map((item) => {
         if (item.itemVendaId === selectedItemForTroca) {
+          // Verifica se o produto já foi adicionado
+          const jaExiste = item.produtosTroca.some(p => p.produtoId === produto.id);
+          if (jaExiste) return item;
+
           return {
             ...item,
-            produtoTrocaId: produto.id,
-            produtoTrocaNome: produto.nome,
-            quantidadeTroca: item.quantidade,
-            precoTroca: produto.precoVenda || 0,
+            produtosTroca: [
+              ...item.produtosTroca,
+              {
+                produtoId: produto.id,
+                produtoNome: produto.nome,
+                quantidade: 1,
+                preco: produto.precoVenda || 0,
+              },
+            ],
           };
         }
         return item;
       })
     );
-    setSelectedItemForTroca(null);
     setBuscaProduto('');
     setProdutos([]);
+  };
+
+  // Remove product from TROCA array
+  const removerProdutoTroca = (itemVendaId: number, produtoId: number) => {
+    setItensParaDevolver(
+      itensParaDevolver.map((item) => {
+        if (item.itemVendaId === itemVendaId) {
+          return {
+            ...item,
+            produtosTroca: item.produtosTroca.filter(p => p.produtoId !== produtoId),
+          };
+        }
+        return item;
+      })
+    );
+  };
+
+  // Update quantity for exchange product
+  const updateQuantidadeTroca = (itemVendaId: number, produtoId: number, delta: number) => {
+    setItensParaDevolver(
+      itensParaDevolver.map((item) => {
+        if (item.itemVendaId === itemVendaId) {
+          return {
+            ...item,
+            produtosTroca: item.produtosTroca.map(p => {
+              if (p.produtoId === produtoId) {
+                return { ...p, quantidade: Math.max(1, p.quantidade + delta) };
+              }
+              return p;
+            }),
+          };
+        }
+        return item;
+      })
+    );
   };
 
   // Calculate total to return/refund
@@ -373,9 +421,12 @@ function DevolucoesPageContent() {
     0
   );
 
-  // Calculate total of exchange products (for TROCA)
+  // Calculate total of exchange products (for TROCA) - soma todos os produtos de troca
   const totalTroca = itensParaDevolver.reduce(
-    (acc, item) => acc + (item.quantidadeTroca || 0) * (item.precoTroca || 0),
+    (acc, item) => acc + item.produtosTroca.reduce(
+      (sum, p) => sum + p.quantidade * p.preco,
+      0
+    ),
     0
   );
 
@@ -386,11 +437,11 @@ function DevolucoesPageContent() {
   const confirmarDevolucao = async () => {
     if (!venda || itensParaDevolver.length === 0) return;
 
-    // Validate TROCA has all products selected
+    // Validate TROCA has at least one product selected for each item
     if (tipoDevolucao === 'TROCA') {
-      const semTroca = itensParaDevolver.find((i) => !i.produtoTrocaId);
+      const semTroca = itensParaDevolver.find((i) => i.produtosTroca.length === 0);
       if (semTroca) {
-        showToast('Selecione o produto de troca para todos os itens', 'error');
+        showToast('Selecione ao menos um produto de troca para cada item', 'error');
         return;
       }
     }
@@ -415,9 +466,7 @@ function DevolucoesPageContent() {
             produtoId: item.produtoId,
             quantidadeDevolvida: item.quantidade,
             valorUnitario: item.valorUnitario,
-            produtoTrocaId: tipoDevolucao === 'TROCA' ? item.produtoTrocaId : null,
-            quantidadeTroca: tipoDevolucao === 'TROCA' ? item.quantidadeTroca : null,
-            precoTroca: tipoDevolucao === 'TROCA' ? item.precoTroca : null,
+            produtosTroca: tipoDevolucao === 'TROCA' ? item.produtosTroca : [],
           })),
         }),
       });
@@ -723,135 +772,135 @@ function DevolucoesPageContent() {
                               </div>
                             </div>
 
-                            {/* Produto de troca */}
+                            {/* Produtos de troca (múltiplos) */}
                             {tipoDevolucao === 'TROCA' && (
                               <div className="mt-4 pt-4 border-t border-white/10">
                                 {!selected ? (
                                   <p className="text-sm text-blue-400/70 italic">
-                                    Marque o item acima para selecionar o produto de troca
+                                    Marque o item acima para selecionar os produtos de troca
                                   </p>
-                                ) : selected.produtoTrocaId ? (
-                                  <div className="bg-blue-500/10 rounded-lg p-3 space-y-3">
-                                    <div className="flex items-center justify-between">
-                                      <div>
-                                        <p className="text-sm text-muted">Trocar por:</p>
-                                        <p className="text-blue-400 font-medium">
-                                          {selected.produtoTrocaNome}
-                                        </p>
-                                        <p className="text-emerald-400 text-sm">
-                                          {formatCurrency(selected.precoTroca || 0)} /un
-                                        </p>
-                                      </div>
-                                      <button
-                                        onClick={() =>
-                                          setItensParaDevolver(
-                                            itensParaDevolver.map((i) =>
-                                              i.itemVendaId === item.id
-                                                ? {
-                                                    ...i,
-                                                    produtoTrocaId: undefined,
-                                                    produtoTrocaNome: undefined,
-                                                    quantidadeTroca: undefined,
-                                                    precoTroca: undefined,
-                                                  }
-                                                : i
-                                            )
-                                          )
-                                        }
-                                        className="text-red-400 hover:text-red-300"
-                                      >
-                                        <X size={18} />
-                                      </button>
-                                    </div>
-                                    {/* Quantidade de troca */}
-                                    <div className="flex items-center justify-between pt-2 border-t border-blue-500/20">
-                                      <span className="text-sm text-muted">Quantidade:</span>
-                                      <div className="flex items-center gap-2">
-                                        <button
-                                          onClick={() =>
-                                            setItensParaDevolver(
-                                              itensParaDevolver.map((i) =>
-                                                i.itemVendaId === item.id
-                                                  ? {
-                                                      ...i,
-                                                      quantidadeTroca: Math.max(1, (i.quantidadeTroca || 1) - 1),
-                                                    }
-                                                  : i
-                                              )
-                                            )
-                                          }
-                                          className="w-7 h-7 bg-blue-500/20 hover:bg-blue-500/30 rounded-lg flex items-center justify-center text-blue-400 transition-colors"
-                                        >
-                                          <Minus size={14} />
-                                        </button>
-                                        <span className="w-8 text-center text-blue-400 font-medium">
-                                          {selected.quantidadeTroca || 1}
-                                        </span>
-                                        <button
-                                          onClick={() =>
-                                            setItensParaDevolver(
-                                              itensParaDevolver.map((i) =>
-                                                i.itemVendaId === item.id
-                                                  ? {
-                                                      ...i,
-                                                      quantidadeTroca: (i.quantidadeTroca || 1) + 1,
-                                                    }
-                                                  : i
-                                              )
-                                            )
-                                          }
-                                          className="w-7 h-7 bg-blue-500/20 hover:bg-blue-500/30 rounded-lg flex items-center justify-center text-blue-400 transition-colors"
-                                        >
-                                          <Plus size={14} />
-                                        </button>
-                                      </div>
-                                    </div>
-                                  </div>
                                 ) : (
-                                  <div className="relative">
-                                    <p className="text-sm text-muted mb-2">Selecione o produto para troca:</p>
-                                    <div className="relative">
-                                      <Search
-                                        size={16}
-                                        className="absolute left-3 top-1/2 -translate-y-1/2 text-foreground-muted"
-                                      />
-                                      <input
-                                        type="text"
-                                        value={selectedItemForTroca === item.id ? buscaProduto : ''}
-                                        onChange={(e) => {
-                                          setSelectedItemForTroca(item.id);
-                                          setBuscaProduto(e.target.value);
-                                        }}
-                                        onFocus={() => setSelectedItemForTroca(item.id)}
-                                        placeholder="Buscar produto para troca..."
-                                        className="w-full pl-10 pr-4 py-2 bg-blue-500/10 rounded-lg border border-blue-500/30 text-foreground text-sm placeholder:text-foreground-muted focus:outline-none focus:border-blue-500/50"
-                                      />
-                                    </div>
-                                    {/* Dropdown produtos */}
-                                    {selectedItemForTroca === item.id && produtos.length > 0 && (
-                                      <div className="absolute top-full left-0 right-0 mt-1 bg-background-secondary rounded-lg border border-white/10 max-h-48 overflow-y-auto z-10">
-                                        {produtos.map((produto) => (
-                                          <button
-                                            key={produto.id}
-                                            onClick={() => selecionarProdutoTroca(produto)}
-                                            className="w-full flex items-center justify-between p-2 hover:bg-white/10 transition-colors text-left text-sm gap-2"
+                                  <div className="space-y-3">
+                                    {/* Lista de produtos selecionados para troca */}
+                                    {selected.produtosTroca.length > 0 && (
+                                      <div className="space-y-2">
+                                        <p className="text-sm text-muted">Produtos para troca:</p>
+                                        {selected.produtosTroca.map((prodTroca) => (
+                                          <div
+                                            key={prodTroca.produtoId}
+                                            className="bg-blue-500/10 rounded-lg p-3"
                                           >
-                                            <div className="flex-1 min-w-0">
-                                              <p className="text-white truncate">{produto.nome}</p>
-                                              <p className="text-muted text-xs">{produto.codigo}</p>
+                                            <div className="flex items-center justify-between">
+                                              <div className="flex-1 min-w-0">
+                                                <p className="text-blue-400 font-medium truncate">
+                                                  {prodTroca.produtoNome}
+                                                </p>
+                                                <p className="text-emerald-400 text-sm">
+                                                  {formatCurrency(prodTroca.preco)} /un
+                                                </p>
+                                              </div>
+                                              <div className="flex items-center gap-3">
+                                                {/* Quantidade */}
+                                                <div className="flex items-center gap-1">
+                                                  <button
+                                                    onClick={() => updateQuantidadeTroca(item.id, prodTroca.produtoId, -1)}
+                                                    className="w-6 h-6 bg-blue-500/20 hover:bg-blue-500/30 rounded flex items-center justify-center text-blue-400 transition-colors"
+                                                  >
+                                                    <Minus size={12} />
+                                                  </button>
+                                                  <span className="w-8 text-center text-blue-400 font-medium text-sm">
+                                                    {prodTroca.quantidade}
+                                                  </span>
+                                                  <button
+                                                    onClick={() => updateQuantidadeTroca(item.id, prodTroca.produtoId, 1)}
+                                                    className="w-6 h-6 bg-blue-500/20 hover:bg-blue-500/30 rounded flex items-center justify-center text-blue-400 transition-colors"
+                                                  >
+                                                    <Plus size={12} />
+                                                  </button>
+                                                </div>
+                                                {/* Subtotal */}
+                                                <span className="text-white font-medium min-w-[80px] text-right">
+                                                  {formatCurrency(prodTroca.quantidade * prodTroca.preco)}
+                                                </span>
+                                                {/* Remover */}
+                                                <button
+                                                  onClick={() => removerProdutoTroca(item.id, prodTroca.produtoId)}
+                                                  className="text-red-400 hover:text-red-300 p-1"
+                                                >
+                                                  <X size={16} />
+                                                </button>
+                                              </div>
                                             </div>
-                                            <span className="text-emerald-400 font-medium whitespace-nowrap">
-                                              {formatCurrency(produto.precoVenda || 0)}
-                                            </span>
-                                          </button>
+                                          </div>
                                         ))}
                                       </div>
                                     )}
-                                    {selectedItemForTroca === item.id && loadingProdutos && (
-                                      <div className="absolute top-full left-0 right-0 mt-1 bg-background-secondary rounded-lg border border-white/10 p-2 text-center text-muted text-sm">
-                                        Buscando...
+
+                                    {/* Campo de busca para adicionar mais produtos */}
+                                    <div className="relative">
+                                      <p className="text-sm text-muted mb-2">
+                                        {selected.produtosTroca.length === 0
+                                          ? 'Selecione o(s) produto(s) para troca:'
+                                          : 'Adicionar outro produto:'}
+                                      </p>
+                                      <div className="relative">
+                                        <Search
+                                          size={16}
+                                          className="absolute left-3 top-1/2 -translate-y-1/2 text-foreground-muted"
+                                        />
+                                        <input
+                                          type="text"
+                                          value={selectedItemForTroca === item.id ? buscaProduto : ''}
+                                          onChange={(e) => {
+                                            setSelectedItemForTroca(item.id);
+                                            setBuscaProduto(e.target.value);
+                                          }}
+                                          onFocus={() => setSelectedItemForTroca(item.id)}
+                                          placeholder="Buscar produto..."
+                                          className="w-full pl-10 pr-4 py-2 bg-blue-500/10 rounded-lg border border-blue-500/30 text-foreground text-sm placeholder:text-foreground-muted focus:outline-none focus:border-blue-500/50"
+                                        />
                                       </div>
-                                    )}
+                                      {/* Dropdown produtos */}
+                                      {selectedItemForTroca === item.id && produtos.length > 0 && (
+                                        <div className="absolute top-full left-0 right-0 mt-1 bg-background-secondary rounded-lg border border-white/10 max-h-48 overflow-y-auto z-10">
+                                          {produtos.map((produto) => {
+                                            const jaAdicionado = selected.produtosTroca.some(
+                                              (p) => p.produtoId === produto.id
+                                            );
+                                            return (
+                                              <button
+                                                key={produto.id}
+                                                onClick={() => selecionarProdutoTroca(produto)}
+                                                disabled={jaAdicionado}
+                                                className={`w-full flex items-center justify-between p-2 transition-colors text-left text-sm gap-2 ${
+                                                  jaAdicionado
+                                                    ? 'opacity-50 cursor-not-allowed bg-white/5'
+                                                    : 'hover:bg-white/10'
+                                                }`}
+                                              >
+                                                <div className="flex-1 min-w-0">
+                                                  <p className="text-white truncate">
+                                                    {produto.nome}
+                                                    {jaAdicionado && (
+                                                      <span className="text-blue-400 ml-2">(já adicionado)</span>
+                                                    )}
+                                                  </p>
+                                                  <p className="text-muted text-xs">{produto.codigo}</p>
+                                                </div>
+                                                <span className="text-emerald-400 font-medium whitespace-nowrap">
+                                                  {formatCurrency(produto.precoVenda || 0)}
+                                                </span>
+                                              </button>
+                                            );
+                                          })}
+                                        </div>
+                                      )}
+                                      {selectedItemForTroca === item.id && loadingProdutos && (
+                                        <div className="absolute top-full left-0 right-0 mt-1 bg-background-secondary rounded-lg border border-white/10 p-2 text-center text-muted text-sm">
+                                          Buscando...
+                                        </div>
+                                      )}
+                                    </div>
                                   </div>
                                 )}
                               </div>

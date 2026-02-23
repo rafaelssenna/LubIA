@@ -3,15 +3,20 @@ import { prisma } from '@/lib/prisma';
 import { getSession } from '@/lib/auth';
 import { executeStockOperations, StockOperation } from '@/lib/estoque';
 
+interface ProdutoTroca {
+  produtoId: number;
+  produtoNome: string;
+  quantidade: number;
+  preco: number;
+}
+
 interface ItemDevolucao {
   itemVendaId: number;
   produtoId: number;
   quantidadeDevolvida: number;
   valorUnitario: number;
-  // For TROCA
-  produtoTrocaId?: number;
-  quantidadeTroca?: number;
-  precoTroca?: number; // Preço unitário do produto de troca
+  // For TROCA - múltiplos produtos
+  produtosTroca: ProdutoTroca[];
 }
 
 interface DevolucaoRequest {
@@ -102,26 +107,35 @@ export async function POST(
     // For TROCA, validate exchange products exist and have stock
     if (tipo === 'TROCA') {
       for (const itemDev of itens) {
-        if (itemDev.produtoTrocaId && itemDev.quantidadeTroca) {
-          const produtoTroca = await prisma.produto.findFirst({
+        // Validate that each item has at least one exchange product
+        if (!itemDev.produtosTroca || itemDev.produtosTroca.length === 0) {
+          return NextResponse.json(
+            { error: 'Selecione ao menos um produto de troca para cada item' },
+            { status: 400 }
+          );
+        }
+
+        // Validate each exchange product
+        for (const prodTroca of itemDev.produtosTroca) {
+          const produto = await prisma.produto.findFirst({
             where: {
-              id: itemDev.produtoTrocaId,
+              id: prodTroca.produtoId,
               empresaId: session.empresaId,
               ativo: true,
             },
           });
 
-          if (!produtoTroca) {
+          if (!produto) {
             return NextResponse.json(
-              { error: `Produto de troca ${itemDev.produtoTrocaId} não encontrado` },
+              { error: `Produto de troca ${prodTroca.produtoId} não encontrado` },
               { status: 400 }
             );
           }
 
-          if (Number(produtoTroca.quantidade) < itemDev.quantidadeTroca) {
+          if (Number(produto.quantidade) < prodTroca.quantidade) {
             return NextResponse.json(
               {
-                error: `Estoque insuficiente para troca: "${produtoTroca.nome}". Disponível: ${Number(produtoTroca.quantidade)}`,
+                error: `Estoque insuficiente para troca: "${produto.nome}". Disponível: ${Number(produto.quantidade)}`,
               },
               { status: 400 }
             );
@@ -152,10 +166,13 @@ export async function POST(
       0
     );
 
-    // Calculate total value of exchange products (for TROCA)
+    // Calculate total value of exchange products (for TROCA) - soma todos os produtos
     const valorTroca = tipo === 'TROCA'
       ? itens.reduce(
-          (acc, item) => acc + (item.quantidadeTroca || 0) * (item.precoTroca || 0),
+          (acc, item) => acc + (item.produtosTroca || []).reduce(
+            (sum, p) => sum + p.quantidade * p.preco,
+            0
+          ),
           0
         )
       : 0;
@@ -165,7 +182,7 @@ export async function POST(
 
     // Create devolução in transaction
     const devolucao = await prisma.$transaction(async (tx) => {
-      // Create devolução
+      // Create devolução with items
       const dev = await tx.devolucaoVendaRapida.create({
         data: {
           empresaId: session.empresaId,
@@ -185,9 +202,6 @@ export async function POST(
               quantidadeDevolvida: item.quantidadeDevolvida,
               valorUnitario: item.valorUnitario,
               subtotal: item.quantidadeDevolvida * item.valorUnitario,
-              produtoTrocaId: tipo === 'TROCA' ? item.produtoTrocaId : null,
-              quantidadeTroca: tipo === 'TROCA' ? item.quantidadeTroca : null,
-              precoTroca: tipo === 'TROCA' ? item.precoTroca : null,
             })),
           },
         },
@@ -195,6 +209,25 @@ export async function POST(
           itens: true,
         },
       });
+
+      // Create exchange product records (for TROCA with multiple products)
+      if (tipo === 'TROCA') {
+        for (let i = 0; i < itens.length; i++) {
+          const itemReq = itens[i];
+          const itemDev = dev.itens[i];
+
+          if (itemReq.produtosTroca && itemReq.produtosTroca.length > 0) {
+            await tx.itemTrocaVendaRapida.createMany({
+              data: itemReq.produtosTroca.map((prodTroca) => ({
+                itemDevolucaoId: itemDev.id,
+                produtoTrocaId: prodTroca.produtoId,
+                quantidadeTroca: prodTroca.quantidade,
+                precoTroca: prodTroca.preco,
+              })),
+            });
+          }
+        }
+      }
 
       // Stock operations
       const stockOps: StockOperation[] = [];
@@ -210,16 +243,18 @@ export async function POST(
           empresaId: session.empresaId,
         });
 
-        // For TROCA, also subtract stock of exchange product
-        if (tipo === 'TROCA' && item.produtoTrocaId && item.quantidadeTroca) {
-          stockOps.push({
-            produtoId: item.produtoTrocaId,
-            quantidade: item.quantidadeTroca,
-            tipo: 'SAIDA',
-            motivo: `Troca ${numeroDevolucao} - Produto substituto`,
-            documento: numeroDevolucao,
-            empresaId: session.empresaId,
-          });
+        // For TROCA, subtract stock for each exchange product
+        if (tipo === 'TROCA' && item.produtosTroca) {
+          for (const prodTroca of item.produtosTroca) {
+            stockOps.push({
+              produtoId: prodTroca.produtoId,
+              quantidade: prodTroca.quantidade,
+              tipo: 'SAIDA',
+              motivo: `Troca ${numeroDevolucao} - Produto substituto`,
+              documento: numeroDevolucao,
+              empresaId: session.empresaId,
+            });
+          }
         }
       }
 

@@ -354,6 +354,7 @@ model Produto {
   itensVendaRapida  ItemVendaRapida[]
   itensDevolvidos   ItemDevolucaoVendaRapida[] @relation("ProdutoDevolvido")
   itensTrocados     ItemDevolucaoVendaRapida[] @relation("ProdutoTroca")
+  itensTrocaMulti   ItemTrocaVendaRapida[]     @relation("ProdutoTrocaItem")
 
   @@unique([codigo, empresaId])
   @@index([empresaId])
@@ -690,6 +691,21 @@ model ItemDevolucaoVendaRapida {
   itemVenda    ItemVendaRapida      @relation(fields: [itemVendaId], references: [id])
   produto      Produto              @relation("ProdutoDevolvido", fields: [produtoId], references: [id])
   produtoTroca Produto?             @relation("ProdutoTroca", fields: [produtoTrocaId], references: [id])
+  itensTroca   ItemTrocaVendaRapida[]
 
   @@map("itens_devolucao_venda_rapida")
+}
+
+// Itens de troca (múltiplos produtos por item devolvido)
+model ItemTrocaVendaRapida {
+  id              Int     @id @default(autoincrement())
+  itemDevolucaoId Int
+  produtoTrocaId  Int
+  quantidadeTroca Decimal @db.Decimal(10, 2)
+  precoTroca      Decimal @db.Decimal(10, 2)
+
+  itemDevolucao ItemDevolucaoVendaRapida @relation(fields: [itemDevolucaoId], references: [id], onDelete: Cascade)
+  produtoTroca  Produto                  @relation("ProdutoTrocaItem", fields: [produtoTrocaId], references: [id])
+
+  @@map("itens_troca_venda_rapida")
 }
