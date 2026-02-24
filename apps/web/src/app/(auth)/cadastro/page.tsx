@@ -39,6 +39,7 @@ export default function CadastroPage() {
   const [loading, setLoading] = useState(false);
   const [buscandoCnpj, setBuscandoCnpj] = useState(false);
   const [error, setError] = useState('');
+  const [aceitouTermos, setAceitouTermos] = useState(false);
 
   // Buscar dados da empresa pelo CNPJ na Receita Federal
   const buscarDadosCnpj = async (cnpjValue: string) => {
@@ -112,6 +113,12 @@ export default function CadastroPage() {
 
     if (!enderecoEmpresa.trim()) {
       setError('Endereço da empresa é obrigatório');
+      setLoading(false);
+      return;
+    }
+
+    if (!aceitouTermos) {
+      setError('Você precisa aceitar os termos para continuar');
       setLoading(false);
       return;
     }
@@ -303,10 +310,49 @@ export default function CadastroPage() {
               />
             </div>
 
+            {/* Informativo sobre cobrança */}
+            <div className="mt-6 p-4 bg-blue-500/10 border border-blue-500/30 rounded-xl">
+              <h4 className="font-semibold text-foreground mb-2 flex items-center gap-2">
+                <AlertCircle size={18} className="text-blue-400" />
+                Como funciona a cobrança
+              </h4>
+              <ul className="text-sm text-muted space-y-1">
+                <li>• Você terá <strong className="text-foreground">7 dias grátis</strong> para testar</li>
+                <li>• Seu cartão será cadastrado no Stripe (pagamento seguro)</li>
+                <li>• Após os 7 dias, será cobrado <strong className="text-foreground">R$ 99,00/mês</strong> automaticamente</li>
+                <li>• Você pode cancelar a qualquer momento pelo sistema</li>
+              </ul>
+            </div>
+
+            {/* Checkbox de aceite */}
+            <label className="flex items-start gap-3 mt-4 cursor-pointer group">
+              <div className="relative mt-0.5">
+                <input
+                  type="checkbox"
+                  checked={aceitouTermos}
+                  onChange={(e) => setAceitouTermos(e.target.checked)}
+                  className="sr-only peer"
+                />
+                <div className="w-5 h-5 border-2 border-border rounded bg-background peer-checked:bg-primary peer-checked:border-primary transition-colors group-hover:border-primary/50" />
+                <svg
+                  className="absolute top-0.5 left-0.5 w-4 h-4 text-white opacity-0 peer-checked:opacity-100 transition-opacity"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  strokeWidth={3}
+                >
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                </svg>
+              </div>
+              <span className="text-sm text-muted">
+                Li e entendi as condições acima. Concordo em fornecer meus dados de pagamento e autorizo a cobrança automática após o período de teste.
+              </span>
+            </label>
+
             <button
               type="submit"
-              disabled={loading}
-              className="w-full flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-primary to-primary-dark rounded-xl text-white font-medium hover:opacity-90 disabled:opacity-50 transition-opacity mt-6"
+              disabled={loading || !aceitouTermos}
+              className="w-full flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-primary to-primary-dark rounded-xl text-white font-medium hover:opacity-90 disabled:opacity-50 transition-opacity mt-4"
             >
               {loading ? (
                 <Loader2 className="animate-spin" size={20} />

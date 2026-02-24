@@ -69,7 +69,9 @@ function AssinaturaContent() {
   const [subscription, setSubscription] = useState<SubscriptionData | null>(null);
   const [processingCheckout, setProcessingCheckout] = useState(false);
   const [processingPortal, setProcessingPortal] = useState(false);
+  const [processingCancel, setProcessingCancel] = useState(false);
   const [syncing, setSyncing] = useState(false);
+  const [showCancelConfirm, setShowCancelConfirm] = useState(false);
 
   useEffect(() => {
     // Verificar parâmetros de retorno do Stripe
@@ -145,6 +147,25 @@ function AssinaturaContent() {
       toast.error('Erro ao sincronizar');
     } finally {
       setSyncing(false);
+    }
+  };
+
+  const handleCancel = async () => {
+    setProcessingCancel(true);
+    try {
+      const res = await fetch('/api/stripe/cancel', { method: 'POST' });
+      const data = await res.json();
+      if (data.success) {
+        toast.success('Assinatura será cancelada ao fim do período');
+        setShowCancelConfirm(false);
+        fetchSubscription();
+      } else {
+        toast.error(data.error || 'Erro ao cancelar');
+      }
+    } catch (error) {
+      toast.error('Erro ao cancelar assinatura');
+    } finally {
+      setProcessingCancel(false);
     }
   };
 
@@ -394,7 +415,8 @@ function AssinaturaContent() {
 
             {/* Botões de Ação */}
             <div className="flex flex-wrap gap-4 pt-4">
-              {subscription?.status !== 'ACTIVE' && (
+              {/* Botão Assinar - só aparece quando precisa reativar (UNPAID, CANCELED, PAST_DUE) */}
+              {(subscription?.status === 'UNPAID' || subscription?.status === 'CANCELED' || subscription?.status === 'PAST_DUE') && (
                 <button
                   onClick={handleCheckout}
                   disabled={processingCheckout}
@@ -405,7 +427,7 @@ function AssinaturaContent() {
                   ) : (
                     <CreditCard size={20} />
                   )}
-                  {subscription?.status === 'ACTIVE' ? 'Alterar Plano' : 'Assinar Agora'}
+                  Reativar Assinatura
                 </button>
               )}
 
@@ -421,6 +443,18 @@ function AssinaturaContent() {
                     <ExternalLink size={20} />
                   )}
                   Gerenciar Assinatura
+                </button>
+              )}
+
+              {/* Botão Cancelar - para TRIAL e ACTIVE (não cancelado ainda) */}
+              {(subscription?.status === 'TRIAL' || subscription?.status === 'ACTIVE') &&
+               !subscription?.cancelAtPeriodEnd && (
+                <button
+                  onClick={() => setShowCancelConfirm(true)}
+                  className="flex items-center justify-center gap-2 px-6 py-3 bg-red-500/10 border border-red-500/30 hover:bg-red-500/20 rounded-xl text-red-400 font-semibold transition-all"
+                >
+                  <XCircle size={20} />
+                  Cancelar Assinatura
                 </button>
               )}
 
@@ -442,6 +476,60 @@ function AssinaturaContent() {
                 </button>
               )}
             </div>
+
+            {/* Modal de Confirmação de Cancelamento */}
+            {showCancelConfirm && (
+              <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+                <div className="bg-card border border-border rounded-2xl p-6 max-w-md w-full">
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className="p-3 bg-red-500/10 rounded-xl">
+                      <AlertTriangle size={24} className="text-red-400" />
+                    </div>
+                    <h3 className="text-xl font-bold text-foreground">Cancelar Assinatura?</h3>
+                  </div>
+
+                  <p className="text-muted mb-2">
+                    Tem certeza que deseja cancelar sua assinatura?
+                  </p>
+
+                  <ul className="text-sm text-muted mb-6 space-y-2">
+                    <li className="flex items-start gap-2">
+                      <span className="text-yellow-400 mt-0.5">•</span>
+                      <span>Você poderá usar o sistema até o fim do período já pago</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <span className="text-yellow-400 mt-0.5">•</span>
+                      <span>Após isso, seu acesso será bloqueado</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <span className="text-yellow-400 mt-0.5">•</span>
+                      <span>Você pode reativar a assinatura a qualquer momento</span>
+                    </li>
+                  </ul>
+
+                  <div className="flex gap-3">
+                    <button
+                      onClick={() => setShowCancelConfirm(false)}
+                      className="flex-1 px-4 py-3 bg-zinc-800 border border-border rounded-xl text-foreground font-medium hover:bg-zinc-700 transition-colors"
+                    >
+                      Voltar
+                    </button>
+                    <button
+                      onClick={handleCancel}
+                      disabled={processingCancel}
+                      className="flex-1 px-4 py-3 bg-red-500 rounded-xl text-white font-medium hover:bg-red-600 transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
+                    >
+                      {processingCancel ? (
+                        <Loader2 className="animate-spin" size={18} />
+                      ) : (
+                        <XCircle size={18} />
+                      )}
+                      Confirmar Cancelamento
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         </div>
 
