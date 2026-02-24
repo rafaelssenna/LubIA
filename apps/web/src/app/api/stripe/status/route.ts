@@ -63,18 +63,18 @@ export async function GET() {
         const subscription = await stripe.subscriptions.retrieve(
           empresa.stripeSubscriptionId,
           { expand: ['default_payment_method'] }
-        );
+        ) as any;
 
         stripeDetails.nextBillingDate = subscription.current_period_end
           ? new Date(subscription.current_period_end * 1000).toISOString()
           : null;
-        stripeDetails.cancelAtPeriodEnd = subscription.cancel_at_period_end;
+        stripeDetails.cancelAtPeriodEnd = subscription.cancel_at_period_end || false;
 
         // Pegar valor da assinatura
-        if (subscription.items.data.length > 0) {
+        if (subscription.items?.data?.length > 0) {
           const item = subscription.items.data[0];
-          stripeDetails.amount = item.price.unit_amount;
-          stripeDetails.currency = item.price.currency;
+          stripeDetails.amount = item.price?.unit_amount || null;
+          stripeDetails.currency = item.price?.currency || null;
         }
 
         // Pegar método de pagamento
