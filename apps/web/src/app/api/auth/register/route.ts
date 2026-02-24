@@ -186,7 +186,7 @@ export async function POST(request: NextRequest) {
           quantity: 1,
         },
       ],
-      success_url: `${APP_URL}/dashboard?welcome=true`,
+      success_url: `${APP_URL}/?welcome=true`,
       cancel_url: `${APP_URL}/assinatura?pending=true`,
       subscription_data: {
         trial_period_days: 7,
