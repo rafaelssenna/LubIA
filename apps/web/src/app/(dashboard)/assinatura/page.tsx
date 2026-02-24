@@ -15,6 +15,9 @@ import {
   Sparkles,
   Shield,
   Zap,
+  Calendar,
+  DollarSign,
+  Wallet,
 } from 'lucide-react';
 
 interface SubscriptionData {
@@ -24,6 +27,37 @@ interface SubscriptionData {
   diasRestantes: number;
   hasStripeCustomer: boolean;
   hasSubscription: boolean;
+  nextBillingDate: string | null;
+  amount: number | null;
+  currency: string | null;
+  paymentMethod: {
+    brand: string | null;
+    last4: string | null;
+  } | null;
+  cancelAtPeriodEnd: boolean;
+}
+
+// Helper para formatar valor em moeda
+function formatCurrency(amount: number | null, currency: string | null): string {
+  if (amount === null) return '-';
+  const value = amount / 100; // Stripe usa centavos
+  return new Intl.NumberFormat('pt-BR', {
+    style: 'currency',
+    currency: currency || 'BRL',
+  }).format(value);
+}
+
+// Helper para nome da bandeira do cartão
+function getCardBrandName(brand: string | null): string {
+  if (!brand) return 'Cartão';
+  const brands: Record<string, string> = {
+    visa: 'Visa',
+    mastercard: 'Mastercard',
+    amex: 'American Express',
+    elo: 'Elo',
+    hipercard: 'Hipercard',
+  };
+  return brands[brand.toLowerCase()] || brand;
 }
 
 // Componente que usa useSearchParams (precisa de Suspense)
@@ -225,16 +259,71 @@ function AssinaturaContent() {
               </div>
             )}
 
-            {subscription?.status === 'ACTIVE' && subscription.subscriptionEndsAt && (
-              <div className="flex items-center justify-between p-4 bg-emerald-500/5 border border-emerald-500/20 rounded-xl">
-                <div className="flex items-center gap-3">
-                  <CheckCircle size={20} className="text-emerald-400" />
-                  <span className="text-foreground">Próxima renovação</span>
+            {subscription?.status === 'ACTIVE' && (
+              <>
+                {/* Próxima cobrança */}
+                {subscription.nextBillingDate && (
+                  <div className="flex items-center justify-between p-4 bg-emerald-500/5 border border-emerald-500/20 rounded-xl">
+                    <div className="flex items-center gap-3">
+                      <Calendar size={20} className="text-emerald-400" />
+                      <span className="text-foreground">Próxima cobrança</span>
+                    </div>
+                    <span className="text-foreground font-semibold">
+                      {new Date(subscription.nextBillingDate).toLocaleDateString('pt-BR')}
+                    </span>
+                  </div>
+                )}
+
+                {/* Valor da assinatura */}
+                {subscription.amount && (
+                  <div className="flex items-center justify-between p-4 bg-emerald-500/5 border border-emerald-500/20 rounded-xl">
+                    <div className="flex items-center gap-3">
+                      <DollarSign size={20} className="text-emerald-400" />
+                      <span className="text-foreground">Valor mensal</span>
+                    </div>
+                    <span className="text-2xl font-bold text-emerald-400">
+                      {formatCurrency(subscription.amount, subscription.currency)}
+                    </span>
+                  </div>
+                )}
+
+                {/* Método de pagamento */}
+                {subscription.paymentMethod && (
+                  <div className="flex items-center justify-between p-4 bg-zinc-500/5 border border-zinc-500/20 rounded-xl">
+                    <div className="flex items-center gap-3">
+                      <Wallet size={20} className="text-zinc-400" />
+                      <span className="text-foreground">Forma de pagamento</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <CreditCard size={20} className="text-zinc-400" />
+                      <span className="text-foreground font-semibold">
+                        {getCardBrandName(subscription.paymentMethod.brand)} •••• {subscription.paymentMethod.last4}
+                      </span>
+                    </div>
+                  </div>
+                )}
+
+                {/* Aviso de cancelamento pendente */}
+                {subscription.cancelAtPeriodEnd && (
+                  <div className="flex items-center gap-3 p-4 bg-yellow-500/10 border border-yellow-500/30 rounded-xl">
+                    <AlertTriangle size={20} className="text-yellow-400" />
+                    <span className="text-yellow-400">
+                      Sua assinatura será cancelada em {new Date(subscription.nextBillingDate!).toLocaleDateString('pt-BR')}
+                    </span>
+                  </div>
+                )}
+
+                {/* Status do pagamento */}
+                <div className="flex items-center justify-between p-4 bg-emerald-500/5 border border-emerald-500/20 rounded-xl">
+                  <div className="flex items-center gap-3">
+                    <CheckCircle size={20} className="text-emerald-400" />
+                    <span className="text-foreground">Status do pagamento</span>
+                  </div>
+                  <span className="px-3 py-1 bg-emerald-500/20 text-emerald-400 text-sm font-semibold rounded-lg">
+                    Em dia
+                  </span>
                 </div>
-                <span className="text-foreground font-semibold">
-                  {new Date(subscription.subscriptionEndsAt).toLocaleDateString('pt-BR')}
-                </span>
-              </div>
+              </>
             )}
 
             {/* Botões de Ação */}

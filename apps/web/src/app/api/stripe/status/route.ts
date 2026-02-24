@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { getSession } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
+import { getStripe } from '@/lib/stripe';
 
 // GET - Retorna status da assinatura da empresa
 export async function GET() {
@@ -38,6 +39,57 @@ export async function GET() {
       );
     }
 
+    // Buscar informações detalhadas do Stripe
+    let stripeDetails: {
+      nextBillingDate: string | null;
+      amount: number | null;
+      currency: string | null;
+      paymentMethod: {
+        brand: string | null;
+        last4: string | null;
+      } | null;
+      cancelAtPeriodEnd: boolean;
+    } = {
+      nextBillingDate: null,
+      amount: null,
+      currency: null,
+      paymentMethod: null,
+      cancelAtPeriodEnd: false,
+    };
+
+    if (empresa.stripeSubscriptionId) {
+      try {
+        const stripe = getStripe();
+        const subscription = await stripe.subscriptions.retrieve(
+          empresa.stripeSubscriptionId,
+          { expand: ['default_payment_method'] }
+        );
+
+        stripeDetails.nextBillingDate = subscription.current_period_end
+          ? new Date(subscription.current_period_end * 1000).toISOString()
+          : null;
+        stripeDetails.cancelAtPeriodEnd = subscription.cancel_at_period_end;
+
+        // Pegar valor da assinatura
+        if (subscription.items.data.length > 0) {
+          const item = subscription.items.data[0];
+          stripeDetails.amount = item.price.unit_amount;
+          stripeDetails.currency = item.price.currency;
+        }
+
+        // Pegar método de pagamento
+        const pm = subscription.default_payment_method;
+        if (pm && typeof pm !== 'string' && pm.card) {
+          stripeDetails.paymentMethod = {
+            brand: pm.card.brand,
+            last4: pm.card.last4,
+          };
+        }
+      } catch (stripeError: any) {
+        console.error('[STRIPE STATUS] Erro ao buscar detalhes:', stripeError?.message);
+      }
+    }
+
     return NextResponse.json({
       data: {
         status: empresa.subscriptionStatus,
@@ -46,6 +98,7 @@ export async function GET() {
         diasRestantes: diasRestantes && diasRestantes > 0 ? diasRestantes : 0,
         hasStripeCustomer: !!empresa.stripeCustomerId,
         hasSubscription: !!empresa.stripeSubscriptionId,
+        ...stripeDetails,
       },
     });
   } catch (error: any) {
