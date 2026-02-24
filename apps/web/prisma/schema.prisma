@@ -59,6 +59,7 @@ model Empresa {
   vendasRapidas         VendaRapida[]
   devolucoesVendaRapida DevolucaoVendaRapida[]
   pagamentos            Pagamento[]
+  ideias                Ideia[]
 
   @@map("empresas")
 }
@@ -80,11 +81,14 @@ model Usuario {
   empresaId   Int
   role        RoleUsuario  @default(ATENDENTE)
   ativo       Boolean      @default(true)
+  isInternal  Boolean      @default(false) // true = equipe interna, pode avaliar ideias
   createdAt   DateTime     @default(now())
   updatedAt   DateTime     @updatedAt
   lastLoginAt DateTime?
 
-  empresa Empresa @relation(fields: [empresaId], references: [id], onDelete: Cascade)
+  empresa          Empresa          @relation(fields: [empresaId], references: [id], onDelete: Cascade)
+  ideias           Ideia[]
+  avaliacoesFeitas IdeiaAvaliacao[] @relation("AvaliacoesFeitas")
 
   @@index([empresaId])
   @@map("usuarios")
@@ -759,4 +763,82 @@ model ItemTrocaVendaRapida {
   produtoTroca  Produto                  @relation("ProdutoTrocaItem", fields: [produtoTrocaId], references: [id])
 
   @@map("itens_troca_venda_rapida")
+}
+
+// =============================================
+// IDEÁRIO (Sistema de Sugestões)
+// =============================================
+
+// Categoria da ideia
+enum CategoriaIdeia {
+  FUNCIONALIDADE
+  MELHORIA
+  CORRECAO
+  INTEGRACAO
+  INTERFACE
+  OUTRO
+}
+
+// Status da ideia
+enum StatusIdeia {
+  SUGERIDA
+  EM_AVALIACAO
+  APROVADA
+  EM_DESENVOLVIMENTO
+  IMPLEMENTADA
+  ARQUIVADA
+}
+
+// Impacto esperado da ideia
+enum ImpactoIdeia {
+  BAIXO
+  MEDIO
+  ALTO
+  CRITICO
+}
+
+// Ideia/Sugestão do usuário
+model Ideia {
+  id              Int            @id @default(autoincrement())
+  empresaId       Int
+  usuarioId       Int
+
+  titulo          String         @db.VarChar(200)
+  descricao       String         @db.Text
+  categoria       CategoriaIdeia
+  impacto         ImpactoIdeia   @default(MEDIO)
+  status          StatusIdeia    @default(SUGERIDA)
+
+  // Avaliação interna (média das notas)
+  notaMedia       Decimal?       @db.Decimal(2, 1)
+  totalAvaliacoes Int            @default(0)
+
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+
+  empresa         Empresa        @relation(fields: [empresaId], references: [id], onDelete: Cascade)
+  usuario         Usuario        @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+  avaliacoes      IdeiaAvaliacao[]
+
+  @@index([empresaId])
+  @@index([usuarioId])
+  @@index([status])
+  @@map("ideias")
+}
+
+// Avaliação de ideia pela equipe interna
+model IdeiaAvaliacao {
+  id          Int      @id @default(autoincrement())
+  ideiaId     Int
+  avaliadorId Int
+  nota        Int      // 1 a 5 estrelas
+  comentario  String?  @db.Text
+  createdAt   DateTime @default(now())
+
+  ideia       Ideia    @relation(fields: [ideiaId], references: [id], onDelete: Cascade)
+  avaliador   Usuario  @relation("AvaliacoesFeitas", fields: [avaliadorId], references: [id], onDelete: Cascade)
+
+  @@unique([ideiaId, avaliadorId]) // cada avaliador só avalia uma vez por ideia
+  @@index([ideiaId])
+  @@map("ideias_avaliacoes")
 }
