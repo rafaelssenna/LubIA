@@ -130,9 +130,14 @@ export default function CadastroPage() {
         return;
       }
 
-      // Cadastro bem sucedido - redireciona para dashboard
-      router.push('/');
-      router.refresh();
+      // Cadastro bem sucedido - redireciona para checkout do Stripe
+      if (data.checkoutUrl) {
+        window.location.href = data.checkoutUrl;
+      } else {
+        // Fallback caso não tenha URL (não deveria acontecer)
+        router.push('/assinatura');
+        router.refresh();
+      }
     } catch {
       setError('Erro de conexão');
     } finally {
@@ -308,8 +313,12 @@ export default function CadastroPage() {
               ) : (
                 <UserPlus size={20} />
               )}
-              {loading ? 'Criando conta...' : 'Criar Conta'}
+              {loading ? 'Criando conta...' : 'Criar Conta e Assinar'}
             </button>
+
+            <p className="text-xs text-center text-muted mt-3">
+              7 dias grátis para testar. Cancele quando quiser.
+            </p>
           </form>
 
           <div className="mt-6 text-center">

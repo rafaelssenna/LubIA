@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { hashPassword, createSession, setSessionCookie } from '@/lib/auth';
-import { TRIAL_DAYS } from '@/lib/stripe';
+import { getStripe, SUBSCRIPTION_PRICE_ID, APP_URL } from '@/lib/stripe';
 
 // POST - Cadastrar nova empresa e usuário
 export async function POST(request: NextRequest) {
@@ -54,17 +54,13 @@ export async function POST(request: NextRequest) {
 
     // Criar empresa e usuário em transação
     const result = await prisma.$transaction(async (tx) => {
-      // 1. Criar empresa com período de trial
-      const trialEndsAt = new Date();
-      trialEndsAt.setDate(trialEndsAt.getDate() + TRIAL_DAYS);
-
+      // 1. Criar empresa (status UNPAID até completar checkout)
       const empresa = await tx.empresa.create({
         data: {
           nome: nomeEmpresa,
           slug,
           ativo: true,
-          subscriptionStatus: 'TRIAL',
-          trialEndsAt,
+          subscriptionStatus: 'UNPAID',
         },
       });
 
@@ -152,8 +148,7 @@ export async function POST(request: NextRequest) {
       nome: result.usuario.nome,
       empresaNome: result.empresa.nome,
       role: 'ADMIN',
-      subscriptionStatus: 'TRIAL',
-      trialEndsAt: result.empresa.trialEndsAt?.toISOString(),
+      subscriptionStatus: 'UNPAID',
     });
 
     await setSessionCookie(token);
@@ -164,8 +159,48 @@ export async function POST(request: NextRequest) {
       data: { lastLoginAt: new Date() },
     });
 
+    // Criar Stripe Customer e Checkout Session
+    const stripe = getStripe();
+
+    const customer = await stripe.customers.create({
+      email,
+      name: nomeEmpresa,
+      metadata: {
+        empresaId: result.empresa.id.toString(),
+      },
+    });
+
+    // Salvar customerId no banco
+    await prisma.empresa.update({
+      where: { id: result.empresa.id },
+      data: { stripeCustomerId: customer.id },
+    });
+
+    // Criar sessão de checkout com 7 dias de trial
+    const checkoutSession = await stripe.checkout.sessions.create({
+      customer: customer.id,
+      mode: 'subscription',
+      line_items: [
+        {
+          price: SUBSCRIPTION_PRICE_ID,
+          quantity: 1,
+        },
+      ],
+      success_url: `${APP_URL}/dashboard?welcome=true`,
+      cancel_url: `${APP_URL}/assinatura?pending=true`,
+      subscription_data: {
+        trial_period_days: 7,
+        metadata: {
+          empresaId: result.empresa.id.toString(),
+        },
+      },
+      locale: 'pt-BR',
+      allow_promotion_codes: true,
+    });
+
     return NextResponse.json({
       success: true,
+      checkoutUrl: checkoutSession.url,
       user: {
         id: result.usuario.id,
         nome: result.usuario.nome,

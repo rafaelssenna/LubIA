@@ -77,6 +77,8 @@ function AssinaturaContent() {
       toast.success('Assinatura ativada com sucesso!');
     } else if (searchParams.get('canceled') === 'true') {
       toast.info('Checkout cancelado');
+    } else if (searchParams.get('pending') === 'true') {
+      toast.warning('Complete sua assinatura para usar o sistema');
     }
 
     fetchSubscription();
