@@ -61,7 +61,7 @@ export async function POST() {
       });
     }
 
-    const subscription = subscriptions.data[0];
+    const subscription = subscriptions.data[0] as any;
     const periodEnd = subscription.current_period_end || subscription.trial_end;
 
     // Atualizar dados no banco
