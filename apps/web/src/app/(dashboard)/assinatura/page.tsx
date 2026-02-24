@@ -422,12 +422,13 @@ function AssinaturaContent() {
                 </button>
               )}
 
-              {/* Botão de sincronização - útil se os dados não estiverem atualizados */}
-              {subscription?.hasStripeCustomer && !subscription?.nextBillingDate && (
+              {/* Botão de sincronização - aparece quando falta informação */}
+              {(subscription?.status === 'ACTIVE' || subscription?.status === 'TRIAL') &&
+               (!subscription?.nextBillingDate || !subscription?.amount) && (
                 <button
                   onClick={handleSync}
                   disabled={syncing}
-                  className="flex items-center justify-center gap-2 px-4 py-3 bg-zinc-800/50 border border-border hover:border-blue-500/50 rounded-xl text-muted hover:text-foreground font-medium transition-all disabled:opacity-50"
+                  className="flex items-center justify-center gap-2 px-4 py-3 bg-blue-600/20 border border-blue-500/30 hover:bg-blue-600/30 rounded-xl text-blue-400 font-medium transition-all disabled:opacity-50"
                   title="Sincronizar dados do Stripe"
                 >
                   {syncing ? (
@@ -435,7 +436,7 @@ function AssinaturaContent() {
                   ) : (
                     <RefreshCw size={18} />
                   )}
-                  Atualizar dados
+                  Atualizar dados do Stripe
                 </button>
               )}
             </div>
