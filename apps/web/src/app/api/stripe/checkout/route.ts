@@ -57,6 +57,7 @@ export async function POST(request: NextRequest) {
       success_url: `${APP_URL}/assinatura?success=true`,
       cancel_url: `${APP_URL}/assinatura?canceled=true`,
       subscription_data: {
+        trial_period_days: 7, // 7 dias de teste grátis (coleta cartão mas não cobra)
         metadata: {
           empresaId: empresa.id.toString(),
         },
