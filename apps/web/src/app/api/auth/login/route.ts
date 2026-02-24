@@ -49,7 +49,7 @@ export async function POST(request: NextRequest) {
       data: { lastLoginAt: new Date() },
     });
 
-    // Criar sessão JWT (incluindo status da assinatura)
+    // Criar sessão JWT (incluindo status da assinatura e super admin)
     const token = await createSession({
       userId: usuario.id,
       email: usuario.email,
@@ -59,6 +59,7 @@ export async function POST(request: NextRequest) {
       role: usuario.role as 'ADMIN' | 'GERENTE' | 'ATENDENTE',
       subscriptionStatus: usuario.empresa.subscriptionStatus,
       trialEndsAt: usuario.empresa.trialEndsAt?.toISOString(),
+      isSuperAdmin: usuario.isSuperAdmin,
     });
 
     // Salvar cookie
@@ -72,6 +73,7 @@ export async function POST(request: NextRequest) {
         email: usuario.email,
         empresa: usuario.empresa.nome,
         role: usuario.role,
+        isSuperAdmin: usuario.isSuperAdmin,
       },
     });
   } catch (error: any) {

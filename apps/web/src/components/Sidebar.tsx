@@ -29,6 +29,7 @@ import {
   RotateCcw,
   CreditCard,
   Lightbulb,
+  Shield,
 } from 'lucide-react';
 import { useSidebar } from '@/contexts/SidebarContext';
 import { useAuth } from '@/contexts/AuthContext';
@@ -103,7 +104,7 @@ const menuItems: MenuItem[] = [
 export default function Sidebar() {
   const pathname = usePathname();
   const { collapsed, toggleCollapsed } = useSidebar();
-  const { logout, isAdmin, user } = useAuth();
+  const { logout, isAdmin, isSuperAdmin, user } = useAuth();
   const { theme } = useTheme();
   const [configIncomplete, setConfigIncomplete] = useState(false);
   const [expandedMenu, setExpandedMenu] = useState<string | null>(null);
@@ -353,6 +354,22 @@ export default function Sidebar() {
           >
             <CreditCard size={20} className="group-hover:scale-110 transition-transform" />
             {!collapsed && <span className="font-medium">Assinatura</span>}
+          </Link>
+        )}
+
+        {/* Painel Admin - apenas para Super Admin (Helsen IA) */}
+        {isSuperAdmin && (
+          <Link
+            href="/admin"
+            className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-300 group ${
+              pathname === '/admin'
+                ? 'bg-gradient-to-r from-amber-500/20 to-orange-500/20 text-amber-400 shadow-lg shadow-amber-500/10 ring-1 ring-amber-500/30'
+                : 'text-amber-400 hover:bg-amber-500/10'
+            } ${collapsed ? 'justify-center px-3' : ''}`}
+            title={collapsed ? 'Painel Admin' : undefined}
+          >
+            <Shield size={20} className="group-hover:scale-110 transition-transform" />
+            {!collapsed && <span className="font-medium">Painel Admin</span>}
           </Link>
         )}
 

@@ -12,6 +12,7 @@ interface User {
   empresaId: number;
   empresaNome: string;
   role: RoleUsuario;
+  isSuperAdmin?: boolean;
 }
 
 interface AuthContextType {
@@ -22,6 +23,7 @@ interface AuthContextType {
   isAdmin: boolean;
   isGerente: boolean;
   isAtendente: boolean;
+  isSuperAdmin: boolean;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -62,12 +64,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     refreshUser();
   }, []);
 
+  const isSuperAdmin = user?.isSuperAdmin === true;
   const isAdmin = user?.role === 'ADMIN';
   const isGerente = user?.role === 'GERENTE' || isAdmin;
   const isAtendente = user?.role === 'ATENDENTE' || isGerente;
 
   return (
-    <AuthContext.Provider value={{ user, loading, logout, refreshUser, isAdmin, isGerente, isAtendente }}>
+    <AuthContext.Provider value={{ user, loading, logout, refreshUser, isAdmin, isGerente, isAtendente, isSuperAdmin }}>
       {children}
     </AuthContext.Provider>
   );

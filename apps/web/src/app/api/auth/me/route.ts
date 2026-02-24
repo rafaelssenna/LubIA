@@ -17,6 +17,7 @@ export async function GET() {
         empresaId: session.empresaId,
         empresaNome: session.empresaNome,
         role: session.role,
+        isSuperAdmin: session.isSuperAdmin,
       },
     });
   } catch (error: any) {

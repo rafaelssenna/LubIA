@@ -74,17 +74,18 @@ enum RoleUsuario {
 
 // Usuario para autenticação
 model Usuario {
-  id          Int          @id @default(autoincrement())
-  email       String       @unique
-  senhaHash   String
-  nome        String
-  empresaId   Int
-  role        RoleUsuario  @default(ATENDENTE)
-  ativo       Boolean      @default(true)
-  isInternal  Boolean      @default(false) // true = equipe interna, pode avaliar ideias
-  createdAt   DateTime     @default(now())
-  updatedAt   DateTime     @updatedAt
-  lastLoginAt DateTime?
+  id           Int          @id @default(autoincrement())
+  email        String       @unique
+  senhaHash    String
+  nome         String
+  empresaId    Int
+  role         RoleUsuario  @default(ATENDENTE)
+  ativo        Boolean      @default(true)
+  isInternal   Boolean      @default(false) // true = equipe interna, pode avaliar ideias
+  isSuperAdmin Boolean      @default(false) // true = Helsen IA, acesso total a todas empresas
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+  lastLoginAt  DateTime?
 
   empresa          Empresa          @relation(fields: [empresaId], references: [id], onDelete: Cascade)
   ideias           Ideia[]

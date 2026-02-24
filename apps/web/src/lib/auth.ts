@@ -20,6 +20,7 @@ export interface SessionPayload {
   role: RoleUsuario;
   subscriptionStatus: string;
   trialEndsAt?: string;
+  isSuperAdmin?: boolean; // Helsen IA - acesso total
   exp?: number;
 }
 
