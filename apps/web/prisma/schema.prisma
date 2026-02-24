@@ -58,6 +58,7 @@ model Empresa {
   filiais               Filial[]
   vendasRapidas         VendaRapida[]
   devolucoesVendaRapida DevolucaoVendaRapida[]
+  pagamentos            Pagamento[]
 
   @@map("empresas")
 }
@@ -231,6 +232,7 @@ model OrdemServico {
   itens          ItemOrdem[]
   itensProduto   ItemOrdemProduto[]
   servicosExtras ServicoExtra[]
+  pagamentos     Pagamento[]
 
   @@unique([numero, empresaId])
   @@index([empresaId])
@@ -641,6 +643,7 @@ model VendaRapida {
   empresa    Empresa                @relation(fields: [empresaId], references: [id], onDelete: Cascade)
   itens      ItemVendaRapida[]
   devolucoes DevolucaoVendaRapida[]
+  pagamentos Pagamento[]
 
   @@unique([numero, empresaId])
   @@index([empresaId])
@@ -663,6 +666,34 @@ model ItemVendaRapida {
   devolucoes ItemDevolucaoVendaRapida[]
 
   @@map("itens_venda_rapida")
+}
+
+// =============================================
+// PAGAMENTOS (múltiplas formas por transação)
+// =============================================
+
+// Pagamento - permite múltiplas formas de pagamento por venda/O.S.
+model Pagamento {
+  id                    Int             @id @default(autoincrement())
+  empresaId             Int
+  tipo                  FormaPagamento
+  valor                 Decimal         @db.Decimal(10, 2)
+  dataPagamento         DateTime?       // null = a receber (crédito pessoal)
+  dataPagamentoPrevista DateTime?       // para crédito pessoal
+
+  ordemServicoId        Int?
+  vendaRapidaId         Int?
+
+  createdAt             DateTime        @default(now())
+
+  empresa               Empresa         @relation(fields: [empresaId], references: [id], onDelete: Cascade)
+  ordemServico          OrdemServico?   @relation(fields: [ordemServicoId], references: [id], onDelete: Cascade)
+  vendaRapida           VendaRapida?    @relation(fields: [vendaRapidaId], references: [id], onDelete: Cascade)
+
+  @@index([empresaId])
+  @@index([ordemServicoId])
+  @@index([vendaRapidaId])
+  @@map("pagamentos")
 }
 
 // =============================================

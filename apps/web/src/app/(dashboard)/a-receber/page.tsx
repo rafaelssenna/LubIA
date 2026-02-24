@@ -80,7 +80,6 @@ export default function AReceberPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           id: selectedPendencia.id,
-          tipo: selectedPendencia.tipo,
           formaPagamento,
         }),
       });

@@ -53,6 +53,7 @@ export async function GET(request: NextRequest) {
             },
           },
         },
+        pagamentos: true,
       },
       orderBy: { createdAt: 'desc' },
       skip: paraDevolver ? 0 : (page - 1) * limit,
@@ -113,6 +114,13 @@ export async function GET(request: NextRequest) {
           desconto: Number(i.desconto),
           subtotal: Number(i.subtotal),
         })),
+        pagamentos: v.pagamentos.map(p => ({
+          id: p.id,
+          tipo: p.tipo,
+          valor: Number(p.valor),
+          dataPagamento: p.dataPagamento,
+          dataPagamentoPrevista: p.dataPagamentoPrevista,
+        })),
       })),
       stats,
       pagination: {
@@ -137,9 +145,18 @@ export async function POST(request: NextRequest) {
 
   try {
     const body = await request.json();
-    const { nomeCliente, observacoes, formaPagamento, desconto, pago, dataPagamentoPrevista, itens } = body;
+    const { nomeCliente, observacoes, formaPagamento, desconto, pago, dataPagamentoPrevista, itens, pagamentos } = body;
     const descontoPercent = parseFloat(desconto) || 0;
-    const isPago = pago !== false; // default true
+
+    // Se tem array de pagamentos, usa ele; senão, usa formaPagamento antigo
+    const usaMultiplosPagamentos = Array.isArray(pagamentos) && pagamentos.length > 0;
+
+    // Verificar se tem crédito pessoal (para definir pago)
+    const temCreditoPessoal = usaMultiplosPagamentos
+      ? pagamentos.some((p: any) => p.tipo === 'CREDITO_PESSOAL')
+      : formaPagamento === 'CREDITO_PESSOAL';
+
+    const isPago = temCreditoPessoal ? false : (pago !== false); // default true, exceto crédito pessoal
 
     if (!itens || itens.length === 0) {
       return NextResponse.json({ error: 'Adicione pelo menos um produto' }, { status: 400 });
@@ -211,7 +228,10 @@ export async function POST(request: NextRequest) {
           numero: numeroFormatado,
           nomeCliente: nomeCliente || null,
           observacoes: observacoes || null,
-          formaPagamento: formaPagamento || null,
+          // Manter formaPagamento para compatibilidade (usa o primeiro ou o único)
+          formaPagamento: usaMultiplosPagamentos
+            ? (pagamentos[0]?.tipo || null)
+            : (formaPagamento || null),
           desconto: descontoPercent,
           total: totalVenda,
           pago: isPago,
@@ -230,6 +250,36 @@ export async function POST(request: NextRequest) {
           },
         },
       });
+
+      // Criar registros de pagamento
+      if (usaMultiplosPagamentos) {
+        for (const pag of pagamentos) {
+          const isCreditoPessoal = pag.tipo === 'CREDITO_PESSOAL';
+          await tx.pagamento.create({
+            data: {
+              empresaId: session.empresaId,
+              vendaRapidaId: novaVenda.id,
+              tipo: pag.tipo,
+              valor: pag.valor,
+              dataPagamento: isCreditoPessoal ? null : new Date(),
+              dataPagamentoPrevista: pag.dataPagamentoPrevista ? new Date(pag.dataPagamentoPrevista) : null,
+            },
+          });
+        }
+      } else if (formaPagamento) {
+        // Compatibilidade: criar um registro de pagamento único
+        const isCreditoPessoal = formaPagamento === 'CREDITO_PESSOAL';
+        await tx.pagamento.create({
+          data: {
+            empresaId: session.empresaId,
+            vendaRapidaId: novaVenda.id,
+            tipo: formaPagamento,
+            valor: totalVenda,
+            dataPagamento: isCreditoPessoal ? null : new Date(),
+            dataPagamentoPrevista: dataPagamentoPrevista ? new Date(dataPagamentoPrevista) : null,
+          },
+        });
+      }
 
       // Deduzir estoque
       await executeStockOperations(tx, itensData.map(item => ({

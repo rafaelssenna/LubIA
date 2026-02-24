@@ -18,6 +18,7 @@ import {
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useToast } from '@/components/Toast';
+import MultiPaymentSelector, { PagamentoItem } from '@/components/MultiPaymentSelector';
 
 interface Produto {
   id: number;
@@ -73,9 +74,8 @@ export default function VendasRapidasPage() {
   const [showNovaVenda, setShowNovaVenda] = useState(false);
   const [nomeCliente, setNomeCliente] = useState('');
   const [observacoes, setObservacoes] = useState('');
-  const [formaPagamento, setFormaPagamento] = useState('');
+  const [pagamentos, setPagamentos] = useState<PagamentoItem[]>([{ tipo: 'PIX', valor: 0 }]);
   const [desconto, setDesconto] = useState('');
-  const [dataPagamentoPrevista, setDataPagamentoPrevista] = useState('');
   const [itensVenda, setItensVenda] = useState<ItemVenda[]>([]);
   const [saving, setSaving] = useState(false);
 
@@ -205,14 +205,21 @@ export default function VendasRapidasPage() {
       return;
     }
 
-    if (!formaPagamento) {
-      showToast('Selecione a forma de pagamento', 'error');
+    if (pagamentos.length === 0 || !pagamentos.some(p => p.valor > 0)) {
+      showToast('Informe a forma de pagamento', 'error');
       return;
     }
 
-    const isCreditoPessoal = formaPagamento === 'CREDITO_PESSOAL';
+    // Validar que soma dos pagamentos = total
+    const somaPagamentos = pagamentos.reduce((acc, p) => acc + (p.valor || 0), 0);
+    if (Math.abs(somaPagamentos - totalVenda) > 0.01) {
+      showToast('A soma dos pagamentos deve ser igual ao total da venda', 'error');
+      return;
+    }
 
-    if (isCreditoPessoal && !nomeCliente) {
+    const temCreditoPessoal = pagamentos.some(p => p.tipo === 'CREDITO_PESSOAL');
+
+    if (temCreditoPessoal && !nomeCliente) {
       showToast('Informe o nome do cliente para Crédito Pessoal', 'error');
       return;
     }
@@ -225,10 +232,8 @@ export default function VendasRapidasPage() {
         body: JSON.stringify({
           nomeCliente: nomeCliente || null,
           observacoes: observacoes || null,
-          formaPagamento: formaPagamento,
+          pagamentos: pagamentos.filter(p => p.valor > 0),
           desconto: descontoPercent,
-          pago: !isCreditoPessoal,
-          dataPagamentoPrevista: isCreditoPessoal && dataPagamentoPrevista ? dataPagamentoPrevista : null,
           itens: itensVenda.map(i => ({
             produtoId: i.produtoId,
             quantidade: i.quantidade,
@@ -240,8 +245,8 @@ export default function VendasRapidasPage() {
 
       const data = await res.json();
       if (res.ok) {
-        const msg = isCreditoPessoal
-          ? `Venda ${data.data.numero} registrada como Crédito Pessoal!`
+        const msg = temCreditoPessoal
+          ? `Venda ${data.data.numero} registrada com Crédito Pessoal!`
           : `Venda ${data.data.numero} realizada com sucesso!`;
         showToast(msg, 'success');
         setShowNovaVenda(false);
@@ -261,9 +266,8 @@ export default function VendasRapidasPage() {
   const resetForm = () => {
     setNomeCliente('');
     setObservacoes('');
-    setFormaPagamento('');
+    setPagamentos([{ tipo: 'PIX', valor: 0 }]);
     setDesconto('');
-    setDataPagamentoPrevista('');
     setItensVenda([]);
     setBuscaProduto('');
     setProdutos([]);
@@ -599,48 +603,13 @@ export default function VendasRapidasPage() {
                 />
               </div>
 
-              {/* Forma de Pagamento */}
-              <div>
-                <label className="block text-sm text-muted mb-2">Forma de Pagamento *</label>
-                <div className="grid grid-cols-2 gap-2">
-                  {[
-                    { value: 'PIX', label: 'PIX', icon: '📱' },
-                    { value: 'DINHEIRO', label: 'Dinheiro', icon: '💵' },
-                    { value: 'CREDITO', label: 'Crédito', icon: '💳' },
-                    { value: 'DEBITO', label: 'Débito', icon: '💳' },
-                    { value: 'CREDITO_PESSOAL', label: 'Crédito Pessoal', icon: '📋' },
-                  ].map((method) => (
-                    <button
-                      key={method.value}
-                      type="button"
-                      onClick={() => setFormaPagamento(method.value)}
-                      className={`p-3 rounded-xl border transition-all duration-200 flex items-center justify-center gap-2 ${
-                        formaPagamento === method.value
-                          ? method.value === 'CREDITO_PESSOAL'
-                            ? 'bg-amber-500/20 border-amber-500 text-amber-400'
-                            : 'bg-primary/20 border-primary text-primary'
-                          : 'bg-background border-white/10 text-muted hover:border-white/20'
-                      }`}
-                    >
-                      <span>{method.icon}</span>
-                      <span className="font-medium">{method.label}</span>
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              {/* Data prevista de pagamento (quando Crédito Pessoal) */}
-              {formaPagamento === 'CREDITO_PESSOAL' && (
-                <div>
-                  <label className="block text-sm text-muted mb-2">Data prevista de pagamento (opcional)</label>
-                  <input
-                    type="date"
-                    value={dataPagamentoPrevista}
-                    onChange={(e) => setDataPagamentoPrevista(e.target.value)}
-                    className="w-full px-4 py-3 bg-background rounded-xl border border-amber-500/30 text-foreground focus:outline-none focus:border-amber-500/50"
-                  />
-                </div>
-              )}
+              {/* Formas de Pagamento */}
+              <MultiPaymentSelector
+                total={totalVenda}
+                pagamentos={pagamentos}
+                onChange={setPagamentos}
+                disabled={saving}
+              />
 
               {/* Desconto */}
               <div>
@@ -691,16 +660,6 @@ export default function VendasRapidasPage() {
                       <p className="text-2xl font-bold text-emerald-400">{formatCurrency(totalVenda)}</p>
                     </>
                   )}
-                  {formaPagamento === 'CREDITO_PESSOAL' && (
-                    <div className="mt-2 px-3 py-2 bg-amber-500/20 rounded-lg border border-amber-500/30">
-                      <p className="text-amber-400 text-sm font-medium">Crédito Pessoal</p>
-                      {dataPagamentoPrevista && (
-                        <p className="text-amber-400/70 text-xs">
-                          Previsão: {new Date(dataPagamentoPrevista + 'T00:00:00').toLocaleDateString('pt-BR')}
-                        </p>
-                      )}
-                    </div>
-                  )}
                 </div>
                 <div className="flex gap-3">
                   <button
@@ -714,9 +673,9 @@ export default function VendasRapidasPage() {
                   </button>
                   <button
                     onClick={finalizarVenda}
-                    disabled={saving || itensVenda.length === 0 || !formaPagamento || (formaPagamento === 'CREDITO_PESSOAL' && !nomeCliente)}
+                    disabled={saving || itensVenda.length === 0}
                     className={`px-6 py-3 text-white rounded-xl transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 ${
-                      formaPagamento === 'CREDITO_PESSOAL' ? 'bg-amber-500 hover:bg-amber-600' : 'bg-primary hover:bg-primary-dark'
+                      pagamentos.some(p => p.tipo === 'CREDITO_PESSOAL') ? 'bg-amber-500 hover:bg-amber-600' : 'bg-primary hover:bg-primary-dark'
                     }`}
                   >
                     {saving ? (
@@ -724,15 +683,10 @@ export default function VendasRapidasPage() {
                         <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
                         Finalizando...
                       </>
-                    ) : formaPagamento === 'CREDITO_PESSOAL' ? (
-                      <>
-                        <ShoppingCart size={20} />
-                        {!nomeCliente ? 'Informe o cliente' : 'Registrar Crédito Pessoal'}
-                      </>
                     ) : (
                       <>
                         <ShoppingCart size={20} />
-                        {!formaPagamento ? 'Selecione o pagamento' : 'Finalizar Venda'}
+                        Finalizar Venda
                       </>
                     )}
                   </button>

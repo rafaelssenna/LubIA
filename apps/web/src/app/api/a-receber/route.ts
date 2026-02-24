@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { getSession } from '@/lib/auth';
 
-// GET - Buscar todas as pendências (ordens e vendas não pagas)
+// GET - Buscar pagamentos pendentes (crédito pessoal não pago)
 export async function GET(request: NextRequest) {
   const session = await getSession();
   if (!session) {
@@ -15,61 +15,78 @@ export async function GET(request: NextRequest) {
 
     const pendencias: any[] = [];
 
-    // Buscar O.S. não pagas
+    // Buscar pagamentos pendentes (CREDITO_PESSOAL sem dataPagamento)
+    const whereBase = {
+      empresaId: session.empresaId,
+      tipo: 'CREDITO_PESSOAL' as const,
+      dataPagamento: null, // não pago
+    };
+
+    // Buscar pagamentos de O.S.
     if (tipo === 'todos' || tipo === 'ordens') {
-      const ordensNaoPagas = await prisma.ordemServico.findMany({
+      const pagamentosOrdens = await prisma.pagamento.findMany({
         where: {
-          empresaId: session.empresaId,
-          pago: false,
-          status: 'CONCLUIDO',
+          ...whereBase,
+          ordemServicoId: { not: null },
         },
         include: {
-          veiculo: {
+          ordemServico: {
             include: {
-              cliente: true,
+              veiculo: {
+                include: {
+                  cliente: true,
+                },
+              },
             },
           },
         },
         orderBy: { dataPagamentoPrevista: 'asc' },
       });
 
-      for (const ordem of ordensNaoPagas) {
+      for (const pag of pagamentosOrdens) {
+        if (!pag.ordemServico) continue;
         pendencias.push({
-          id: ordem.id,
+          id: pag.id,
           tipo: 'ORDEM',
-          numero: ordem.numero,
-          cliente: ordem.veiculo.cliente.nome,
-          telefone: ordem.veiculo.cliente.telefone,
-          total: Number(ordem.total),
-          dataCriacao: ordem.createdAt,
-          dataConclusao: ordem.dataConclusao,
-          dataPagamentoPrevista: ordem.dataPagamentoPrevista,
-          veiculo: `${ordem.veiculo.marca} ${ordem.veiculo.modelo} - ${ordem.veiculo.placa}`,
+          ordemId: pag.ordemServicoId,
+          numero: pag.ordemServico.numero,
+          cliente: pag.ordemServico.veiculo.cliente.nome,
+          telefone: pag.ordemServico.veiculo.cliente.telefone,
+          total: Number(pag.valor),
+          dataCriacao: pag.createdAt,
+          dataConclusao: pag.ordemServico.dataConclusao,
+          dataPagamentoPrevista: pag.dataPagamentoPrevista,
+          veiculo: `${pag.ordemServico.veiculo.marca} ${pag.ordemServico.veiculo.modelo} - ${pag.ordemServico.veiculo.placa}`,
         });
       }
     }
 
-    // Buscar Vendas Rápidas não pagas
+    // Buscar pagamentos de Vendas Rápidas
     if (tipo === 'todos' || tipo === 'vendas') {
-      const vendasNaoPagas = await prisma.vendaRapida.findMany({
+      const pagamentosVendas = await prisma.pagamento.findMany({
         where: {
-          empresaId: session.empresaId,
-          pago: false,
+          ...whereBase,
+          vendaRapidaId: { not: null },
+        },
+        include: {
+          vendaRapida: true,
         },
         orderBy: { dataPagamentoPrevista: 'asc' },
       });
 
-      for (const venda of vendasNaoPagas) {
+      for (const pag of pagamentosVendas) {
+        if (!pag.vendaRapida) continue;
         pendencias.push({
-          id: venda.id,
+          id: pag.id,
           tipo: 'VENDA',
-          numero: venda.numero,
-          cliente: venda.nomeCliente || 'Balcão',
+          vendaId: pag.vendaRapidaId,
+          numero: pag.vendaRapida.numero,
+          cliente: pag.vendaRapida.nomeCliente || 'Balcão',
           telefone: null,
-          total: Number(venda.total),
-          dataCriacao: venda.createdAt,
-          dataConclusao: venda.createdAt,
-          dataPagamentoPrevista: venda.dataPagamentoPrevista,
+          total: Number(pag.valor),
+          dataCriacao: pag.createdAt,
+          dataConclusao: pag.vendaRapida.createdAt,
+          dataPagamentoPrevista: pag.dataPagamentoPrevista,
           veiculo: null,
         });
       }
@@ -105,7 +122,7 @@ export async function GET(request: NextRequest) {
   }
 }
 
-// PUT - Marcar como pago
+// PUT - Marcar pagamento como recebido
 export async function PUT(request: NextRequest) {
   const session = await getSession();
   if (!session) {
@@ -114,48 +131,67 @@ export async function PUT(request: NextRequest) {
 
   try {
     const body = await request.json();
-    const { id, tipo, formaPagamento } = body;
+    const { id, formaPagamento } = body;
 
-    if (!id || !tipo) {
-      return NextResponse.json({ error: 'ID e tipo são obrigatórios' }, { status: 400 });
+    if (!id) {
+      return NextResponse.json({ error: 'ID do pagamento é obrigatório' }, { status: 400 });
     }
 
-    if (tipo === 'ORDEM') {
-      const ordem = await prisma.ordemServico.findFirst({
-        where: { id, empresaId: session.empresaId },
-      });
+    // Buscar o pagamento
+    const pagamento = await prisma.pagamento.findFirst({
+      where: { id, empresaId: session.empresaId },
+    });
 
-      if (!ordem) {
-        return NextResponse.json({ error: 'Ordem não encontrada' }, { status: 404 });
-      }
+    if (!pagamento) {
+      return NextResponse.json({ error: 'Pagamento não encontrado' }, { status: 404 });
+    }
 
-      await prisma.ordemServico.update({
-        where: { id },
-        data: {
-          pago: true,
-          dataPagamento: new Date(),
-          formaPagamento: formaPagamento || null,
+    // Atualizar o pagamento
+    await prisma.pagamento.update({
+      where: { id },
+      data: {
+        tipo: formaPagamento || pagamento.tipo, // Permite mudar a forma de pagamento
+        dataPagamento: new Date(),
+      },
+    });
+
+    // Verificar se todos os pagamentos da ordem/venda foram recebidos
+    if (pagamento.ordemServicoId) {
+      const pendentes = await prisma.pagamento.count({
+        where: {
+          ordemServicoId: pagamento.ordemServicoId,
+          dataPagamento: null,
         },
       });
-    } else if (tipo === 'VENDA') {
-      const venda = await prisma.vendaRapida.findFirst({
-        where: { id, empresaId: session.empresaId },
-      });
 
-      if (!venda) {
-        return NextResponse.json({ error: 'Venda não encontrada' }, { status: 404 });
+      // Se não há mais pagamentos pendentes, marcar a ordem como paga
+      if (pendentes === 0) {
+        await prisma.ordemServico.update({
+          where: { id: pagamento.ordemServicoId },
+          data: {
+            pago: true,
+            dataPagamento: new Date(),
+          },
+        });
       }
-
-      await prisma.vendaRapida.update({
-        where: { id },
-        data: {
-          pago: true,
-          dataPagamento: new Date(),
-          formaPagamento: formaPagamento || null,
+    } else if (pagamento.vendaRapidaId) {
+      const pendentes = await prisma.pagamento.count({
+        where: {
+          vendaRapidaId: pagamento.vendaRapidaId,
+          dataPagamento: null,
         },
       });
-    } else {
-      return NextResponse.json({ error: 'Tipo inválido' }, { status: 400 });
+
+      // Se não há mais pagamentos pendentes, marcar a venda como paga
+      if (pendentes === 0) {
+        await prisma.vendaRapida.update({
+          where: { id: pagamento.vendaRapidaId },
+          data: {
+            pago: true,
+            dataPagamento: new Date(),
+          },
+        });
+      }
     }
 
     return NextResponse.json({ success: true });

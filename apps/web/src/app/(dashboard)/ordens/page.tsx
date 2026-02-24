@@ -13,6 +13,7 @@ import { useToast } from '@/components/Toast';
 import { downloadOrdemPDF, EmpresaConfig } from '@/lib/pdfGenerator';
 import { capitalize, formatPlate } from '@/utils/format';
 import { formatDateToLocalInput, formatDateTimeBrazil, formatDateBrazil } from '@/lib/timezone';
+import MultiPaymentSelector, { PagamentoItem } from '@/components/MultiPaymentSelector';
 
 interface Cliente {
   id: number;
@@ -103,9 +104,8 @@ function OrdensPageContent() {
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [showConcluirConfirm, setShowConcluirConfirm] = useState(false);
   const [selectedOrdem, setSelectedOrdem] = useState<OrdemServico | null>(null);
-  const [formaPagamento, setFormaPagamento] = useState<string>('');
+  const [pagamentosConcluir, setPagamentosConcluir] = useState<PagamentoItem[]>([{ tipo: 'PIX', valor: 0 }]);
   const [descontoConcluir, setDescontoConcluir] = useState<string>('');
-  const [dataPagamentoPrevistaConcluir, setDataPagamentoPrevistaConcluir] = useState('');
   const [saving, setSaving] = useState(false);
 
   // Form states for new O.S.
@@ -406,17 +406,15 @@ function OrdensPageContent() {
     }
   };
 
-  const handleStatusChange = async (ordem: OrdemServico, newStatus: string, pagamento?: string, desconto?: number, pago?: boolean, dataPagamentoPrevista?: string) => {
+  const handleStatusChange = async (ordem: OrdemServico, newStatus: string, pagamentos?: PagamentoItem[], desconto?: number) => {
     try {
       const res = await fetch(`/api/ordens/${ordem.id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           status: newStatus,
-          ...(pagamento && { formaPagamento: pagamento }),
+          ...(pagamentos && pagamentos.length > 0 && { pagamentos: pagamentos.filter(p => p.valor > 0) }),
           ...(desconto !== undefined && { desconto }),
-          ...(pago !== undefined && { pago }),
-          ...(dataPagamentoPrevista && { dataPagamentoPrevista })
         }),
       });
 
@@ -937,6 +935,7 @@ function OrdensPageContent() {
                         <button
                           onClick={() => {
                             setSelectedOrdem(ordem);
+                            setPagamentosConcluir([{ tipo: 'PIX', valor: ordem.total }]);
                             setShowConcluirConfirm(true);
                           }}
                           className="px-4 py-2 bg-emerald-500/10 text-emerald-400 rounded-xl text-sm font-medium hover:bg-emerald-500/20 border border-emerald-500/20 transition-all duration-200"
@@ -1616,6 +1615,7 @@ function OrdensPageContent() {
                 <button
                   onClick={() => {
                     setShowDetailModal(false);
+                    setPagamentosConcluir([{ tipo: 'PIX', valor: selectedOrdem.total }]);
                     setShowConcluirConfirm(true);
                   }}
                   className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-emerald-500 to-emerald-700 rounded-xl text-white font-medium hover:opacity-90 transition-opacity"
@@ -1745,48 +1745,15 @@ function OrdensPageContent() {
                 </div>
               </div>
 
-              {/* Forma de Pagamento */}
+              {/* Formas de Pagamento */}
               <div className="mb-4">
-                <label className="block text-sm text-muted mb-2">Forma de Pagamento</label>
-                <div className="grid grid-cols-2 gap-2">
-                  {[
-                    { value: 'PIX', label: 'PIX', icon: '📱' },
-                    { value: 'DINHEIRO', label: 'Dinheiro', icon: '💵' },
-                    { value: 'CREDITO', label: 'Crédito', icon: '💳' },
-                    { value: 'DEBITO', label: 'Débito', icon: '💳' },
-                    { value: 'CREDITO_PESSOAL', label: 'Crédito Pessoal', icon: '📋' },
-                  ].map((method) => (
-                    <button
-                      key={method.value}
-                      type="button"
-                      onClick={() => setFormaPagamento(method.value)}
-                      className={`p-3 rounded-xl border transition-all duration-200 flex items-center justify-center gap-2 ${
-                        formaPagamento === method.value
-                          ? method.value === 'CREDITO_PESSOAL'
-                            ? 'bg-amber-500/20 border-amber-500 text-amber-400'
-                            : 'bg-emerald-500/20 border-emerald-500 text-emerald-400'
-                          : 'bg-background border-border text-muted hover:border-zinc-600'
-                      }`}
-                    >
-                      <span>{method.icon}</span>
-                      <span className="font-medium">{method.label}</span>
-                    </button>
-                  ))}
-                </div>
+                <MultiPaymentSelector
+                  total={Math.floor(selectedOrdem.total * (1 - (parseFloat(descontoConcluir.replace(',', '.')) || 0) / 100))}
+                  pagamentos={pagamentosConcluir}
+                  onChange={setPagamentosConcluir}
+                  disabled={saving}
+                />
               </div>
-
-              {/* Data Prevista de Pagamento (quando Crédito Pessoal) */}
-              {formaPagamento === 'CREDITO_PESSOAL' && (
-                <div className="mb-4">
-                  <label className="block text-sm text-muted mb-2">Data Prevista de Pagamento (opcional)</label>
-                  <input
-                    type="date"
-                    value={dataPagamentoPrevistaConcluir}
-                    onChange={(e) => setDataPagamentoPrevistaConcluir(e.target.value)}
-                    className="w-full px-4 py-3 bg-background rounded-xl border border-amber-500/30 text-white placeholder:text-foreground-muted focus:outline-none focus:border-amber-500/50"
-                  />
-                </div>
-              )}
 
               {/* Desconto */}
               <div className="mb-4">
@@ -1836,9 +1803,8 @@ function OrdensPageContent() {
                 onClick={() => {
                   setShowConcluirConfirm(false);
                   setSelectedOrdem(null);
-                  setFormaPagamento('');
+                  setPagamentosConcluir([{ tipo: 'PIX', valor: 0 }]);
                   setDescontoConcluir('');
-                  setDataPagamentoPrevistaConcluir('');
                 }}
                 className="px-6 py-3 border border-border rounded-xl text-muted hover:bg-zinc-800 transition-all duration-200"
               >
@@ -1847,25 +1813,34 @@ function OrdensPageContent() {
               <button
                 onClick={async () => {
                   const descontoPercent = parseFloat(descontoConcluir.replace(',', '.')) || 0;
-                  const isCreditoPessoal = formaPagamento === 'CREDITO_PESSOAL';
+                  const totalComDesconto = Math.floor(selectedOrdem.total * (1 - descontoPercent / 100));
+                  const somaPagamentos = pagamentosConcluir.reduce((acc, p) => acc + (p.valor || 0), 0);
+
+                  // Validar que soma dos pagamentos = total
+                  if (Math.abs(somaPagamentos - totalComDesconto) > 0.01) {
+                    toast.error('A soma dos pagamentos deve ser igual ao total');
+                    return;
+                  }
+
                   await handleStatusChange(
                     selectedOrdem,
                     'CONCLUIDO',
-                    formaPagamento,
-                    descontoPercent,
-                    !isCreditoPessoal, // pago = true se NÃO for Crédito Pessoal
-                    isCreditoPessoal ? dataPagamentoPrevistaConcluir : undefined
+                    pagamentosConcluir,
+                    descontoPercent
                   );
                   setShowConcluirConfirm(false);
                   setSelectedOrdem(null);
-                  setFormaPagamento('');
+                  setPagamentosConcluir([{ tipo: 'PIX', valor: 0 }]);
                   setDescontoConcluir('');
-                  setDataPagamentoPrevistaConcluir('');
                 }}
-                disabled={saving || !formaPagamento}
-                className="px-6 py-3 bg-gradient-to-r from-emerald-500 to-emerald-700 rounded-xl text-white font-medium hover:shadow-lg hover:shadow-emerald-500/25 transition-all duration-300 disabled:opacity-50"
+                disabled={saving || pagamentosConcluir.length === 0}
+                className={`px-6 py-3 rounded-xl text-white font-medium transition-all duration-300 disabled:opacity-50 ${
+                  pagamentosConcluir.some(p => p.tipo === 'CREDITO_PESSOAL')
+                    ? 'bg-gradient-to-r from-amber-500 to-amber-700 hover:shadow-lg hover:shadow-amber-500/25'
+                    : 'bg-gradient-to-r from-emerald-500 to-emerald-700 hover:shadow-lg hover:shadow-emerald-500/25'
+                }`}
               >
-                {!formaPagamento ? 'Selecione o pagamento' : formaPagamento === 'CREDITO_PESSOAL' ? 'Concluir (Crédito Pessoal)' : 'Confirmar'}
+                Confirmar
               </button>
             </div>
           </div>

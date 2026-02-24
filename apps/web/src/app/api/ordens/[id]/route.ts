@@ -50,6 +50,7 @@ export async function GET(
           },
         },
         servicosExtras: true,
+        pagamentos: true,
       },
     });
 
@@ -108,6 +109,13 @@ export async function GET(
           descricao: s.descricao,
           valor: Number(s.valor),
         })),
+        pagamentos: ordem.pagamentos.map(p => ({
+          id: p.id,
+          tipo: p.tipo,
+          valor: Number(p.valor),
+          dataPagamento: p.dataPagamento,
+          dataPagamentoPrevista: p.dataPagamentoPrevista,
+        })),
       },
     });
   } catch (error: any) {
@@ -135,7 +143,10 @@ export async function PUT(
     }
 
     const body = await request.json();
-    const { status, veiculoId, dataAgendada, dataInicio, dataConclusao, kmEntrada, observacoes, itens, itensProduto, servicosExtras, formaPagamento, desconto, pago, dataPagamentoPrevista } = body;
+    const { status, veiculoId, dataAgendada, dataInicio, dataConclusao, kmEntrada, observacoes, itens, itensProduto, servicosExtras, formaPagamento, desconto, pago, dataPagamentoPrevista, pagamentos } = body;
+
+    // Verifica se usa múltiplos pagamentos
+    const usaMultiplosPagamentos = Array.isArray(pagamentos) && pagamentos.length > 0;
 
     // Verify order exists and belongs to this empresa
     const existing = await prisma.ordemServico.findFirst({
@@ -177,15 +188,34 @@ export async function PUT(
     if (dataConclusao !== undefined) updateData.dataConclusao = dataConclusao ? parseDateTimeLocalToBrazil(dataConclusao) : null;
     if (kmEntrada !== undefined) updateData.kmEntrada = kmEntrada;
     if (observacoes !== undefined) updateData.observacoes = observacoes;
-    if (formaPagamento !== undefined) updateData.formaPagamento = formaPagamento;
+    // Verifica se tem crédito pessoal (para definir pago)
+    const temCreditoPessoal = usaMultiplosPagamentos
+      ? pagamentos.some((p: any) => p.tipo === 'CREDITO_PESSOAL')
+      : formaPagamento === 'CREDITO_PESSOAL';
+
+    // Para múltiplos pagamentos, usa o primeiro tipo para manter compatibilidade
+    if (usaMultiplosPagamentos) {
+      updateData.formaPagamento = pagamentos[0]?.tipo || null;
+    } else if (formaPagamento !== undefined) {
+      updateData.formaPagamento = formaPagamento;
+    }
+
     if (desconto !== undefined) updateData.desconto = desconto;
+
+    // Define pago baseado se tem crédito pessoal
     if (pago !== undefined) {
-      updateData.pago = pago;
-      // Se está sendo pago agora, registrar a data do pagamento
-      if (pago) {
+      updateData.pago = temCreditoPessoal ? false : pago;
+      if (updateData.pago) {
+        updateData.dataPagamento = new Date();
+      }
+    } else if (usaMultiplosPagamentos || formaPagamento !== undefined) {
+      // Se está definindo pagamento, marca como pago (exceto crédito pessoal)
+      updateData.pago = !temCreditoPessoal;
+      if (updateData.pago) {
         updateData.dataPagamento = new Date();
       }
     }
+
     if (dataPagamentoPrevista !== undefined) {
       updateData.dataPagamentoPrevista = dataPagamentoPrevista ? new Date(dataPagamentoPrevista) : null;
     }
@@ -407,6 +437,74 @@ export async function PUT(
           },
         });
       }
+    }
+
+    // Se tem pagamentos, fazer tudo em uma transação
+    if (usaMultiplosPagamentos || formaPagamento !== undefined) {
+      const ordem = await prisma.$transaction(async (tx) => {
+        // Atualizar a ordem
+        const updated = await tx.ordemServico.update({
+          where: { id: ordemId },
+          data: updateData,
+          include: {
+            veiculo: { include: { cliente: true } },
+          },
+        });
+
+        // Deletar pagamentos antigos desta ordem
+        await tx.pagamento.deleteMany({
+          where: { ordemServicoId: ordemId },
+        });
+
+        // Criar novos registros de pagamento
+        if (usaMultiplosPagamentos) {
+          for (const pag of pagamentos) {
+            const isCreditoPessoal = pag.tipo === 'CREDITO_PESSOAL';
+            await tx.pagamento.create({
+              data: {
+                empresaId: session.empresaId,
+                ordemServicoId: ordemId,
+                tipo: pag.tipo,
+                valor: pag.valor,
+                dataPagamento: isCreditoPessoal ? null : new Date(),
+                dataPagamentoPrevista: pag.dataPagamentoPrevista ? new Date(pag.dataPagamentoPrevista) : null,
+              },
+            });
+          }
+        } else if (formaPagamento) {
+          // Compatibilidade: criar um registro de pagamento único
+          const isCreditoPessoal = formaPagamento === 'CREDITO_PESSOAL';
+          await tx.pagamento.create({
+            data: {
+              empresaId: session.empresaId,
+              ordemServicoId: ordemId,
+              tipo: formaPagamento,
+              valor: Number(updated.total),
+              dataPagamento: isCreditoPessoal ? null : new Date(),
+              dataPagamentoPrevista: dataPagamentoPrevista ? new Date(dataPagamentoPrevista) : null,
+            },
+          });
+        }
+
+        return updated;
+      });
+
+      // Update vehicle km if provided and higher
+      if (kmEntrada && kmEntrada > (existing.veiculo.kmAtual || 0)) {
+        await prisma.veiculo.update({
+          where: { id: existing.veiculoId },
+          data: { kmAtual: kmEntrada },
+        });
+      }
+
+      return NextResponse.json({
+        data: {
+          id: ordem.id,
+          numero: ordem.numero,
+          status: ordem.status,
+          total: Number(ordem.total),
+        },
+      });
     }
 
     const ordem = await prisma.ordemServico.update({
