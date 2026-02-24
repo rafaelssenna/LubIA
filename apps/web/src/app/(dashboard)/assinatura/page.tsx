@@ -248,15 +248,59 @@ function AssinaturaContent() {
 
           <div className="p-6 space-y-4">
             {subscription?.status === 'TRIAL' && (
-              <div className="flex items-center justify-between p-4 bg-blue-500/5 border border-blue-500/20 rounded-xl">
-                <div className="flex items-center gap-3">
-                  <Clock size={20} className="text-blue-400" />
-                  <span className="text-foreground">Dias restantes no teste</span>
+              <>
+                <div className="flex items-center justify-between p-4 bg-blue-500/5 border border-blue-500/20 rounded-xl">
+                  <div className="flex items-center gap-3">
+                    <Clock size={20} className="text-blue-400" />
+                    <span className="text-foreground">Dias restantes no teste</span>
+                  </div>
+                  <span className="text-2xl font-bold text-blue-400">
+                    {subscription.diasRestantes}
+                  </span>
                 </div>
-                <span className="text-2xl font-bold text-blue-400">
-                  {subscription.diasRestantes}
-                </span>
-              </div>
+
+                {/* Quando começa a cobrar */}
+                {subscription.nextBillingDate && (
+                  <div className="flex items-center justify-between p-4 bg-blue-500/5 border border-blue-500/20 rounded-xl">
+                    <div className="flex items-center gap-3">
+                      <Calendar size={20} className="text-blue-400" />
+                      <span className="text-foreground">Primeira cobrança</span>
+                    </div>
+                    <span className="text-foreground font-semibold">
+                      {new Date(subscription.nextBillingDate).toLocaleDateString('pt-BR')}
+                    </span>
+                  </div>
+                )}
+
+                {/* Valor que será cobrado */}
+                {subscription.amount && (
+                  <div className="flex items-center justify-between p-4 bg-blue-500/5 border border-blue-500/20 rounded-xl">
+                    <div className="flex items-center gap-3">
+                      <DollarSign size={20} className="text-blue-400" />
+                      <span className="text-foreground">Valor após o teste</span>
+                    </div>
+                    <span className="text-lg font-bold text-blue-400">
+                      {formatCurrency(subscription.amount, subscription.currency)}/mês
+                    </span>
+                  </div>
+                )}
+
+                {/* Método de pagamento salvo */}
+                {subscription.paymentMethod && (
+                  <div className="flex items-center justify-between p-4 bg-zinc-500/5 border border-zinc-500/20 rounded-xl">
+                    <div className="flex items-center gap-3">
+                      <Wallet size={20} className="text-zinc-400" />
+                      <span className="text-foreground">Cartão cadastrado</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <CreditCard size={20} className="text-zinc-400" />
+                      <span className="text-foreground font-semibold">
+                        {getCardBrandName(subscription.paymentMethod.brand)} •••• {subscription.paymentMethod.last4}
+                      </span>
+                    </div>
+                  </div>
+                )}
+              </>
             )}
 
             {subscription?.status === 'ACTIVE' && (

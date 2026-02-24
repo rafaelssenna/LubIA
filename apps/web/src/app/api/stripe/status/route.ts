@@ -62,11 +62,21 @@ export async function GET() {
         const stripe = getStripe();
         const subscription = await stripe.subscriptions.retrieve(
           empresa.stripeSubscriptionId,
-          { expand: ['default_payment_method'] }
+          { expand: ['default_payment_method', 'customer'] }
         ) as any;
 
-        stripeDetails.nextBillingDate = subscription.current_period_end
-          ? new Date(subscription.current_period_end * 1000).toISOString()
+        console.log('[STRIPE STATUS] Subscription data:', JSON.stringify({
+          id: subscription.id,
+          status: subscription.status,
+          current_period_end: subscription.current_period_end,
+          items: subscription.items?.data?.length,
+          default_payment_method: subscription.default_payment_method ? 'exists' : 'null',
+        }));
+
+        // Data da próxima cobrança
+        const periodEnd = subscription.current_period_end || subscription.trial_end;
+        stripeDetails.nextBillingDate = periodEnd
+          ? new Date(periodEnd * 1000).toISOString()
           : null;
         stripeDetails.cancelAtPeriodEnd = subscription.cancel_at_period_end || false;
 
@@ -77,8 +87,34 @@ export async function GET() {
           stripeDetails.currency = item.price?.currency || null;
         }
 
-        // Pegar método de pagamento
-        const pm = subscription.default_payment_method;
+        // Pegar método de pagamento - tentar várias fontes
+        let pm = subscription.default_payment_method;
+
+        // Se não tiver na subscription, tentar pegar do customer
+        if (!pm && empresa.stripeCustomerId) {
+          try {
+            const customer = await stripe.customers.retrieve(empresa.stripeCustomerId, {
+              expand: ['default_source', 'invoice_settings.default_payment_method'],
+            }) as any;
+
+            pm = customer.invoice_settings?.default_payment_method;
+
+            // Se ainda não tiver, tentar listar payment methods
+            if (!pm) {
+              const paymentMethods = await stripe.paymentMethods.list({
+                customer: empresa.stripeCustomerId,
+                type: 'card',
+                limit: 1,
+              });
+              if (paymentMethods.data.length > 0) {
+                pm = paymentMethods.data[0];
+              }
+            }
+          } catch (e) {
+            console.error('[STRIPE STATUS] Erro ao buscar PM do customer:', e);
+          }
+        }
+
         if (pm && typeof pm !== 'string' && pm.card) {
           stripeDetails.paymentMethod = {
             brand: pm.card.brand,
