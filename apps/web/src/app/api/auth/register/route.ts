@@ -1,9 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import { hashPassword, createSession, setSessionCookie } from '@/lib/auth';
+import { hashPassword } from '@/lib/auth';
 import { getStripe, SUBSCRIPTION_PRICE_ID, APP_URL } from '@/lib/stripe';
 
-// POST - Cadastrar nova empresa e usuário
+// POST - Inicia cadastro (conta só é criada após checkout no webhook)
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
@@ -24,6 +24,15 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Verificar se Stripe está configurado
+    if (!SUBSCRIPTION_PRICE_ID) {
+      console.error('[REGISTER] STRIPE_PRICE_ID não configurado');
+      return NextResponse.json(
+        { error: 'Sistema de pagamento não configurado. Contate o suporte.' },
+        { status: 500 }
+      );
+    }
+
     // Verificar se email já existe
     const existingUser = await prisma.usuario.findUnique({
       where: { email },
@@ -36,144 +45,28 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Gerar slug único para a empresa
-    let slug = nomeEmpresa
-      .toLowerCase()
-      .normalize('NFD')
-      .replace(/[\u0300-\u036f]/g, '') // Remove acentos
-      .replace(/[^a-z0-9]+/g, '-')
-      .replace(/^-|-$/g, '');
+    // Hash da senha para guardar nos metadados (será usada pelo webhook)
+    const senhaHash = await hashPassword(senha);
 
-    // Verificar se slug já existe e adicionar número se necessário
-    let slugBase = slug;
-    let counter = 1;
-    while (await prisma.empresa.findUnique({ where: { slug } })) {
-      slug = `${slugBase}-${counter}`;
-      counter++;
-    }
-
-    // Criar empresa e usuário em transação
-    const result = await prisma.$transaction(async (tx) => {
-      // 1. Criar empresa (status UNPAID até completar checkout)
-      const empresa = await tx.empresa.create({
-        data: {
-          nome: nomeEmpresa,
-          slug,
-          ativo: true,
-          subscriptionStatus: 'UNPAID',
-        },
-      });
-
-      // 2. Criar usuário (primeiro usuário é sempre ADMIN)
-      const senhaHash = await hashPassword(senha);
-      const usuario = await tx.usuario.create({
-        data: {
-          email,
-          senhaHash,
-          nome,
-          empresaId: empresa.id,
-          role: 'ADMIN',
-          ativo: true,
-        },
-      });
-
-      // 3. Criar configuração padrão
-      await tx.configuracao.create({
-        data: {
-          empresaId: empresa.id,
-          nomeOficina: nomeEmpresa,
-          cnpj: cnpjEmpresa,
-          telefone: telefoneEmpresa,
-          endereco: enderecoEmpresa,
-          chatbotEnabled: true,
-          chatbotNome: 'LoopIA',
-          chatbotHorario: JSON.stringify({
-            seg: { ativo: true, abertura: '08:00', fechamento: '18:00' },
-            ter: { ativo: true, abertura: '08:00', fechamento: '18:00' },
-            qua: { ativo: true, abertura: '08:00', fechamento: '18:00' },
-            qui: { ativo: true, abertura: '08:00', fechamento: '18:00' },
-            sex: { ativo: true, abertura: '08:00', fechamento: '18:00' },
-            sab: { ativo: true, abertura: '08:00', fechamento: '12:00' },
-            dom: { ativo: false, abertura: '08:00', fechamento: '12:00' },
-          }),
-        },
-      });
-
-      // 4. Criar serviços padrão
-      await tx.servico.createMany({
-        data: [
-          {
-            empresaId: empresa.id,
-            nome: 'Troca de Óleo 5W30',
-            descricao: 'Troca de óleo do motor com óleo semi-sintético 5W30',
-            categoria: 'TROCA_OLEO',
-            precoBase: 180.00,
-            duracaoMin: 60,
-          },
-          {
-            empresaId: empresa.id,
-            nome: 'Troca de Óleo Sintético',
-            descricao: 'Troca de óleo do motor com óleo 100% sintético',
-            categoria: 'TROCA_OLEO',
-            precoBase: 280.00,
-            duracaoMin: 60,
-          },
-          {
-            empresaId: empresa.id,
-            nome: 'Alinhamento e Balanceamento',
-            descricao: 'Alinhamento das rodas dianteiras e traseiras + balanceamento das 4 rodas',
-            categoria: 'PNEUS',
-            precoBase: 140.00,
-            duracaoMin: 90,
-          },
-          {
-            empresaId: empresa.id,
-            nome: 'Troca de Filtros',
-            descricao: 'Substituição do filtro de óleo, ar e combustível',
-            categoria: 'FILTROS',
-            precoBase: 150.00,
-            duracaoMin: 45,
-          },
-        ],
-      });
-
-      return { empresa, usuario };
-    });
-
-    // Criar token e fazer login automático (primeiro usuário é sempre ADMIN)
-    const token = await createSession({
-      userId: result.usuario.id,
-      empresaId: result.empresa.id,
-      email: result.usuario.email,
-      nome: result.usuario.nome,
-      empresaNome: result.empresa.nome,
-      role: 'ADMIN',
-      subscriptionStatus: 'UNPAID',
-    });
-
-    await setSessionCookie(token);
-
-    // Atualizar lastLoginAt
-    await prisma.usuario.update({
-      where: { id: result.usuario.id },
-      data: { lastLoginAt: new Date() },
-    });
-
-    // Criar Stripe Customer e Checkout Session
+    // Criar Stripe Customer com todos os dados nos metadados
+    // A conta só será criada no banco após checkout completado (via webhook)
     const stripe = getStripe();
 
     const customer = await stripe.customers.create({
       email,
       name: nomeEmpresa,
+      phone: telefoneEmpresa,
       metadata: {
-        empresaId: result.empresa.id.toString(),
+        // Dados para criar a conta após checkout
+        pendingRegistration: 'true',
+        adminNome: nome,
+        adminEmail: email,
+        senhaHash: senhaHash,
+        nomeEmpresa: nomeEmpresa,
+        cnpjEmpresa: cnpjEmpresa,
+        telefoneEmpresa: telefoneEmpresa,
+        enderecoEmpresa: enderecoEmpresa,
       },
-    });
-
-    // Salvar customerId no banco
-    await prisma.empresa.update({
-      where: { id: result.empresa.id },
-      data: { stripeCustomerId: customer.id },
     });
 
     // Criar sessão de checkout com 7 dias de trial
@@ -186,12 +79,12 @@ export async function POST(request: NextRequest) {
           quantity: 1,
         },
       ],
-      success_url: `${APP_URL}/?welcome=true`,
-      cancel_url: `${APP_URL}/assinatura?pending=true`,
+      success_url: `${APP_URL}/login?registered=true`,
+      cancel_url: `${APP_URL}/cadastro?canceled=true`,
       subscription_data: {
         trial_period_days: 7,
         metadata: {
-          empresaId: result.empresa.id.toString(),
+          customerId: customer.id,
         },
       },
       locale: 'pt-BR',
@@ -201,20 +94,11 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({
       success: true,
       checkoutUrl: checkoutSession.url,
-      user: {
-        id: result.usuario.id,
-        nome: result.usuario.nome,
-        email: result.usuario.email,
-      },
-      empresa: {
-        id: result.empresa.id,
-        nome: result.empresa.nome,
-      },
     });
   } catch (error: any) {
     console.error('[REGISTER] Erro:', error?.message);
     return NextResponse.json(
-      { error: 'Erro ao criar conta. Tente novamente.' },
+      { error: 'Erro ao iniciar cadastro. Tente novamente.' },
       { status: 500 }
     );
   }

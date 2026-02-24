@@ -28,6 +28,9 @@ model Empresa {
   id        Int      @id @default(autoincrement())
   nome      String
   slug      String   @unique
+  cnpj      String?
+  telefone  String?
+  endereco  String?
   ativo     Boolean  @default(true)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
