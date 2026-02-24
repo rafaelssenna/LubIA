@@ -319,7 +319,7 @@ export default function CadastroPage() {
               <ul className="text-sm text-muted space-y-1">
                 <li>• Você terá <strong className="text-foreground">7 dias grátis</strong> para testar</li>
                 <li>• Seu cartão será cadastrado no Stripe (pagamento seguro)</li>
-                <li>• Após os 7 dias, será cobrado <strong className="text-foreground">R$ 99,00/mês</strong> automaticamente</li>
+                <li>• Após os 7 dias, será cobrado <strong className="text-foreground">R$ 97,90/mês</strong> automaticamente</li>
                 <li>• Você pode cancelar a qualquer momento pelo sistema</li>
               </ul>
             </div>
