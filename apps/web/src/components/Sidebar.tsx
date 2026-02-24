@@ -137,6 +137,11 @@ export default function Sidebar() {
     const checkConfig = async () => {
       try {
         const res = await fetch('/api/whatsapp/config');
+        // Se não for OK (401, 403, etc), não tentar parsear
+        if (!res.ok) {
+          setConfigIncomplete(false);
+          return;
+        }
         const data = await res.json();
         if (data.data) {
           const { nomeOficina, cnpj, telefone, endereco } = data.data;

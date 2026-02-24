@@ -89,6 +89,14 @@ function AssinaturaContent() {
   const fetchSubscription = async () => {
     try {
       const res = await fetch('/api/stripe/status');
+      if (!res.ok) {
+        // Se não autorizado, não mostrar erro (pode ser token expirado)
+        if (res.status === 401) {
+          window.location.href = '/login';
+          return;
+        }
+        throw new Error('Erro ao buscar status');
+      }
       const data = await res.json();
       setSubscription(data.data);
     } catch (error) {
@@ -102,6 +110,10 @@ function AssinaturaContent() {
     setProcessingCheckout(true);
     try {
       const res = await fetch('/api/stripe/checkout', { method: 'POST' });
+      if (res.status === 401) {
+        window.location.href = '/login';
+        return;
+      }
       const data = await res.json();
       if (data.url) {
         window.location.href = data.url;
@@ -119,6 +131,10 @@ function AssinaturaContent() {
     setProcessingPortal(true);
     try {
       const res = await fetch('/api/stripe/portal', { method: 'POST' });
+      if (res.status === 401) {
+        window.location.href = '/login';
+        return;
+      }
       const data = await res.json();
       if (data.url) {
         window.location.href = data.url;
@@ -136,10 +152,14 @@ function AssinaturaContent() {
     setSyncing(true);
     try {
       const res = await fetch('/api/stripe/sync', { method: 'POST' });
+      if (res.status === 401) {
+        window.location.href = '/login';
+        return;
+      }
       const data = await res.json();
       if (data.success) {
         toast.success('Dados sincronizados!');
-        fetchSubscription(); // Recarregar os dados
+        fetchSubscription();
       } else {
         toast.error(data.error || 'Erro ao sincronizar');
       }
@@ -154,6 +174,10 @@ function AssinaturaContent() {
     setProcessingCancel(true);
     try {
       const res = await fetch('/api/stripe/cancel', { method: 'POST' });
+      if (res.status === 401) {
+        window.location.href = '/login';
+        return;
+      }
       const data = await res.json();
       if (data.success) {
         toast.success('Assinatura será cancelada ao fim do período');
