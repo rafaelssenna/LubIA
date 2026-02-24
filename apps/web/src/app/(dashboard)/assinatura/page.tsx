@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import Header from '@/components/Header';
 import { useToast } from '@/components/Toast';
@@ -26,7 +26,8 @@ interface SubscriptionData {
   hasSubscription: boolean;
 }
 
-export default function AssinaturaPage() {
+// Componente que usa useSearchParams (precisa de Suspense)
+function AssinaturaContent() {
   const toast = useToast();
   const searchParams = useSearchParams();
   const [loading, setLoading] = useState(true);
@@ -311,5 +312,29 @@ export default function AssinaturaPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+// Componente de loading para o Suspense
+function AssinaturaLoading() {
+  return (
+    <div className="flex items-center justify-center h-[60vh]">
+      <div className="flex flex-col items-center gap-4">
+        <div className="relative">
+          <div className="w-16 h-16 border-4 border-primary/20 rounded-full"></div>
+          <div className="absolute top-0 left-0 w-16 h-16 border-4 border-transparent border-t-primary rounded-full animate-spin"></div>
+        </div>
+        <p className="text-muted animate-pulse">Carregando assinatura...</p>
+      </div>
+    </div>
+  );
+}
+
+// Exporta o componente principal envolvido em Suspense
+export default function AssinaturaPage() {
+  return (
+    <Suspense fallback={<AssinaturaLoading />}>
+      <AssinaturaContent />
+    </Suspense>
   );
 }
