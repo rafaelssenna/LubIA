@@ -24,6 +24,64 @@ const FORMAS_PAGAMENTO = [
   { value: 'CREDITO_PESSOAL', label: 'Crédito Pessoal', icon: '📋' },
 ];
 
+// Componente de input de valor separado para gerenciar estado local
+function ValorInput({
+  value,
+  onChange,
+  disabled,
+}: {
+  value: number;
+  onChange: (val: number) => void;
+  disabled: boolean;
+}) {
+  const [inputValue, setInputValue] = useState(value > 0 ? value.toFixed(2).replace('.', ',') : '');
+
+  // Atualiza quando o valor externo muda (ex: ao adicionar novo pagamento)
+  useEffect(() => {
+    if (value > 0) {
+      setInputValue(value.toFixed(2).replace('.', ','));
+    } else {
+      setInputValue('');
+    }
+  }, [value]);
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    // Permite apenas números e vírgula
+    const raw = e.target.value.replace(/[^\d,]/g, '');
+    setInputValue(raw);
+
+    // Converte para número
+    const parsed = parseFloat(raw.replace(',', '.')) || 0;
+    onChange(parsed);
+  };
+
+  const handleBlur = () => {
+    // Formata ao sair do campo
+    const parsed = parseFloat(inputValue.replace(',', '.')) || 0;
+    if (parsed > 0) {
+      setInputValue(parsed.toFixed(2).replace('.', ','));
+    } else {
+      setInputValue('');
+    }
+  };
+
+  return (
+    <div className="relative">
+      <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted">R$</span>
+      <input
+        type="text"
+        inputMode="decimal"
+        value={inputValue}
+        onChange={handleChange}
+        onBlur={handleBlur}
+        disabled={disabled}
+        placeholder="0,00"
+        className="w-28 pl-10 pr-3 py-2 bg-card rounded-lg border border-white/10 text-foreground text-right focus:outline-none focus:border-primary/50"
+      />
+    </div>
+  );
+}
+
 export default function MultiPaymentSelector({
   total,
   pagamentos,
@@ -74,18 +132,6 @@ export default function MultiPaymentSelector({
     }).format(value);
   };
 
-  // Parsear valor de string para número
-  const parseValue = (str: string): number => {
-    const cleaned = str.replace(/[^\d,]/g, '').replace(',', '.');
-    return parseFloat(cleaned) || 0;
-  };
-
-  // Formatar valor para input
-  const formatInputValue = (value: number): string => {
-    if (value === 0) return '';
-    return value.toFixed(2).replace('.', ',');
-  };
-
   return (
     <div className="space-y-3">
       <label className="block text-sm text-muted mb-2">Formas de Pagamento *</label>
@@ -110,20 +156,11 @@ export default function MultiPaymentSelector({
               </select>
 
               {/* Valor */}
-              <div className="relative">
-                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted">R$</span>
-                <input
-                  type="text"
-                  value={formatInputValue(pagamento.valor)}
-                  onChange={(e) => {
-                    const val = parseValue(e.target.value);
-                    updatePagamento(index, 'valor', val);
-                  }}
-                  disabled={disabled}
-                  placeholder="0,00"
-                  className="w-28 pl-10 pr-3 py-2 bg-card rounded-lg border border-white/10 text-foreground text-right focus:outline-none focus:border-primary/50"
-                />
-              </div>
+              <ValorInput
+                value={pagamento.valor}
+                onChange={(val) => updatePagamento(index, 'valor', val)}
+                disabled={disabled}
+              />
 
               {/* Botão remover */}
               {localPagamentos.length > 1 && (
