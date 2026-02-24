@@ -18,6 +18,7 @@ import {
   Calendar,
   DollarSign,
   Wallet,
+  RefreshCw,
 } from 'lucide-react';
 
 interface SubscriptionData {
@@ -68,6 +69,7 @@ function AssinaturaContent() {
   const [subscription, setSubscription] = useState<SubscriptionData | null>(null);
   const [processingCheckout, setProcessingCheckout] = useState(false);
   const [processingPortal, setProcessingPortal] = useState(false);
+  const [syncing, setSyncing] = useState(false);
 
   useEffect(() => {
     // Verificar parâmetros de retorno do Stripe
@@ -123,6 +125,24 @@ function AssinaturaContent() {
       toast.error('Erro ao abrir portal');
     } finally {
       setProcessingPortal(false);
+    }
+  };
+
+  const handleSync = async () => {
+    setSyncing(true);
+    try {
+      const res = await fetch('/api/stripe/sync', { method: 'POST' });
+      const data = await res.json();
+      if (data.success) {
+        toast.success('Dados sincronizados!');
+        fetchSubscription(); // Recarregar os dados
+      } else {
+        toast.error(data.error || 'Erro ao sincronizar');
+      }
+    } catch (error) {
+      toast.error('Erro ao sincronizar');
+    } finally {
+      setSyncing(false);
     }
   };
 
@@ -399,6 +419,23 @@ function AssinaturaContent() {
                     <ExternalLink size={20} />
                   )}
                   Gerenciar Assinatura
+                </button>
+              )}
+
+              {/* Botão de sincronização - útil se os dados não estiverem atualizados */}
+              {subscription?.hasStripeCustomer && !subscription?.nextBillingDate && (
+                <button
+                  onClick={handleSync}
+                  disabled={syncing}
+                  className="flex items-center justify-center gap-2 px-4 py-3 bg-zinc-800/50 border border-border hover:border-blue-500/50 rounded-xl text-muted hover:text-foreground font-medium transition-all disabled:opacity-50"
+                  title="Sincronizar dados do Stripe"
+                >
+                  {syncing ? (
+                    <Loader2 className="animate-spin" size={18} />
+                  ) : (
+                    <RefreshCw size={18} />
+                  )}
+                  Atualizar dados
                 </button>
               )}
             </div>
