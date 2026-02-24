@@ -1,9 +1,10 @@
 'use client';
 
 import { useState, useEffect, Suspense } from 'react';
-import { useSearchParams } from 'next/navigation';
+import { useSearchParams, useRouter } from 'next/navigation';
 import Header from '@/components/Header';
 import { useToast } from '@/components/Toast';
+import { useAuth } from '@/contexts/AuthContext';
 import {
   CreditCard,
   CheckCircle,
@@ -64,7 +65,9 @@ function getCardBrandName(brand: string | null): string {
 // Componente que usa useSearchParams (precisa de Suspense)
 function AssinaturaContent() {
   const toast = useToast();
+  const router = useRouter();
   const searchParams = useSearchParams();
+  const { isAdmin, loading: authLoading } = useAuth();
   const [loading, setLoading] = useState(true);
   const [subscription, setSubscription] = useState<SubscriptionData | null>(null);
   const [processingCheckout, setProcessingCheckout] = useState(false);
@@ -72,6 +75,13 @@ function AssinaturaContent() {
   const [processingCancel, setProcessingCancel] = useState(false);
   const [syncing, setSyncing] = useState(false);
   const [showCancelConfirm, setShowCancelConfirm] = useState(false);
+
+  // Redirecionar se não for admin
+  useEffect(() => {
+    if (!authLoading && !isAdmin) {
+      router.push('/');
+    }
+  }, [authLoading, isAdmin, router]);
 
   useEffect(() => {
     // Verificar parâmetros de retorno do Stripe
@@ -240,7 +250,8 @@ function AssinaturaContent() {
     }
   };
 
-  if (loading) {
+  // Mostrar loading enquanto verifica auth ou carrega dados
+  if (authLoading || loading || !isAdmin) {
     return (
       <div className="flex items-center justify-center h-[60vh]">
         <div className="flex flex-col items-center gap-4">
@@ -248,7 +259,7 @@ function AssinaturaContent() {
             <div className="w-16 h-16 border-4 border-primary/20 rounded-full"></div>
             <div className="absolute top-0 left-0 w-16 h-16 border-4 border-transparent border-t-primary rounded-full animate-spin"></div>
           </div>
-          <p className="text-muted animate-pulse">Carregando assinatura...</p>
+          <p className="text-muted animate-pulse">Carregando...</p>
         </div>
       </div>
     );
