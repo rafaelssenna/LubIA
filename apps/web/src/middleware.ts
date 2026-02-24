@@ -65,36 +65,9 @@ export async function middleware(request: NextRequest) {
       return NextResponse.next();
     }
 
-    // Verificar status da assinatura
-    const subscriptionStatus = (payload as any).subscriptionStatus as string;
-    const trialEndsAt = (payload as any).trialEndsAt as string | undefined;
-
-    // Status que bloqueiam acesso
-    const blockedStatuses = ['UNPAID', 'CANCELED'];
-
-    if (blockedStatuses.includes(subscriptionStatus)) {
-      if (pathname.startsWith('/api/')) {
-        return NextResponse.json(
-          { error: 'Assinatura necessária', code: 'SUBSCRIPTION_REQUIRED' },
-          { status: 403 }
-        );
-      }
-      return NextResponse.redirect(new URL('/assinatura', request.url));
-    }
-
-    // Verificar se trial expirou
-    if (subscriptionStatus === 'TRIAL' && trialEndsAt) {
-      const trialEnd = new Date(trialEndsAt);
-      if (trialEnd < new Date()) {
-        if (pathname.startsWith('/api/')) {
-          return NextResponse.json(
-            { error: 'Período de teste expirado', code: 'TRIAL_EXPIRED' },
-            { status: 403 }
-          );
-        }
-        return NextResponse.redirect(new URL('/assinatura', request.url));
-      }
-    }
+    // Não bloquear navegação - apenas a página /assinatura mostra o status
+    // O usuário pode usar o sistema normalmente, mesmo com assinatura cancelada
+    // A página de assinatura já exibe o alerta de bloqueio quando necessário
 
     return NextResponse.next();
   } catch {
