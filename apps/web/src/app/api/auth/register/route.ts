@@ -96,9 +96,18 @@ export async function POST(request: NextRequest) {
       checkoutUrl: checkoutSession.url,
     });
   } catch (error: any) {
-    console.error('[REGISTER] Erro:', error?.message);
+    console.error('[REGISTER] Erro completo:', {
+      message: error?.message,
+      type: error?.type,
+      code: error?.code,
+      statusCode: error?.statusCode,
+      raw: error?.raw?.message,
+    });
+
+    // Retornar erro mais específico
+    const errorMessage = error?.message || 'Erro ao iniciar cadastro. Tente novamente.';
     return NextResponse.json(
-      { error: 'Erro ao iniciar cadastro. Tente novamente.' },
+      { error: errorMessage },
       { status: 500 }
     );
   }
