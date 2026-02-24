@@ -5,6 +5,15 @@ const INTERVALO_TROCA_OLEO = 5000; // km entre trocas de óleo
 const INTERVALO_ALINHAMENTO = 10000; // km entre alinhamentos
 const INTERVALO_FILTROS = 10000; // km entre troca de filtros
 
+// Palavras-chave para identificar tipo de serviço pelo nome
+const KEYWORDS_OLEO = ['óleo', 'oleo', 'lubrificante', 'troca de óleo', 'troca de oleo'];
+const KEYWORDS_ALINHAMENTO = ['alinhamento', 'balanceamento', 'pneu', 'rodas', 'roda'];
+const KEYWORDS_FILTROS = ['filtro', 'filtros', 'ar condicionado', 'ar-condicionado'];
+
+// Categorias de produtos que indicam tipo de manutenção
+const PRODUTOS_OLEO = ['OLEO_LUBRIFICANTE', 'ADITIVO', 'GRAXA'];
+const PRODUTOS_FILTROS = ['FILTRO_OLEO', 'FILTRO_AR', 'FILTRO_AR_CONDICIONADO', 'FILTRO_COMBUSTIVEL'];
+
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
@@ -43,14 +52,10 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Veículo não encontrado' }, { status: 404 });
     }
 
-    // Buscar ordens de serviço do veículo (últimos 12 meses)
-    const dozeMesesAtras = new Date();
-    dozeMesesAtras.setMonth(dozeMesesAtras.getMonth() - 12);
-
+    // Buscar TODAS as ordens de serviço do veículo (sem limite de data)
     const ordens = await prisma.ordemServico.findMany({
       where: {
         veiculoId: veiculo.id,
-        createdAt: { gte: dozeMesesAtras },
       },
       select: {
         id: true,
@@ -68,31 +73,73 @@ export async function POST(request: NextRequest) {
             },
           },
         },
+        itensProduto: {
+          select: {
+            produto: {
+              select: { nome: true, categoria: true },
+            },
+          },
+        },
       },
       orderBy: { createdAt: 'desc' },
-      take: 20,
     });
 
     console.log('[CONSULTA] Ordens encontradas:', ordens.length);
 
-    // Função auxiliar para buscar último serviço por categoria
-    const buscarUltimoServico = async (categoria: 'TROCA_OLEO' | 'PNEUS' | 'FILTROS') => {
-      return prisma.ordemServico.findFirst({
-        where: {
-          veiculoId: veiculo.id,
-          status: { in: ['CONCLUIDO', 'ENTREGUE'] },
-          itens: {
-            some: {
-              servico: { categoria },
-            },
-          },
-        },
-        select: {
-          dataConclusao: true,
-          kmEntrada: true,
-        },
-        orderBy: { dataConclusao: 'desc' },
-      });
+    // Função para verificar se serviço/produto é de um tipo específico
+    const matchKeywords = (nome: string, keywords: string[]) => {
+      const nomeLower = nome.toLowerCase();
+      return keywords.some(k => nomeLower.includes(k.toLowerCase()));
+    };
+
+    // Função para buscar última manutenção por tipo (mais flexível)
+    const buscarUltimaManutencao = (
+      tipo: 'oleo' | 'alinhamento' | 'filtros'
+    ): { dataConclusao: Date | null; kmEntrada: number | null } | null => {
+      const categoriaServico = tipo === 'oleo' ? 'TROCA_OLEO' : tipo === 'alinhamento' ? 'PNEUS' : 'FILTROS';
+      const keywords = tipo === 'oleo' ? KEYWORDS_OLEO : tipo === 'alinhamento' ? KEYWORDS_ALINHAMENTO : KEYWORDS_FILTROS;
+      const categoriasProdutos = tipo === 'oleo' ? PRODUTOS_OLEO : tipo === 'filtros' ? PRODUTOS_FILTROS : [];
+
+      // Filtrar ordens concluídas/entregues
+      const ordensConcluidas = ordens.filter(o => o.status === 'CONCLUIDO' || o.status === 'ENTREGUE');
+
+      for (const ordem of ordensConcluidas) {
+        // Verificar por categoria do serviço
+        const temServicoCategoria = ordem.itens?.some(
+          item => item.servico?.categoria === categoriaServico
+        );
+
+        // Verificar por nome do serviço (keywords)
+        const temServicoNome = ordem.itens?.some(
+          item => item.servico?.nome && matchKeywords(item.servico.nome, keywords)
+        );
+
+        // Verificar por categoria do produto usado
+        const temProdutoCategoria = ordem.itensProduto?.some(
+          item => item.produto?.categoria && categoriasProdutos.includes(item.produto.categoria)
+        );
+
+        // Verificar por nome do produto usado
+        const temProdutoNome = ordem.itensProduto?.some(
+          item => item.produto?.nome && matchKeywords(item.produto.nome, keywords)
+        );
+
+        if (temServicoCategoria || temServicoNome || temProdutoCategoria || temProdutoNome) {
+          console.log(`[CONSULTA] Encontrou ${tipo}:`, {
+            ordemId: ordem.id,
+            temServicoCategoria,
+            temServicoNome,
+            temProdutoCategoria,
+            temProdutoNome,
+          });
+          return {
+            dataConclusao: ordem.dataConclusao,
+            kmEntrada: ordem.kmEntrada,
+          };
+        }
+      }
+
+      return null;
     };
 
     // Função auxiliar para calcular próxima manutenção
@@ -110,17 +157,24 @@ export async function POST(request: NextRequest) {
 
     const kmAtual = veiculo.kmAtual || 0;
 
-    // Buscar últimos serviços de cada categoria
-    const [ultimaTrocaOleo, ultimoAlinhamento, ultimaTrocaFiltros] = await Promise.all([
-      buscarUltimoServico('TROCA_OLEO'),
-      buscarUltimoServico('PNEUS'),
-      buscarUltimoServico('FILTROS'),
-    ]);
+    // Buscar últimos serviços de cada tipo (usando lógica flexível)
+    const ultimaTrocaOleo = buscarUltimaManutencao('oleo');
+    const ultimoAlinhamento = buscarUltimaManutencao('alinhamento');
+    const ultimaTrocaFiltros = buscarUltimaManutencao('filtros');
+
+    console.log('[CONSULTA] Últimas manutenções:', {
+      oleo: ultimaTrocaOleo,
+      alinhamento: ultimoAlinhamento,
+      filtros: ultimaTrocaFiltros,
+    });
 
     // Calcular próximas manutenções
     const proximaTrocaOleo = calcularProximaManutencao(ultimaTrocaOleo?.kmEntrada || null, INTERVALO_TROCA_OLEO, kmAtual);
     const proximoAlinhamento = calcularProximaManutencao(ultimoAlinhamento?.kmEntrada || null, INTERVALO_ALINHAMENTO, kmAtual);
     const proximaTrocaFiltros = calcularProximaManutencao(ultimaTrocaFiltros?.kmEntrada || null, INTERVALO_FILTROS, kmAtual);
+
+    // Limitar ordens para histórico (últimas 20)
+    const ordensHistorico = ordens.slice(0, 20);
 
     // Formatar resposta
     return NextResponse.json({
@@ -131,17 +185,26 @@ export async function POST(request: NextRequest) {
         ano: veiculo.ano,
         kmAtual: veiculo.kmAtual,
       },
-      ordens: ordens.map((o) => ({
-        numero: o.numero?.slice(-8).toUpperCase() || 'N/A',
-        status: o.status,
-        dataAgendada: o.dataAgendada,
-        dataInicio: o.dataInicio,
-        dataConclusao: o.dataConclusao,
-        createdAt: o.createdAt,
-        servicos: o.itens
+      ordens: ordensHistorico.map((o) => {
+        // Combinar serviços e produtos para exibição
+        const servicosNomes = o.itens
           ?.filter((i) => i.servico?.nome)
-          .map((i) => i.servico.nome) || [],
-      })),
+          .map((i) => i.servico.nome) || [];
+        const produtosNomes = o.itensProduto
+          ?.filter((i) => i.produto?.nome)
+          .map((i) => i.produto.nome) || [];
+
+        return {
+          numero: o.numero?.slice(-8).toUpperCase() || 'N/A',
+          status: o.status,
+          dataAgendada: o.dataAgendada,
+          dataInicio: o.dataInicio,
+          dataConclusao: o.dataConclusao,
+          kmEntrada: o.kmEntrada,
+          createdAt: o.createdAt,
+          servicos: [...servicosNomes, ...produtosNomes],
+        };
+      }),
       manutencao: {
         ultimaTrocaOleo: ultimaTrocaOleo ? {
           data: ultimaTrocaOleo.dataConclusao,
