@@ -364,7 +364,7 @@ export async function GET(request: NextRequest) {
 
       for (const lembrete of lembretesPendentes) {
         const cliente = lembrete.veiculo.cliente;
-        if (!cliente.telefone) continue;
+        if (!cliente || !cliente.telefone) continue;
 
         const telefone = cliente.telefone;
 

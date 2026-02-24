@@ -221,8 +221,8 @@ export async function POST() {
     for (const lembrete of lembretesPendentes) {
       const cliente = lembrete.veiculo.cliente;
 
-      if (!cliente.telefone) {
-        continue; // Pular clientes sem telefone
+      if (!cliente || !cliente.telefone) {
+        continue; // Pular veículos sem cliente ou sem telefone
       }
 
       const telefone = cliente.telefone;

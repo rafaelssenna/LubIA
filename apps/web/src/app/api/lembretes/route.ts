@@ -111,11 +111,11 @@ export async function GET(request: NextRequest) {
             modelo: l.veiculo.modelo,
             ano: l.veiculo.ano,
             kmAtual: l.veiculo.kmAtual,
-            cliente: {
+            cliente: l.veiculo.cliente ? {
               id: l.veiculo.cliente.id,
               nome: l.veiculo.cliente.nome,
               telefone: l.veiculo.cliente.telefone,
-            },
+            } : null,
           },
         };
       }),
@@ -185,7 +185,7 @@ export async function POST(request: NextRequest) {
         dataLembrete: lembrete.dataLembrete,
         veiculo: {
           placa: lembrete.veiculo.placa,
-          cliente: lembrete.veiculo.cliente.nome,
+          cliente: lembrete.veiculo.cliente?.nome || 'Avulso',
         },
       },
     }, { status: 201 });

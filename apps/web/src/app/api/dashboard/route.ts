@@ -148,7 +148,7 @@ export async function GET() {
       hora: o.dataAgendada
         ? new Date(o.dataAgendada).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })
         : '--:--',
-      cliente: o.veiculo.cliente.nome,
+      cliente: o.veiculo.cliente?.nome || 'Avulso',
       veiculo: `${o.veiculo.marca} ${o.veiculo.modelo}`,
       placa: o.veiculo.placa,
       servico: o.itens[0]?.servico.nome || 'Serviço',
@@ -179,7 +179,7 @@ export async function GET() {
         id: o.id,
         tipo: 'ORDEM' as const,
         numero: o.numero,
-        cliente: o.veiculo.cliente.nome,
+        cliente: o.veiculo.cliente?.nome || 'Avulso',
         total: Number(o.total),
         dataPagamentoPrevista: o.dataPagamentoPrevista,
       })),
@@ -208,8 +208,8 @@ export async function GET() {
       return {
         id: l.id,
         tipo: l.tipo,
-        cliente: l.veiculo.cliente.nome,
-        telefone: l.veiculo.cliente.telefone,
+        cliente: l.veiculo.cliente?.nome || 'Avulso',
+        telefone: l.veiculo.cliente?.telefone || 'N/I',
         veiculo: `${l.veiculo.marca} ${l.veiculo.modelo}`,
         placa: l.veiculo.placa,
         kmLembrete: l.kmLembrete,

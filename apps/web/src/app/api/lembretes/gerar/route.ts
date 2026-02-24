@@ -264,8 +264,8 @@ export async function GET() {
 
         preview.push({
           veiculo: `${veiculo.marca} ${veiculo.modelo} (${veiculo.placa})`,
-          cliente: veiculo.cliente.nome,
-          telefone: veiculo.cliente.telefone || 'Sem telefone',
+          cliente: veiculo.cliente?.nome || 'Avulso',
+          telefone: veiculo.cliente?.telefone || 'Sem telefone',
           kmAtual,
           proximaTroca,
           kmRestantes,

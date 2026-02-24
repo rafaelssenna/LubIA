@@ -78,12 +78,12 @@ export async function GET(
           modelo: ordem.veiculo.modelo,
           ano: ordem.veiculo.ano,
           kmAtual: ordem.veiculo.kmAtual,
-          cliente: {
+          cliente: ordem.veiculo.cliente ? {
             id: ordem.veiculo.cliente.id,
             nome: ordem.veiculo.cliente.nome,
             telefone: ordem.veiculo.cliente.telefone,
             email: ordem.veiculo.cliente.email,
-          },
+          } : null,
         },
         itens: ordem.itens.map(i => ({
           id: i.id,

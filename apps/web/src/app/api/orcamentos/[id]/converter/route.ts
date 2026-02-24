@@ -191,7 +191,7 @@ export async function POST(
         total: Number(ordem.total),
         veiculo: {
           placa: veiculo.placa,
-          cliente: veiculo.cliente.nome,
+          cliente: veiculo.cliente?.nome || 'Avulso',
         },
       },
       message: `Orçamento convertido em O.S. #${ordem.numero}`,

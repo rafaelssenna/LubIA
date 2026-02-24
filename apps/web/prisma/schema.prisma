@@ -121,7 +121,7 @@ model Cliente {
   @@map("clientes")
 }
 
-// Veículo do cliente
+// Veículo (pode ou não ter cliente vinculado)
 model Veiculo {
   id           Int      @id @default(autoincrement())
   empresaId    Int
@@ -133,18 +133,19 @@ model Veiculo {
   cilindrada   String?  // Ex: "1.0", "1.4", "2.0 Turbo"
   kmAtual      Int?
   kmInicial    Int?     // KM no momento do cadastro (base para calcular próxima troca)
-  clienteId    Int
+  clienteId    Int?     // Opcional - veículo pode existir sem cliente (serviço avulso)
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 
   empresa      Empresa       @relation(fields: [empresaId], references: [id], onDelete: Cascade)
-  cliente      Cliente       @relation(fields: [clienteId], references: [id], onDelete: Cascade)
+  cliente      Cliente?      @relation(fields: [clienteId], references: [id], onDelete: SetNull)
   ordens       OrdemServico[]
   orcamentos   Orcamento[]
   lembretes    Lembrete[]
 
   @@unique([placa, empresaId])
   @@index([empresaId])
+  @@index([clienteId])
   @@map("veiculos")
 }
 

@@ -68,8 +68,8 @@ export async function GET(request: NextRequest) {
           id: o.id,
           tipo: 'OS',
           numero: o.numero,
-          cliente: o.veiculo.cliente.nome,
-          telefone: o.veiculo.cliente.telefone,
+          cliente: o.veiculo.cliente?.nome || 'Avulso',
+          telefone: o.veiculo.cliente?.telefone || 'N/I',
           descricao: o.veiculo.placa + ' - ' + o.veiculo.marca + ' ' + o.veiculo.modelo,
           itens: [
             ...o.itens.map(i => i.servico.nome),

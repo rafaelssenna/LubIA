@@ -101,11 +101,11 @@ export async function GET(request: NextRequest) {
           marca: o.veiculo.marca,
           modelo: o.veiculo.modelo,
           ano: o.veiculo.ano,
-          cliente: {
+          cliente: o.veiculo.cliente ? {
             id: o.veiculo.cliente.id,
             nome: o.veiculo.cliente.nome,
             telefone: o.veiculo.cliente.telefone,
-          },
+          } : null,
         } : null,
         itens: o.itens.map(i => ({
           id: i.id,

@@ -129,11 +129,11 @@ export async function GET(request: NextRequest) {
           marca: o.veiculo.marca,
           modelo: o.veiculo.modelo,
           ano: o.veiculo.ano,
-          cliente: {
+          cliente: o.veiculo.cliente ? {
             id: o.veiculo.cliente.id,
             nome: o.veiculo.cliente.nome,
             telefone: o.veiculo.cliente.telefone,
-          },
+          } : null,
         },
         itens: o.itens.map(i => ({
           id: i.id,
@@ -372,7 +372,7 @@ export async function POST(request: NextRequest) {
         total: Number(ordem.total),
         veiculo: {
           placa: ordem.veiculo.placa,
-          cliente: ordem.veiculo.cliente.nome,
+          cliente: ordem.veiculo.cliente?.nome || 'Avulso',
         },
       },
     }, { status: 201 });

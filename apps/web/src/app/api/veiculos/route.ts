@@ -75,10 +75,14 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ data: existing, existing: true }, { status: 200 });
     }
 
-    let clienteId: number;
+    let clienteId: number | null = null;
 
+    // Modo avulso: veículo sem cliente (para serviços rápidos)
+    if (body.avulso === true || body.semCliente === true) {
+      clienteId = null;
+    }
     // Modo tradicional: usar clienteId existente
-    if (body.clienteId) {
+    else if (body.clienteId) {
       const cliente = await prisma.cliente.findFirst({
         where: { id: parseInt(body.clienteId), empresaId: session.empresaId }
       });

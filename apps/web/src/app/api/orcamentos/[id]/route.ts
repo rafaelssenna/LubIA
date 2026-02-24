@@ -61,12 +61,12 @@ export async function GET(
           modelo: orcamento.veiculo.modelo,
           ano: orcamento.veiculo.ano,
           kmAtual: orcamento.veiculo.kmAtual,
-          cliente: {
+          cliente: orcamento.veiculo.cliente ? {
             id: orcamento.veiculo.cliente.id,
             nome: orcamento.veiculo.cliente.nome,
             telefone: orcamento.veiculo.cliente.telefone,
             email: orcamento.veiculo.cliente.email,
-          },
+          } : null,
         } : null,
         itens: orcamento.itens.map(i => ({
           id: i.id,
