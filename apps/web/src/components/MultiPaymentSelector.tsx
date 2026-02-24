@@ -35,15 +35,23 @@ function ValorInput({
   disabled: boolean;
 }) {
   const [inputValue, setInputValue] = useState(value > 0 ? value.toFixed(2).replace('.', ',') : '');
+  const [isFocused, setIsFocused] = useState(false);
+  const lastExternalValue = useState(value)[0];
 
-  // Atualiza quando o valor externo muda (ex: ao adicionar novo pagamento)
+  // Só atualiza do valor externo quando NÃO está em foco e o valor mudou significativamente
   useEffect(() => {
-    if (value > 0) {
-      setInputValue(value.toFixed(2).replace('.', ','));
-    } else {
-      setInputValue('');
+    if (!isFocused) {
+      const currentParsed = parseFloat(inputValue.replace(',', '.')) || 0;
+      // Só atualiza se a diferença for maior que 0.01 (evita loop)
+      if (Math.abs(currentParsed - value) > 0.01) {
+        if (value > 0) {
+          setInputValue(value.toFixed(2).replace('.', ','));
+        } else {
+          setInputValue('');
+        }
+      }
     }
-  }, [value]);
+  }, [value, isFocused]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     // Permite apenas números e vírgula
@@ -55,7 +63,12 @@ function ValorInput({
     onChange(parsed);
   };
 
+  const handleFocus = () => {
+    setIsFocused(true);
+  };
+
   const handleBlur = () => {
+    setIsFocused(false);
     // Formata ao sair do campo
     const parsed = parseFloat(inputValue.replace(',', '.')) || 0;
     if (parsed > 0) {
@@ -73,6 +86,7 @@ function ValorInput({
         inputMode="decimal"
         value={inputValue}
         onChange={handleChange}
+        onFocus={handleFocus}
         onBlur={handleBlur}
         disabled={disabled}
         placeholder="0,00"
