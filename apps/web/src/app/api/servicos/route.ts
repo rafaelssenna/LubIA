@@ -100,8 +100,9 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Nome é obrigatório' }, { status: 400 });
     }
 
-    if (!precoBase || precoBase <= 0) {
-      return NextResponse.json({ error: 'Preço é obrigatório' }, { status: 400 });
+    // Preço pode ser 0 para serviços informativos (chatbot)
+    if (precoBase === undefined || precoBase === null || precoBase < 0) {
+      return NextResponse.json({ error: 'Preço inválido' }, { status: 400 });
     }
 
     const servico = await prisma.servico.create({
