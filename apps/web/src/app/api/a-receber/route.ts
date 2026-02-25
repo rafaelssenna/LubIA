@@ -14,12 +14,15 @@ export async function GET(request: NextRequest) {
     const tipo = searchParams.get('tipo') || 'todos'; // 'ordens', 'vendas', 'todos'
 
     const pendencias: any[] = [];
+    const idsJaAdicionados = new Set<string>();
 
-    // Buscar pagamentos pendentes (CREDITO_PESSOAL sem dataPagamento)
+    // ========================================
+    // MÉTODO 1: Buscar na tabela Pagamento (novo sistema)
+    // ========================================
     const whereBase = {
       empresaId: session.empresaId,
       tipo: 'CREDITO_PESSOAL' as const,
-      dataPagamento: null, // não pago
+      dataPagamento: null,
     };
 
     // Buscar pagamentos de O.S.
@@ -45,6 +48,10 @@ export async function GET(request: NextRequest) {
 
       for (const pag of pagamentosOrdens) {
         if (!pag.ordemServico) continue;
+        const key = `ORDEM-${pag.ordemServicoId}`;
+        if (idsJaAdicionados.has(key)) continue;
+        idsJaAdicionados.add(key);
+
         pendencias.push({
           id: pag.id,
           tipo: 'ORDEM',
@@ -76,6 +83,10 @@ export async function GET(request: NextRequest) {
 
       for (const pag of pagamentosVendas) {
         if (!pag.vendaRapida) continue;
+        const key = `VENDA-${pag.vendaRapidaId}`;
+        if (idsJaAdicionados.has(key)) continue;
+        idsJaAdicionados.add(key);
+
         pendencias.push({
           id: pag.id,
           tipo: 'VENDA',
@@ -88,6 +99,79 @@ export async function GET(request: NextRequest) {
           dataConclusao: pag.vendaRapida.createdAt,
           dataPagamentoPrevista: pag.dataPagamentoPrevista,
           veiculo: null,
+        });
+      }
+    }
+
+    // ========================================
+    // MÉTODO 2: Buscar diretamente nas tabelas (sistema legado - pago=false)
+    // ========================================
+
+    // O.S. com pago=false que não estão na tabela Pagamento
+    if (tipo === 'todos' || tipo === 'ordens') {
+      const ordensNaoPagas = await prisma.ordemServico.findMany({
+        where: {
+          empresaId: session.empresaId,
+          pago: false,
+        },
+        include: {
+          veiculo: {
+            include: { cliente: true },
+          },
+        },
+        orderBy: { dataPagamentoPrevista: 'asc' },
+      });
+
+      for (const os of ordensNaoPagas) {
+        const key = `ORDEM-${os.id}`;
+        if (idsJaAdicionados.has(key)) continue;
+        idsJaAdicionados.add(key);
+
+        pendencias.push({
+          id: os.id,
+          tipo: 'ORDEM',
+          ordemId: os.id,
+          numero: os.numero,
+          cliente: os.veiculo.cliente?.nome || 'Avulso',
+          telefone: os.veiculo.cliente?.telefone || 'N/I',
+          total: Number(os.total),
+          dataCriacao: os.createdAt,
+          dataConclusao: os.dataConclusao,
+          dataPagamentoPrevista: os.dataPagamentoPrevista,
+          veiculo: `${os.veiculo.marca} ${os.veiculo.modelo} - ${os.veiculo.placa}`,
+          legado: true, // Flag para indicar registro legado
+        });
+      }
+    }
+
+    // Vendas com pago=false que não estão na tabela Pagamento
+    if (tipo === 'todos' || tipo === 'vendas') {
+      const vendasNaoPagas = await prisma.vendaRapida.findMany({
+        where: {
+          empresaId: session.empresaId,
+          pago: false,
+        },
+        orderBy: { dataPagamentoPrevista: 'asc' },
+      });
+
+      for (const venda of vendasNaoPagas) {
+        const key = `VENDA-${venda.id}`;
+        if (idsJaAdicionados.has(key)) continue;
+        idsJaAdicionados.add(key);
+
+        pendencias.push({
+          id: venda.id,
+          tipo: 'VENDA',
+          vendaId: venda.id,
+          numero: venda.numero,
+          cliente: venda.nomeCliente || 'Balcão',
+          telefone: null,
+          total: Number(venda.total),
+          dataCriacao: venda.createdAt,
+          dataConclusao: venda.createdAt,
+          dataPagamentoPrevista: venda.dataPagamentoPrevista,
+          veiculo: null,
+          legado: true,
         });
       }
     }
@@ -131,13 +215,37 @@ export async function PUT(request: NextRequest) {
 
   try {
     const body = await request.json();
-    const { id, formaPagamento } = body;
+    const { id, formaPagamento, tipo, legado } = body;
 
     if (!id) {
-      return NextResponse.json({ error: 'ID do pagamento é obrigatório' }, { status: 400 });
+      return NextResponse.json({ error: 'ID é obrigatório' }, { status: 400 });
     }
 
-    // Buscar o pagamento
+    // Se é um registro legado (não está na tabela Pagamento)
+    if (legado) {
+      if (tipo === 'ORDEM') {
+        await prisma.ordemServico.update({
+          where: { id, empresaId: session.empresaId },
+          data: {
+            pago: true,
+            formaPagamento: formaPagamento || 'DINHEIRO',
+            dataPagamento: new Date(),
+          },
+        });
+      } else if (tipo === 'VENDA') {
+        await prisma.vendaRapida.update({
+          where: { id, empresaId: session.empresaId },
+          data: {
+            pago: true,
+            formaPagamento: formaPagamento || 'DINHEIRO',
+            dataPagamento: new Date(),
+          },
+        });
+      }
+      return NextResponse.json({ success: true });
+    }
+
+    // Buscar o pagamento na tabela Pagamento
     const pagamento = await prisma.pagamento.findFirst({
       where: { id, empresaId: session.empresaId },
     });
@@ -150,7 +258,7 @@ export async function PUT(request: NextRequest) {
     await prisma.pagamento.update({
       where: { id },
       data: {
-        tipo: formaPagamento || pagamento.tipo, // Permite mudar a forma de pagamento
+        tipo: formaPagamento || pagamento.tipo,
         dataPagamento: new Date(),
       },
     });
@@ -164,7 +272,6 @@ export async function PUT(request: NextRequest) {
         },
       });
 
-      // Se não há mais pagamentos pendentes, marcar a ordem como paga
       if (pendentes === 0) {
         await prisma.ordemServico.update({
           where: { id: pagamento.ordemServicoId },
@@ -182,7 +289,6 @@ export async function PUT(request: NextRequest) {
         },
       });
 
-      // Se não há mais pagamentos pendentes, marcar a venda como paga
       if (pendentes === 0) {
         await prisma.vendaRapida.update({
           where: { id: pagamento.vendaRapidaId },

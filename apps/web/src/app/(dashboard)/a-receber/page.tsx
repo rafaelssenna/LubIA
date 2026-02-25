@@ -19,6 +19,7 @@ interface Pendencia {
   dataConclusao: string;
   dataPagamentoPrevista: string | null;
   veiculo: string | null;
+  legado?: boolean;
 }
 
 interface Stats {
@@ -81,6 +82,8 @@ export default function AReceberPage() {
         body: JSON.stringify({
           id: selectedPendencia.id,
           formaPagamento,
+          tipo: selectedPendencia.tipo,
+          legado: selectedPendencia.legado || false,
         }),
       });
 

@@ -90,6 +90,7 @@ model Usuario {
   empresa          Empresa          @relation(fields: [empresaId], references: [id], onDelete: Cascade)
   ideias           Ideia[]
   avaliacoesFeitas IdeiaAvaliacao[] @relation("AvaliacoesFeitas")
+  passwordResetTokens PasswordResetToken[]
 
   @@index([empresaId])
   @@map("usuarios")
@@ -843,4 +844,23 @@ model IdeiaAvaliacao {
   @@unique([ideiaId, avaliadorId]) // cada avaliador só avalia uma vez por ideia
   @@index([ideiaId])
   @@map("ideias_avaliacoes")
+}
+
+// =============================================
+// RESET DE SENHA
+// =============================================
+
+// Token para recuperação de senha
+model PasswordResetToken {
+  id        Int      @id @default(autoincrement())
+  token     String   @unique
+  usuarioId Int
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime @default(now())
+
+  usuario   Usuario  @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+
+  @@index([usuarioId])
+  @@map("password_reset_tokens")
 }
