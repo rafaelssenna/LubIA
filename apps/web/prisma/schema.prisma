@@ -369,6 +369,8 @@ model Produto {
   precoVenda        Decimal          @db.Decimal(10, 2) @default(0)
   precoGranel       Decimal?         @db.Decimal(10, 2)
   localizacao       String?
+  ncm               String?          // NCM - Nomenclatura Comum do Mercosul (8 dígitos)
+  cfop              String?          // CFOP - Código Fiscal de Operações (4 dígitos)
   cnpjFornecedor    String?          // Campo legado - usar filialId
   filialId          Int?             // Filial/Fornecedor de onde veio o produto
   ativo             Boolean          @default(true)

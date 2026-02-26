@@ -1956,6 +1956,8 @@ function EstoquePageContent() {
                             ...item.existingProduct,
                             quantidade: newQuantity,
                             precoCompraAtual: item.precoCompra || item.existingProduct.precoCompraAtual,
+                            ncm: item.ncm || item.existingProduct.ncm,
+                            cfop: item.cfop || item.existingProduct.cfop,
                           }),
                         });
                         if (res.ok) updatedCount++;
@@ -1976,6 +1978,8 @@ function EstoquePageContent() {
                             precoCompra: item.precoCompra,
                             precoCompraAtual: item.precoCompra,
                             precoVenda: item.precoVenda,
+                            ncm: item.ncm || null,
+                            cfop: item.cfop || null,
                           }),
                         });
                         if (res.ok) successCount++;

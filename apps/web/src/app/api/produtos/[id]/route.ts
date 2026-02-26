@@ -97,6 +97,8 @@ export async function PUT(
         precoVenda: body.precoVenda,
         precoGranel: body.precoGranel || null,
         localizacao: body.localizacao || null,
+        ncm: body.ncm !== undefined ? body.ncm : existingProduto.ncm,
+        cfop: body.cfop !== undefined ? body.cfop : existingProduto.cfop,
         cnpjFornecedor: body.cnpjFornecedor !== undefined ? body.cnpjFornecedor : existingProduto.cnpjFornecedor,
         filialId: body.filialId !== undefined ? body.filialId : existingProduto.filialId,
         ativo: body.ativo !== undefined ? body.ativo : existingProduto.ativo,

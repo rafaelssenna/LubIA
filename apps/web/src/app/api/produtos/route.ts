@@ -172,6 +172,8 @@ export async function GET(request: NextRequest) {
       precoVenda: Number(p.precoVenda),
       precoGranel: p.precoGranel ? Number(p.precoGranel) : null,
       localizacao: p.localizacao,
+      ncm: p.ncm,
+      cfop: p.cfop,
       cnpjFornecedor: p.cnpjFornecedor,
       filialId: p.filialId,
       filialNome: p.filial?.nome || null,
@@ -253,6 +255,8 @@ export async function POST(request: NextRequest) {
               precoCompraAtual: novoPrecoCompra,
               precoVenda: novoPrecoVenda,
               ...(body.filialId && { filialId: body.filialId }),
+              ...(body.ncm && { ncm: body.ncm }),
+              ...(body.cfop && { cfop: body.cfop }),
             },
           });
 
@@ -322,6 +326,8 @@ export async function POST(request: NextRequest) {
         precoVenda: body.precoVenda || 0,
         precoGranel: body.precoGranel || null,
         localizacao: body.localizacao || null,
+        ncm: body.ncm || null,
+        cfop: body.cfop || null,
         cnpjFornecedor: body.cnpjFornecedor || null,
         filialId: body.filialId || null,
         empresaId: session.empresaId,
