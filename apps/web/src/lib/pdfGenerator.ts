@@ -114,8 +114,9 @@ export function generateOrdemPDF(ordem: OrdemPDF, empresaConfig?: EmpresaConfig)
   };
 
   // ============ HEADER ============
+  const headerHeight = config.endereco ? 52 : 45;
   doc.setFillColor(34, 197, 94);
-  doc.rect(0, 0, pageWidth, 45, 'F');
+  doc.rect(0, 0, pageWidth, headerHeight, 'F');
 
   // Logo/Nome da oficina
   doc.setTextColor(255, 255, 255);
@@ -127,13 +128,17 @@ export function generateOrdemPDF(ordem: OrdemPDF, empresaConfig?: EmpresaConfig)
   doc.setFont('helvetica', 'normal');
   doc.text(config.subtitulo, margin, 26);
 
-  // Dados da oficina no header (só mostra se tiver valor)
+  // Dados da oficina no header
   doc.setFontSize(8);
-  if (config.cnpj) {
-    doc.text(`CNPJ: ${config.cnpj}`, margin, 34);
+  const infoParts = [
+    config.cnpj ? `CNPJ: ${config.cnpj}` : '',
+    config.telefone ? `Tel: ${formatPhone(config.telefone)}` : '',
+  ].filter(Boolean);
+  if (infoParts.length > 0) {
+    doc.text(infoParts.join('  |  '), margin, 34);
   }
-  if (config.telefone) {
-    doc.text(`Tel: ${config.telefone}`, margin, 40);
+  if (config.endereco) {
+    doc.text(config.endereco, margin, 40);
   }
 
   // O.S. Number (lado direito)
@@ -154,7 +159,7 @@ export function generateOrdemPDF(ordem: OrdemPDF, empresaConfig?: EmpresaConfig)
   doc.setFontSize(8);
   doc.text(`Emitida: ${formatDateTime(ordem.createdAt)}`, pageWidth - margin, 42, { align: 'right' });
 
-  let yPos = 55;
+  let yPos = headerHeight + 10;
 
   // ============ DADOS DO CLIENTE ============
   doc.setTextColor(34, 197, 94);
@@ -504,8 +509,9 @@ export function generateOrcamentoPDF(orcamento: OrcamentoPDF, empresaConfig?: Em
 
   // ============ HEADER ============
   // Cor laranja para orçamento (diferenciar da O.S.)
+  const orcHeaderHeight = config.endereco ? 52 : 45;
   doc.setFillColor(232, 93, 4);
-  doc.rect(0, 0, pageWidth, 45, 'F');
+  doc.rect(0, 0, pageWidth, orcHeaderHeight, 'F');
 
   // Logo/Nome da oficina
   doc.setTextColor(255, 255, 255);
@@ -519,11 +525,15 @@ export function generateOrcamentoPDF(orcamento: OrcamentoPDF, empresaConfig?: Em
 
   // Dados da oficina no header
   doc.setFontSize(8);
-  if (config.cnpj) {
-    doc.text(`CNPJ: ${config.cnpj}`, margin, 34);
+  const orcInfoParts = [
+    config.cnpj ? `CNPJ: ${config.cnpj}` : '',
+    config.telefone ? `Tel: ${formatPhone(config.telefone)}` : '',
+  ].filter(Boolean);
+  if (orcInfoParts.length > 0) {
+    doc.text(orcInfoParts.join('  |  '), margin, 34);
   }
-  if (config.telefone) {
-    doc.text(`Tel: ${config.telefone}`, margin, 40);
+  if (config.endereco) {
+    doc.text(config.endereco, margin, 40);
   }
 
   // Orçamento Number (lado direito)
@@ -544,7 +554,7 @@ export function generateOrcamentoPDF(orcamento: OrcamentoPDF, empresaConfig?: Em
   doc.setFontSize(8);
   doc.text(`Emitido: ${formatDateTime(orcamento.createdAt)}`, pageWidth - margin, 42, { align: 'right' });
 
-  let yPos = 55;
+  let yPos = orcHeaderHeight + 10;
 
   // ============ DADOS DO CLIENTE ============
   if (orcamento.nomeCliente || orcamento.telefoneCliente) {
