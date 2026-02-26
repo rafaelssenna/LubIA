@@ -39,6 +39,8 @@ export interface InvoiceData {
   itens: Array<{
     descricao: string;
     codigo?: string;
+    ncm?: string;
+    cfop?: string;
     quantidade?: number;
     unidade?: string;
     valorUnitario?: number;
@@ -172,6 +174,8 @@ Se for uma nota fiscal válida, responda no formato:
     {
       "descricao": "Nome do produto",
       "codigo": "código",
+      "ncm": "00000000",
+      "cfop": "0000",
       "quantidade": 1,
       "unidade": "UN",
       "valorUnitario": 50.00,
@@ -187,7 +191,9 @@ Regras:
 - Extraia TODOS os itens/produtos listados
 - Valores numéricos sem "R$"
 - Se não conseguir ler algum campo, omita-o
-- Para óleos, identifique a viscosidade (5W30, 10W40, etc)`;
+- Para óleos, identifique a viscosidade (5W30, 10W40, etc)
+- NCM é o código de 8 dígitos (Nomenclatura Comum do Mercosul)
+- CFOP é o código de 4 dígitos (Código Fiscal de Operações)`;
 
     console.log('[OCR extractInvoiceData] Enviando requisição para Gemini...');
     const result = await model.generateContent([

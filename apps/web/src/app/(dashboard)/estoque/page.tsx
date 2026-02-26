@@ -1832,6 +1832,20 @@ function EstoquePageContent() {
                           />
                         </div>
                       </div>
+                      {(item.ncm || item.cfop) && (
+                        <div className="flex items-center gap-4 text-xs">
+                          {item.ncm && (
+                            <span className="text-muted">
+                              NCM: <span className="text-foreground font-mono">{item.ncm}</span>
+                            </span>
+                          )}
+                          {item.cfop && (
+                            <span className="text-muted">
+                              CFOP: <span className="text-foreground font-mono">{item.cfop}</span>
+                            </span>
+                          )}
+                        </div>
+                      )}
                       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                         <div>
                           <label className="block text-xs text-muted mb-1">Quantidade</label>
