@@ -182,7 +182,7 @@ function OrdensPageContent() {
 
   const fetchEmpresaConfig = async () => {
     try {
-      const res = await fetch('/api/configuracoes');
+      const res = await fetch('/api/whatsapp/config');
       const data = await res.json();
       if (data.data) {
         setEmpresaConfig({
