@@ -44,6 +44,8 @@ interface Produto {
   precoCompraAtual: number;
   precoVenda: number;
   precoGranel: number | null;
+  ncm: string | null;
+  cfop: string | null;
   localizacao: string | null;
   cnpjFornecedor: string | null;
   filialId: number | null;
@@ -395,6 +397,8 @@ function EstoquePageContent() {
     precoCompra: '',
     precoVenda: '',
     precoGranel: '',
+    ncm: '',
+    cfop: '',
     cnpjFornecedor: '',
     filialId: '' as string | number,
   });
@@ -438,6 +442,8 @@ function EstoquePageContent() {
     precoCompra: '',
     precoVenda: '',
     precoGranel: '',
+    ncm: '',
+    cfop: '',
     cnpjFornecedor: '',
     filialId: '' as string | number,
   });
@@ -598,6 +604,8 @@ function EstoquePageContent() {
           precoCompraAtual: parseFloat(form.precoCompra) || 0,
           precoVenda: parseFloat(form.precoVenda) || 0,
           precoGranel: form.precoGranel ? parseFloat(form.precoGranel) : null,
+          ncm: form.ncm || null,
+          cfop: form.cfop || null,
           cnpjFornecedor: form.cnpjFornecedor || null,
           filialId: form.filialId ? parseInt(form.filialId.toString()) : null,
         }),
@@ -623,6 +631,8 @@ function EstoquePageContent() {
           precoCompra: '',
           precoVenda: '',
           precoGranel: '',
+          ncm: '',
+          cfop: '',
           cnpjFornecedor: '',
           filialId: '',
         });
@@ -678,6 +688,8 @@ function EstoquePageContent() {
       precoCompra: produto.precoCompraAtual.toString(),
       precoVenda: produto.precoVenda.toString(),
       precoGranel: produto.precoGranel?.toString() || '',
+      ncm: produto.ncm || '',
+      cfop: produto.cfop || '',
       cnpjFornecedor: produto.cnpjFornecedor || '',
       filialId: produto.filialId || '',
     });
@@ -700,6 +712,8 @@ function EstoquePageContent() {
           precoCompraAtual: parseFloat(editingForm.precoCompra) || 0,
           precoVenda: parseFloat(editingForm.precoVenda) || 0,
           precoGranel: editingForm.precoGranel ? parseFloat(editingForm.precoGranel) : null,
+          ncm: editingForm.ncm || null,
+          cfop: editingForm.cfop || null,
           filialId: editingForm.filialId ? parseInt(editingForm.filialId.toString()) : null,
         }),
       });
@@ -1183,6 +1197,11 @@ function EstoquePageContent() {
                           <div>
                             <p className="text-foreground font-medium">{produto.nome}</p>
                             <p className="text-xs text-muted">{produto.marca}</p>
+                            {(produto.ncm || produto.cfop) && (
+                              <p className="text-xs text-muted/70 font-mono">
+                                {produto.ncm && `NCM: ${produto.ncm}`}{produto.ncm && produto.cfop && ' · '}{produto.cfop && `CFOP: ${produto.cfop}`}
+                              </p>
+                            )}
                           </div>
                           {!produto.ativo && (
                             <span className="px-2 py-0.5 bg-red-500/10 text-red-400 text-xs rounded-full flex items-center gap-1">
@@ -1481,6 +1500,30 @@ function EstoquePageContent() {
                     onChange={(e) => setForm({ ...form, precoVenda: e.target.value })}
                     placeholder="0.00"
                     className="w-full bg-background border border-border rounded-xl px-4 py-3 text-foreground placeholder-[#616161] focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/20 transition-all duration-200"
+                  />
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-muted mb-2">NCM</label>
+                  <input
+                    type="text"
+                    value={form.ncm}
+                    onChange={(e) => setForm({ ...form, ncm: e.target.value })}
+                    placeholder="Ex: 27101932"
+                    maxLength={8}
+                    className="w-full bg-background border border-border rounded-xl px-4 py-3 text-foreground placeholder-[#616161] focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/20 transition-all duration-200 font-mono"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-muted mb-2">CFOP</label>
+                  <input
+                    type="text"
+                    value={form.cfop}
+                    onChange={(e) => setForm({ ...form, cfop: e.target.value })}
+                    placeholder="Ex: 5655"
+                    maxLength={4}
+                    className="w-full bg-background border border-border rounded-xl px-4 py-3 text-foreground placeholder-[#616161] focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/20 transition-all duration-200 font-mono"
                   />
                 </div>
               </div>
@@ -2146,6 +2189,30 @@ function EstoquePageContent() {
                     value={editingForm.precoVenda}
                     onChange={(e) => setEditingForm({ ...editingForm, precoVenda: e.target.value })}
                     className="w-full bg-background border border-border rounded-xl px-4 py-3 text-foreground placeholder-[#616161] focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/20 transition-all duration-200"
+                  />
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-muted mb-2">NCM</label>
+                  <input
+                    type="text"
+                    value={editingForm.ncm}
+                    onChange={(e) => setEditingForm({ ...editingForm, ncm: e.target.value })}
+                    placeholder="Ex: 27101932"
+                    maxLength={8}
+                    className="w-full bg-background border border-border rounded-xl px-4 py-3 text-foreground placeholder-[#616161] focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/20 transition-all duration-200 font-mono"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-muted mb-2">CFOP</label>
+                  <input
+                    type="text"
+                    value={editingForm.cfop}
+                    onChange={(e) => setEditingForm({ ...editingForm, cfop: e.target.value })}
+                    placeholder="Ex: 5655"
+                    maxLength={4}
+                    className="w-full bg-background border border-border rounded-xl px-4 py-3 text-foreground placeholder-[#616161] focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/20 transition-all duration-200 font-mono"
                   />
                 </div>
               </div>

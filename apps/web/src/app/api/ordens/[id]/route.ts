@@ -99,6 +99,8 @@ export async function GET(
           produtoId: i.produtoId,
           produtoNome: i.produto.nome,
           produtoCodigo: i.produto.codigo,
+          ncm: i.produto.ncm,
+          cfop: i.produto.cfop,
           quantidade: Number(i.quantidade),
           precoUnitario: Number(i.precoUnitario),
           desconto: Number(i.desconto),

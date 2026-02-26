@@ -36,6 +36,8 @@ interface OrdemPDF {
   }[];
   itensProduto: {
     produtoNome: string;
+    ncm?: string | null;
+    cfop?: string | null;
     quantidade: number;
     precoUnitario: number;
     subtotal: number;
@@ -310,12 +312,17 @@ export function generateOrdemPDF(ordem: OrdemPDF, empresaConfig?: EmpresaConfig)
     autoTable(doc, {
       startY: yPos,
       head: [['Descrição do Produto', 'Qtd', 'Valor Unit.', 'Subtotal']],
-      body: ordem.itensProduto.map(item => [
-        item.produtoNome,
-        item.quantidade.toString(),
-        formatCurrency(item.precoUnitario),
-        formatCurrency(item.subtotal),
-      ]),
+      body: ordem.itensProduto.map(item => {
+        let descricao = item.produtoNome;
+        const fiscal = [item.ncm && `NCM: ${item.ncm}`, item.cfop && `CFOP: ${item.cfop}`].filter(Boolean).join('  |  ');
+        if (fiscal) descricao += `\n${fiscal}`;
+        return [
+          descricao,
+          item.quantidade.toString(),
+          formatCurrency(item.precoUnitario),
+          formatCurrency(item.subtotal),
+        ];
+      }),
       theme: 'striped',
       headStyles: {
         fillColor: [59, 130, 246],
@@ -464,6 +471,8 @@ interface OrcamentoPDF {
   }[];
   itensProduto: {
     produtoNome: string;
+    ncm?: string | null;
+    cfop?: string | null;
     quantidade: number;
     precoUnitario: number;
     subtotal: number;

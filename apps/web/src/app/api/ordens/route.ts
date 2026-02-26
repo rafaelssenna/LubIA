@@ -148,6 +148,8 @@ export async function GET(request: NextRequest) {
           id: i.id,
           produtoId: i.produtoId,
           produtoNome: i.produto.nome,
+          ncm: i.produto.ncm,
+          cfop: i.produto.cfop,
           quantidade: Number(i.quantidade),
           precoUnitario: Number(i.precoUnitario),
           desconto: Number(i.desconto),
