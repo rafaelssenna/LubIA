@@ -29,6 +29,7 @@ import { useState, useEffect, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import OCRScanner from '@/components/OCRScanner';
 import { useToast } from '@/components/Toast';
+import { useFormatCurrency } from '@/hooks/useFormatCurrency';
 
 interface Produto {
   id: number;
@@ -365,6 +366,7 @@ const findBestMatch = (descricao: string, produtos: Produto[]): Produto | null =
 function EstoquePageContent() {
   const toast = useToast();
   const searchParams = useSearchParams();
+  const formatCurrency = useFormatCurrency();
   const [produtos, setProdutos] = useState<Produto[]>([]);
   const [loading, setLoading] = useState(true);
   const [urlIdHandled, setUrlIdHandled] = useState(false);
@@ -857,7 +859,7 @@ function EstoquePageContent() {
             <div class="stat-label">Itens em Estoque</div>
           </div>
           <div class="stat">
-            <div class="stat-value">${valorTotal.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</div>
+            <div class="stat-value">${formatCurrency(valorTotal)}</div>
             <div class="stat-label">Valor Total</div>
           </div>
           <div class="stat">
@@ -887,9 +889,9 @@ function EstoquePageContent() {
                 <td>${p.marca}</td>
                 <td>${getCategoriaLabel(p.categoria)}</td>
                 <td class="text-right ${p.estoqueBaixo ? 'low-stock' : ''}">${p.quantidade} ${p.unidade}</td>
-                <td class="text-right">${p.precoCompraAtual.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</td>
-                <td class="text-right">${p.precoVenda.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</td>
-                <td class="text-right">${(p.quantidade * p.precoCompraAtual).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</td>
+                <td class="text-right">${formatCurrency(p.precoCompraAtual)}</td>
+                <td class="text-right">${formatCurrency(p.precoVenda)}</td>
+                <td class="text-right">${formatCurrency(p.quantidade * p.precoCompraAtual)}</td>
               </tr>
             `).join('')}
           </tbody>
@@ -971,7 +973,7 @@ function EstoquePageContent() {
                 </div>
                 <span className="text-xs font-medium text-amber-400 bg-amber-500/10 px-2 py-1 rounded-full">Valor</span>
               </div>
-              <p className="text-3xl font-bold text-foreground mb-1">{valorTotal.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</p>
+              <p className="text-3xl font-bold text-foreground mb-1">{formatCurrency(valorTotal)}</p>
               <p className="text-sm text-muted">valor total</p>
             </div>
           </div>
@@ -1238,10 +1240,10 @@ function EstoquePageContent() {
                         </div>
                       </td>
                       <td className="px-6 py-4 text-right text-muted">
-                        {produto.precoCompraAtual.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
+                        {formatCurrency(produto.precoCompraAtual)}
                       </td>
                       <td className="px-6 py-4 text-right text-primary font-bold">
-                        {produto.precoVenda.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
+                        {formatCurrency(produto.precoVenda)}
                       </td>
                       <td className="px-6 py-4">
                         <div className="flex items-center justify-center gap-1 bg-background rounded-lg p-1">

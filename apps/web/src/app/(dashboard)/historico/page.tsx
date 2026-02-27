@@ -1,6 +1,7 @@
 'use client';
 
 import Header from '@/components/Header';
+import { useFormatCurrency } from '@/hooks/useFormatCurrency';
 import {
   Search,
   History,
@@ -58,9 +59,7 @@ export default function HistoricoPage() {
   const [total, setTotal] = useState(0);
   const [showFilters, setShowFilters] = useState(false);
 
-  const formatCurrency = (value: number) => {
-    return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value);
-  };
+  const formatCurrency = useFormatCurrency();
 
   const formatDate = (dateStr: string) => {
     return new Date(dateStr).toLocaleDateString('pt-BR');

@@ -7,6 +7,7 @@ import {
 } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { useToast } from '@/components/Toast';
+import { useFormatCurrency } from '@/hooks/useFormatCurrency';
 
 interface Pendencia {
   id: number;
@@ -31,16 +32,13 @@ interface Stats {
   totalVendas: number;
 }
 
-const formatCurrency = (value: number) => {
-  return value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
-};
-
 const formatDate = (date: string | null) => {
   if (!date) return '-';
   return new Date(date).toLocaleDateString('pt-BR');
 };
 
 export default function AReceberPage() {
+  const formatCurrency = useFormatCurrency();
   const toast = useToast();
   const [pendencias, setPendencias] = useState<Pendencia[]>([]);
   const [loading, setLoading] = useState(true);

@@ -18,6 +18,7 @@ import {
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useToast } from '@/components/Toast';
+import { useFormatCurrency } from '@/hooks/useFormatCurrency';
 import MultiPaymentSelector, { PagamentoItem } from '@/components/MultiPaymentSelector';
 
 interface Produto {
@@ -273,12 +274,7 @@ export default function VendasRapidasPage() {
     setProdutos([]);
   };
 
-  const formatCurrency = (value: number) => {
-    return new Intl.NumberFormat('pt-BR', {
-      style: 'currency',
-      currency: 'BRL',
-    }).format(value);
-  };
+  const formatCurrency = useFormatCurrency();
 
   const formatDate = (date: string) => {
     return new Date(date).toLocaleDateString('pt-BR', {

@@ -1,6 +1,7 @@
 'use client';
 
 import Header from '@/components/Header';
+import { useFormatCurrency } from '@/hooks/useFormatCurrency';
 import {
   Plus,
   Search,
@@ -78,6 +79,7 @@ const formatDuracao = (minutos: number | null) => {
 
 export default function ServicosPage() {
   const toast = useToast();
+  const formatCurrency = useFormatCurrency();
   const [servicos, setServicos] = useState<Servico[]>([]);
   const [stats, setStats] = useState<Stats>({ total: 0, ativos: 0, categorias: 0, precoMedio: 0, duracaoMedia: 0 });
   const [loading, setLoading] = useState(true);
@@ -302,7 +304,7 @@ export default function ServicosPage() {
               </div>
               <div>
                 <p className="text-2xl font-bold text-foreground">
-                  {stats.precoMedio.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
+                  {formatCurrency(stats.precoMedio)}
                 </p>
                 <p className="text-xs text-[#6B7280]">Ticket Médio</p>
               </div>
@@ -411,7 +413,7 @@ export default function ServicosPage() {
                       <span className="text-sm">Preço</span>
                     </div>
                     <span className="text-primary font-bold">
-                      {servico.precoBase.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
+                      {formatCurrency(servico.precoBase)}
                     </span>
                   </div>
                   <div className="flex items-center justify-between">

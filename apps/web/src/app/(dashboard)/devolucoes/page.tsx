@@ -19,6 +19,7 @@ import {
 import { useState, useEffect, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { useToast } from '@/components/Toast';
+import { useFormatCurrency } from '@/hooks/useFormatCurrency';
 
 interface Produto {
   id: number;
@@ -506,12 +507,7 @@ function DevolucoesPageContent() {
     setProdutos([]);
   };
 
-  const formatCurrency = (value: number) => {
-    return new Intl.NumberFormat('pt-BR', {
-      style: 'currency',
-      currency: 'BRL',
-    }).format(value);
-  };
+  const formatCurrency = useFormatCurrency();
 
   const formatDate = (date: string) => {
     return new Date(date).toLocaleDateString('pt-BR', {

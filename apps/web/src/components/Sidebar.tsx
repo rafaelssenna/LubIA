@@ -35,6 +35,7 @@ import { useSidebar } from '@/contexts/SidebarContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { useTheme } from '@/contexts/ThemeContext';
 import ThemeToggle from './ThemeToggle';
+import FinancialToggle from './FinancialToggle';
 
 type RoleUsuario = 'ADMIN' | 'GERENTE' | 'ATENDENTE' | 'VENDEDOR';
 
@@ -372,6 +373,9 @@ export default function Sidebar() {
             {!collapsed && <span className="font-medium">Painel Admin</span>}
           </Link>
         )}
+
+        {/* Financial Toggle */}
+        <FinancialToggle collapsed={collapsed} />
 
         {/* Theme Toggle */}
         <ThemeToggle collapsed={collapsed} />

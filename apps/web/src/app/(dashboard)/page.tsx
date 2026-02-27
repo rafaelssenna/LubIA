@@ -3,6 +3,7 @@
 import Header from '@/components/Header';
 import Link from 'next/link';
 import { useState, useEffect } from 'react';
+import { useFormatCurrency } from '@/hooks/useFormatCurrency';
 import {
   Car,
   Users,
@@ -116,10 +117,6 @@ const getStatusConfig = (status: string) => {
   }
 };
 
-const formatCurrency = (value: number) => {
-  return value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
-};
-
 const formatFormaPagamento = (forma: string | null) => {
   if (!forma) return null;
   const labels: Record<string, string> = {
@@ -132,6 +129,7 @@ const formatFormaPagamento = (forma: string | null) => {
 };
 
 export default function Dashboard() {
+  const formatCurrency = useFormatCurrency();
   const [stats, setStats] = useState<DashboardStats | null>(null);
   const [servicosHoje, setServicosHoje] = useState<ServicoHoje[]>([]);
   const [vendasHoje, setVendasHoje] = useState<VendasHojeData | null>(null);

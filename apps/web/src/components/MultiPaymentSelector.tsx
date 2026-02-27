@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { Plus, Trash2, AlertCircle, CheckCircle } from 'lucide-react';
+import { useFormatCurrency } from '@/hooks/useFormatCurrency';
 
 export interface PagamentoItem {
   tipo: string;
@@ -138,13 +139,7 @@ export default function MultiPaymentSelector({
     onChange(novos);
   };
 
-  // Formatar valor para exibição
-  const formatCurrency = (value: number) => {
-    return new Intl.NumberFormat('pt-BR', {
-      style: 'currency',
-      currency: 'BRL',
-    }).format(value);
-  };
+  const formatCurrency = useFormatCurrency();
 
   return (
     <div className="space-y-3">

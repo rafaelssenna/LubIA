@@ -14,6 +14,7 @@ import { downloadOrdemPDF, EmpresaConfig } from '@/lib/pdfGenerator';
 import { capitalize, formatPlate } from '@/utils/format';
 import { formatDateToLocalInput, formatDateTimeBrazil, formatDateBrazil } from '@/lib/timezone';
 import MultiPaymentSelector, { PagamentoItem } from '@/components/MultiPaymentSelector';
+import { useFormatCurrency } from '@/hooks/useFormatCurrency';
 
 interface Cliente {
   id: number;
@@ -504,9 +505,7 @@ function OrdensPageContent() {
     return formatDateTimeBrazil(date);
   };
 
-  const formatCurrency = (value: number) => {
-    return value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
-  };
+  const formatCurrency = useFormatCurrency();
 
   const filteredVeiculos = veiculos.filter(v =>
     v.placa.toLowerCase().includes(searchVeiculo.toLowerCase()) ||

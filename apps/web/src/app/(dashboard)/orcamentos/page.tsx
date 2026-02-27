@@ -11,6 +11,7 @@ import { useState, useEffect, Suspense } from 'react';
 import { useRouter } from 'next/navigation';
 import { useToast } from '@/components/Toast';
 import { downloadOrcamentoPDF, generateOrcamentoPDF, EmpresaConfig } from '@/lib/pdfGenerator';
+import { useFormatCurrency } from '@/hooks/useFormatCurrency';
 
 interface ServicoExtra {
   id?: number;
@@ -471,9 +472,7 @@ function OrcamentosPageContent() {
     return new Date(date).toLocaleDateString('pt-BR');
   };
 
-  const formatCurrency = (value: number) => {
-    return value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
-  };
+  const formatCurrency = useFormatCurrency();
 
   const formatPhone = (phone: string | null) => {
     if (!phone) return '-';
