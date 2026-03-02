@@ -469,6 +469,8 @@ interface ServicoData {
   nome: string;
   categoria: string;
   preco: number;
+  intervaloKm: number | null;
+  intervaloDias: number | null;
 }
 
 // Buscar serviços ativos do banco
@@ -484,6 +486,8 @@ async function getServicos(empresaId: number): Promise<ServicoData[]> {
       nome: s.nome,
       categoria: s.categoria,
       preco: Number(s.precoBase),
+      intervaloKm: s.intervaloKm,
+      intervaloDias: s.intervaloDias,
     }));
   } catch (error: any) {
     console.error('[CHATBOT] Erro ao buscar serviços:', error?.message);
@@ -508,9 +512,14 @@ function formatServicosParaPrompt(servicos: ServicoData[]): string {
   const linhas: string[] = [];
   for (const [categoria, items] of Object.entries(porCategoria)) {
     const categoriaFormatada = categoria.replace(/_/g, ' ').toLowerCase();
-    const servicosLista = items.map(s =>
-      `  - ${s.nome}: R$ ${s.preco.toFixed(2).replace('.', ',')}`
-    ).join('\n');
+    const servicosLista = items.map(s => {
+      let linha = `  - ${s.nome}: R$ ${s.preco.toFixed(2).replace('.', ',')}`;
+      const intervalos: string[] = [];
+      if (s.intervaloKm) intervalos.push(`a cada ${s.intervaloKm.toLocaleString('pt-BR')} km`);
+      if (s.intervaloDias) intervalos.push(`a cada ${s.intervaloDias} dias`);
+      if (intervalos.length > 0) linha += ` (${intervalos.join(' ou ')})`;
+      return linha;
+    }).join('\n');
     linhas.push(`${categoriaFormatada}:\n${servicosLista}`);
   }
 
