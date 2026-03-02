@@ -56,6 +56,8 @@ interface Servico {
   nome: string;
   categoria: string;
   precoBase: string;
+  intervaloKm: number | null;
+  intervaloDias: number | null;
   ativo: boolean;
 }
 
@@ -228,7 +230,7 @@ export default function ConfiguraçõesPage() {
   const [servicos, setServiços] = useState<Servico[]>([]);
   const [showServicoModal, setShowServicoModal] = useState(false);
   const [editingServico, setEditingServico] = useState<Servico | null>(null);
-  const [servicoForm, setServicoForm] = useState({ nome: '' });
+  const [servicoForm, setServicoForm] = useState({ nome: '', categoria: 'TROCA_OLEO', precoBase: '', intervaloKm: '', intervaloDias: '' });
   const [savingServico, setSavingServico] = useState(false);
 
   // Filiais
@@ -307,8 +309,10 @@ export default function ConfiguraçõesPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           nome: servicoForm.nome,
-          precoBase: 0,
-          categoria: 'OUTROS',
+          precoBase: servicoForm.precoBase ? parseFloat(servicoForm.precoBase) : 0,
+          categoria: servicoForm.categoria || 'OUTROS',
+          intervaloKm: servicoForm.intervaloKm ? parseInt(servicoForm.intervaloKm) : null,
+          intervaloDias: servicoForm.intervaloDias ? parseInt(servicoForm.intervaloDias) : null,
           ativo: true,
         }),
       });
@@ -317,7 +321,7 @@ export default function ConfiguraçõesPage() {
         toast.success(editingServico ? 'Serviço atualizado!' : 'Serviço cadastrado!');
         setShowServicoModal(false);
         setEditingServico(null);
-        setServicoForm({ nome: '' });
+        setServicoForm({ nome: '', categoria: 'TROCA_OLEO', precoBase: '', intervaloKm: '', intervaloDias: '' });
         fetchServiços();
       } else {
         const data = await res.json();
@@ -349,7 +353,13 @@ export default function ConfiguraçõesPage() {
 
   const openEditServico = (servico: Servico) => {
     setEditingServico(servico);
-    setServicoForm({ nome: servico.nome });
+    setServicoForm({
+      nome: servico.nome,
+      categoria: servico.categoria || 'TROCA_OLEO',
+      precoBase: servico.precoBase ? String(servico.precoBase) : '',
+      intervaloKm: servico.intervaloKm ? String(servico.intervaloKm) : '',
+      intervaloDias: servico.intervaloDias ? String(servico.intervaloDias) : '',
+    });
     setShowServicoModal(true);
   };
 
@@ -822,9 +832,9 @@ export default function ConfiguraçõesPage() {
                   {editingServico ? 'Editar Serviço' : 'Novo Serviço'}
                 </h2>
               </div>
-              <div className="p-6">
+              <div className="p-6 space-y-4" style={{ maxHeight: '60vh', overflowY: 'auto' }}>
                 <div>
-                  <label className="block text-sm font-medium text-muted mb-2">Nome do Serviço</label>
+                  <label className="block text-sm font-medium text-muted mb-2">Nome do Serviço *</label>
                   <input
                     type="text"
                     value={servicoForm.nome}
@@ -833,13 +843,67 @@ export default function ConfiguraçõesPage() {
                     className="w-full bg-zinc-900/50 border border-border rounded-xl px-4 py-3 text-foreground placeholder-zinc-500 focus:outline-none focus:border-purple-500/50 focus:ring-2 focus:ring-purple-500/20 transition-all"
                   />
                 </div>
+                <div>
+                  <label className="block text-sm font-medium text-muted mb-2">Categoria</label>
+                  <select
+                    value={servicoForm.categoria}
+                    onChange={(e) => setServicoForm({ ...servicoForm, categoria: e.target.value })}
+                    className="w-full bg-zinc-900/50 border border-border rounded-xl px-4 py-3 text-foreground focus:outline-none focus:border-purple-500/50 focus:ring-2 focus:ring-purple-500/20 transition-all"
+                  >
+                    <option value="TROCA_OLEO">Trocas de Óleo</option>
+                    <option value="FILTROS">Filtros</option>
+                    <option value="PNEUS">Pneus</option>
+                    <option value="REVISOES">Revisões</option>
+                    <option value="FREIOS">Freios</option>
+                    <option value="SUSPENSAO">Suspensão</option>
+                    <option value="ELETRICA">Elétrica</option>
+                    <option value="AR_CONDICIONADO">Ar Condicionado</option>
+                    <option value="OUTROS">Outros</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-muted mb-2">Preço (R$)</label>
+                  <input
+                    type="number"
+                    step="0.01"
+                    value={servicoForm.precoBase}
+                    onChange={(e) => setServicoForm({ ...servicoForm, precoBase: e.target.value })}
+                    placeholder="Ex: 180.00"
+                    className="w-full bg-zinc-900/50 border border-border rounded-xl px-4 py-3 text-foreground placeholder-zinc-500 focus:outline-none focus:border-purple-500/50 focus:ring-2 focus:ring-purple-500/20 transition-all"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-muted mb-2">Intervalo para a próxima</label>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <input
+                        type="number"
+                        value={servicoForm.intervaloKm}
+                        onChange={(e) => setServicoForm({ ...servicoForm, intervaloKm: e.target.value })}
+                        placeholder="Ex: 10000"
+                        className="w-full bg-zinc-900/50 border border-border rounded-xl px-4 py-3 text-foreground placeholder-zinc-500 focus:outline-none focus:border-purple-500/50 focus:ring-2 focus:ring-purple-500/20 transition-all"
+                      />
+                      <span className="text-xs text-zinc-500 mt-1 block">KM</span>
+                    </div>
+                    <div>
+                      <input
+                        type="number"
+                        value={servicoForm.intervaloDias}
+                        onChange={(e) => setServicoForm({ ...servicoForm, intervaloDias: e.target.value })}
+                        placeholder="Ex: 180"
+                        className="w-full bg-zinc-900/50 border border-border rounded-xl px-4 py-3 text-foreground placeholder-zinc-500 focus:outline-none focus:border-purple-500/50 focus:ring-2 focus:ring-purple-500/20 transition-all"
+                      />
+                      <span className="text-xs text-zinc-500 mt-1 block">Dias</span>
+                    </div>
+                  </div>
+                </div>
               </div>
               <div className="p-6 border-t border-border flex gap-3 justify-end">
                 <button
                   onClick={() => {
                     setShowServicoModal(false);
                     setEditingServico(null);
-                    setServicoForm({ nome: '' });
+                    setServicoForm({ nome: '', categoria: 'TROCA_OLEO', precoBase: '', intervaloKm: '', intervaloDias: '' });
                   }}
                   className="px-6 py-3 border border-border rounded-xl text-muted hover:bg-zinc-800 transition-colors"
                 >
@@ -1081,7 +1145,7 @@ export default function ConfiguraçõesPage() {
                   <button
                     onClick={() => {
                       setEditingServico(null);
-                      setServicoForm({ nome: '' });
+                      setServicoForm({ nome: '', categoria: 'TROCA_OLEO', precoBase: '', intervaloKm: '', intervaloDias: '' });
                       setShowServicoModal(true);
                     }}
                     className="flex items-center gap-1.5 px-3 py-1.5 bg-purple-500/10 border border-purple-500/30 rounded-lg text-purple-400 text-xs font-medium hover:bg-purple-500/20 transition-all"
