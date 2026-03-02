@@ -433,8 +433,8 @@ export default function ServicosPage() {
       {/* Modal Novo Serviço */}
       {showModal && (
         <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-card border border-border rounded-2xl w-full max-w-lg animate-fade-in shadow-2xl">
-            <div className="p-6 border-b border-border flex items-center justify-between">
+          <div className="bg-card border border-border rounded-2xl w-full max-w-lg max-h-[90vh] flex flex-col animate-fade-in shadow-2xl">
+            <div className="p-6 border-b border-border flex items-center justify-between shrink-0">
               <div>
                 <h2 className="text-xl font-semibold text-foreground">Novo Serviço</h2>
                 <p className="text-sm text-[#6B7280] mt-1">Cadastre um novo serviço no catálogo</p>
@@ -446,7 +446,7 @@ export default function ServicosPage() {
                 <X size={20} />
               </button>
             </div>
-            <div className="p-6 space-y-4">
+            <div className="p-6 space-y-4 overflow-y-auto">
               <div>
                 <label className="block text-sm font-medium text-muted mb-2">Nome do Serviço *</label>
                 <input
@@ -528,7 +528,7 @@ export default function ServicosPage() {
                 </div>
               </div>
             </div>
-            <div className="p-6 border-t border-border flex gap-3 justify-end">
+            <div className="p-6 border-t border-border flex gap-3 justify-end shrink-0">
               <button
                 onClick={() => setShowModal(false)}
                 className="px-6 py-3 border border-border rounded-xl text-muted hover:bg-background hover:text-foreground transition-all duration-200"
@@ -550,8 +550,8 @@ export default function ServicosPage() {
       {/* Modal Editar Serviço */}
       {showEditModal && editingServico && (
         <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-card border border-border rounded-2xl w-full max-w-lg animate-fade-in shadow-2xl">
-            <div className="p-6 border-b border-border flex items-center justify-between">
+          <div className="bg-card border border-border rounded-2xl w-full max-w-lg max-h-[90vh] flex flex-col animate-fade-in shadow-2xl">
+            <div className="p-6 border-b border-border flex items-center justify-between shrink-0">
               <div>
                 <h2 className="text-xl font-semibold text-foreground">Editar Serviço</h2>
                 <p className="text-sm text-[#6B7280] mt-1">Atualize as informações do serviço</p>
@@ -566,7 +566,7 @@ export default function ServicosPage() {
                 <X size={20} />
               </button>
             </div>
-            <div className="p-6 space-y-4">
+            <div className="p-6 space-y-4 overflow-y-auto">
               <div>
                 <label className="block text-sm font-medium text-[#9E9E9E] mb-2">Nome do Serviço *</label>
                 <input
@@ -644,7 +644,7 @@ export default function ServicosPage() {
                 </div>
               </div>
             </div>
-            <div className="p-6 border-t border-[#333333] flex gap-3 justify-end">
+            <div className="p-6 border-t border-[#333333] flex gap-3 justify-end shrink-0">
               <button
                 onClick={() => {
                   setShowEditModal(false);
