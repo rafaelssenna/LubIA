@@ -460,12 +460,20 @@ export async function POST(request: NextRequest) {
         { type: message.type, mimetype: message.mimetype }
       );
 
+      // Verificar se IA está pausada para esta conversa
+      const conversa = await prisma.conversa.findFirst({
+        where: { telefone: from, empresaId },
+        select: { aiPaused: true },
+      });
+
       // Processar mensagem e responder imediatamente (sem buffer)
       // O buffer em memória não funciona bem em serverless (Vercel)
-      if (token) {
+      if (token && !conversa?.aiPaused) {
         // Aguardar processamento completo antes de retornar
         // (necessário em serverless para evitar que a função seja encerrada)
         await processMessageAndRespond(from, text, pushName, empresaId, token);
+      } else if (conversa?.aiPaused) {
+        console.log('[WEBHOOK] IA pausada para', from, '- não respondendo');
       }
 
       return NextResponse.json({ success: true, processed: true });

@@ -61,6 +61,7 @@ export async function GET(
         nome: conversa.nome || conversa.cliente?.nome || conversa.telefone,
         cliente: conversa.cliente,
         arquivada: conversa.arquivada,
+        aiPaused: conversa.aiPaused,
         mensagens: conversa.mensagens.map(m => ({
           id: m.id,
           tipo: m.tipo,
@@ -104,13 +105,14 @@ export async function PUT(
       return NextResponse.json({ error: 'Conversa não encontrada' }, { status: 404 });
     }
 
-    const { arquivada, nome } = body;
+    const { arquivada, nome, aiPaused } = body;
 
     const conversa = await prisma.conversa.update({
       where: { id: conversaId },
       data: {
         ...(arquivada !== undefined && { arquivada }),
         ...(nome !== undefined && { nome }),
+        ...(aiPaused !== undefined && { aiPaused }),
       },
     });
 

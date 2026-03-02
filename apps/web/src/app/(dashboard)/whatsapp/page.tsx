@@ -21,6 +21,8 @@ import {
   Archive,
   Loader2,
   AlertCircle,
+  Bot,
+  UserRound,
 } from 'lucide-react';
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { useToast } from '@/components/Toast';
@@ -52,6 +54,7 @@ interface ConversaDetalhes extends Conversa {
     telefone: string;
     email: string | null;
   } | null;
+  aiPaused: boolean;
   mensagens: Mensagem[];
 }
 
@@ -155,6 +158,25 @@ export default function WhatsAppPage() {
       toast.error('Erro ao enviar mensagem');
     } finally {
       setSending(false);
+    }
+  };
+
+  // Toggle IA pausada para conversa
+  const toggleAiPaused = async () => {
+    if (!selectedConversation) return;
+    const newValue = !selectedConversation.aiPaused;
+    try {
+      const res = await fetch(`/api/whatsapp/conversas/${selectedConversation.id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ aiPaused: newValue }),
+      });
+      if (res.ok) {
+        setSelectedConversation(prev => prev ? { ...prev, aiPaused: newValue } : null);
+        toast.success(newValue ? 'IA pausada - você assumiu a conversa' : 'IA retomada para este contato');
+      }
+    } catch {
+      toast.error('Erro ao alterar status da IA');
     }
   };
 
@@ -392,7 +414,28 @@ export default function WhatsAppPage() {
                       </p>
                     </div>
                   </div>
-                  <div className="flex gap-2">
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={toggleAiPaused}
+                      title={selectedConversation.aiPaused ? 'Retomar IA' : 'Pausar IA e assumir conversa'}
+                      className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-all ${
+                        selectedConversation.aiPaused
+                          ? 'bg-amber-500/20 text-amber-400 hover:bg-amber-500/30'
+                          : 'bg-[#25D366]/10 text-[#25D366] hover:bg-[#25D366]/20'
+                      }`}
+                    >
+                      {selectedConversation.aiPaused ? (
+                        <>
+                          <UserRound size={16} />
+                          <span className="hidden sm:inline">Você</span>
+                        </>
+                      ) : (
+                        <>
+                          <Bot size={16} />
+                          <span className="hidden sm:inline">IA</span>
+                        </>
+                      )}
+                    </button>
                     <button className="p-2.5 hover:bg-zinc-800 rounded-lg transition-all text-muted hover:text-[#25D366]">
                       <Phone size={18} />
                     </button>
@@ -401,6 +444,22 @@ export default function WhatsAppPage() {
                     </button>
                   </div>
                 </div>
+
+                {/* Banner IA Pausada */}
+                {selectedConversation.aiPaused && (
+                  <div className="px-4 py-2.5 bg-amber-500/10 border-b border-amber-500/20 flex items-center justify-between">
+                    <div className="flex items-center gap-2 text-amber-400 text-sm">
+                      <UserRound size={15} />
+                      <span>IA pausada - você est&#225; respondendo manualmente</span>
+                    </div>
+                    <button
+                      onClick={toggleAiPaused}
+                      className="text-xs text-amber-400 hover:text-amber-300 underline transition-colors"
+                    >
+                      Retomar IA
+                    </button>
+                  </div>
+                )}
 
                 {/* Mensagens */}
                 <div className="flex-1 overflow-y-auto p-6 space-y-4" style={{ background: 'radial-gradient(ellipse at bottom, rgba(37, 211, 102, 0.03), transparent)' }}>
