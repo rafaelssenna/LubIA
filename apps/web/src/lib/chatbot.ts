@@ -1114,7 +1114,7 @@ export async function generateChatResponse(
 
     // Tratar áudio não transcrito
     if (userMessage === '[AUDIO_NAO_TRANSCRITO]' || userMessage === '[AUDIO_SEM_URL]') {
-      const primeiroNome = customerData?.nome.split(' ')[0] || userName || 'Cliente';
+      const primeiroNome = customerData?.nome.split(' ')[0] || (userName ? userName.split(' ')[0] : 'Cliente');
       return {
         type: 'text',
         message: `Oi ${primeiroNome}! Recebi seu áudio mas não consegui entender. 😅\n\nPode digitar ou enviar outro áudio mais claro?`,
@@ -1428,7 +1428,7 @@ export async function generateChatResponse(
 
     // Processar remarcação via botão
     if (isButtonResponse && userMessage.startsWith('remarcar_')) {
-      const primeiroNome = customerData?.nome.split(' ')[0] || userName || 'Cliente';
+      const primeiroNome = customerData?.nome.split(' ')[0] || (userName ? userName.split(' ')[0] : 'Cliente');
 
       // Verificar se é novo horário ou ID de agendamento
       if (userMessage.includes('T')) {
@@ -1492,7 +1492,7 @@ export async function generateChatResponse(
     // Processar cancelamento de agendamento específico via botão
     if (isButtonResponse && userMessage.startsWith('cancelar_') && userMessage !== 'cancelar_cadastro') {
       const ordemId = parseInt(userMessage.replace('cancelar_', ''));
-      const primeiroNome = customerData?.nome.split(' ')[0] || userName || 'Cliente';
+      const primeiroNome = customerData?.nome.split(' ')[0] || (userName ? userName.split(' ')[0] : 'Cliente');
 
       if (!isNaN(ordemId) && customerData?.agendamentosFuturos) {
         const ag = customerData.agendamentosFuturos.find(a => a.id === ordemId);
@@ -1518,7 +1518,7 @@ export async function generateChatResponse(
     // ==========================================
 
     // Preparar contexto para o modelo
-    const primeiroNome = customerData?.nome.split(' ')[0] || userName || 'Cliente';
+    const primeiroNome = customerData?.nome.split(' ')[0] || (userName ? userName.split(' ')[0] : 'Cliente');
 
     // Buscar histórico recente de mensagens para contexto
     const recentMessages = await getRecentMessages(phoneNumber, empresaId);
