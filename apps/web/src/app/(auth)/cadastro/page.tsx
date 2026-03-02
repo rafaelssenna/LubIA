@@ -39,7 +39,6 @@ export default function CadastroPage() {
   const [loading, setLoading] = useState(false);
   const [buscandoCnpj, setBuscandoCnpj] = useState(false);
   const [error, setError] = useState('');
-  const [aceitouTermos, setAceitouTermos] = useState(false);
 
   // Buscar dados da empresa pelo CNPJ na Receita Federal
   const buscarDadosCnpj = async (cnpjValue: string) => {
@@ -117,12 +116,6 @@ export default function CadastroPage() {
       return;
     }
 
-    if (!aceitouTermos) {
-      setError('Você precisa aceitar os termos para continuar');
-      setLoading(false);
-      return;
-    }
-
     try {
       const res = await fetch('/api/auth/register', {
         method: 'POST',
@@ -137,14 +130,8 @@ export default function CadastroPage() {
         return;
       }
 
-      // Cadastro bem sucedido - redireciona para checkout do Stripe
-      if (data.checkoutUrl) {
-        window.location.href = data.checkoutUrl;
-      } else {
-        // Fallback caso não tenha URL (não deveria acontecer)
-        router.push('/assinatura');
-        router.refresh();
-      }
+      // Cadastro bem sucedido - redireciona para login
+      router.push(data.redirect || '/login?registered=true');
     } catch {
       setError('Erro de conexão');
     } finally {
@@ -317,41 +304,16 @@ export default function CadastroPage() {
                 Como funciona a cobrança
               </h4>
               <ul className="text-sm text-muted space-y-1">
-                <li>• Você terá <strong className="text-foreground">7 dias grátis</strong> para testar</li>
-                <li>• Seu cartão será cadastrado no Stripe (pagamento seguro)</li>
-                <li>• Após os 7 dias, será cobrado <strong className="text-foreground">R$ 97,90/mês</strong> automaticamente</li>
-                <li>• Você pode cancelar a qualquer momento pelo sistema</li>
+                <li>• Você terá <strong className="text-foreground">7 dias grátis</strong> para testar o sistema completo</li>
+                <li>• <strong className="text-foreground">Não precisa de cartão</strong> para começar</li>
+                <li>• Após os 7 dias, assine por apenas <strong className="text-foreground">R$ 97,90/mês</strong></li>
+                <li>• Cancele a qualquer momento, sem multa</li>
               </ul>
             </div>
 
-            {/* Checkbox de aceite */}
-            <label className="flex items-start gap-3 mt-4 cursor-pointer group">
-              <div className="relative mt-0.5">
-                <input
-                  type="checkbox"
-                  checked={aceitouTermos}
-                  onChange={(e) => setAceitouTermos(e.target.checked)}
-                  className="sr-only peer"
-                />
-                <div className="w-5 h-5 border-2 border-border rounded bg-background peer-checked:bg-primary peer-checked:border-primary transition-colors group-hover:border-primary/50" />
-                <svg
-                  className="absolute top-0.5 left-0.5 w-4 h-4 text-white opacity-0 peer-checked:opacity-100 transition-opacity"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                  strokeWidth={3}
-                >
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-                </svg>
-              </div>
-              <span className="text-sm text-muted">
-                Li e entendi as condições acima. Concordo em fornecer meus dados de pagamento e autorizo a cobrança automática após o período de teste.
-              </span>
-            </label>
-
             <button
               type="submit"
-              disabled={loading || !aceitouTermos}
+              disabled={loading}
               className="w-full flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-primary to-primary-dark rounded-xl text-white font-medium hover:opacity-90 disabled:opacity-50 transition-opacity mt-4"
             >
               {loading ? (

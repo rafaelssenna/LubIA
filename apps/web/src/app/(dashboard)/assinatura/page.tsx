@@ -284,7 +284,7 @@ function AssinaturaContent() {
             </h2>
             <p className="text-muted mb-6 max-w-md mx-auto">
               {isTrialExpired
-                ? 'Seu período de teste de 14 dias terminou. Assine agora para continuar usando o sistema.'
+                ? 'Seu período de teste de 7 dias terminou. Assine agora para continuar usando o sistema.'
                 : 'Sua assinatura está inativa. Ative agora para continuar usando todas as funcionalidades.'}
             </p>
             <button

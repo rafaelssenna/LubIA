@@ -44,10 +44,7 @@ export async function POST(request: NextRequest) {
       });
     }
 
-    // Verificar se já teve trial (trialEndsAt preenchido = já usou trial)
-    const jaTeveTrial = empresa.trialEndsAt !== null;
-
-    // Criar sessão de checkout
+    // Criar sessão de checkout (sem trial - o trial já foi gratuito no banco)
     const checkoutSession = await stripe.checkout.sessions.create({
       customer: customerId,
       mode: 'subscription',
@@ -59,10 +56,10 @@ export async function POST(request: NextRequest) {
       ],
       success_url: `${APP_URL}/assinatura?success=true`,
       cancel_url: `${APP_URL}/assinatura?canceled=true`,
+      metadata: {
+        empresaId: empresa.id.toString(),
+      },
       subscription_data: {
-        // Trial de 7 dias APENAS para primeira assinatura
-        // Reativação cobra imediatamente
-        ...(jaTeveTrial ? {} : { trial_period_days: 7 }),
         metadata: {
           empresaId: empresa.id.toString(),
         },

@@ -65,9 +65,28 @@ export async function middleware(request: NextRequest) {
       return NextResponse.next();
     }
 
-    // Não bloquear navegação - apenas a página /assinatura mostra o status
-    // O usuário pode usar o sistema normalmente, mesmo com assinatura cancelada
-    // A página de assinatura já exibe o alerta de bloqueio quando necessário
+    // Verificar status da assinatura
+    const subscriptionStatus = payload.subscriptionStatus as string;
+    const trialEndsAt = payload.trialEndsAt as string | undefined;
+
+    // Bloqueado: CANCELED ou UNPAID
+    if (subscriptionStatus === 'CANCELED' || subscriptionStatus === 'UNPAID') {
+      if (pathname.startsWith('/api/')) {
+        return NextResponse.json({ error: 'Assinatura inativa' }, { status: 403 });
+      }
+      return NextResponse.redirect(new URL('/assinatura', request.url));
+    }
+
+    // Trial expirado
+    if (subscriptionStatus === 'TRIAL' && trialEndsAt) {
+      const trialEnd = new Date(trialEndsAt);
+      if (trialEnd < new Date()) {
+        if (pathname.startsWith('/api/')) {
+          return NextResponse.json({ error: 'Período de teste expirado' }, { status: 403 });
+        }
+        return NextResponse.redirect(new URL('/assinatura', request.url));
+      }
+    }
 
     return NextResponse.next();
   } catch {
