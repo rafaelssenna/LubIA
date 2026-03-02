@@ -31,9 +31,18 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({ url: portalSession.url });
   } catch (error: any) {
-    console.error('[STRIPE PORTAL] Erro:', error?.message);
+    console.error('[STRIPE PORTAL] Erro:', error?.type, error?.message);
+
+    // Stripe error - billing portal not configured
+    if (error?.type === 'StripeInvalidRequestError' && error?.message?.includes('portal')) {
+      return NextResponse.json(
+        { error: 'Portal do Stripe não configurado. Configure em: https://dashboard.stripe.com/settings/billing/portal' },
+        { status: 400 }
+      );
+    }
+
     return NextResponse.json(
-      { error: 'Erro ao abrir portal' },
+      { error: error?.message || 'Erro ao abrir portal' },
       { status: 500 }
     );
   }
