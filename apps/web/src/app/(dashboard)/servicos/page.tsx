@@ -470,40 +470,18 @@ export default function ServicosPage() {
                 </select>
               </div>
               <div>
-                <label className="block text-sm font-medium text-muted mb-2">Descrição</label>
-                <textarea
-                  value={form.descricao}
-                  onChange={(e) => setForm({ ...form, descricao: e.target.value })}
-                  placeholder="Descrição do serviço..."
-                  rows={2}
-                  className="w-full bg-background border border-border rounded-xl px-4 py-3 text-foreground placeholder-[#616161] focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/20 transition-all duration-200 resize-none"
+                <label className="block text-sm font-medium text-muted mb-2">Preço (R$) *</label>
+                <input
+                  type="number"
+                  step="0.01"
+                  value={form.precoBase}
+                  onChange={(e) => setForm({ ...form, precoBase: e.target.value })}
+                  placeholder="Ex: 180.00"
+                  className="w-full bg-background border border-border rounded-xl px-4 py-3 text-foreground placeholder-[#616161] focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/20 transition-all duration-200"
                 />
               </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-muted mb-2">Preço (R$) *</label>
-                  <input
-                    type="number"
-                    step="0.01"
-                    value={form.precoBase}
-                    onChange={(e) => setForm({ ...form, precoBase: e.target.value })}
-                    placeholder="Ex: 180.00"
-                    className="w-full bg-background border border-border rounded-xl px-4 py-3 text-foreground placeholder-[#616161] focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/20 transition-all duration-200"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-muted mb-2">Duração (min)</label>
-                  <input
-                    type="number"
-                    value={form.duracaoMin}
-                    onChange={(e) => setForm({ ...form, duracaoMin: e.target.value })}
-                    placeholder="Ex: 60"
-                    className="w-full bg-background border border-border rounded-xl px-4 py-3 text-foreground placeholder-[#616161] focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/20 transition-all duration-200"
-                  />
-                </div>
-              </div>
               <div>
-                <label className="block text-sm font-medium text-muted mb-2">Tempo para a próxima</label>
+                <label className="block text-sm font-medium text-muted mb-2">Intervalo para a próxima</label>
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <input
@@ -589,37 +567,17 @@ export default function ServicosPage() {
                 </select>
               </div>
               <div>
-                <label className="block text-sm font-medium text-[#9E9E9E] mb-2">Descrição</label>
-                <textarea
-                  value={form.descricao}
-                  onChange={(e) => setForm({ ...form, descricao: e.target.value })}
-                  rows={2}
-                  className="w-full bg-[#121212] border border-[#333333] rounded-xl px-4 py-3 text-[#E8E8E8] placeholder-[#616161] focus:outline-none focus:border-[#43A047]/50 focus:ring-1 focus:ring-[#43A047]/20 transition-all duration-200 resize-none"
+                <label className="block text-sm font-medium text-[#9E9E9E] mb-2">Preço (R$) *</label>
+                <input
+                  type="number"
+                  step="0.01"
+                  value={form.precoBase}
+                  onChange={(e) => setForm({ ...form, precoBase: e.target.value })}
+                  className="w-full bg-[#121212] border border-[#333333] rounded-xl px-4 py-3 text-[#E8E8E8] placeholder-[#616161] focus:outline-none focus:border-[#43A047]/50 focus:ring-1 focus:ring-[#43A047]/20 transition-all duration-200"
                 />
               </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-[#9E9E9E] mb-2">Preço (R$) *</label>
-                  <input
-                    type="number"
-                    step="0.01"
-                    value={form.precoBase}
-                    onChange={(e) => setForm({ ...form, precoBase: e.target.value })}
-                    className="w-full bg-[#121212] border border-[#333333] rounded-xl px-4 py-3 text-[#E8E8E8] placeholder-[#616161] focus:outline-none focus:border-[#43A047]/50 focus:ring-1 focus:ring-[#43A047]/20 transition-all duration-200"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-[#9E9E9E] mb-2">Duração (min)</label>
-                  <input
-                    type="number"
-                    value={form.duracaoMin}
-                    onChange={(e) => setForm({ ...form, duracaoMin: e.target.value })}
-                    className="w-full bg-[#121212] border border-[#333333] rounded-xl px-4 py-3 text-[#E8E8E8] placeholder-[#616161] focus:outline-none focus:border-[#43A047]/50 focus:ring-1 focus:ring-[#43A047]/20 transition-all duration-200"
-                  />
-                </div>
-              </div>
               <div>
-                <label className="block text-sm font-medium text-[#9E9E9E] mb-2">Tempo para a próxima</label>
+                <label className="block text-sm font-medium text-[#9E9E9E] mb-2">Intervalo para a próxima</label>
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <input
