@@ -62,10 +62,15 @@ const chatbotTools: FunctionDeclarationsTool[] = [{
   functionDeclarations: [
     {
       name: 'iniciar_agendamento',
-      description: 'Inicia o processo de agendamento quando o cliente quer marcar/agendar um serviço. Use quando o cliente demonstrar intenção de agendar, marcar horário, fazer revisão, trocar óleo, etc. Exemplos: "quero agendar", "pode sim", "vamos marcar", "preciso trocar o óleo", "qual horário tem?", "posso ir amanhã?"',
+      description: 'Inicia o processo de agendamento quando o cliente quer marcar/agendar um serviço. Use quando o cliente demonstrar intenção de agendar, marcar horário, fazer revisão, trocar óleo, etc. Exemplos: "quero agendar", "pode sim", "vamos marcar", "preciso trocar o óleo", "qual horário tem?", "posso ir amanhã?". IMPORTANTE: sempre extraia o serviço mencionado pelo cliente.',
       parameters: {
         type: SchemaType.OBJECT,
-        properties: {},
+        properties: {
+          servico: {
+            type: SchemaType.STRING,
+            description: 'O serviço que o cliente quer agendar (ex: troca de óleo, revisão, filtro, alinhamento). Extraia da mensagem do cliente.'
+          }
+        },
         required: []
       }
     },
@@ -1170,7 +1175,7 @@ export async function generateChatResponse(
 
             return {
               type: 'list',
-              text: `Ótimo, ${primeiroNome}! 🚗\n\nVou agendar a troca de óleo dos seus veículos:\n${listaVeiculos}\n\nQual horário fica bom pra você?`,
+              text: `Ótimo, ${primeiroNome}! 🚗\n\nVou agendar ${agendamento.servico || 'o serviço'} dos seus veículos:\n${listaVeiculos}\n\nQual horário fica bom pra você?`,
               listButton: 'Ver Horários',
               footerText: 'Escolha o melhor horário',
               choices,
@@ -1202,7 +1207,7 @@ export async function generateChatResponse(
 
             return {
               type: 'list',
-              text: `Ótimo, ${primeiroNome}! 🚗\n\nVou agendar a troca de óleo do seu ${agendamento.veiculoNome}.\n\nQual horário fica bom pra você?`,
+              text: `Ótimo, ${primeiroNome}! 🚗\n\nVou agendar ${agendamento.servico || 'o serviço'} do seu ${agendamento.veiculoNome}.\n\nQual horário fica bom pra você?`,
               listButton: 'Ver Horários',
               footerText: 'Escolha o melhor horário',
               choices,
@@ -1231,7 +1236,7 @@ export async function generateChatResponse(
           const listaVeiculos = agendamento.veiculoNomes?.map(n => `• ${n}`).join('\n') || '';
           return {
             type: 'button',
-            text: `Perfeito, ${primeiroNome}! 📋\n\n*Confirme seu agendamento:*\n\n🚗 Veículos:\n${listaVeiculos}\n📅 Data: ${dataFormatada}\n🔧 Serviço: Troca de Óleo`,
+            text: `Perfeito, ${primeiroNome}! 📋\n\n*Confirme seu agendamento:*\n\n🚗 Veículos:\n${listaVeiculos}\n📅 Data: ${dataFormatada}\n🔧 Serviço: ${agendamento.servico || 'Serviço agendado'}`,
             footerText: 'Confirma o agendamento?',
             choices: ['✅ Confirmar|confirmar_sim', '❌ Cancelar|cancelar'],
           };
@@ -1240,7 +1245,7 @@ export async function generateChatResponse(
         // Veículo único
         return {
           type: 'button',
-          text: `Perfeito, ${primeiroNome}! 📋\n\n*Confirme seu agendamento:*\n\n🚗 Veículo: ${agendamento.veiculoNome}\n📅 Data: ${dataFormatada}\n🔧 Serviço: Troca de Óleo`,
+          text: `Perfeito, ${primeiroNome}! 📋\n\n*Confirme seu agendamento:*\n\n🚗 Veículo: ${agendamento.veiculoNome}\n📅 Data: ${dataFormatada}\n🔧 Serviço: ${agendamento.servico || 'Serviço agendado'}`,
           footerText: 'Confirma o agendamento?',
           choices: ['✅ Confirmar|confirmar_sim', '❌ Cancelar|cancelar'],
         };
@@ -1259,7 +1264,7 @@ export async function generateChatResponse(
         for (let i = 0; i < agendamento.veiculoIds.length; i++) {
           const veiculoId = agendamento.veiculoIds[i];
           const veiculoNome = agendamento.veiculoNomes?.[i] || 'Veículo';
-          const resultado = await criarOrdemServico(veiculoId, agendamento.dataHora, empresaId, 'Troca de Óleo');
+          const resultado = await criarOrdemServico(veiculoId, agendamento.dataHora, empresaId, agendamento.servico || 'Serviço agendado');
           resultados.push({ success: resultado.success, veiculo: veiculoNome, numero: resultado.numero });
         }
 
@@ -1287,7 +1292,7 @@ export async function generateChatResponse(
           agendamento.veiculoId,
           agendamento.dataHora,
           empresaId,
-          'Troca de Óleo'
+          agendamento.servico || 'Serviço agendado'
         );
 
         agendamentoState.delete(phoneNumber);
@@ -1397,7 +1402,7 @@ export async function generateChatResponse(
 
             return {
               type: 'list',
-              text: `Pronto, ${primeiroNomeCadastro}! ✅ Cadastro feito!\n\nAgora vamos agendar a troca de óleo do seu ${agendamento.veiculoNome}?\n\nEscolha um horário:`,
+              text: `Pronto, ${primeiroNomeCadastro}! ✅ Cadastro feito!\n\nAgora vamos agendar ${agendamento.servico || 'o serviço'} do seu ${agendamento.veiculoNome}?\n\nEscolha um horário:`,
               listButton: 'Ver Horários',
               footerText: 'Escolha o melhor horário',
               choices,
@@ -1520,9 +1525,9 @@ export async function generateChatResponse(
     let historicoConversa = '';
     if (recentMessages.length > 0) {
       historicoConversa = `\n\n[HISTÓRICO DA CONVERSA - Use este contexto para entender o que o cliente está respondendo]`;
-      for (const msg of recentMessages.slice(-6)) { // Últimas 6 mensagens
+      for (const msg of recentMessages.slice(-12)) { // Últimas 12 mensagens para manter contexto rico
         const remetente = msg.role === 'bot' ? 'Você (bot)' : 'Cliente';
-        historicoConversa += `\n${remetente}: ${msg.text.substring(0, 200)}`;
+        historicoConversa += `\n${remetente}: ${msg.text.substring(0, 500)}`;
       }
       historicoConversa += `\n[FIM DO HISTÓRICO]`;
     }
@@ -1617,18 +1622,24 @@ ${contextoAgendamento}
 ${historicoConversa}
 
 🧠 SUA PERSONALIDADE:
-- Você é simpática, prestativa e MUITO inteligente
+- Você é uma atendente REAL de oficina mecânica, simpática e experiente
+- Fale de forma NATURAL e HUMANA, como se fosse um WhatsApp entre amigos
+- Use linguagem informal brasileira (pode usar "tá", "pra", "né", "beleza", "show")
 - Chame o cliente sempre pelo primeiro nome: "${primeiroNome}"
-- Seja objetiva (máximo 2-3 frases), mas com empatia
-- Use emojis moderadamente para dar personalidade
+- Seja CONCISA (máximo 2-3 frases curtas), ninguém gosta de textão no WhatsApp
+- Use emojis com moderação (1-2 por mensagem, máximo)
+- Evite parecer um robô: NÃO repita o nome do cliente em toda mensagem, NÃO use frases genéricas como "Como posso ajudar?"
 - Lembre das preferências do cliente e use-as proativamente
+- Se o cliente perguntar algo que você não sabe, seja honesta e ofereça ligar pra oficina
 
 📋 REGRAS DE OURO:
 1. SEMPRE leia o HISTÓRICO DA CONVERSA para entender o contexto
 2. Se o cliente perguntou algo e você respondeu, e ele confirma (sim, pode, ok, isso, quero), EXECUTE a ação apropriada
 3. Se o cliente mencionar um veículo específico e confirmar, não pergunte de novo qual veículo
 4. Seja PROATIVA: se o cliente não faz serviço há muito tempo, sugira gentilmente uma revisão
-5. Se o cliente tem preferências cadastradas, mencione-as (ex: "Vai querer o óleo sintético de sempre?")
+5. Se o cliente tem preferências cadastradas, mencione-as (ex: "Vai querer o sintético de sempre?")
+6. NUNCA responda de forma genérica a perguntas técnicas - se não sabe, diga que vai verificar com o mecânico
+7. Adapte o tom: se o cliente é formal, seja mais formal. Se é descontraído, seja descontraída
 
 ⏰ HORÁRIO DE FUNCIONAMENTO:
 - Nosso horário de atendimento é: ${parseHorarioParaString(config?.chatbotHorario || null)}
@@ -1686,7 +1697,7 @@ Mensagem atual: "${userMessage}"`;
         // Habilita thinking interno para melhor raciocínio
         // O modelo "pensa" antes de responder, melhorando a qualidade
         thinkingConfig: {
-          thinkingBudget: 1024, // Tokens para raciocínio interno
+          thinkingBudget: 4096, // Tokens para raciocínio interno (aumentado para respostas mais inteligentes)
         },
       } as any, // Type assertion para suportar thinkingConfig
     });
@@ -1747,6 +1758,9 @@ async function executeFunctionCall(
 
   switch (functionName) {
     case 'iniciar_agendamento': {
+      // Capturar serviço mencionado pelo cliente
+      const servicoMencionado = (args.servico as string) || '';
+
       // Se cliente não está cadastrado, redirecionar para cadastro
       if (!customerData || customerData.veiculos.length === 0) {
         console.log('[CHATBOT] Cliente não cadastrado, redirecionando para cadastro');
@@ -1766,6 +1780,9 @@ async function executeFunctionCall(
       // Iniciar novo agendamento
       agendamento.ativo = true;
       agendamento.timestamp = Date.now();
+      if (servicoMencionado) {
+        agendamento.servico = servicoMencionado;
+      }
 
       // Verificar se um veículo específico foi mencionado nas mensagens recentes
       let veiculoMencionado: typeof customerData.veiculos[0] | null = null;
@@ -1809,7 +1826,7 @@ async function executeFunctionCall(
 
           return {
             type: 'list',
-            text: `Ótimo, ${primeiroNome}! 🚗\n\nVou agendar a troca de óleo do seu ${agendamento.veiculoNome}.\n\nQual horário fica bom?`,
+            text: `Ótimo, ${primeiroNome}! 🚗\n\nVou agendar ${agendamento.servico || 'o serviço'} do seu ${agendamento.veiculoNome}.\n\nQual horário fica bom?`,
             listButton: 'Ver Horários',
             footerText: 'Escolha o melhor horário',
             choices,
@@ -1864,7 +1881,7 @@ async function executeFunctionCall(
 
         return {
           type: 'list',
-          text: `Oi ${primeiroNome}! Vamos agendar a troca de óleo do seu ${agendamento.veiculoNome}? 🚗\n\nEscolha um horário:`,
+          text: `Oi ${primeiroNome}! Vamos agendar ${agendamento.servico || 'o serviço'} do seu ${agendamento.veiculoNome}? 🚗\n\nEscolha um horário:`,
           listButton: 'Ver Horários',
           footerText: 'Escolha o melhor horário',
           choices,
@@ -1913,7 +1930,7 @@ async function executeFunctionCall(
 
         return {
           type: 'list',
-          text: `Ótimo, ${primeiroNome}! 🚗\n\nVou agendar a troca de óleo do seu ${agendamento.veiculoNome}.\n\nQual horário fica bom?`,
+          text: `Ótimo, ${primeiroNome}! 🚗\n\nVou agendar ${agendamento.servico || 'o serviço'} do seu ${agendamento.veiculoNome}.\n\nQual horário fica bom?`,
           listButton: 'Ver Horários',
           footerText: 'Escolha o melhor horário',
           choices,
@@ -1999,7 +2016,7 @@ async function executeFunctionCall(
 
       return {
         type: 'button',
-        text: `Perfeito, ${primeiroNome}! 📋\n\n*Confirme seu agendamento:*\n\n🚗 Veículo: ${agendamento.veiculoNome}\n📅 Data: ${dataFormatada}\n🔧 Serviço: Troca de Óleo`,
+        text: `Perfeito, ${primeiroNome}! 📋\n\n*Confirme seu agendamento:*\n\n🚗 Veículo: ${agendamento.veiculoNome}\n📅 Data: ${dataFormatada}\n🔧 Serviço: ${agendamento.servico || 'Serviço agendado'}`,
         footerText: 'Confirma o agendamento?',
         choices: ['✅ Confirmar|confirmar_sim', '❌ Cancelar|cancelar'],
       };
@@ -2027,7 +2044,7 @@ async function executeFunctionCall(
         agendamento.veiculoId,
         agendamento.dataHora,
         empresaId,
-        'Troca de Óleo'
+        agendamento.servico || 'Serviço agendado'
       );
 
       agendamentoState.delete(phoneNumber);
@@ -2255,7 +2272,7 @@ async function executeFunctionCall(
 
           return {
             type: 'list',
-            text: `Pronto, ${primeiroNomeCadastro}! ✅ Cadastro feito!\n\nAgora vamos agendar a troca de óleo do seu ${agendamento.veiculoNome}?\n\nEscolha um horário:`,
+            text: `Pronto, ${primeiroNomeCadastro}! ✅ Cadastro feito!\n\nAgora vamos agendar ${agendamento.servico || 'o serviço'} do seu ${agendamento.veiculoNome}?\n\nEscolha um horário:`,
             listButton: 'Ver Horários',
             footerText: 'Escolha o melhor horário',
             choices,
