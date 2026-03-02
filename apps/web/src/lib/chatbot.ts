@@ -215,6 +215,24 @@ const chatbotTools: FunctionDeclarationsTool[] = [{
     // FUNÇÕES INTELIGENTES
     // ==========================================
     {
+      name: 'consultar_estoque',
+      description: 'Consulta produtos disponíveis no estoque da oficina. Use SEMPRE que o cliente perguntar sobre produtos, marcas, tipos de óleo, filtros, se tem tal produto, etc. Exemplos: "vocês têm óleo sintético?", "que marca de óleo vocês usam?", "tem filtro pro meu carro?", "trabalham com Mobil?"',
+      parameters: {
+        type: SchemaType.OBJECT,
+        properties: {
+          busca: {
+            type: SchemaType.STRING,
+            description: 'Termo de busca: nome do produto, marca, tipo (ex: "sintético", "filtro", "Mobil", "5W30")'
+          },
+          categoria: {
+            type: SchemaType.STRING,
+            description: 'Categoria do produto: OLEO_LUBRIFICANTE, FILTRO_OLEO, FILTRO_AR, FILTRO_AR_CONDICIONADO, FILTRO_COMBUSTIVEL, ADITIVO, GRAXA, ACESSORIO, OUTRO'
+          }
+        },
+        required: []
+      }
+    },
+    {
       name: 'consultar_status_veiculo',
       description: 'Consulta o status do veículo/serviço do cliente. Use quando o cliente perguntar se o carro ficou pronto, qual o status, quando fica pronto, etc. Exemplos: "meu carro já ficou pronto?", "como está meu carro?", "já posso buscar?", "qual o status?"',
       parameters: {
@@ -1625,21 +1643,31 @@ ${historicoConversa}
 - Você é uma atendente REAL de oficina mecânica, simpática e experiente
 - Fale de forma NATURAL e HUMANA, como se fosse um WhatsApp entre amigos
 - Use linguagem informal brasileira (pode usar "tá", "pra", "né", "beleza", "show")
-- Chame o cliente sempre pelo primeiro nome: "${primeiroNome}"
+- O primeiro nome do cliente é: "${primeiroNome}"
 - Seja CONCISA (máximo 2-3 frases curtas), ninguém gosta de textão no WhatsApp
 - Use emojis com moderação (1-2 por mensagem, máximo)
-- Evite parecer um robô: NÃO repita o nome do cliente em toda mensagem, NÃO use frases genéricas como "Como posso ajudar?"
-- Lembre das preferências do cliente e use-as proativamente
-- Se o cliente perguntar algo que você não sabe, seja honesta e ofereça ligar pra oficina
+
+🚫 O QUE NUNCA FAZER:
+- NÃO comece TODA mensagem com "Oi [nome]!" - varie! Use "E aí", "Fala", "Beleza", ou simplesmente responda direto
+- NÃO use frases robóticas como "Como posso ajudar?", "Em que posso ser útil?", "Estou à disposição"
+- NÃO repita o nome do cliente em toda mensagem - use só de vez em quando, naturalmente
+- NÃO dê respostas genéricas sobre produtos - use a função consultar_estoque pra buscar dados REAIS
+- NÃO invente informações que você não tem - se não sabe, fale "vou verificar com o mecânico"
+
+✅ O QUE FAZER:
+- Responda DIRETO ao que o cliente perguntou, sem rodeios
+- Se é primeira mensagem da conversa (sem histórico), cumprimente. Se já está conversando, vá direto ao ponto
+- Para perguntas sobre produtos/marcas/tipos → USE consultar_estoque SEMPRE
+- Adapte o tom: se o cliente é formal, seja formal. Se é descontraído, seja descontraída
 
 📋 REGRAS DE OURO:
-1. SEMPRE leia o HISTÓRICO DA CONVERSA para entender o contexto
-2. Se o cliente perguntou algo e você respondeu, e ele confirma (sim, pode, ok, isso, quero), EXECUTE a ação apropriada
-3. Se o cliente mencionar um veículo específico e confirmar, não pergunte de novo qual veículo
+1. SEMPRE leia o HISTÓRICO DA CONVERSA - se já cumprimentou, NÃO cumprimente de novo
+2. Se o cliente confirma (sim, pode, ok, isso, quero), EXECUTE a ação sem perguntar de novo
+3. Se o cliente mencionar um veículo específico, não pergunte de novo qual veículo
 4. Seja PROATIVA: se o cliente não faz serviço há muito tempo, sugira gentilmente uma revisão
 5. Se o cliente tem preferências cadastradas, mencione-as (ex: "Vai querer o sintético de sempre?")
-6. NUNCA responda de forma genérica a perguntas técnicas - se não sabe, diga que vai verificar com o mecânico
-7. Adapte o tom: se o cliente é formal, seja mais formal. Se é descontraído, seja descontraída
+6. Para perguntas sobre produtos → consultar_estoque. Para preços de serviço → consultar_preco
+7. Adapte o tom ao do cliente
 
 ⏰ HORÁRIO DE FUNCIONAMENTO:
 - Nosso horário de atendimento é: ${parseHorarioParaString(config?.chatbotHorario || null)}
@@ -1654,10 +1682,11 @@ ${historicoConversa}
 8. Se o cliente já está cadastrado mas quer agendar um veículo que não tem, use iniciar_cadastro (vai pular o nome automaticamente)
 
 🔧 FUNÇÕES INTELIGENTES:
+- consultar_estoque: OBRIGATÓRIA para perguntas sobre produtos! "vocês têm óleo sintético?", "que marca usam?", "tem filtro?", "trabalham com Mobil?"
 - consultar_status_veiculo: "meu carro já ficou?", "como está meu carro?", "já posso buscar?"
 - consultar_agendamentos: "quando é minha marcação?", "tenho agendamento?"
 - cancelar_ou_remarcar: "preciso remarcar", "cancelar agendamento", "mudar horário"
-- consultar_preco: "quanto custa?", "qual o valor?", "preço de..."
+- consultar_preco: "quanto custa o SERVIÇO?", "qual o valor?", "preço de..." (serviços, não produtos)
 - agendar_multiplos_servicos: quando pedir 2+ serviços juntos (ex: "troca de óleo e filtro")
 - registrar_preferencia: quando mencionar preferência (ex: "prefiro óleo sintético", "gosto de ir de manhã")
 - consultar_historico: "quando fiz a última troca?", "meu histórico"
@@ -1678,10 +1707,13 @@ ${historicoConversa}
 💬 responder_texto: para saudações, dúvidas gerais, conversas normais
 
 EXEMPLOS DE INTERPRETAÇÃO:
-- "oi" → responder_texto (saudação)
-- "quero agendar" → iniciar_agendamento
+- "oi" → responder_texto (saudação curta e natural)
+- "quero agendar" → iniciar_agendamento(servico="agendamento")
+- "quero trocar o óleo" → iniciar_agendamento(servico="troca de óleo")
 - "meu carro já tá pronto?" → consultar_status_veiculo
-- "quanto custa trocar o óleo?" → consultar_preco
+- "quanto custa a revisão?" → consultar_preco (para SERVIÇOS)
+- "vocês têm óleo sintético?" → consultar_estoque(busca="sintético") ← NÃO use responder_texto!
+- "que marca de filtro vocês usam?" → consultar_estoque(busca="filtro")
 - "quero trocar óleo e filtro" → agendar_multiplos_servicos
 - "prefiro de manhã" → registrar_preferencia
 - "preciso remarcar" → cancelar_ou_remarcar
@@ -2299,7 +2331,7 @@ async function executeFunctionCall(
       if (!customerData) {
         return {
           type: 'text',
-          message: `Oi! Não encontrei seu cadastro aqui. 😅\n\nPode me passar seu telefone cadastrado ou ligar pra oficina?`,
+          message: `Hmm, não encontrei seu cadastro por esse número. 😅\n\nQuer que eu te cadastre rapidinho? É só me passar seu nome completo! Ou se já tem cadastro, me manda o número que usou.`,
         };
       }
 
@@ -2360,7 +2392,7 @@ async function executeFunctionCall(
       if (!customerData) {
         return {
           type: 'text',
-          message: `Oi! Não encontrei seu cadastro aqui. 😅\n\nPode me passar seu telefone cadastrado?`,
+          message: `Não encontrei seu cadastro por esse número. 😅\n\nQuer que eu te cadastre agora? Leva menos de 1 minuto! É só me passar seu nome completo.`,
         };
       }
 
@@ -2384,7 +2416,7 @@ async function executeFunctionCall(
       if (!customerData) {
         return {
           type: 'text',
-          message: `Oi! Não encontrei seu cadastro aqui. 😅\n\nPode ligar pra oficina pra resolver?`,
+          message: `Não encontrei seu cadastro por esse número. 😅\n\nPra remarcar, preciso te encontrar no sistema. Quer que eu te cadastre? É rapidinho!`,
         };
       }
 
@@ -2458,6 +2490,93 @@ async function executeFunctionCall(
         footerText: 'Selecione um',
         choices: ['[Seus Agendamentos]', ...choices],
       };
+    }
+
+    case 'consultar_estoque': {
+      const busca = (args.busca as string)?.toLowerCase() || '';
+      const categoria = (args.categoria as string) || '';
+
+      // Buscar produtos no estoque
+      const whereClause: any = {
+        empresaId,
+        ativo: true,
+        quantidade: { gt: 0 },
+      };
+
+      if (categoria) {
+        whereClause.categoria = categoria;
+      }
+
+      const produtos = await prisma.produto.findMany({
+        where: whereClause,
+        select: {
+          nome: true,
+          marca: true,
+          categoria: true,
+          precoVenda: true,
+          quantidade: true,
+          precoGranel: true,
+          volumeUnidade: true,
+          unidade: true,
+        },
+        orderBy: { nome: 'asc' },
+        take: 20,
+      });
+
+      // Filtrar por busca textual se fornecida
+      let resultados = produtos;
+      if (busca) {
+        resultados = produtos.filter(p => {
+          const nomeLower = p.nome.toLowerCase();
+          const marcaLower = p.marca.toLowerCase();
+          const catLower = p.categoria.toLowerCase().replace(/_/g, ' ');
+          return nomeLower.includes(busca) ||
+                 marcaLower.includes(busca) ||
+                 catLower.includes(busca) ||
+                 (busca.includes('sintético') && (nomeLower.includes('sintético') || nomeLower.includes('sintetico') || nomeLower.includes('synthetic'))) ||
+                 (busca.includes('semi') && (nomeLower.includes('semi') || nomeLower.includes('blend'))) ||
+                 (busca.includes('mineral') && nomeLower.includes('mineral')) ||
+                 (busca.includes('filtro') && catLower.includes('filtro')) ||
+                 (busca.includes('oleo') && catLower.includes('oleo')) ||
+                 (busca.includes('óleo') && catLower.includes('oleo'));
+        });
+      }
+
+      if (resultados.length === 0 && busca) {
+        // Se não encontrou com filtro, buscar tudo da categoria mais provável
+        resultados = produtos;
+      }
+
+      if (resultados.length === 0) {
+        return {
+          type: 'text',
+          message: `${primeiroNome}, não encontrei esse produto no nosso estoque no momento. 😅\n\nQuer que eu verifique com o mecânico? Ou pode ligar pra oficina!`,
+        };
+      }
+
+      // Formatar resposta com produtos reais
+      const porCategoria: Record<string, typeof resultados> = {};
+      for (const p of resultados) {
+        const catNome = p.categoria.replace(/_/g, ' ').replace(/OLEO/g, 'Óleo').replace(/FILTRO/g, 'Filtro');
+        if (!porCategoria[catNome]) porCategoria[catNome] = [];
+        porCategoria[catNome].push(p);
+      }
+
+      let mensagem = `${primeiroNome}, temos sim! Olha o que temos em estoque:\n`;
+      for (const [cat, items] of Object.entries(porCategoria)) {
+        mensagem += `\n*${cat}*\n`;
+        for (const p of items.slice(0, 5)) { // Max 5 por categoria
+          const preco = Number(p.precoVenda);
+          const precoStr = preco > 0 ? ` - R$ ${preco.toFixed(2).replace('.', ',')}` : '';
+          mensagem += `  • ${p.marca} ${p.nome}${precoStr}\n`;
+        }
+        if (items.length > 5) {
+          mensagem += `  _...e mais ${items.length - 5} opções_\n`;
+        }
+      }
+      mensagem += `\nQuer agendar um serviço ou saber mais detalhes? 😊`;
+
+      return { type: 'text', message: mensagem };
     }
 
     case 'consultar_preco': {
@@ -2657,7 +2776,7 @@ async function executeFunctionCall(
       if (!customerData) {
         return {
           type: 'text',
-          message: `Oi! Não encontrei seu cadastro aqui. 😅\n\nPode me passar seu telefone cadastrado?`,
+          message: `Não encontrei seu cadastro por esse número. 😅\n\nQuer que eu te cadastre agora? Leva menos de 1 minuto! É só me passar seu nome completo.`,
         };
       }
 
