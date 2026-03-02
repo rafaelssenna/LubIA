@@ -433,7 +433,7 @@ export default function ServicosPage() {
       {/* Modal Novo Serviço */}
       {showModal && (
         <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-card border border-border rounded-2xl w-full max-w-lg max-h-[90vh] flex flex-col animate-fade-in shadow-2xl">
+          <div className="bg-card border border-border rounded-2xl w-full max-w-lg max-h-[85vh] flex flex-col animate-fade-in shadow-2xl overflow-hidden">
             <div className="p-6 border-b border-border flex items-center justify-between shrink-0">
               <div>
                 <h2 className="text-xl font-semibold text-foreground">Novo Serviço</h2>
@@ -446,7 +446,7 @@ export default function ServicosPage() {
                 <X size={20} />
               </button>
             </div>
-            <div className="p-6 space-y-4 overflow-y-auto">
+            <div className="p-6 space-y-4 overflow-y-auto min-h-0 flex-1">
               <div>
                 <label className="block text-sm font-medium text-muted mb-2">Nome do Serviço *</label>
                 <input
@@ -528,7 +528,7 @@ export default function ServicosPage() {
       {/* Modal Editar Serviço */}
       {showEditModal && editingServico && (
         <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-card border border-border rounded-2xl w-full max-w-lg max-h-[90vh] flex flex-col animate-fade-in shadow-2xl">
+          <div className="bg-card border border-border rounded-2xl w-full max-w-lg max-h-[85vh] flex flex-col animate-fade-in shadow-2xl overflow-hidden">
             <div className="p-6 border-b border-border flex items-center justify-between shrink-0">
               <div>
                 <h2 className="text-xl font-semibold text-foreground">Editar Serviço</h2>
@@ -544,7 +544,7 @@ export default function ServicosPage() {
                 <X size={20} />
               </button>
             </div>
-            <div className="p-6 space-y-4 overflow-y-auto">
+            <div className="p-6 space-y-4 overflow-y-auto min-h-0 flex-1">
               <div>
                 <label className="block text-sm font-medium text-[#9E9E9E] mb-2">Nome do Serviço *</label>
                 <input
