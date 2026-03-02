@@ -94,7 +94,7 @@ export default function AdminPage() {
 
   useEffect(() => {
     if (!authLoading && !isSuperAdmin) {
-      router.push('/');
+      router.push('/dashboard');
     }
   }, [authLoading, isSuperAdmin, router]);
 

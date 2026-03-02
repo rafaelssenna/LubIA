@@ -79,7 +79,7 @@ function AssinaturaContent() {
   // Redirecionar se não for admin
   useEffect(() => {
     if (!authLoading && !isAdmin) {
-      router.push('/');
+      router.push('/dashboard');
     }
   }, [authLoading, isAdmin, router]);
 

@@ -35,6 +35,11 @@ const subscriptionExemptPaths = [
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
+  // Landing page é pública
+  if (pathname === '/') {
+    return NextResponse.next();
+  }
+
   // Permitir rotas públicas
   if (publicPaths.some(path => pathname.startsWith(path))) {
     return NextResponse.next();
