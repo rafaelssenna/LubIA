@@ -150,7 +150,7 @@ export async function POST() {
 
         lembretesGerados.push({
           veiculoId: veiculo.id,
-          placa: veiculo.placa,
+          placa: veiculo.placa || '',
           kmLembrete: proximaTroca,
           mediaKmMes: Math.round(mediaKmMes),
           diasEstimados,

@@ -1326,7 +1326,7 @@ function OrcamentosPageContent() {
                       .filter(v => {
                         const search = searchVeiculo.toLowerCase();
                         return !search ||
-                          v.placa.toLowerCase().includes(search) ||
+                          (v.placa || '').toLowerCase().includes(search) ||
                           v.modelo.toLowerCase().includes(search) ||
                           v.marca.toLowerCase().includes(search) ||
                           v.cliente.nome.toLowerCase().includes(search);

@@ -126,7 +126,7 @@ model Cliente {
 model Veiculo {
   id           Int      @id @default(autoincrement())
   empresaId    Int
-  placa        String
+  placa        String?
   marca        String
   modelo       String
   ano          Int?

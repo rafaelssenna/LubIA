@@ -160,14 +160,10 @@ const chatbotTools: FunctionDeclarationsTool[] = [{
     },
     {
       name: 'salvar_dados_veiculo',
-      description: 'Salva os dados do veículo durante o cadastro. Use quando o cliente informar dados do carro (placa, modelo, marca, ano, km). Pode salvar parcialmente.',
+      description: 'Salva os dados do veículo durante o cadastro. Use quando o cliente informar o carro (marca e modelo). Placa, ano e km são opcionais - NÃO peça se o cliente não informar espontaneamente.',
       parameters: {
         type: SchemaType.OBJECT,
         properties: {
-          placa: {
-            type: SchemaType.STRING,
-            description: 'Placa do veículo (formato ABC1234 ou ABC1D23)'
-          },
           marca: {
             type: SchemaType.STRING,
             description: 'Marca do veículo (Fiat, Volkswagen, Chevrolet, etc)'
@@ -176,13 +172,17 @@ const chatbotTools: FunctionDeclarationsTool[] = [{
             type: SchemaType.STRING,
             description: 'Modelo do veículo (Uno, Gol, Onix, etc)'
           },
+          placa: {
+            type: SchemaType.STRING,
+            description: 'Placa do veículo se o cliente informar espontaneamente (formato ABC1234 ou ABC1D23)'
+          },
           ano: {
             type: SchemaType.NUMBER,
-            description: 'Ano do veículo'
+            description: 'Ano do veículo se o cliente informar espontaneamente'
           },
           kmAtual: {
             type: SchemaType.NUMBER,
-            description: 'Quilometragem atual do veículo'
+            description: 'Quilometragem se o cliente informar espontaneamente'
           }
         },
         required: []
@@ -190,7 +190,7 @@ const chatbotTools: FunctionDeclarationsTool[] = [{
     },
     {
       name: 'confirmar_cadastro',
-      description: 'Finaliza o cadastro e cria o cliente e veículo no sistema. Use quando todos os dados obrigatórios (nome, placa, marca, modelo) estiverem preenchidos e o cliente confirmar.',
+      description: 'Finaliza o cadastro e cria o cliente e veículo no sistema. Use quando os dados mínimos (nome e marca/modelo do carro) estiverem preenchidos. NÃO exija placa - ela é opcional.',
       parameters: {
         type: SchemaType.OBJECT,
         properties: {},
@@ -431,7 +431,7 @@ interface CustomerData {
     marca: string;
     modelo: string;
     ano: number | null;
-    placa: string;
+    placa: string | null;
     kmAtual: number | null;
   }[];
   ultimoServico?: {
@@ -882,7 +882,7 @@ async function criarClienteEVeiculo(
   empresaId: number,
   telefone: string,
   nome: string,
-  placa: string,
+  placa: string | undefined,
   marca: string,
   modelo: string,
   ano?: number,
@@ -891,6 +891,7 @@ async function criarClienteEVeiculo(
   try {
     // Limpar telefone
     const telefoneLimpo = telefone.replace(/\D/g, '');
+    const placaLimpa = placa ? placa.toUpperCase().replace(/[^A-Z0-9]/g, '') : null;
 
     // Verificar se já existe cliente com esse telefone
     const clienteExistente = await prisma.cliente.findFirst({
@@ -910,7 +911,7 @@ async function criarClienteEVeiculo(
         data: {
           empresaId,
           clienteId: clienteExistente.id,
-          placa: placa.toUpperCase().replace(/[^A-Z0-9]/g, ''),
+          placa: placaLimpa,
           marca,
           modelo,
           ano,
@@ -931,7 +932,7 @@ async function criarClienteEVeiculo(
         veiculos: {
           create: {
             empresaId,
-            placa: placa.toUpperCase().replace(/[^A-Z0-9]/g, ''),
+            placa: placaLimpa,
             marca,
             modelo,
             ano,
@@ -1352,15 +1353,15 @@ export async function generateChatResponse(
     // Processar confirmação de cadastro via botão
     if (isButtonResponse && userMessage === 'confirmar_cadastro') {
       // Verificar se tem cadastro em andamento com dados completos
-      if (cadastro.ativo && cadastro.nome && cadastro.placa && cadastro.marca && cadastro.modelo) {
+      if (cadastro.ativo && cadastro.nome && (cadastro.marca || cadastro.modelo)) {
         // Criar cliente e veículo
         const resultado = await criarClienteEVeiculo(
           empresaId,
           phoneNumber,
           cadastro.nome,
           cadastro.placa,
-          cadastro.marca,
-          cadastro.modelo,
+          cadastro.marca || '',
+          cadastro.modelo || '',
           cadastro.ano,
           cadastro.kmAtual
         );
@@ -1397,7 +1398,7 @@ export async function generateChatResponse(
           // Fallback: buscar pela placa que foi cadastrada
           if (!veiculoRecemCadastrado && cadastro.placa) {
             veiculoRecemCadastrado = novoCustomerData.veiculos.find(v =>
-              v.placa.toUpperCase().replace(/[^A-Z0-9]/g, '') === cadastro.placa?.toUpperCase().replace(/[^A-Z0-9]/g, '')
+              v.placa?.toUpperCase().replace(/[^A-Z0-9]/g, '') === cadastro.placa?.toUpperCase().replace(/[^A-Z0-9]/g, '')
             );
           }
 
@@ -1685,10 +1686,10 @@ ${historicoConversa}
 - Se não souber o horário exato, informe que vai verificar e ofereça os horários disponíveis na lista
 
 ⚠️ REGRAS CRÍTICAS DE CADASTRO:
-6. Se o cliente INFORMA DADOS (placa, marca, modelo, ano, km), SEMPRE chame salvar_dados_veiculo COM TODOS os dados que ele informou!
-   Exemplo: "Ford F150 placa HHW3243" → salvar_dados_veiculo(placa="HHW3243", marca="Ford", modelo="F150")
-7. NUNCA peça um dado que o cliente JÁ INFORMOU - olhe os dados já salvos no cadastro!
-8. Se o cliente já está cadastrado mas quer agendar um veículo que não tem, use iniciar_cadastro (vai pular o nome automaticamente)
+6. O cadastro é RÁPIDO: só precisa de NOME e CARRO (marca/modelo). NÃO peça placa, km ou ano - só aceite se o cliente informar espontaneamente!
+7. Se o cliente diz "Gol 2020" ou "HB20" → salvar_dados_veiculo(marca="Volkswagen", modelo="Gol", ano=2020) - DEDUZA a marca pelo modelo!
+8. NUNCA peça um dado que o cliente JÁ INFORMOU
+9. Se o cliente já está cadastrado mas quer agendar um veículo que não tem, use iniciar_cadastro (vai pular o nome automaticamente)
 
 🔧 FUNÇÕES INTELIGENTES:
 - consultar_estoque: OBRIGATÓRIA para perguntas sobre produtos! "vocês têm óleo sintético?", "que marca usam?", "tem filtro?", "trabalham com Mobil?"
@@ -1707,11 +1708,11 @@ ${historicoConversa}
 - confirmar_agendamento: quando confirmar
 - cancelar_agendamento: quando desistir
 
-📝 FUNÇÕES DE CADASTRO (veículo novo):
-- iniciar_cadastro: quando cliente quer agendar um veículo que NÃO TEM cadastrado (funciona para cliente novo OU existente adicionando veículo)
-- salvar_nome_cliente: informou nome completo (SÓ se cliente novo)
-- salvar_dados_veiculo: EXTRAIA TODOS os dados que o cliente informou! Se ele disse "Ford F150 placa ABC1234 2024 50000km", chame com TODOS os parâmetros!
-- confirmar_cadastro: quando TODOS os dados obrigatórios estão preenchidos (nome se novo, placa, marca, modelo)
+📝 FUNÇÕES DE CADASTRO (rápido - só nome e carro!):
+- iniciar_cadastro: quando cliente quer agendar um veículo que NÃO TEM cadastrado
+- salvar_nome_cliente: informou nome (SÓ se cliente novo)
+- salvar_dados_veiculo: DEDUZA a marca pelo modelo! "Gol" = Volkswagen, "Onix" = Chevrolet, "HB20" = Hyundai, etc. Aceite placa/ano/km SÓ se o cliente informar voluntariamente
+- confirmar_cadastro: quando tem NOME + MARCA/MODELO. NÃO exija placa!
 
 💬 responder_texto: para saudações, dúvidas gerais, conversas normais
 
@@ -1834,11 +1835,11 @@ async function executeFunctionCall(
 
         // Procurar por placa ou modelo mencionado
         for (const v of customerData.veiculos) {
-          const placaLower = v.placa.toLowerCase().replace('-', '');
+          const placaLower = (v.placa || '').toLowerCase().replace('-', '');
           const modeloLower = v.modelo.toLowerCase();
           const marcaLower = v.marca.toLowerCase();
 
-          if (textoBot.includes(placaLower) || textoBot.includes(v.placa.toLowerCase()) ||
+          if ((placaLower && (textoBot.includes(placaLower) || textoBot.includes((v.placa || '').toLowerCase()))) ||
               (textoBot.includes(modeloLower) && textoBot.includes(marcaLower))) {
             veiculoMencionado = v;
             console.log('[CHATBOT] Veículo detectado no histórico:', v.marca, v.modelo, v.placa);
@@ -2130,7 +2131,7 @@ async function executeFunctionCall(
 
         return {
           type: 'text',
-          message: `${primeiroNome}, vou cadastrar seu novo veículo! 🚗\n\nQual a *placa*, *marca* e *modelo* do carro?\n\n_Exemplo: ABC1234, Ford F-150_`,
+          message: `${primeiroNome}, vou cadastrar seu novo veículo! 🚗\n\nQual o seu carro? (marca e modelo)\n\n_Exemplo: Gol 2020, Onix 2022, HB20_`,
         };
       }
 
@@ -2142,7 +2143,7 @@ async function executeFunctionCall(
 
       return {
         type: 'text',
-        message: `Oi${primeiroNome !== 'Cliente' ? ` ${primeiroNome}` : ''}! 😊\n\nVi que você ainda não está cadastrado(a) aqui. Vou te cadastrar rapidinho pra gente agendar!\n\nQual é o seu *nome completo*?`,
+        message: `Oi${primeiroNome !== 'Cliente' ? ` ${primeiroNome}` : ''}! 😊\n\nPra gente agendar, só preciso de duas coisas rápidas:\n\n1️⃣ Seu *nome*\n2️⃣ Qual *carro* você tem (ex: Gol 2020)\n\nQual é o seu *nome*?`,
       };
     }
 
@@ -2165,7 +2166,7 @@ async function executeFunctionCall(
 
       return {
         type: 'text',
-        message: `Prazer, ${nome.split(' ')[0]}! 😊\n\nAgora preciso dos dados do seu veículo.\n\nQual a *placa*, *marca* e *modelo* do seu carro?\n\n_Exemplo: ABC1234, Volkswagen Gol_`,
+        message: `Prazer, ${nome.split(' ')[0]}! 😊\n\nE qual é o seu *carro*?\n\n_Exemplo: Gol 2020, Onix 2022, HB20_`,
       };
     }
 
@@ -2193,25 +2194,17 @@ async function executeFunctionCall(
 
       console.log('[CHATBOT] Dados veículo salvos:', { placa: cadastro.placa, marca: cadastro.marca, modelo: cadastro.modelo, nome: cadastro.nome });
 
-      // Verificar se faltam dados obrigatórios
+      // Verificar se faltam dados obrigatórios (só nome e marca/modelo)
       const faltantes: string[] = [];
       // Nome só é obrigatório se cliente não existe ainda
       if (!cadastro.nome && !customerData?.nome) faltantes.push('nome');
-      if (!cadastro.placa) faltantes.push('placa');
-      if (!cadastro.marca) faltantes.push('marca');
-      if (!cadastro.modelo) faltantes.push('modelo');
+      if (!cadastro.marca && !cadastro.modelo) faltantes.push('carro (marca/modelo)');
 
       if (faltantes.length > 0) {
         const primeiroNomeCadastro = cadastro.nome?.split(' ')[0] || primeiroNome;
-        const dadosInformados: string[] = [];
-        if (cadastro.nome) dadosInformados.push(`Nome: ${cadastro.nome}`);
-        if (cadastro.placa) dadosInformados.push(`Placa: ${cadastro.placa}`);
-        if (cadastro.marca) dadosInformados.push(`Marca: ${cadastro.marca}`);
-        if (cadastro.modelo) dadosInformados.push(`Modelo: ${cadastro.modelo}`);
-
         return {
           type: 'text',
-          message: `${primeiroNomeCadastro}, ainda falta: *${faltantes.join(', ')}*\n\n${dadosInformados.length > 0 ? `✅ Já tenho:\n${dadosInformados.join('\n')}\n\n` : ''}Pode me informar o que falta?`,
+          message: `${primeiroNomeCadastro}, só falta me dizer: *${faltantes.join(' e ')}*`,
         };
       }
 
@@ -2222,18 +2215,18 @@ async function executeFunctionCall(
       const primeiroNomeCadastro = cadastro.nome?.split(' ')[0] || primeiroNome;
       return {
         type: 'button',
-        text: `Perfeito, ${primeiroNomeCadastro}! 📋\n\n*Confirme seus dados:*\n\n👤 Nome: ${cadastro.nome}\n🚗 Veículo: ${cadastro.marca} ${cadastro.modelo}\n📋 Placa: ${cadastro.placa}${cadastro.ano ? `\n📅 Ano: ${cadastro.ano}` : ''}${cadastro.kmAtual ? `\n🔢 KM: ${cadastro.kmAtual.toLocaleString('pt-BR')}` : ''}`,
+        text: `Perfeito, ${primeiroNomeCadastro}! 📋\n\n*Seus dados:*\n\n👤 ${cadastro.nome}\n🚗 ${cadastro.marca || ''} ${cadastro.modelo || ''}${cadastro.placa ? `\n📋 Placa: ${cadastro.placa}` : ''}${cadastro.ano ? ` ${cadastro.ano}` : ''}`,
         footerText: 'Tudo certo?',
         choices: ['✅ Confirmar|confirmar_cadastro', '❌ Corrigir|cancelar_cadastro'],
       };
     }
 
     case 'confirmar_cadastro': {
-      // Verificar se todos os dados obrigatórios estão presentes
-      if (!cadastro.nome || !cadastro.placa || !cadastro.marca || !cadastro.modelo) {
+      // Verificar se todos os dados obrigatórios estão presentes (só nome e marca/modelo)
+      if (!cadastro.nome || (!cadastro.marca && !cadastro.modelo)) {
         return {
           type: 'text',
-          message: `Ainda faltam alguns dados pra eu completar o cadastro. Me conta: qual a placa, marca e modelo do seu carro?`,
+          message: `Só falta me dizer seu *nome* e qual é o seu *carro* (ex: Gol 2020) pra gente finalizar!`,
         };
       }
 
@@ -2243,8 +2236,8 @@ async function executeFunctionCall(
         phoneNumber,
         cadastro.nome,
         cadastro.placa,
-        cadastro.marca,
-        cadastro.modelo,
+        cadastro.marca || '',
+        cadastro.modelo || '',
         cadastro.ano,
         cadastro.kmAtual
       );
@@ -2281,7 +2274,7 @@ async function executeFunctionCall(
         // Fallback: buscar pela placa que foi cadastrada
         if (!veiculoRecemCadastrado && cadastro.placa) {
           veiculoRecemCadastrado = novoCustomerData.veiculos.find(v =>
-            v.placa.toUpperCase().replace(/[^A-Z0-9]/g, '') === cadastro.placa?.toUpperCase().replace(/[^A-Z0-9]/g, '')
+            v.placa?.toUpperCase().replace(/[^A-Z0-9]/g, '') === cadastro.placa?.toUpperCase().replace(/[^A-Z0-9]/g, '')
           );
         }
 

@@ -508,7 +508,7 @@ function OrdensPageContent() {
   const formatCurrency = useFormatCurrency();
 
   const filteredVeiculos = veiculos.filter(v =>
-    v.placa.toLowerCase().includes(searchVeiculo.toLowerCase()) ||
+    (v.placa || '').toLowerCase().includes(searchVeiculo.toLowerCase()) ||
     v.cliente.nome.toLowerCase().includes(searchVeiculo.toLowerCase()) ||
     `${v.marca} ${v.modelo}`.toLowerCase().includes(searchVeiculo.toLowerCase())
   );
@@ -1421,8 +1421,8 @@ function OrdensPageContent() {
                     if (step === 1) {
                       if (modoNovoVeiculo) {
                         // Validar apenas placa
-                        if (!novoVeiculo.placa.trim()) {
-                          toast.warning('Informe a placa do veículo');
+                        if (!novoVeiculo.marca.trim() && !novoVeiculo.modelo.trim()) {
+                          toast.warning('Informe pelo menos a marca ou modelo do veículo');
                           return;
                         }
                         // Criar veículo + cliente
