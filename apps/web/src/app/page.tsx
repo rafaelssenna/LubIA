@@ -91,7 +91,7 @@ export default function LandingPage() {
       <nav className="fixed top-0 left-0 right-0 z-50 bg-[#0a0a0a]/80 backdrop-blur-xl border-b border-white/5">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
           <div className="flex items-center">
-            <Image src="/logo.png" alt="LoopIA" width={90} height={90} />
+            <Image src="/logo.png" alt="LoopIA" width={108} height={108} />
           </div>
           <div className="flex items-center gap-3">
             <Link href="/login" className="text-sm text-gray-400 hover:text-white transition-colors hidden sm:block">
@@ -501,7 +501,7 @@ export default function LandingPage() {
         <div className="max-w-4xl mx-auto">
           <div className="flex flex-col sm:flex-row items-center justify-between gap-6">
             <div className="flex items-center">
-              <Image src="/logo.png" alt="LoopIA" width={70} height={70} />
+              <Image src="/logo.png" alt="LoopIA" width={84} height={84} />
             </div>
             <div className="flex items-center gap-6 text-sm text-gray-500">
               <Link href="/login" className="hover:text-white transition-colors">Entrar</Link>
