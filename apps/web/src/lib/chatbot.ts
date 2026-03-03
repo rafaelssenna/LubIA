@@ -2641,20 +2641,10 @@ async function executeFunctionCall(
         };
       }
 
-      // Múltiplos serviços - listar sem preço
-      const porCategoria: Record<string, typeof servicosEncontrados> = {};
+      // Múltiplos serviços - listar só por nome, sem categoria
+      let mensagem = `${primeiroNome}, trabalhamos com os seguintes serviços:\n\n`;
       for (const s of servicosEncontrados) {
-        const cat = s.categoria.replace(/_/g, ' ');
-        if (!porCategoria[cat]) porCategoria[cat] = [];
-        porCategoria[cat].push(s);
-      }
-
-      let mensagem = `${primeiroNome}, trabalhamos com os seguintes serviços:\n`;
-      for (const [categoria, items] of Object.entries(porCategoria)) {
-        mensagem += `\n*${categoria}*\n`;
-        for (const s of items) {
-          mensagem += `  • ${s.nome}\n`;
-        }
+        mensagem += `• ${s.nome}\n`;
       }
       mensagem += `\nO valor depende muito do veículo. Se quiser, pode passar aqui para uma avaliação sem compromisso.`;
 
