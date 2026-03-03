@@ -199,7 +199,7 @@ const chatbotTools: FunctionDeclarationsTool[] = [{
     },
     {
       name: 'responder_texto',
-      description: 'Envia uma resposta de texto normal para o cliente. Use para saudações, dúvidas gerais, informações sobre preços, horários de funcionamento, etc.',
+      description: 'Envia uma resposta de texto normal para o cliente. Use para saudações, dúvidas gerais, horários de funcionamento, etc. NUNCA informe preços - diga que o valor depende do veículo.',
       parameters: {
         type: SchemaType.OBJECT,
         properties: {
@@ -271,13 +271,13 @@ const chatbotTools: FunctionDeclarationsTool[] = [{
     },
     {
       name: 'consultar_preco',
-      description: 'Consulta o preço de um serviço específico. Use quando o cliente perguntar quanto custa, qual o valor, preço de troca de óleo, filtro, etc.',
+      description: 'Consulta os serviços disponíveis na oficina. Use quando o cliente perguntar quanto custa, qual o valor, se fazem tal serviço, etc. NÃO informa preços - apenas lista os serviços e convida para avaliação presencial.',
       parameters: {
         type: SchemaType.OBJECT,
         properties: {
           servico: {
             type: SchemaType.STRING,
-            description: 'O serviço que o cliente quer saber o preço (óleo, filtro, fluido, revisão, etc)'
+            description: 'O serviço que o cliente perguntou (óleo, filtro, fluido, revisão, etc)'
           }
         },
         required: []
@@ -528,11 +528,6 @@ function formatServicosParaPrompt(servicos: ServicoData[]): string {
     const categoriaFormatada = categoria.replace(/_/g, ' ').toLowerCase();
     const servicosLista = items.map(s => {
       let linha = `  - ${s.nome}`;
-      if (s.preco > 0) {
-        linha += `: R$ ${s.preco.toFixed(2).replace('.', ',')}`;
-      } else {
-        linha += ` (consultar valor)`;
-      }
       const intervalos: string[] = [];
       if (s.intervaloKm) intervalos.push(`a cada ${s.intervaloKm.toLocaleString('pt-BR')} km`);
       if (s.intervaloDias) intervalos.push(`a cada ${s.intervaloDias} dias`);
@@ -1681,7 +1676,8 @@ O QUE NUNCA FAZER:
 - NUNCA cumprimente mais de uma vez na conversa - só na primeira mensagem
 - NUNCA repita o nome do cliente em toda mensagem
 - NUNCA invente informações - se não sabe, diga "vou verificar com o responsável"
-- NUNCA diga que um serviço é gratuito, grátis ou de graça. Se o preço é R$ 0,00 ou não está cadastrado, diga "o valor será informado conforme avaliação do veículo"
+- NUNCA informe preços ou valores de serviços. O valor depende do veículo do cliente. Diga "o valor depende do veículo, mas se quiser pode passar aqui para uma avaliação sem compromisso"
+- NUNCA diga que um serviço é gratuito, grátis ou de graça
 - NUNCA dê respostas genéricas sobre produtos - use consultar_estoque para dados REAIS
 
 O QUE FAZER:
@@ -1694,9 +1690,9 @@ REGRAS DE OURO:
 1. SEMPRE leia o HISTÓRICO DA CONVERSA - se já cumprimentou, NÃO cumprimente de novo
 2. Se o cliente confirma (sim, pode, ok, isso, quero), EXECUTE a ação sem perguntar de novo
 3. Se o cliente mencionar um veículo específico, não pergunte de novo qual veículo
-4. Para perguntas sobre produtos → consultar_estoque. Para preços de serviço → consultar_preco
+4. Para perguntas sobre produtos → consultar_estoque. Para serviços disponíveis → consultar_preco
 5. BREVIDADE: cada resposta deve ter NO MÁXIMO 2 linhas curtas
-6. PREÇO: Se o preço de um serviço é R$ 0,00 ou não está cadastrado, diga "o valor será informado conforme avaliação do veículo" - NUNCA diga que é grátis ou de graça
+6. PREÇO: NUNCA informe valores. Diga que o valor depende do veículo e convide o cliente a passar na oficina para avaliação. NUNCA diga que é grátis ou de graça
 
 HORARIO DE FUNCIONAMENTO:
 - Horário: ${parseHorarioParaString(config?.chatbotHorario || null)}
@@ -1710,7 +1706,7 @@ REGRAS DE CADASTRO:
 - Cliente cadastrado sem veículo → use iniciar_cadastro (pula o nome)
 
 TRANSFERÊNCIA PARA ATENDENTE:
-- Quando o preço de um serviço não está disponível (R$ 0,00), ofereça transferir para um atendente humano
+- Se o cliente insistir em saber o valor exato, ofereça transferir para um atendente
 - Se o cliente pedir para falar com uma pessoa, atendente ou responsável, use transferir_atendente
 - Se após 2 tentativas você não conseguir resolver a dúvida do cliente, ofereça transferir para um atendente
 - Use transferir_atendente(motivo="descrição do motivo")
@@ -1720,11 +1716,11 @@ FUNÇÕES INTELIGENTES:
 - consultar_status_veiculo: "meu carro já ficou?", "já posso buscar?"
 - consultar_agendamentos: "quando é minha marcação?"
 - cancelar_ou_remarcar: "preciso remarcar", "cancelar agendamento"
-- consultar_preco: "quanto custa?", "qual o valor?" (para SERVIÇOS)
+- consultar_preco: "quanto custa?", "qual o valor?", "fazem tal serviço?" (para verificar SERVIÇOS disponíveis)
 - agendar_multiplos_servicos: quando pedir 2+ serviços juntos
 - registrar_preferencia: quando mencionar preferência
 - consultar_historico: "quando fiz a última troca?"
-- transferir_atendente: "quero falar com alguém", "chamar atendente", ou quando preço não disponível
+- transferir_atendente: "quero falar com alguém", "chamar atendente", ou quando cliente insistir em valor exato
 
 FUNÇÕES DE AGENDAMENTO:
 - iniciar_agendamento: quando cliente quer agendar
@@ -1746,7 +1742,7 @@ EXEMPLOS DE INTERPRETAÇÃO:
 - "quero agendar" → iniciar_agendamento(servico="agendamento")
 - "quero trocar o óleo" → iniciar_agendamento(servico="troca de óleo")
 - "meu carro já tá pronto?" → consultar_status_veiculo
-- "quanto custa a revisão?" → consultar_preco (para SERVIÇOS)
+- "quanto custa a revisão?" → consultar_preco (NÃO informe valor, diga que depende do veículo)
 - "vocês têm óleo sintético?" → consultar_estoque(busca="sintético") ← NÃO use responder_texto!
 - "que marca de filtro vocês usam?" → consultar_estoque(busca="filtro")
 - "quero trocar óleo e filtro" → agendar_multiplos_servicos
@@ -2594,15 +2590,13 @@ async function executeFunctionCall(
       for (const [cat, items] of Object.entries(porCategoria)) {
         mensagem += `\n*${cat}*\n`;
         for (const p of items.slice(0, 5)) { // Max 5 por categoria
-          const preco = Number(p.precoVenda);
-          const precoStr = preco > 0 ? ` - R$ ${preco.toFixed(2).replace('.', ',')}` : '';
-          mensagem += `  • ${p.marca} ${p.nome}${precoStr}\n`;
+          mensagem += `  • ${p.marca} ${p.nome}\n`;
         }
         if (items.length > 5) {
           mensagem += `  _...e mais ${items.length - 5} opções_\n`;
         }
       }
-      mensagem += `\nDeseja agendar um serviço?`;
+      mensagem += `\nOs valores dependem do veículo. Deseja agendar uma avaliação?`;
 
       return { type: 'text', message: mensagem };
     }
@@ -2614,7 +2608,7 @@ async function executeFunctionCall(
       if (servicos.length === 0) {
         return {
           type: 'text',
-          message: `${primeiroNome}, os valores dos serviços serão informados conforme avaliação do veículo. Entre em contato com a oficina para mais detalhes.`,
+          message: `${primeiroNome}, trabalhamos com troca de óleo, filtros, fluidos e revisões. O valor depende do veículo. Se quiser, pode passar aqui para uma avaliação sem compromisso.`,
         };
       }
 
@@ -2634,28 +2628,20 @@ async function executeFunctionCall(
       }
 
       if (servicosEncontrados.length === 0) {
-        // Mostrar todos os serviços
         servicosEncontrados = servicos;
       }
 
       if (servicosEncontrados.length === 1) {
         const s = servicosEncontrados[0];
-        if (s.preco > 0) {
-          return {
-            type: 'text',
-            message: `${primeiroNome}, o valor de *${s.nome}* é *R$ ${s.preco.toFixed(2).replace('.', ',')}*. Deseja agendar?`,
-          };
-        } else {
-          return {
-            type: 'button',
-            text: `${primeiroNome}, o valor de *${s.nome}* será informado conforme avaliação do veículo. Deseja falar com um atendente para obter o valor?`,
-            footerText: '',
-            choices: ['Falar com atendente|transferir_preco', 'Não, obrigado|cancelar'],
-          };
-        }
+        return {
+          type: 'button',
+          text: `${primeiroNome}, sim, trabalhamos com *${s.nome}*. O valor depende do veículo. Deseja agendar uma avaliação?`,
+          footerText: '',
+          choices: ['Agendar avaliação|agendar', 'Falar com atendente|transferir_preco'],
+        };
       }
 
-      // Múltiplos serviços - formatar por categoria
+      // Múltiplos serviços - listar sem preço
       const porCategoria: Record<string, typeof servicosEncontrados> = {};
       for (const s of servicosEncontrados) {
         const cat = s.categoria.replace(/_/g, ' ');
@@ -2663,20 +2649,21 @@ async function executeFunctionCall(
         porCategoria[cat].push(s);
       }
 
-      let mensagem = `${primeiroNome}, aqui estão nossos serviços:\n`;
+      let mensagem = `${primeiroNome}, trabalhamos com os seguintes serviços:\n`;
       for (const [categoria, items] of Object.entries(porCategoria)) {
         mensagem += `\n*${categoria}*\n`;
         for (const s of items) {
-          if (s.preco > 0) {
-            mensagem += `  • ${s.nome}: R$ ${s.preco.toFixed(2).replace('.', ',')}\n`;
-          } else {
-            mensagem += `  • ${s.nome}: consultar valor\n`;
-          }
+          mensagem += `  • ${s.nome}\n`;
         }
       }
-      mensagem += `\nDeseja agendar algum serviço?`;
+      mensagem += `\nOs valores dependem do veículo. Deseja agendar uma avaliação?`;
 
-      return { type: 'text', message: mensagem };
+      return {
+        type: 'button',
+        text: mensagem,
+        footerText: '',
+        choices: ['Agendar avaliação|agendar', 'Falar com atendente|transferir_preco'],
+      };
     }
 
     case 'agendar_multiplos_servicos': {
@@ -2720,12 +2707,8 @@ async function executeFunctionCall(
         };
       }
 
-      // Calcular total (ignorar serviços sem preço)
-      const total = servicosEncontrados.reduce((acc, s) => acc + s.preco, 0);
-      const listaServicos = servicosEncontrados.map(s => {
-        if (s.preco > 0) return `• ${s.nome}: R$ ${s.preco.toFixed(2).replace('.', ',')}`;
-        return `• ${s.nome}: consultar valor`;
-      }).join('\n');
+      // Listar serviços sem preço
+      const listaServicos = servicosEncontrados.map(s => `• ${s.nome}`).join('\n');
 
       // Guardar serviços no estado para usar quando confirmar
       (agendamento as any).servicosMultiplos = servicosEncontrados;
@@ -2755,7 +2738,7 @@ async function executeFunctionCall(
 
           return {
             type: 'list',
-            text: `${primeiroNome}, serviços para o ${agendamento.veiculoNome}:\n\n${listaServicos}\n\n*Total: R$ ${total.toFixed(2).replace('.', ',')}*\n\nSelecione um horário:`,
+            text: `${primeiroNome}, serviços para o ${agendamento.veiculoNome}:\n\n${listaServicos}\n\n_Valores conforme avaliação do veículo._\n\nSelecione um horário:`,
             listButton: 'Ver Horários',
             footerText: 'Escolha o melhor horário',
             choices,
@@ -2777,7 +2760,7 @@ async function executeFunctionCall(
 
       return {
         type: 'list',
-        text: `${primeiroNome}, serviços selecionados:\n\n${listaServicos}\n\n*Total: R$ ${total.toFixed(2).replace('.', ',')}*\n\nQual veículo deseja trazer?`,
+        text: `${primeiroNome}, serviços selecionados:\n\n${listaServicos}\n\n_Valores conforme avaliação do veículo._\n\nQual veículo deseja trazer?`,
         listButton: 'Escolher Veículo',
         footerText: 'Selecione um',
         choices,
