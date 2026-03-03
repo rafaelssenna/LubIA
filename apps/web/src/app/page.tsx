@@ -6,7 +6,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import {
   MessageCircle, Users, Car, ClipboardList, Package, DollarSign, Bell,
-  ChevronDown, Check, Star, ArrowRight, Shield, Globe, Zap,
+  ChevronDown, Check, ArrowRight, Shield, Globe, Zap,
   Phone, BookOpen, Calendar, Wrench, Clock, TrendingUp,
   Loader2
 } from 'lucide-react';
@@ -90,9 +90,8 @@ export default function LandingPage() {
       {/* ============ NAV ============ */}
       <nav className="fixed top-0 left-0 right-0 z-50 bg-[#0a0a0a]/80 backdrop-blur-xl border-b border-white/5">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <Image src="/logo.png" alt="LoopIA" width={36} height={36} />
-            <span className="font-bold text-lg">Loop<span className="text-emerald-400">IA</span></span>
+          <div className="flex items-center">
+            <Image src="/logo.png" alt="LoopIA" width={54} height={54} />
           </div>
           <div className="flex items-center gap-3">
             <Link href="/login" className="text-sm text-gray-400 hover:text-white transition-colors hidden sm:block">
@@ -129,8 +128,8 @@ export default function LandingPage() {
 
           <AnimatedSection delay={200}>
             <p className="text-lg sm:text-xl text-gray-400 max-w-2xl mx-auto mb-8 leading-relaxed">
-              Chatbot com IA no WhatsApp, gestão completa, lembretes automáticos
-              e controle financeiro. Tudo em um só lugar.
+              Controle total de clientes, veículos, ordens de serviço, estoque e financeiro.
+              Com inteligência artificial que atende seus clientes 24h pelo WhatsApp.
             </p>
           </AnimatedSection>
 
@@ -290,8 +289,8 @@ export default function LandingPage() {
               O LoopIA resolve tudo isso pra você
             </h2>
             <p className="text-gray-400 max-w-2xl mx-auto text-base sm:text-lg leading-relaxed">
-              Sistema completo pra sua oficina com inteligência artificial no WhatsApp.
-              Seus clientes são atendidos 24 horas. Você controla tudo de qualquer lugar, até do celular.
+              Um sistema completo que organiza toda sua oficina: clientes, veículos, ordens de serviço,
+              orçamentos, estoque, financeiro e lembretes. E ainda tem uma IA que atende seus clientes pelo WhatsApp.
             </p>
           </AnimatedSection>
         </div>
@@ -306,41 +305,18 @@ export default function LandingPage() {
             </h2>
           </AnimatedSection>
 
-          {/* Destaque: Chatbot IA */}
-          <AnimatedSection>
-            <div className="bg-gradient-to-br from-emerald-500/10 to-cyan-500/5 border border-emerald-500/20 rounded-2xl p-6 sm:p-8 mb-6">
-              <div className="flex flex-col sm:flex-row items-start gap-6">
-                <div className="w-14 h-14 bg-emerald-500/20 rounded-xl flex items-center justify-center shrink-0">
-                  <MessageCircle size={28} className="text-emerald-400" />
-                </div>
-                <div>
-                  <h3 className="text-xl font-bold text-white mb-2">Chatbot IA no WhatsApp</h3>
-                  <p className="text-gray-400 leading-relaxed mb-4">
-                    Atenda clientes 24h sem levantar do serviço. O chatbot responde dúvidas, informa preços,
-                    agenda serviços e cadastra clientes automaticamente pelo WhatsApp. Com inteligência artificial
-                    que entende o que o cliente quer.
-                  </p>
-                  <div className="flex flex-wrap gap-2">
-                    {['Responde 24h', 'Agenda sozinho', 'Informa preços', 'Cadastra clientes'].map((tag, i) => (
-                      <span key={i} className="bg-emerald-500/10 text-emerald-400 text-xs px-3 py-1 rounded-full border border-emerald-500/20">
-                        {tag}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            </div>
-          </AnimatedSection>
-
-          {/* Grid de features */}
+          {/* Grid de features - sistema completo */}
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {[
-              { icon: Users, title: 'Clientes e Veículos', desc: 'Histórico completo na palma da mão. Nunca mais perca informação.' },
-              { icon: ClipboardList, title: 'Ordens de Serviço', desc: 'Da entrada à entrega, tudo registrado. Notifique o cliente quando ficar pronto.' },
-              { icon: BookOpen, title: 'Orçamentos', desc: 'Monte orçamentos profissionais e envie pelo WhatsApp com um clique.' },
-              { icon: Package, title: 'Estoque', desc: 'Saiba o que tem na prateleira. Alertas de estoque baixo automáticos.' },
-              { icon: DollarSign, title: 'Financeiro', desc: 'Contas a pagar, a receber, fluxo de caixa. Sem surpresa no fim do mês.' },
-              { icon: Bell, title: 'Lembretes Automáticos', desc: 'O cliente volta. Sempre. Lembretes de troca de óleo e revisão no piloto automático.' },
+              { icon: Users, title: 'Cadastro de Clientes', desc: 'Controle completo dos seus clientes com histórico de serviços, veículos e preferências.' },
+              { icon: Car, title: 'Controle de Veículos', desc: 'Todos os veículos cadastrados com placa, marca, modelo, km e histórico de manutenção.' },
+              { icon: ClipboardList, title: 'Ordens de Serviço', desc: 'Da entrada à entrega, tudo registrado. Acompanhe status e notifique o cliente.' },
+              { icon: BookOpen, title: 'Orçamentos', desc: 'Monte orçamentos profissionais com peças e serviços. Envie pelo WhatsApp em um clique.' },
+              { icon: Package, title: 'Controle de Estoque', desc: 'Saiba o que tem na prateleira. Entrada, saída e alertas de estoque baixo.' },
+              { icon: DollarSign, title: 'Gestão Financeira', desc: 'Contas a pagar, a receber, vendas rápidas e fluxo de caixa. Tudo organizado.' },
+              { icon: Bell, title: 'Lembretes Automáticos', desc: 'Avise clientes sobre troca de óleo e revisões. Eles voltam sozinhos.' },
+              { icon: MessageCircle, title: 'IA no WhatsApp', desc: 'Inteligência artificial que atende seus clientes 24h: responde, agenda e cadastra.' },
+              { icon: Calendar, title: 'Agenda Integrada', desc: 'Horários disponíveis, agendamentos e histórico. Tudo integrado com a IA.' },
             ].map((item, i) => (
               <AnimatedSection key={i} delay={i * 80}>
                 <div className="bg-white/[0.02] border border-white/10 rounded-xl p-5 hover:border-emerald-500/20 hover:bg-emerald-500/[0.02] transition-all h-full">
@@ -369,7 +345,7 @@ export default function LandingPage() {
             {[
               { step: '1', icon: Wrench, title: 'Crie sua conta', desc: 'Em 30 segundos, sem burocracia. Só precisa do nome e e-mail.' },
               { step: '2', icon: Clock, title: 'Configure a oficina', desc: 'Cadastre serviços e preços. O sistema já vem pronto pra usar.' },
-              { step: '3', icon: TrendingUp, title: 'Pronto!', desc: 'O chatbot começa a atender no WhatsApp. Você foca nos carros.' },
+              { step: '3', icon: TrendingUp, title: 'Pronto!', desc: 'Gerencie tudo pelo sistema. A IA atende no WhatsApp. Você foca nos carros.' },
             ].map((item, i) => (
               <AnimatedSection key={i} delay={i * 150}>
                 <div className="text-center">
@@ -414,12 +390,13 @@ export default function LandingPage() {
 
               <div className="text-left space-y-3 mb-8">
                 {[
-                  'Chatbot IA no WhatsApp 24h',
-                  'Clientes e veículos ilimitados',
-                  'Ordens de serviço e orçamentos',
+                  'Cadastro de clientes e veículos ilimitados',
+                  'Ordens de serviço completas',
+                  'Orçamentos profissionais',
                   'Controle de estoque',
-                  'Gestão financeira completa',
-                  'Lembretes automáticos',
+                  'Gestão financeira (contas, vendas, fluxo)',
+                  'Lembretes automáticos de manutenção',
+                  'IA que atende no WhatsApp 24h',
                   'Suporte por WhatsApp',
                 ].map((item, i) => (
                   <div key={i} className="flex items-center gap-3">
@@ -448,51 +425,6 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* ============ DEPOIMENTOS ============ */}
-      <section className="py-16 sm:py-24 px-4 sm:px-6">
-        <div className="max-w-4xl mx-auto">
-          <AnimatedSection>
-            <h2 className="text-2xl sm:text-3xl font-bold text-center mb-12">
-              O que donos de oficina estão dizendo
-            </h2>
-          </AnimatedSection>
-
-          <div className="grid sm:grid-cols-3 gap-4">
-            {[
-              {
-                name: 'Pedro L.',
-                city: 'Belo Horizonte, MG',
-                text: 'Antes eu perdia clientes porque não atendia o telefone. Agora o chatbot responde tudo e eu ganhei muito mais tempo.',
-              },
-              {
-                name: 'Marcos R.',
-                city: 'São Paulo, SP',
-                text: 'O lembrete automático é sensacional. O cliente volta sozinho pra fazer a troca de óleo. Não preciso ficar ligando.',
-              },
-              {
-                name: 'Jonas G.',
-                city: 'Contagem, MG',
-                text: 'Finalmente sei quanto entra e quanto sai. O financeiro do sistema é simples e me mostra tudo que eu preciso.',
-              },
-            ].map((item, i) => (
-              <AnimatedSection key={i} delay={i * 100}>
-                <div className="bg-white/[0.02] border border-white/10 rounded-xl p-5 h-full flex flex-col">
-                  <div className="flex gap-1 mb-3">
-                    {[...Array(5)].map((_, j) => (
-                      <Star key={j} size={14} className="text-yellow-400 fill-yellow-400" />
-                    ))}
-                  </div>
-                  <p className="text-gray-300 text-sm leading-relaxed mb-4 flex-1">&quot;{item.text}&quot;</p>
-                  <div>
-                    <p className="font-semibold text-white text-sm">{item.name}</p>
-                    <p className="text-gray-500 text-xs">{item.city}</p>
-                  </div>
-                </div>
-              </AnimatedSection>
-            ))}
-          </div>
-        </div>
-      </section>
 
       {/* ============ FAQ ============ */}
       <section className="py-16 sm:py-24 px-4 sm:px-6">
@@ -526,8 +458,8 @@ export default function LandingPage() {
                 answer="Sim. Sem multa, sem fidelidade. Cancele quando quiser com um clique."
               />
               <FaqItem
-                question="O chatbot atende bem mesmo?"
-                answer="Sim. Ele usa inteligência artificial avançada, responde dúvidas, informa preços e agenda serviços automaticamente."
+                question="A IA atende bem os clientes?"
+                answer="Sim. Ela usa inteligência artificial avançada, responde dúvidas, informa preços, agenda serviços e cadastra clientes automaticamente."
               />
               <FaqItem
                 question="Já tenho outro sistema. Consigo migrar?"
@@ -568,9 +500,8 @@ export default function LandingPage() {
       <footer className="py-12 px-4 sm:px-6 border-t border-white/5">
         <div className="max-w-4xl mx-auto">
           <div className="flex flex-col sm:flex-row items-center justify-between gap-6">
-            <div className="flex items-center gap-2">
-              <Image src="/logo.png" alt="LoopIA" width={28} height={28} />
-              <span className="font-bold">Loop<span className="text-emerald-400">IA</span></span>
+            <div className="flex items-center">
+              <Image src="/logo.png" alt="LoopIA" width={42} height={42} />
             </div>
             <div className="flex items-center gap-6 text-sm text-gray-500">
               <Link href="/login" className="hover:text-white transition-colors">Entrar</Link>
