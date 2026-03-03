@@ -98,11 +98,17 @@ export async function gerarLembretesParaEmpresa(empresaId: number): Promise<Lemb
   for (const veiculo of veiculos) {
     const kmAtual = veiculo.kmAtual;
 
+    // Pré-calcular última OS geral do veículo (fallback quando não tem serviço linkado)
+    const ultimaOSGeral = veiculo.ordens[0] || null; // já vem ordenado desc
+
     for (const servico of servicos) {
       const tipoLembrete = CATEGORIA_TO_TIPO[servico.categoria] || 'OUTRO';
 
-      // Verificar se já tem lembrete pendente/recente pro mesmo tipo
-      const jaTemLembrete = veiculo.lembretes.some(l => l.tipo === tipoLembrete);
+      // FIX: Verificar por nome do serviço (mensagem), não só por tipo
+      // Isso evita colisão quando vários serviços mapeiam pro mesmo tipo (ex: todos OUTROS)
+      const jaTemLembrete = veiculo.lembretes.some(l =>
+        l.mensagem === servico.nome || (!l.mensagem && l.tipo === tipoLembrete)
+      );
       if (jaTemLembrete) continue;
 
       let precisaPorKm = false;
@@ -111,28 +117,28 @@ export async function gerarLembretesParaEmpresa(empresaId: number): Promise<Lemb
 
       // --- Verificação por KM ---
       if (servico.intervaloKm && kmAtual) {
-        // Buscar última OS que contenha esse serviço (pela categoria)
+        // 1º: Buscar última OS que contenha esse serviço (pela categoria)
         const ultimaOSComServico = veiculo.ordens.find(ordem =>
-          ordem.itens.some(item => item.servico.categoria === servico.categoria)
+          ordem.itens.some(item => item.servico?.categoria === servico.categoria)
         );
 
         if (ultimaOSComServico?.kmEntrada) {
-          // Tem OS anterior com km → próxima = km da OS + intervalo
           kmProximaManutencao = ultimaOSComServico.kmEntrada + servico.intervaloKm;
+        } else if (ultimaOSGeral?.kmEntrada) {
+          // 2º fallback: última OS qualquer (para oficinas que não linkam serviços na OS)
+          kmProximaManutencao = ultimaOSGeral.kmEntrada + servico.intervaloKm;
         } else if (veiculo.kmInicial) {
-          // Sem OS mas tem kmInicial → assume que fez na hora do cadastro
+          // 3º fallback: kmInicial do veículo
           kmProximaManutencao = veiculo.kmInicial + servico.intervaloKm;
         } else {
-          // Sem referência de km → não dá pra calcular por km
+          // Sem referência → não dá pra calcular por km
           kmProximaManutencao = null;
         }
 
         if (kmProximaManutencao !== null) {
-          // Threshold: 10% do intervalo, mínimo 500km
           const threshold = Math.max(500, Math.round(servico.intervaloKm * 0.1));
           const kmRestantes = kmProximaManutencao - kmAtual;
 
-          // Gerar se faltam menos que o threshold (ou já passou)
           if (kmRestantes <= threshold && kmRestantes > -(servico.intervaloKm)) {
             precisaPorKm = true;
           }
@@ -141,8 +147,9 @@ export async function gerarLembretesParaEmpresa(empresaId: number): Promise<Lemb
 
       // --- Verificação por DIAS ---
       if (servico.intervaloDias) {
+        // 1º: Buscar última OS que contenha esse serviço (pela categoria)
         const ultimaOSComServico = veiculo.ordens.find(ordem =>
-          ordem.itens.some(item => item.servico.categoria === servico.categoria)
+          ordem.itens.some(item => item.servico?.categoria === servico.categoria)
         );
 
         let dataReferencia: Date;
@@ -150,15 +157,19 @@ export async function gerarLembretesParaEmpresa(empresaId: number): Promise<Lemb
           dataReferencia = new Date(ultimaOSComServico.dataConclusao);
         } else if (ultimaOSComServico?.createdAt) {
           dataReferencia = new Date(ultimaOSComServico.createdAt);
+        } else if (ultimaOSGeral?.dataConclusao) {
+          // 2º fallback: última OS qualquer (para oficinas que não linkam serviços)
+          dataReferencia = new Date(ultimaOSGeral.dataConclusao);
+        } else if (ultimaOSGeral?.createdAt) {
+          dataReferencia = new Date(ultimaOSGeral.createdAt);
         } else {
-          // Sem OS → usar data de cadastro do veículo
+          // 3º fallback: data de cadastro do veículo
           dataReferencia = new Date(veiculo.createdAt);
         }
 
         const proximaData = new Date(dataReferencia);
         proximaData.setDate(proximaData.getDate() + servico.intervaloDias);
 
-        // Gerar se faltam 7 dias ou menos (ou já passou)
         const diasRestantes = Math.ceil(
           (proximaData.getTime() - hoje.getTime()) / (1000 * 60 * 60 * 24)
         );
@@ -178,7 +189,7 @@ export async function gerarLembretesParaEmpresa(empresaId: number): Promise<Lemb
             tipo: tipoLembrete as any,
             dataLembrete: hoje,
             kmLembrete: kmProximaManutencao,
-            mensagem: servico.nome, // Nome real do serviço pra mensagem
+            mensagem: servico.nome,
             empresaId,
           },
         });
