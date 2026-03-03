@@ -470,18 +470,18 @@ export default function Dashboard() {
         </div>
 
         {/* Em Espera - Clientes aguardando atendente */}
-        {emEspera && emEspera.count > 0 && (
-          <div className="bg-card rounded-2xl border border-orange-500/20 overflow-hidden">
-            <div className="p-3 border-b border-border flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <div className="p-2 bg-orange-500/10 rounded-lg">
-                  <MessageCircle className="h-4 w-4 text-orange-400" />
-                </div>
-                <div>
-                  <h3 className="text-sm font-semibold text-foreground">Clientes em Espera</h3>
-                  <p className="text-xs text-foreground-muted">{emEspera.count} aguardando atendente</p>
-                </div>
+        <div className="bg-card rounded-2xl border border-orange-500/20 overflow-hidden">
+          <div className="p-3 border-b border-border flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-orange-500/10 rounded-lg">
+                <MessageCircle className="h-4 w-4 text-orange-400" />
               </div>
+              <div>
+                <h3 className="text-sm font-semibold text-foreground">Clientes em Espera</h3>
+                <p className="text-xs text-foreground-muted">{emEspera?.count || 0} aguardando atendente</p>
+              </div>
+            </div>
+            {emEspera && emEspera.count > 0 && (
               <Link
                 href="/whatsapp"
                 className="flex items-center gap-1.5 px-3 py-1.5 bg-orange-500/10 rounded-lg text-orange-400 text-xs font-medium hover:bg-orange-500/20 transition-all"
@@ -489,8 +489,15 @@ export default function Dashboard() {
                 Atender
                 <ArrowRight className="h-3 w-3" />
               </Link>
-            </div>
-            <div className="p-3">
+            )}
+          </div>
+          <div className="p-3">
+            {!emEspera || emEspera.count === 0 ? (
+              <div className="py-4 text-center">
+                <CheckCircle className="h-8 w-8 text-emerald-500 mx-auto mb-2" />
+                <p className="text-sm text-foreground-muted">Nenhum cliente em espera</p>
+              </div>
+            ) : (
               <div className="flex gap-3 overflow-x-auto custom-scrollbar pb-1">
                 {emEspera.itens.map((item) => {
                   const tempoEspera = Math.floor((Date.now() - new Date(item.desde).getTime()) / (1000 * 60));
@@ -513,9 +520,9 @@ export default function Dashboard() {
                   );
                 })}
               </div>
-            </div>
+            )}
           </div>
-        )}
+        </div>
 
         {/* Lembretes - Barra horizontal */}
         {lembretes && lembretes.count > 0 && (
