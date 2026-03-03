@@ -22,6 +22,8 @@ import {
   Edit,
   Trash2,
   Store,
+  HelpCircle,
+  Info,
 } from 'lucide-react';
 import { useState, useEffect } from 'react';
 
@@ -39,6 +41,13 @@ interface Config {
   chatbotNome: string | null;
   chatbotHorário: string | null;
   chatbotBoasVindas: string | null;
+  informacoesNegocio: string | null;
+  chatbotFaq: string | null;
+}
+
+interface FaqItem {
+  pergunta: string;
+  resposta: string;
 }
 
 interface WhatsAppStatus {
@@ -225,6 +234,8 @@ export default function ConfiguraçõesPage() {
   const [chatbotNome, setChatbotNome] = useState('LoopIA');
   const [chatbotHorário, setChatbotHorário] = useState<HorárioSemana>(horarioPadrao);
   const [chatbotBoasVindas, setChatbotBoasVindas] = useState('Olá! Sou a LoopIA, assistente virtual da oficina. Como posso ajudar?');
+  const [informacoesNegocio, setInformacoesNegocio] = useState('');
+  const [faqItems, setFaqItems] = useState<FaqItem[]>([]);
 
   // Serviços do banco
   const [servicos, setServiços] = useState<Servico[]>([]);
@@ -273,6 +284,14 @@ export default function ConfiguraçõesPage() {
           setChatbotHorário(horarioPadrao);
         }
         setChatbotBoasVindas(data.data.chatbotBoasVindas || 'Olá! Sou a LoopIA, assistente virtual da oficina.');
+        setInformacoesNegocio(data.data.informacoesNegocio || '');
+        // Carregar FAQ
+        try {
+          if (data.data.chatbotFaq) {
+            const parsed = JSON.parse(data.data.chatbotFaq);
+            if (Array.isArray(parsed)) setFaqItems(parsed);
+          }
+        } catch {}
       }
     } catch (error) {
       console.error('Erro ao buscar config:', error);
@@ -499,6 +518,8 @@ export default function ConfiguraçõesPage() {
           chatbotNome,
           chatbotHorário: JSON.stringify(chatbotHorário),
           chatbotBoasVindas,
+          informacoesNegocio,
+          chatbotFaq: JSON.stringify(faqItems.filter(f => f.pergunta.trim() && f.resposta.trim())),
         }),
       });
 
@@ -1216,6 +1237,99 @@ export default function ConfiguraçõesPage() {
                 />
               </div>
 
+              {/* Informações do Negócio */}
+              <div>
+                <label className="flex items-center gap-2 text-sm font-medium text-muted mb-2">
+                  <Info size={14} />
+                  Informações do Negócio
+                </label>
+                <textarea
+                  value={informacoesNegocio}
+                  onChange={(e) => setInformacoesNegocio(e.target.value)}
+                  placeholder={"Ex: Trabalhamos com todas as marcas de veículos.\nAceitamos cartão, Pix e dinheiro.\nEstacionamento gratuito para clientes.\nTemos sala de espera com Wi-Fi e café."}
+                  rows={4}
+                  className="w-full bg-zinc-900/50 border border-border rounded-xl px-4 py-3 text-foreground placeholder-zinc-500 focus:outline-none focus:border-purple-500/50 focus:ring-2 focus:ring-purple-500/20 transition-all resize-none"
+                />
+                <p className="mt-1.5 text-xs text-foreground-muted">
+                  Informações gerais sobre a oficina que a IA usará nas conversas (formas de pagamento, diferenciais, etc.)
+                </p>
+              </div>
+
+              {/* FAQ - Perguntas Frequentes */}
+              <div>
+                <div className="flex items-center justify-between mb-2">
+                  <label className="flex items-center gap-2 text-sm font-medium text-muted">
+                    <HelpCircle size={14} />
+                    Perguntas Frequentes (FAQ)
+                  </label>
+                  <button
+                    onClick={() => setFaqItems([...faqItems, { pergunta: '', resposta: '' }])}
+                    className="flex items-center gap-1.5 px-3 py-1.5 bg-purple-500/10 border border-purple-500/30 rounded-lg text-purple-400 text-xs font-medium hover:bg-purple-500/20 transition-all"
+                  >
+                    <Plus size={14} />
+                    Adicionar
+                  </button>
+                </div>
+                <div className="space-y-3">
+                  {faqItems.length > 0 ? (
+                    faqItems.map((item, index) => (
+                      <div key={index} className="bg-zinc-900/50 border border-border rounded-xl p-4 space-y-3">
+                        <div className="flex items-start justify-between gap-2">
+                          <div className="flex-1 space-y-3">
+                            <div>
+                              <label className="block text-xs font-medium text-muted mb-1">Pergunta</label>
+                              <input
+                                type="text"
+                                value={item.pergunta}
+                                onChange={(e) => {
+                                  const updated = [...faqItems];
+                                  updated[index] = { ...updated[index], pergunta: e.target.value };
+                                  setFaqItems(updated);
+                                }}
+                                placeholder="Ex: Vocês trabalham com qual marca de óleo?"
+                                className="w-full bg-zinc-800/50 border border-border rounded-lg px-3 py-2 text-sm text-foreground placeholder-zinc-500 focus:outline-none focus:border-purple-500/50 transition-all"
+                              />
+                            </div>
+                            <div>
+                              <label className="block text-xs font-medium text-muted mb-1">Resposta</label>
+                              <textarea
+                                value={item.resposta}
+                                onChange={(e) => {
+                                  const updated = [...faqItems];
+                                  updated[index] = { ...updated[index], resposta: e.target.value };
+                                  setFaqItems(updated);
+                                }}
+                                placeholder="Ex: Trabalhamos com Mobil, Shell, Castrol e outras marcas premium."
+                                rows={2}
+                                className="w-full bg-zinc-800/50 border border-border rounded-lg px-3 py-2 text-sm text-foreground placeholder-zinc-500 focus:outline-none focus:border-purple-500/50 transition-all resize-none"
+                              />
+                            </div>
+                          </div>
+                          <button
+                            onClick={() => {
+                              const updated = faqItems.filter((_, i) => i !== index);
+                              setFaqItems(updated);
+                            }}
+                            className="p-2 hover:bg-red-500/10 rounded-lg text-zinc-400 hover:text-red-400 transition-all mt-5"
+                            title="Remover"
+                          >
+                            <Trash2 size={16} />
+                          </button>
+                        </div>
+                      </div>
+                    ))
+                  ) : (
+                    <div className="bg-zinc-900/50 border border-border rounded-xl p-6 text-center">
+                      <HelpCircle size={24} className="text-zinc-500 mx-auto mb-2" />
+                      <p className="text-sm text-muted">Nenhuma pergunta cadastrada</p>
+                      <p className="text-xs text-foreground-muted mt-1">
+                        Adicione perguntas frequentes para a IA responder automaticamente
+                      </p>
+                    </div>
+                  )}
+                </div>
+              </div>
+
               <div className="bg-purple-500/5 border border-purple-500/20 rounded-xl p-4">
                 <div className="flex items-start gap-3">
                   <Bot size={20} className="text-purple-400 mt-0.5" />
@@ -1223,7 +1337,7 @@ export default function ConfiguraçõesPage() {
                     <p className="text-sm text-foreground font-medium">Como funciona</p>
                     <p className="text-xs text-muted mt-1">
                       A LoopIA responde automaticamente as mensagens recebidas no WhatsApp usando inteligência artificial (Gemini).
-                      Ela conhece os serviços da oficina, preços, e dados dos clientes cadastrados.
+                      Ela conhece os serviços, informações do negócio e FAQ cadastrados aqui.
                     </p>
                   </div>
                 </div>

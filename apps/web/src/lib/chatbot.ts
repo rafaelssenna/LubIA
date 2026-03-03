@@ -4,6 +4,31 @@ import { prisma } from './prisma';
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || '');
 
 // ==========================================
+// UTILITÁRIOS
+// ==========================================
+
+// Sanitizar primeiro nome (remove emojis, detecta razão social, normaliza)
+function sanitizePrimeiroNome(fullName: string | undefined | null): string {
+  if (!fullName) return '';
+
+  // Remove emojis
+  let clean = fullName.replace(/[\u{1F600}-\u{1F64F}\u{1F300}-\u{1F5FF}\u{1F680}-\u{1F6FF}\u{1F1E0}-\u{1F1FF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}\u{FE00}-\u{FE0F}\u{1F900}-\u{1F9FF}\u{200D}\u{20E3}\u{E0020}-\u{E007F}]/gu, '').trim();
+
+  // Se ALL CAPS e > 15 chars, provavelmente razão social
+  if (clean.length > 15 && clean === clean.toUpperCase()) return '';
+
+  // Se contém sufixos empresariais, ignorar
+  if (/\b(LTDA|MEI|EIRELI|S\.?A\.?|ASSOCIA|COMERCI|SERVICO|EMPRESA|DISTRIB|REPRESENT)\b/i.test(clean)) return '';
+
+  // Pegar primeiro nome
+  const firstName = clean.split(/\s+/)[0];
+  if (!firstName || firstName.length < 2) return '';
+
+  // Title case
+  return firstName.charAt(0).toUpperCase() + firstName.slice(1).toLowerCase();
+}
+
+// ==========================================
 // TRANSCRIÇÃO DE ÁUDIO COM GEMINI
 // ==========================================
 
@@ -62,7 +87,7 @@ const chatbotTools: FunctionDeclarationsTool[] = [{
   functionDeclarations: [
     {
       name: 'iniciar_agendamento',
-      description: 'Inicia o processo de agendamento quando o cliente quer marcar/agendar um serviço. Use quando o cliente demonstrar intenção de agendar, marcar horário, fazer revisão, trocar óleo, etc. Exemplos: "quero agendar", "pode sim", "vamos marcar", "preciso trocar o óleo", "qual horário tem?", "posso ir amanhã?". IMPORTANTE: sempre extraia o serviço mencionado pelo cliente.',
+      description: 'Inicia agendamento. Use SOMENTE quando o cliente PEDIR EXPLICITAMENTE para agendar ou marcar. Exemplos: "quero agendar", "marca pra mim", "pode agendar". NAO use para: "sim", "ok", "pode" sem contexto, perguntas sobre servicos ("voces fazem?", "quanto custa?"), ou duvidas gerais. Extraia o servico mencionado.',
       parameters: {
         type: SchemaType.OBJECT,
         properties: {
@@ -1156,7 +1181,7 @@ export async function generateChatResponse(
 
     // Tratar áudio não transcrito
     if (userMessage === '[AUDIO_NAO_TRANSCRITO]' || userMessage === '[AUDIO_SEM_URL]') {
-      const primeiroNome = customerData?.nome.split(' ')[0] || (userName ? userName.split(' ')[0] : 'Cliente');
+      const primeiroNome = sanitizePrimeiroNome(customerData?.nome) || sanitizePrimeiroNome(userName) || 'Cliente';
       return {
         type: 'text',
         message: `${primeiroNome}, não foi possível compreender o áudio. Por favor, envie novamente ou digite sua mensagem.`,
@@ -1192,7 +1217,7 @@ export async function generateChatResponse(
     // Processar resposta de seleção de veículo via botão
     if (isButtonResponse && userMessage.startsWith('veiculo_')) {
       if (customerData) {
-        const primeiroNome = customerData.nome.split(' ')[0];
+        const primeiroNome = sanitizePrimeiroNome(customerData.nome) || 'Cliente';
 
         // Opção "Todos os veículos"
         if (userMessage === 'veiculo_todos') {
@@ -1271,7 +1296,7 @@ export async function generateChatResponse(
 
         const dataFormatada = formatDateBrazil(dataEscolhida);
 
-        const primeiroNome = customerData?.nome.split(' ')[0] || 'Cliente';
+        const primeiroNome = sanitizePrimeiroNome(customerData?.nome) || 'Cliente';
 
         // Múltiplos veículos
         if (agendamento.veiculoIds && agendamento.veiculoIds.length > 1) {
@@ -1296,7 +1321,7 @@ export async function generateChatResponse(
 
     // Processar confirmação via botão
     if (isButtonResponse && userMessage === 'confirmar_sim') {
-      const primeiroNome = customerData?.nome.split(' ')[0] || 'Cliente';
+      const primeiroNome = sanitizePrimeiroNome(customerData?.nome) || 'Cliente';
       const dataFormatada = agendamento.dataHora ? formatDateBrazil(agendamento.dataHora) : '';
 
       // Múltiplos veículos
@@ -1470,7 +1495,7 @@ export async function generateChatResponse(
 
     // Processar remarcação via botão
     if (isButtonResponse && userMessage.startsWith('remarcar_')) {
-      const primeiroNome = customerData?.nome.split(' ')[0] || (userName ? userName.split(' ')[0] : 'Cliente');
+      const primeiroNome = sanitizePrimeiroNome(customerData?.nome) || sanitizePrimeiroNome(userName) || 'Cliente';
 
       // Verificar se é novo horário ou ID de agendamento
       if (userMessage.includes('T')) {
@@ -1534,7 +1559,7 @@ export async function generateChatResponse(
     // Processar cancelamento de agendamento específico via botão
     if (isButtonResponse && userMessage.startsWith('cancelar_') && userMessage !== 'cancelar_cadastro') {
       const ordemId = parseInt(userMessage.replace('cancelar_', ''));
-      const primeiroNome = customerData?.nome.split(' ')[0] || (userName ? userName.split(' ')[0] : 'Cliente');
+      const primeiroNome = sanitizePrimeiroNome(customerData?.nome) || sanitizePrimeiroNome(userName) || 'Cliente';
 
       if (!isNaN(ordemId) && customerData?.agendamentosFuturos) {
         const ag = customerData.agendamentosFuturos.find(a => a.id === ordemId);
@@ -1560,7 +1585,7 @@ export async function generateChatResponse(
     // ==========================================
 
     // Preparar contexto para o modelo
-    const primeiroNome = customerData?.nome.split(' ')[0] || (userName ? userName.split(' ')[0] : 'Cliente');
+    const primeiroNome = sanitizePrimeiroNome(customerData?.nome) || sanitizePrimeiroNome(userName) || 'Cliente';
 
     // Buscar histórico recente de mensagens para contexto
     const recentMessages = await getRecentMessages(phoneNumber, empresaId);
@@ -1651,107 +1676,104 @@ export async function generateChatResponse(
       }
     }
 
-    // Construir prompt para function calling
-    const systemPromptFC = `Você é a assistente virtual inteligente de uma oficina mecânica. Seu nome é ${config?.chatbotNome || 'LoopIA'}.
-Oficina: ${config?.nomeOficina || 'Oficina'}
-Horário: ${parseHorarioParaString(config?.chatbotHorario || null)}
+    // Flag: primeira mensagem da conversa
+    const isFirstMessage = recentMessages.length === 0;
 
-Serviços disponíveis:
+    // Parse FAQ do config
+    let faqFormatado = '';
+    if ((config as any)?.chatbotFaq) {
+      try {
+        const faqItems = JSON.parse((config as any).chatbotFaq) as { pergunta: string; resposta: string }[];
+        if (faqItems.length > 0) {
+          faqFormatado = faqItems.map(item => `P: ${item.pergunta}\nR: ${item.resposta}`).join('\n\n');
+        }
+      } catch {
+        // JSON inválido, ignorar
+      }
+    }
+
+    // Construir prompt para function calling
+    const systemPromptFC = `[QUEM VOCE E]
+Seu nome: ${config?.chatbotNome || 'LubIA'}
+Oficina: ${config?.nomeOficina || 'nossa oficina'}
+Horario: ${parseHorarioParaString(config?.chatbotHorario || null)}
+Voce e a atendente da oficina pelo WhatsApp. Voce NAO e um robo - voce e uma pessoa real que trabalha aqui.
+${(config as any)?.informacoesNegocio ? `\n[INFORMACOES DA OFICINA]\n${(config as any).informacoesNegocio}` : ''}
+${faqFormatado ? `\n[PERGUNTAS FREQUENTES - use quando relevante, responda com suas palavras]\n${faqFormatado}` : ''}
+
+[SERVICOS DISPONIVEIS]
 ${servicosFormatados}
 ${contextoCliente}
 ${contextoCadastro}
 ${contextoAgendamento}
 ${historicoConversa}
 
-SUA PERSONALIDADE:
-- Você é a assistente virtual de uma oficina mecânica
-- Use linguagem FORMAL e profissional. Trate o cliente com respeito
-- O primeiro nome do cliente é: "${primeiroNome}"
-- Seja OBJETIVA e DIRETA: máximo 1-2 frases curtas por resposta
-- NÃO use emojis. Responda apenas com texto limpo
-- NÃO use gírias, diminutivos ou linguagem informal (nada de "pra", "rapidinho", "probleminha", "show", "beleza")
+${isFirstMessage ? '[PRIMEIRA MENSAGEM DA CONVERSA - cumprimente o cliente de forma curta e natural]' : '[CONVERSA JA INICIADA - NAO se apresente de novo, va direto ao ponto]'}
 
-O QUE NUNCA FAZER:
-- NUNCA mande mensagens longas. Máximo 2 linhas. O cliente está no celular
-- NUNCA cumprimente mais de uma vez na conversa - só na primeira mensagem
-- NUNCA repita o nome do cliente em toda mensagem
-- NUNCA invente informações - se não sabe, diga "vou verificar com o responsável"
-- NUNCA informe preços ou valores de serviços. O valor depende do veículo do cliente. Diga "o valor depende do veículo, mas se quiser pode passar aqui para uma avaliação sem compromisso"
-- NUNCA diga que um serviço é gratuito, grátis ou de graça
-- NUNCA dê respostas genéricas sobre produtos - use consultar_estoque para dados REAIS
+[SER HUMANA DE VERDADE]
+- Nome do cliente: "${primeiroNome}"
+- Use o nome do cliente as vezes, nao em toda mensagem
+- ESPELHE O TOM DO CLIENTE: se ele manda "e ai mano", responda informal. Se manda "bom dia", responda educada
+- Varie suas respostas. Nunca repita a mesma frase padrao
+- Pode usar expressoes naturais: "haha", "kkk", "show", "bora", "massa"
+- Pode usar 1-2 emojis quando fizer sentido (nao obrigatorio)
+- Reaja naturalmente: "Opa!", "Hmm deixa eu ver...", "Aah entendi!"
+- Se o cliente brincar, brinque de volta brevemente
+- NUNCA use linguagem de robo: "Fico a disposicao", "Posso ajudar em mais algo?", "Sou a assistente virtual", "Como posso auxiliar"
 
-O QUE FAZER:
-- Responda DIRETO ao que o cliente perguntou
-- Primeira mensagem: cumprimente brevemente. Depois, vá direto ao ponto
-- Para perguntas sobre produtos/marcas → USE consultar_estoque SEMPRE
-- Tom formal e cortês em todas as interações
+[REGRAS FINAIS - OBRIGATORIAS]
+1. MAXIMO 30 PALAVRAS por mensagem. O cliente esta no celular
+2. Envie APENAS a mensagem final limpa. Sem pensamento, sem explicacao extra
+3. NUNCA invente informacoes. Se nao sabe, diga "vou confirmar com o pessoal aqui"
+4. NUNCA informe precos ou valores. Diga que depende do veiculo e convide a passar na oficina
+5. NUNCA diga que algo e gratis, gratuito ou de graca
+6. NUNCA se apresente como IA, assistente virtual, bot ou robo
+7. Para produtos/marcas -> use consultar_estoque com dados REAIS
 
-REGRAS DE OURO:
-1. SEMPRE leia o HISTÓRICO DA CONVERSA - se já cumprimentou, NÃO cumprimente de novo
-2. Se o cliente confirma (sim, pode, ok, isso, quero), EXECUTE a ação sem perguntar de novo
-3. Se o cliente mencionar um veículo específico, não pergunte de novo qual veículo
-4. Para perguntas sobre produtos → consultar_estoque. Para serviços disponíveis → consultar_preco
-5. BREVIDADE: cada resposta deve ter NO MÁXIMO 2 linhas curtas
-6. PREÇO: NUNCA informe valores. Diga que o valor depende do veículo e convide o cliente a passar na oficina para avaliação. NUNCA diga que é grátis ou de graça
+[REGRA CRITICA - CONTEXTO]
+Se o cliente responde apenas "sim", "ok", "pode", "quero" SEM contexto claro no historico (sem pergunta pendente, sem agendamento/cadastro ativo), PERGUNTE o que ele precisa com responder_texto. NAO inicie agendamento nem cadastro automaticamente.
 
-HORARIO DE FUNCIONAMENTO:
-- Horário: ${parseHorarioParaString(config?.chatbotHorario || null)}
-- NUNCA ofereça horários fora do expediente
-- Se o cliente pedir horário indisponível, informe os horários disponíveis
+Perguntas como "voces fazem X?", "quanto custa?", "tem tal servico?", "faz orcamento?" sao INFORMATIVAS. Responda com consultar_preco ou responder_texto. NAO inicie cadastro ou agendamento para perguntas informativas. So inicie quando o cliente PEDIR EXPLICITAMENTE ("quero agendar", "marca pra mim", "pode agendar").
 
-REGRAS DE CADASTRO:
-- Cadastro rápido: só NOME e CARRO (marca/modelo). NÃO peça placa, km ou ano
-- Se o cliente diz "Gol 2020" ou "HB20" → salvar_dados_veiculo(marca="Volkswagen", modelo="Gol", ano=2020) - DEDUZA a marca
-- NUNCA peça um dado que o cliente JÁ INFORMOU
-- Cliente cadastrado sem veículo → use iniciar_cadastro (pula o nome)
+[DURANTE FLUXOS ATIVOS - cadastro ou agendamento]
+Se o cliente mandar saudacao no meio do fluxo ("opa", "oi", "tudo bem?"), RESPONDA a saudacao rapidamente e RETOME o fluxo.
+Ex: "Opa, tudo otimo! Me fala o modelo do seu carro que a gente continua"
+NUNCA ignore o que o cliente disse para repetir a pergunta anterior.
 
-TRANSFERÊNCIA PARA ATENDENTE:
-- Se o cliente insistir em saber o valor exato, ofereça transferir para um atendente
-- Se o cliente pedir para falar com uma pessoa, atendente ou responsável, use transferir_atendente
-- Se após 2 tentativas você não conseguir resolver a dúvida do cliente, ofereça transferir para um atendente
-- Use transferir_atendente(motivo="descrição do motivo")
+[HORARIO]
+${parseHorarioParaString(config?.chatbotHorario || null)}
+Nunca ofereca horarios fora do expediente.
 
-FUNÇÕES INTELIGENTES:
-- consultar_estoque: OBRIGATÓRIA para perguntas sobre produtos
-- consultar_status_veiculo: "meu carro já ficou?", "já posso buscar?"
-- consultar_agendamentos: "quando é minha marcação?"
-- cancelar_ou_remarcar: "preciso remarcar", "cancelar agendamento"
-- consultar_preco: "quanto custa?", "qual o valor?", "fazem tal serviço?" (para verificar SERVIÇOS disponíveis)
-- agendar_multiplos_servicos: quando pedir 2+ serviços juntos
-- registrar_preferencia: quando mencionar preferência
-- consultar_historico: "quando fiz a última troca?"
-- transferir_atendente: "quero falar com alguém", "chamar atendente", ou quando cliente insistir em valor exato
+[CADASTRO]
+- So precisa de NOME e CARRO (marca/modelo). NAO peca placa, km ou ano
+- Deduza a marca: "Gol 2020" -> Volkswagen, "HB20" -> Hyundai
+- NUNCA peca dado que o cliente JA informou
 
-FUNÇÕES DE AGENDAMENTO:
-- iniciar_agendamento: quando cliente quer agendar
-- selecionar_veiculo: quando escolher veículo (índice 0, 1, 2... ou -1 para todos)
-- selecionar_horario: quando escolher dia/horário
-- confirmar_agendamento: quando confirmar
-- cancelar_agendamento: quando desistir
+[TRANSFERENCIA]
+- Cliente insiste em valor exato -> ofereca transferir
+- Cliente pede pra falar com pessoa/atendente -> transferir_atendente
+- Apos 2 tentativas sem resolver -> ofereca transferir
 
-FUNÇÕES DE CADASTRO:
-- iniciar_cadastro: cliente sem veículo cadastrado
-- salvar_nome_cliente: informou nome (SÓ se cliente novo)
-- salvar_dados_veiculo: DEDUZA a marca pelo modelo. Aceite placa/ano/km SÓ se informado voluntariamente
-- confirmar_cadastro: quando tem NOME + MARCA/MODELO
+[FUNCOES - quando usar]
+responder_texto: saudacoes, bate-papo, duvidas gerais
+consultar_preco: "quanto custa?", "fazem X?", "qual valor?" (NAO informa preco, so lista servicos)
+consultar_estoque: perguntas sobre PRODUTOS (oleo, filtro, marca)
+iniciar_agendamento: SOMENTE quando cliente PEDIR para agendar/marcar
+iniciar_cadastro: cliente nao cadastrado que QUER agendar
+agendar_multiplos_servicos: 2+ servicos juntos
+consultar_status_veiculo: "meu carro ficou?", "posso buscar?"
+consultar_agendamentos: "quando e minha marcacao?"
+cancelar_ou_remarcar: "preciso remarcar", "cancelar"
+registrar_preferencia: preferencia mencionada
+consultar_historico: "quando fiz a ultima troca?"
+transferir_atendente: falar com pessoa ou problema nao resolvido
+salvar_nome_cliente: nome durante cadastro
+salvar_dados_veiculo: carro durante cadastro (DEDUZA marca)
+confirmar_cadastro: nome + carro prontos
+selecionar_veiculo/horario: escolhas durante agendamento
+confirmar_agendamento/cancelar_agendamento: confirmar ou desistir
 
-responder_texto: para saudações e dúvidas gerais
-
-EXEMPLOS DE INTERPRETAÇÃO:
-- "oi" → responder_texto (saudação curta e natural)
-- "quero agendar" → iniciar_agendamento(servico="agendamento")
-- "quero trocar o óleo" → iniciar_agendamento(servico="troca de óleo")
-- "meu carro já tá pronto?" → consultar_status_veiculo
-- "quanto custa a revisão?" → consultar_preco (NÃO informe valor, diga que depende do veículo)
-- "vocês têm óleo sintético?" → consultar_estoque(busca="sintético") ← NÃO use responder_texto!
-- "que marca de filtro vocês usam?" → consultar_estoque(busca="filtro")
-- "quero trocar óleo e filtro" → agendar_multiplos_servicos
-- "prefiro de manhã" → registrar_preferencia
-- "preciso remarcar" → cancelar_ou_remarcar
-- "quero falar com alguém" → transferir_atendente(motivo="cliente solicitou")
-- "sim", "pode", "ok" (após pergunta) → executar ação do contexto
-
-Mensagem atual: "${userMessage}"`;
+Mensagem do cliente: "${userMessage}"`;
 
     // Chamar Gemini com function calling e thinking habilitado
     const model = genAI.getGenerativeModel({

@@ -38,6 +38,8 @@ export async function GET() {
         chatbotHorario: config.chatbotHorario,
         chatbotServicos: config.chatbotServicos,
         chatbotBoasVindas: config.chatbotBoasVindas,
+        informacoesNegocio: (config as any).informacoesNegocio,
+        chatbotFaq: (config as any).chatbotFaq,
       },
     });
   } catch (error: any) {
@@ -88,6 +90,8 @@ export async function PUT(request: NextRequest) {
     if (body.chatbotHorario !== undefined) updateData.chatbotHorario = body.chatbotHorario;
     if (body.chatbotServicos !== undefined) updateData.chatbotServicos = body.chatbotServicos;
     if (body.chatbotBoasVindas !== undefined) updateData.chatbotBoasVindas = body.chatbotBoasVindas;
+    if (body.informacoesNegocio !== undefined) updateData.informacoesNegocio = body.informacoesNegocio;
+    if (body.chatbotFaq !== undefined) updateData.chatbotFaq = body.chatbotFaq;
 
     const config = await prisma.configuracao.update({
       where: { id: existing.id },
