@@ -2635,9 +2635,9 @@ async function executeFunctionCall(
         const s = servicosEncontrados[0];
         return {
           type: 'button',
-          text: `${primeiroNome}, sim, trabalhamos com *${s.nome}*. O valor depende do veículo. Deseja agendar uma avaliação?`,
+          text: `${primeiroNome}, sim, trabalhamos com *${s.nome}*. O valor depende muito do veículo. Se quiser, pode passar aqui para uma avaliação sem compromisso.`,
           footerText: '',
-          choices: ['Agendar avaliação|agendar', 'Falar com atendente|transferir_preco'],
+          choices: ['Agendar avaliação|agendar', 'Não precisa|cancelar'],
         };
       }
 
@@ -2656,13 +2656,13 @@ async function executeFunctionCall(
           mensagem += `  • ${s.nome}\n`;
         }
       }
-      mensagem += `\nOs valores dependem do veículo. Deseja agendar uma avaliação?`;
+      mensagem += `\nO valor depende muito do veículo. Se quiser, pode passar aqui para uma avaliação sem compromisso.`;
 
       return {
         type: 'button',
         text: mensagem,
         footerText: '',
-        choices: ['Agendar avaliação|agendar', 'Falar com atendente|transferir_preco'],
+        choices: ['Agendar avaliação|agendar', 'Não precisa|cancelar'],
       };
     }
 
