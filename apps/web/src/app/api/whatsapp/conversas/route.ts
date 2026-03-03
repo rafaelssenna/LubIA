@@ -68,6 +68,9 @@ export async function GET(request: NextRequest) {
         ultimaData: c.ultimaData,
         naoLidas: c.naoLidas,
         arquivada: c.arquivada,
+        aiPaused: c.aiPaused,
+        aguardandoAtendente: c.aguardandoAtendente,
+        motivoTransferencia: c.motivoTransferencia,
       })),
       stats: {
         total: totalConversas,

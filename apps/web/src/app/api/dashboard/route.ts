@@ -28,6 +28,7 @@ export async function GET() {
       vendasHoje,
       ordensAReceber,
       vendasAReceber,
+      conversasEmEspera,
       lembretesPendentes,
     ] = await Promise.all([
       prisma.cliente.count({ where: { empresaId: session.empresaId } }),
@@ -118,6 +119,14 @@ export async function GET() {
         },
         orderBy: { dataPagamentoPrevista: 'asc' },
         take: 5,
+      }),
+      // Conversas aguardando atendente
+      prisma.conversa.findMany({
+        where: { empresaId: session.empresaId, aguardandoAtendente: true },
+        include: {
+          cliente: { select: { nome: true } },
+        },
+        orderBy: { ultimaData: 'desc' },
       }),
       // Lembretes pendentes
       prisma.lembrete.findMany({
@@ -240,6 +249,16 @@ export async function GET() {
       lembretes: {
         itens: lembretesFormatados,
         count: lembretesPendentes.length,
+      },
+      emEspera: {
+        itens: conversasEmEspera.map(c => ({
+          id: c.id,
+          telefone: c.telefone,
+          nome: c.nome || c.cliente?.nome || c.telefone,
+          motivo: c.motivoTransferencia || 'Transferido para atendente',
+          desde: c.ultimaData,
+        })),
+        count: conversasEmEspera.length,
       },
     });
   } catch (error: any) {

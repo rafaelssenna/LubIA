@@ -324,6 +324,20 @@ const chatbotTools: FunctionDeclarationsTool[] = [{
         properties: {},
         required: []
       }
+    },
+    {
+      name: 'transferir_atendente',
+      description: 'Transfere a conversa para um atendente humano. Use quando: o cliente pedir explicitamente para falar com uma pessoa/atendente/responsável, quando a situação exigir decisão humana (negociação de preço, reclamação, problema técnico complexo, orçamento personalizado), ou quando você não conseguir resolver a solicitação do cliente após 2 tentativas.',
+      parameters: {
+        type: SchemaType.OBJECT,
+        properties: {
+          motivo: {
+            type: SchemaType.STRING,
+            description: 'Motivo da transferência (ex: "cliente solicitou", "reclamação", "orçamento personalizado", "problema técnico")'
+          }
+        },
+        required: ['motivo']
+      }
     }
   ]
 }];
@@ -513,7 +527,12 @@ function formatServicosParaPrompt(servicos: ServicoData[]): string {
   for (const [categoria, items] of Object.entries(porCategoria)) {
     const categoriaFormatada = categoria.replace(/_/g, ' ').toLowerCase();
     const servicosLista = items.map(s => {
-      let linha = `  - ${s.nome}: R$ ${s.preco.toFixed(2).replace('.', ',')}`;
+      let linha = `  - ${s.nome}`;
+      if (s.preco > 0) {
+        linha += `: R$ ${s.preco.toFixed(2).replace('.', ',')}`;
+      } else {
+        linha += ` (consultar valor)`;
+      }
       const intervalos: string[] = [];
       if (s.intervaloKm) intervalos.push(`a cada ${s.intervaloKm.toLocaleString('pt-BR')} km`);
       if (s.intervaloDias) intervalos.push(`a cada ${s.intervaloDias} dias`);
@@ -1145,7 +1164,7 @@ export async function generateChatResponse(
       const primeiroNome = customerData?.nome.split(' ')[0] || (userName ? userName.split(' ')[0] : 'Cliente');
       return {
         type: 'text',
-        message: `Oi ${primeiroNome}! Recebi seu áudio mas não consegui entender. 😅\n\nPode digitar ou enviar outro áudio mais claro?`,
+        message: `${primeiroNome}, não foi possível compreender o áudio. Por favor, envie novamente ou digite sua mensagem.`,
       };
     }
 
@@ -1158,7 +1177,7 @@ export async function generateChatResponse(
       console.log('[CHATBOT] Agendamento cancelado pelo usuário');
       return {
         type: 'text',
-        message: `Tudo bem! Cancelei o agendamento. 😊\n\nQuando quiser marcar, é só me chamar aqui!`,
+        message: `Agendamento cancelado. Estamos à disposição.`,
       };
     }
 
@@ -1168,7 +1187,7 @@ export async function generateChatResponse(
       console.log('[CHATBOT] Cadastro cancelado pelo usuário');
       return {
         type: 'text',
-        message: `Tudo bem! Cancelei o cadastro. 😊\n\nQuando quiser se cadastrar, é só me chamar!`,
+        message: `Cadastro cancelado. Estamos à disposição.`,
       };
     }
 
@@ -1203,7 +1222,7 @@ export async function generateChatResponse(
 
             return {
               type: 'list',
-              text: `Ótimo, ${primeiroNome}! 🚗\n\nVou agendar ${agendamento.servico || 'o serviço'} dos seus veículos:\n${listaVeiculos}\n\nQual horário fica bom pra você?`,
+              text: `${primeiroNome}, segue o agendamento de ${agendamento.servico || 'serviço'} dos seus veículos:\n${listaVeiculos}\n\nSelecione um horário:`,
               listButton: 'Ver Horários',
               footerText: 'Escolha o melhor horário',
               choices,
@@ -1235,7 +1254,7 @@ export async function generateChatResponse(
 
             return {
               type: 'list',
-              text: `Ótimo, ${primeiroNome}! 🚗\n\nVou agendar ${agendamento.servico || 'o serviço'} do seu ${agendamento.veiculoNome}.\n\nQual horário fica bom pra você?`,
+              text: `${primeiroNome}, vou agendar ${agendamento.servico || 'o serviço'} do seu ${agendamento.veiculoNome}.\n\nSelecione um horário:`,
               listButton: 'Ver Horários',
               footerText: 'Escolha o melhor horário',
               choices,
@@ -1264,18 +1283,18 @@ export async function generateChatResponse(
           const listaVeiculos = agendamento.veiculoNomes?.map(n => `• ${n}`).join('\n') || '';
           return {
             type: 'button',
-            text: `Perfeito, ${primeiroNome}! 📋\n\n*Confirme seu agendamento:*\n\n🚗 Veículos:\n${listaVeiculos}\n📅 Data: ${dataFormatada}\n🔧 Serviço: ${agendamento.servico || 'Serviço agendado'}`,
+            text: `${primeiroNome}, confirme seu agendamento:\n\nVeículos:\n${listaVeiculos}\nData: ${dataFormatada}\nServiço: ${agendamento.servico || 'Serviço agendado'}`,
             footerText: 'Confirma o agendamento?',
-            choices: ['✅ Confirmar|confirmar_sim', '❌ Cancelar|cancelar'],
+            choices: ['Confirmar|confirmar_sim', 'Cancelar|cancelar'],
           };
         }
 
         // Veículo único
         return {
           type: 'button',
-          text: `Perfeito, ${primeiroNome}! 📋\n\n*Confirme seu agendamento:*\n\n🚗 Veículo: ${agendamento.veiculoNome}\n📅 Data: ${dataFormatada}\n🔧 Serviço: ${agendamento.servico || 'Serviço agendado'}`,
+          text: `${primeiroNome}, confirme seu agendamento:\n\nVeículo: ${agendamento.veiculoNome}\nData: ${dataFormatada}\nServiço: ${agendamento.servico || 'Serviço agendado'}`,
           footerText: 'Confirma o agendamento?',
-          choices: ['✅ Confirmar|confirmar_sim', '❌ Cancelar|cancelar'],
+          choices: ['Confirmar|confirmar_sim', 'Cancelar|cancelar'],
         };
       }
     }
@@ -1304,12 +1323,12 @@ export async function generateChatResponse(
           console.log('[CHATBOT] Agendamentos criados:', sucessos.length);
           return {
             type: 'text',
-            message: `Pronto, ${primeiroNome}! ✅\n\nSeus veículos estão agendados para ${dataFormatada}:\n${listaVeiculos}\n\nTe esperamos! Qualquer coisa é só chamar aqui. 😊`,
+            message: `${primeiroNome}, seus veículos foram agendados para ${dataFormatada}:\n${listaVeiculos}\n\nAguardamos sua visita.`,
           };
         } else {
           return {
             type: 'text',
-            message: `Ops, consegui agendar ${sucessos.length} de ${resultados.length} veículos. 😅\n\nPode ligar pra oficina que a gente resolve o resto!`,
+            message: `${primeiroNome}, foi possível agendar ${sucessos.length} de ${resultados.length} veículos. Por favor, entre em contato com a oficina para resolver os demais.`,
           };
         }
       }
@@ -1329,13 +1348,13 @@ export async function generateChatResponse(
           console.log('[CHATBOT] Agendamento criado! O.S.:', resultado.numero);
           return {
             type: 'text',
-            message: `Pronto, ${primeiroNome}! ✅\n\nSeu ${agendamento.veiculoNome} está agendado para ${dataFormatada}.\n\nTe esperamos! Qualquer coisa é só chamar aqui. 😊`,
+            message: `${primeiroNome}, seu ${agendamento.veiculoNome} foi agendado para ${dataFormatada}. Aguardamos sua visita.`,
           };
         } else {
           console.error('[CHATBOT] Erro ao criar agendamento:', resultado.error);
           return {
             type: 'text',
-            message: `Ops, tive um probleminha pra criar o agendamento. 😅\n\nPode ligar pra oficina que a gente resolve rapidinho!`,
+            message: `${primeiroNome}, não foi possível concluir o agendamento. Por favor, entre em contato com a oficina.`,
           };
         }
       }
@@ -1346,7 +1365,7 @@ export async function generateChatResponse(
       agendamentoState.delete(phoneNumber);
       return {
         type: 'text',
-        message: `Tudo bem! Cancelei o agendamento. 😊\n\nQuando quiser marcar, é só me chamar aqui!`,
+        message: `Agendamento cancelado. Estamos à disposição.`,
       };
     }
 
@@ -1372,13 +1391,13 @@ export async function generateChatResponse(
           if (resultado.error === 'Placa já cadastrada') {
             return {
               type: 'text',
-              message: `Ops! Essa placa já está cadastrada aqui. 😅\n\nSe for seu carro, pode ser que você já tenha cadastro com outro telefone. Liga pra oficina que a gente resolve!`,
+              message: `Esta placa já está cadastrada no sistema. Caso seja seu veículo, entre em contato com a oficina para verificar.`,
             };
           }
 
           return {
             type: 'text',
-            message: `Ops, tive um probleminha pra criar o cadastro. 😅\n\nPode ligar pra oficina que a gente resolve rapidinho!`,
+            message: `Não foi possível concluir o cadastro. Por favor, entre em contato com a oficina.`,
           };
         }
 
@@ -1430,7 +1449,7 @@ export async function generateChatResponse(
 
             return {
               type: 'list',
-              text: `Pronto, ${primeiroNomeCadastro}! ✅ Cadastro feito!\n\nAgora vamos agendar ${agendamento.servico || 'o serviço'} do seu ${agendamento.veiculoNome}?\n\nEscolha um horário:`,
+              text: `${primeiroNomeCadastro}, cadastro realizado. Vamos agendar ${agendamento.servico || 'o serviço'} do seu ${agendamento.veiculoNome}.\n\nSelecione um horário:`,
               listButton: 'Ver Horários',
               footerText: 'Escolha o melhor horário',
               choices,
@@ -1440,7 +1459,7 @@ export async function generateChatResponse(
 
         return {
           type: 'text',
-          message: `Pronto, ${primeiroNomeCadastro}! ✅ Seu cadastro foi criado com sucesso!\n\nAgora você pode agendar quando quiser. É só me chamar aqui! 😊`,
+          message: `${primeiroNomeCadastro}, seu cadastro foi realizado com sucesso. Para agendar um serviço, basta enviar uma mensagem.`,
         };
       }
     }
@@ -1450,7 +1469,7 @@ export async function generateChatResponse(
       cadastroState.delete(phoneNumber);
       return {
         type: 'text',
-        message: `Tudo bem! Cancelei o cadastro. 😊\n\nQuando quiser se cadastrar, é só me chamar!`,
+        message: `Cadastro cancelado. Estamos à disposição.`,
       };
     }
 
@@ -1472,12 +1491,12 @@ export async function generateChatResponse(
           if (sucesso) {
             return {
               type: 'text',
-              message: `Pronto, ${primeiroNome}! ✅\n\nRemarcado para ${formatDateBrazil(novaData)}.\n\nTe esperamos! 😊`,
+              message: `${primeiroNome}, agendamento remarcado para ${formatDateBrazil(novaData)}. Aguardamos sua visita.`,
             };
           }
           return {
             type: 'text',
-            message: `Ops, tive um probleminha pra remarcar. 😅\n\nPode ligar pra oficina?`,
+            message: `Não foi possível remarcar o agendamento. Por favor, entre em contato com a oficina.`,
           };
         }
       } else {
@@ -1529,7 +1548,7 @@ export async function generateChatResponse(
           if (cancelou) {
             return {
               type: 'text',
-              message: `Pronto, ${primeiroNome}! ❌\n\nCancelei o agendamento do ${ag.veiculo} que estava marcado pra ${formatDateBrazil(ag.dataAgendada)}.\n\nQuando quiser reagendar, é só me chamar! 😊`,
+              message: `${primeiroNome}, o agendamento do ${ag.veiculo} (${formatDateBrazil(ag.dataAgendada)}) foi cancelado. Estamos à disposição para reagendar.`,
             };
           }
         }
@@ -1537,7 +1556,7 @@ export async function generateChatResponse(
 
       return {
         type: 'text',
-        message: `Ops, não consegui cancelar. 😅\n\nPode ligar pra oficina?`,
+        message: `Não foi possível cancelar o agendamento. Por favor, entre em contato com a oficina.`,
       };
     }
 
@@ -1589,7 +1608,7 @@ export async function generateChatResponse(
         const diasDesdeUltimo = Math.floor((Date.now() - customerData.ultimoServico.data.getTime()) / (1000 * 60 * 60 * 24));
         contextoCliente += `\n- Último serviço: ${customerData.ultimoServico.tipo} (há ${diasDesdeUltimo} dias)`;
         if (diasDesdeUltimo > 180) {
-          contextoCliente += ` ⚠️ ATENÇÃO: Já passou do tempo recomendado para revisão!`;
+          contextoCliente += ` ATENÇÃO: Já passou do tempo recomendado para revisão!`;
         }
       }
       if (customerData.ordensEmAndamento && customerData.ordensEmAndamento.length > 0) {
@@ -1649,72 +1668,78 @@ ${contextoCadastro}
 ${contextoAgendamento}
 ${historicoConversa}
 
-🧠 SUA PERSONALIDADE:
-- Você é uma atendente REAL de oficina mecânica, simpática e experiente
-- Fale de forma NATURAL e HUMANA, como se fosse um WhatsApp entre amigos
-- Use linguagem informal brasileira (pode usar "tá", "pra", "né", "beleza", "show")
+SUA PERSONALIDADE:
+- Você é a assistente virtual de uma oficina mecânica
+- Use linguagem FORMAL e profissional. Trate o cliente com respeito
 - O primeiro nome do cliente é: "${primeiroNome}"
-- Seja CONCISA (máximo 2-3 frases curtas), ninguém gosta de textão no WhatsApp
-- Use emojis com moderação (1-2 por mensagem, máximo)
+- Seja OBJETIVA e DIRETA: máximo 1-2 frases curtas por resposta
+- NÃO use emojis. Responda apenas com texto limpo
+- NÃO use gírias, diminutivos ou linguagem informal (nada de "pra", "rapidinho", "probleminha", "show", "beleza")
 
-🚫 O QUE NUNCA FAZER:
-- NÃO comece TODA mensagem com "Oi [nome]!" - varie! Use "E aí", "Fala", "Beleza", ou simplesmente responda direto
-- NÃO use frases robóticas como "Como posso ajudar?", "Em que posso ser útil?", "Estou à disposição"
-- NÃO repita o nome do cliente em toda mensagem - use só de vez em quando, naturalmente
-- NÃO dê respostas genéricas sobre produtos - use a função consultar_estoque pra buscar dados REAIS
-- NÃO invente informações que você não tem - se não sabe, fale "vou verificar com o mecânico"
+O QUE NUNCA FAZER:
+- NUNCA mande mensagens longas. Máximo 2 linhas. O cliente está no celular
+- NUNCA cumprimente mais de uma vez na conversa - só na primeira mensagem
+- NUNCA repita o nome do cliente em toda mensagem
+- NUNCA invente informações - se não sabe, diga "vou verificar com o responsável"
+- NUNCA diga que um serviço é gratuito, grátis ou de graça. Se o preço é R$ 0,00 ou não está cadastrado, diga "o valor será informado conforme avaliação do veículo"
+- NUNCA dê respostas genéricas sobre produtos - use consultar_estoque para dados REAIS
 
-✅ O QUE FAZER:
-- Responda DIRETO ao que o cliente perguntou, sem rodeios
-- Se é primeira mensagem da conversa (sem histórico), cumprimente. Se já está conversando, vá direto ao ponto
-- Para perguntas sobre produtos/marcas/tipos → USE consultar_estoque SEMPRE
-- Adapte o tom: se o cliente é formal, seja formal. Se é descontraído, seja descontraída
+O QUE FAZER:
+- Responda DIRETO ao que o cliente perguntou
+- Primeira mensagem: cumprimente brevemente. Depois, vá direto ao ponto
+- Para perguntas sobre produtos/marcas → USE consultar_estoque SEMPRE
+- Tom formal e cortês em todas as interações
 
-📋 REGRAS DE OURO:
+REGRAS DE OURO:
 1. SEMPRE leia o HISTÓRICO DA CONVERSA - se já cumprimentou, NÃO cumprimente de novo
 2. Se o cliente confirma (sim, pode, ok, isso, quero), EXECUTE a ação sem perguntar de novo
 3. Se o cliente mencionar um veículo específico, não pergunte de novo qual veículo
-4. Seja PROATIVA: se o cliente não faz serviço há muito tempo, sugira gentilmente uma revisão
-5. Se o cliente tem preferências cadastradas, mencione-as (ex: "Vai querer o sintético de sempre?")
-6. Para perguntas sobre produtos → consultar_estoque. Para preços de serviço → consultar_preco
-7. Adapte o tom ao do cliente
+4. Para perguntas sobre produtos → consultar_estoque. Para preços de serviço → consultar_preco
+5. BREVIDADE: cada resposta deve ter NO MÁXIMO 2 linhas curtas
+6. PREÇO: Se o preço de um serviço é R$ 0,00 ou não está cadastrado, diga "o valor será informado conforme avaliação do veículo" - NUNCA diga que é grátis ou de graça
 
-⏰ HORÁRIO DE FUNCIONAMENTO:
-- Nosso horário de atendimento é: ${parseHorarioParaString(config?.chatbotHorario || null)}
-- NUNCA ofereça horários fora do expediente (ex: domingo, madrugada, feriados)
-- Se o cliente pedir horário indisponível, sugira gentilmente um horário dentro do funcionamento
-- Se não souber o horário exato, informe que vai verificar e ofereça os horários disponíveis na lista
+HORARIO DE FUNCIONAMENTO:
+- Horário: ${parseHorarioParaString(config?.chatbotHorario || null)}
+- NUNCA ofereça horários fora do expediente
+- Se o cliente pedir horário indisponível, informe os horários disponíveis
 
-⚠️ REGRAS CRÍTICAS DE CADASTRO:
-6. O cadastro é RÁPIDO: só precisa de NOME e CARRO (marca/modelo). NÃO peça placa, km ou ano - só aceite se o cliente informar espontaneamente!
-7. Se o cliente diz "Gol 2020" ou "HB20" → salvar_dados_veiculo(marca="Volkswagen", modelo="Gol", ano=2020) - DEDUZA a marca pelo modelo!
-8. NUNCA peça um dado que o cliente JÁ INFORMOU
-9. Se o cliente já está cadastrado mas quer agendar um veículo que não tem, use iniciar_cadastro (vai pular o nome automaticamente)
+REGRAS DE CADASTRO:
+- Cadastro rápido: só NOME e CARRO (marca/modelo). NÃO peça placa, km ou ano
+- Se o cliente diz "Gol 2020" ou "HB20" → salvar_dados_veiculo(marca="Volkswagen", modelo="Gol", ano=2020) - DEDUZA a marca
+- NUNCA peça um dado que o cliente JÁ INFORMOU
+- Cliente cadastrado sem veículo → use iniciar_cadastro (pula o nome)
 
-🔧 FUNÇÕES INTELIGENTES:
-- consultar_estoque: OBRIGATÓRIA para perguntas sobre produtos! "vocês têm óleo sintético?", "que marca usam?", "tem filtro?", "trabalham com Mobil?"
-- consultar_status_veiculo: "meu carro já ficou?", "como está meu carro?", "já posso buscar?"
-- consultar_agendamentos: "quando é minha marcação?", "tenho agendamento?"
-- cancelar_ou_remarcar: "preciso remarcar", "cancelar agendamento", "mudar horário"
-- consultar_preco: "quanto custa o SERVIÇO?", "qual o valor?", "preço de..." (serviços, não produtos)
-- agendar_multiplos_servicos: quando pedir 2+ serviços juntos (ex: "troca de óleo e filtro")
-- registrar_preferencia: quando mencionar preferência (ex: "prefiro óleo sintético", "gosto de ir de manhã")
-- consultar_historico: "quando fiz a última troca?", "meu histórico"
+TRANSFERÊNCIA PARA ATENDENTE:
+- Quando o preço de um serviço não está disponível (R$ 0,00), ofereça transferir para um atendente humano
+- Se o cliente pedir para falar com uma pessoa, atendente ou responsável, use transferir_atendente
+- Se após 2 tentativas você não conseguir resolver a dúvida do cliente, ofereça transferir para um atendente
+- Use transferir_atendente(motivo="descrição do motivo")
 
-📅 FUNÇÕES DE AGENDAMENTO:
-- iniciar_agendamento: quando cliente quer agendar/marcar serviço
+FUNÇÕES INTELIGENTES:
+- consultar_estoque: OBRIGATÓRIA para perguntas sobre produtos
+- consultar_status_veiculo: "meu carro já ficou?", "já posso buscar?"
+- consultar_agendamentos: "quando é minha marcação?"
+- cancelar_ou_remarcar: "preciso remarcar", "cancelar agendamento"
+- consultar_preco: "quanto custa?", "qual o valor?" (para SERVIÇOS)
+- agendar_multiplos_servicos: quando pedir 2+ serviços juntos
+- registrar_preferencia: quando mencionar preferência
+- consultar_historico: "quando fiz a última troca?"
+- transferir_atendente: "quero falar com alguém", "chamar atendente", ou quando preço não disponível
+
+FUNÇÕES DE AGENDAMENTO:
+- iniciar_agendamento: quando cliente quer agendar
 - selecionar_veiculo: quando escolher veículo (índice 0, 1, 2... ou -1 para todos)
 - selecionar_horario: quando escolher dia/horário
 - confirmar_agendamento: quando confirmar
 - cancelar_agendamento: quando desistir
 
-📝 FUNÇÕES DE CADASTRO (rápido - só nome e carro!):
-- iniciar_cadastro: quando cliente quer agendar um veículo que NÃO TEM cadastrado
+FUNÇÕES DE CADASTRO:
+- iniciar_cadastro: cliente sem veículo cadastrado
 - salvar_nome_cliente: informou nome (SÓ se cliente novo)
-- salvar_dados_veiculo: DEDUZA a marca pelo modelo! "Gol" = Volkswagen, "Onix" = Chevrolet, "HB20" = Hyundai, etc. Aceite placa/ano/km SÓ se o cliente informar voluntariamente
-- confirmar_cadastro: quando tem NOME + MARCA/MODELO. NÃO exija placa!
+- salvar_dados_veiculo: DEDUZA a marca pelo modelo. Aceite placa/ano/km SÓ se informado voluntariamente
+- confirmar_cadastro: quando tem NOME + MARCA/MODELO
 
-💬 responder_texto: para saudações, dúvidas gerais, conversas normais
+responder_texto: para saudações e dúvidas gerais
 
 EXEMPLOS DE INTERPRETAÇÃO:
 - "oi" → responder_texto (saudação curta e natural)
@@ -1727,6 +1752,7 @@ EXEMPLOS DE INTERPRETAÇÃO:
 - "quero trocar óleo e filtro" → agendar_multiplos_servicos
 - "prefiro de manhã" → registrar_preferencia
 - "preciso remarcar" → cancelar_ou_remarcar
+- "quero falar com alguém" → transferir_atendente(motivo="cliente solicitou")
 - "sim", "pode", "ok" (após pergunta) → executar ação do contexto
 
 Mensagem atual: "${userMessage}"`;
@@ -1774,7 +1800,7 @@ Mensagem atual: "${userMessage}"`;
     }
 
     // Fallback
-    return { type: 'text', message: `Olá ${primeiroNome}! Como posso ajudar?` };
+    return { type: 'text', message: `${primeiroNome}, como posso ajudar?` };
   } catch (error: any) {
     console.error('[CHATBOT] Erro ao gerar resposta:', error?.message);
     return { type: 'text', message: 'Desculpe, não consegui processar sua mensagem. Tente novamente ou ligue para a oficina.' };
@@ -1868,7 +1894,7 @@ async function executeFunctionCall(
 
           return {
             type: 'list',
-            text: `Ótimo, ${primeiroNome}! 🚗\n\nVou agendar ${agendamento.servico || 'o serviço'} do seu ${agendamento.veiculoNome}.\n\nQual horário fica bom?`,
+            text: `${primeiroNome}, vou agendar ${agendamento.servico || 'o serviço'} do seu ${agendamento.veiculoNome}.\n\nSelecione um horário:`,
             listButton: 'Ver Horários',
             footerText: 'Escolha o melhor horário',
             choices,
@@ -1877,7 +1903,7 @@ async function executeFunctionCall(
 
         return {
           type: 'text',
-          message: `Oi ${primeiroNome}! Quero agendar seu ${agendamento.veiculoNome}, mas não encontrei horários disponíveis essa semana. 😅\n\nPode ligar pra oficina?`,
+          message: `${primeiroNome}, no momento não há horários disponíveis para o seu ${agendamento.veiculoNome}. Por favor, entre em contato com a oficina.`,
         };
       }
 
@@ -1896,7 +1922,7 @@ async function executeFunctionCall(
 
         return {
           type: 'list',
-          text: `Oi ${primeiroNome}! Vamos agendar? 🚗\n\nVi que você tem ${customerData.veiculos.length} veículos cadastrados. Qual deles você quer trazer?`,
+          text: `${primeiroNome}, você possui ${customerData.veiculos.length} veículos cadastrados. Qual deseja trazer?`,
           listButton: 'Escolher Veículo',
           footerText: 'Selecione um ou todos',
           choices,
@@ -1923,7 +1949,7 @@ async function executeFunctionCall(
 
         return {
           type: 'list',
-          text: `Oi ${primeiroNome}! Vamos agendar ${agendamento.servico || 'o serviço'} do seu ${agendamento.veiculoNome}? 🚗\n\nEscolha um horário:`,
+          text: `${primeiroNome}, vamos agendar ${agendamento.servico || 'o serviço'} do seu ${agendamento.veiculoNome}.\n\nSelecione um horário:`,
           listButton: 'Ver Horários',
           footerText: 'Escolha o melhor horário',
           choices,
@@ -1932,13 +1958,13 @@ async function executeFunctionCall(
 
       return {
         type: 'text',
-        message: `Oi ${primeiroNome}! Quero agendar seu ${agendamento.veiculoNome}, mas não encontrei horários disponíveis essa semana. 😅\n\nPode ligar pra oficina?`,
+        message: `${primeiroNome}, no momento não há horários disponíveis para o seu ${agendamento.veiculoNome}. Por favor, entre em contato com a oficina.`,
       };
     }
 
     case 'selecionar_veiculo': {
       if (!customerData) {
-        return { type: 'text', message: 'Não encontrei seus dados. Pode ligar pra oficina?' };
+        return { type: 'text', message: 'Não foram encontrados dados no sistema. Por favor, entre em contato com a oficina.' };
       }
 
       const veiculoIndex = args.veiculoIndex as number;
@@ -1972,20 +1998,20 @@ async function executeFunctionCall(
 
         return {
           type: 'list',
-          text: `Ótimo, ${primeiroNome}! 🚗\n\nVou agendar ${agendamento.servico || 'o serviço'} do seu ${agendamento.veiculoNome}.\n\nQual horário fica bom?`,
+          text: `${primeiroNome}, vou agendar ${agendamento.servico || 'o serviço'} do seu ${agendamento.veiculoNome}.\n\nSelecione um horário:`,
           listButton: 'Ver Horários',
           footerText: 'Escolha o melhor horário',
           choices,
         };
       }
 
-      return { type: 'text', message: 'Não encontrei horários disponíveis. Pode ligar pra oficina?' };
+      return { type: 'text', message: 'No momento não há horários disponíveis. Por favor, entre em contato com a oficina.' };
     }
 
     case 'selecionar_horario': {
       const slots = agendamento.horariosDisponiveis;
       if (!slots || slots.length === 0) {
-        return { type: 'text', message: 'Não encontrei horários disponíveis. Pode ligar pra oficina?' };
+        return { type: 'text', message: 'No momento não há horários disponíveis. Por favor, entre em contato com a oficina.' };
       }
 
       let slotEscolhido: { data: Date; label: string } | null = null;
@@ -2042,7 +2068,7 @@ async function executeFunctionCall(
 
         return {
           type: 'list',
-          text: `${primeiroNome}, qual desses horários fica bom pra você?`,
+          text: `${primeiroNome}, selecione um dos horários disponíveis:`,
           listButton: 'Ver Horários',
           footerText: 'Escolha o melhor horário',
           choices,
@@ -2058,9 +2084,9 @@ async function executeFunctionCall(
 
       return {
         type: 'button',
-        text: `Perfeito, ${primeiroNome}! 📋\n\n*Confirme seu agendamento:*\n\n🚗 Veículo: ${agendamento.veiculoNome}\n📅 Data: ${dataFormatada}\n🔧 Serviço: ${agendamento.servico || 'Serviço agendado'}`,
+        text: `${primeiroNome}, confirme seu agendamento:\n\nVeículo: ${agendamento.veiculoNome}\nData: ${dataFormatada}\nServiço: ${agendamento.servico || 'Serviço agendado'}`,
         footerText: 'Confirma o agendamento?',
-        choices: ['✅ Confirmar|confirmar_sim', '❌ Cancelar|cancelar'],
+        choices: ['Confirmar|confirmar_sim', 'Cancelar|cancelar'],
       };
     }
 
@@ -2095,13 +2121,13 @@ async function executeFunctionCall(
         const dataFormatada = formatDateBrazil(agendamento.dataHora);
         return {
           type: 'text',
-          message: `Pronto, ${primeiroNome}! ✅\n\nSeu ${agendamento.veiculoNome} está agendado para ${dataFormatada}.\n\nTe esperamos! 😊`,
+          message: `${primeiroNome}, seu ${agendamento.veiculoNome} foi agendado para ${dataFormatada}. Aguardamos sua visita.`,
         };
       }
 
       return {
         type: 'text',
-        message: `Ops, tive um probleminha pra criar o agendamento. 😅\n\nPode ligar pra oficina que a gente resolve!`,
+        message: `Não foi possível concluir o agendamento. Por favor, entre em contato com a oficina.`,
       };
     }
 
@@ -2109,7 +2135,7 @@ async function executeFunctionCall(
       agendamentoState.delete(phoneNumber);
       return {
         type: 'text',
-        message: `Tudo bem! Cancelei o agendamento. 😊\n\nQuando quiser marcar, é só me chamar!`,
+        message: `Agendamento cancelado. Estamos à disposição para quando precisar.`,
       };
     }
 
@@ -2131,7 +2157,7 @@ async function executeFunctionCall(
 
         return {
           type: 'text',
-          message: `${primeiroNome}, vou cadastrar seu novo veículo! 🚗\n\nQual o seu carro? (marca e modelo)\n\n_Exemplo: Gol 2020, Onix 2022, HB20_`,
+          message: `${primeiroNome}, para cadastrar seu novo veículo, informe a marca e o modelo.\n\n_Exemplo: Gol 2020, Onix 2022, HB20_`,
         };
       }
 
@@ -2143,7 +2169,7 @@ async function executeFunctionCall(
 
       return {
         type: 'text',
-        message: `Oi${primeiroNome !== 'Cliente' ? ` ${primeiroNome}` : ''}! 😊\n\nPra gente agendar, só preciso de duas coisas rápidas:\n\n1️⃣ Seu *nome*\n2️⃣ Qual *carro* você tem (ex: Gol 2020)\n\nQual é o seu *nome*?`,
+        message: `${primeiroNome !== 'Cliente' ? `${primeiroNome}, para` : 'Para'} realizar o agendamento, preciso de duas informações:\n\n1. Seu *nome completo*\n2. Seu *veículo* (marca e modelo)\n\nPor favor, informe seu *nome*:`,
       };
     }
 
@@ -2152,7 +2178,7 @@ async function executeFunctionCall(
       if (!nome || nome.length < 2) {
         return {
           type: 'text',
-          message: `Por favor, me diz seu nome completo pra eu te cadastrar! 😊`,
+          message: `Por favor, informe seu nome completo para o cadastro.`,
         };
       }
 
@@ -2166,7 +2192,7 @@ async function executeFunctionCall(
 
       return {
         type: 'text',
-        message: `Prazer, ${nome.split(' ')[0]}! 😊\n\nE qual é o seu *carro*?\n\n_Exemplo: Gol 2020, Onix 2022, HB20_`,
+        message: `${nome.split(' ')[0]}, agora informe seu *veículo* (marca e modelo).\n\n_Exemplo: Gol 2020, Onix 2022, HB20_`,
       };
     }
 
@@ -2215,9 +2241,9 @@ async function executeFunctionCall(
       const primeiroNomeCadastro = cadastro.nome?.split(' ')[0] || primeiroNome;
       return {
         type: 'button',
-        text: `Perfeito, ${primeiroNomeCadastro}! 📋\n\n*Seus dados:*\n\n👤 ${cadastro.nome}\n🚗 ${cadastro.marca || ''} ${cadastro.modelo || ''}${cadastro.placa ? `\n📋 Placa: ${cadastro.placa}` : ''}${cadastro.ano ? ` ${cadastro.ano}` : ''}`,
-        footerText: 'Tudo certo?',
-        choices: ['✅ Confirmar|confirmar_cadastro', '❌ Corrigir|cancelar_cadastro'],
+        text: `${primeiroNomeCadastro}, confirme seus dados:\n\nNome: ${cadastro.nome}\nVeículo: ${cadastro.marca || ''} ${cadastro.modelo || ''}${cadastro.placa ? `\nPlaca: ${cadastro.placa}` : ''}${cadastro.ano ? ` ${cadastro.ano}` : ''}`,
+        footerText: 'Dados corretos?',
+        choices: ['Confirmar|confirmar_cadastro', 'Corrigir|cancelar_cadastro'],
       };
     }
 
@@ -2226,7 +2252,7 @@ async function executeFunctionCall(
       if (!cadastro.nome || (!cadastro.marca && !cadastro.modelo)) {
         return {
           type: 'text',
-          message: `Só falta me dizer seu *nome* e qual é o seu *carro* (ex: Gol 2020) pra gente finalizar!`,
+          message: `Para finalizar, informe seu *nome* e seu *veículo* (ex: Gol 2020).`,
         };
       }
 
@@ -2248,13 +2274,13 @@ async function executeFunctionCall(
         if (resultado.error === 'Placa já cadastrada') {
           return {
             type: 'text',
-            message: `Ops! Essa placa já está cadastrada aqui. 😅\n\nSe for seu carro, pode ser que você já tenha cadastro com outro telefone. Liga pra oficina que a gente resolve!`,
+            message: `Esta placa já está cadastrada no sistema. Caso seja seu veículo, entre em contato com a oficina para verificar.`,
           };
         }
 
         return {
           type: 'text',
-          message: `Ops, tive um probleminha pra criar o cadastro. 😅\n\nPode ligar pra oficina que a gente resolve rapidinho!`,
+          message: `Não foi possível concluir o cadastro. Por favor, entre em contato com a oficina.`,
         };
       }
 
@@ -2306,7 +2332,7 @@ async function executeFunctionCall(
 
           return {
             type: 'list',
-            text: `Pronto, ${primeiroNomeCadastro}! ✅ Cadastro feito!\n\nAgora vamos agendar ${agendamento.servico || 'o serviço'} do seu ${agendamento.veiculoNome}?\n\nEscolha um horário:`,
+            text: `${primeiroNomeCadastro}, cadastro realizado. Vamos agendar ${agendamento.servico || 'o serviço'} do seu ${agendamento.veiculoNome}.\n\nSelecione um horário:`,
             listButton: 'Ver Horários',
             footerText: 'Escolha o melhor horário',
             choices,
@@ -2316,13 +2342,13 @@ async function executeFunctionCall(
 
       return {
         type: 'text',
-        message: `Pronto, ${primeiroNomeCadastro}! ✅ Seu cadastro foi criado com sucesso!\n\nAgora você pode agendar quando quiser. É só me chamar aqui! 😊`,
+        message: `${primeiroNomeCadastro}, seu cadastro foi realizado com sucesso. Para agendar um serviço, basta enviar uma mensagem.`,
       };
     }
 
     case 'responder_texto': {
       const mensagem = args.mensagem as string;
-      return { type: 'text', message: mensagem || `Olá ${primeiroNome}! Como posso ajudar?` };
+      return { type: 'text', message: mensagem || `${primeiroNome}, como posso ajudar?` };
     }
 
     // ==========================================
@@ -2333,7 +2359,7 @@ async function executeFunctionCall(
       if (!customerData) {
         return {
           type: 'text',
-          message: `Hmm, não encontrei seu cadastro por esse número. 😅\n\nQuer que eu te cadastre rapidinho? É só me passar seu nome completo! Ou se já tem cadastro, me manda o número que usou.`,
+          message: `${primeiroNome}, não localizamos cadastro para este número. Para cadastrar, informe seu nome completo.`,
         };
       }
 
@@ -2345,22 +2371,22 @@ async function executeFunctionCall(
           const dataFormatada = formatDateBrazil(proximo.dataAgendada);
           return {
             type: 'text',
-            message: `${primeiroNome}, você não tem nenhum veículo aqui no momento. 🔍\n\nMas você tem um agendamento:\n📅 ${dataFormatada}\n🚗 ${proximo.veiculo}\n🔧 ${proximo.servicos}\n\nTe esperamos! 😊`,
+            message: `${primeiroNome}, não há veículo em atendimento no momento.\n\nSeu próximo agendamento:\n${dataFormatada}\n${proximo.veiculo} - ${proximo.servicos}`,
           };
         }
 
         return {
           type: 'text',
-          message: `${primeiroNome}, você não tem nenhum veículo aqui na oficina no momento. 🔍\n\nQuer agendar um serviço?`,
+          message: `${primeiroNome}, não há veículo em atendimento no momento. Deseja agendar um serviço?`,
         };
       }
 
       // Tem ordens em andamento
       const statusMap: Record<string, string> = {
-        'AGENDADO': '📅 Agendado - aguardando chegada',
-        'EM_ANDAMENTO': '🔧 Em andamento - estamos trabalhando!',
-        'AGUARDANDO_PECAS': '⏳ Aguardando peças',
-        'CONCLUIDO': '✅ Pronto pra buscar!',
+        'AGENDADO': 'Agendado - aguardando chegada',
+        'EM_ANDAMENTO': 'Em andamento',
+        'AGUARDANDO_PECAS': 'Aguardando peças',
+        'CONCLUIDO': 'Concluído - disponível para retirada',
       };
 
       if (customerData.ordensEmAndamento.length === 1) {
@@ -2370,11 +2396,11 @@ async function executeFunctionCall(
         let mensagem = `${primeiroNome}, aqui está o status do seu ${ordem.veiculo}:\n\n${statusTexto}`;
 
         if (ordem.status === 'EM_ANDAMENTO') {
-          mensagem += `\n\nAssim que ficar pronto, te aviso aqui! 😊`;
+          mensagem += `\n\nInformaremos assim que estiver pronto.`;
         } else if (ordem.status === 'CONCLUIDO') {
-          mensagem += `\n\nPode vir buscar quando quiser! Estamos te esperando. 🎉`;
+          mensagem += `\n\nO veículo está disponível para retirada.`;
         } else if (ordem.dataAgendada) {
-          mensagem += `\n\n📅 Agendado para: ${formatDateBrazil(ordem.dataAgendada)}`;
+          mensagem += `\n\nAgendado para: ${formatDateBrazil(ordem.dataAgendada)}`;
         }
 
         return { type: 'text', message: mensagem };
@@ -2384,7 +2410,7 @@ async function executeFunctionCall(
       let mensagem = `${primeiroNome}, aqui está o status dos seus veículos:\n`;
       for (const ordem of customerData.ordensEmAndamento) {
         const statusTexto = statusMap[ordem.status] || ordem.status;
-        mensagem += `\n🚗 *${ordem.veiculo}*\n   ${statusTexto}\n`;
+        mensagem += `\n*${ordem.veiculo}*\n   ${statusTexto}\n`;
       }
 
       return { type: 'text', message: mensagem };
@@ -2394,21 +2420,21 @@ async function executeFunctionCall(
       if (!customerData) {
         return {
           type: 'text',
-          message: `Não encontrei seu cadastro por esse número. 😅\n\nQuer que eu te cadastre agora? Leva menos de 1 minuto! É só me passar seu nome completo.`,
+          message: `Não localizamos cadastro para este número. Para cadastrar, informe seu nome completo.`,
         };
       }
 
       if (!customerData.agendamentosFuturos || customerData.agendamentosFuturos.length === 0) {
         return {
           type: 'text',
-          message: `${primeiroNome}, você não tem nenhum agendamento futuro. 📅\n\nQuer agendar um serviço agora?`,
+          message: `${primeiroNome}, não há agendamentos futuros registrados. Deseja agendar um serviço?`,
         };
       }
 
       let mensagem = `${primeiroNome}, seus próximos agendamentos:\n`;
       for (const ag of customerData.agendamentosFuturos) {
         const dataFormatada = formatDateBrazil(ag.dataAgendada);
-        mensagem += `\n📅 *${dataFormatada}*\n   🚗 ${ag.veiculo}\n   🔧 ${ag.servicos}\n`;
+        mensagem += `\n*${dataFormatada}*\n   ${ag.veiculo} - ${ag.servicos}\n`;
       }
 
       return { type: 'text', message: mensagem };
@@ -2418,7 +2444,7 @@ async function executeFunctionCall(
       if (!customerData) {
         return {
           type: 'text',
-          message: `Não encontrei seu cadastro por esse número. 😅\n\nPra remarcar, preciso te encontrar no sistema. Quer que eu te cadastre? É rapidinho!`,
+          message: `Não localizamos cadastro para este número. Para prosseguir, informe seu nome completo para cadastro.`,
         };
       }
 
@@ -2427,7 +2453,7 @@ async function executeFunctionCall(
       if (!customerData.agendamentosFuturos || customerData.agendamentosFuturos.length === 0) {
         return {
           type: 'text',
-          message: `${primeiroNome}, você não tem nenhum agendamento pra ${acao === 'remarcar' ? 'remarcar' : 'cancelar'}. 📅`,
+          message: `${primeiroNome}, não há agendamentos para ${acao === 'remarcar' ? 'remarcar' : 'cancelar'}.`,
         };
       }
 
@@ -2440,12 +2466,12 @@ async function executeFunctionCall(
           if (cancelou) {
             return {
               type: 'text',
-              message: `Pronto, ${primeiroNome}! ❌\n\nCancelei seu agendamento do ${ag.veiculo} que estava marcado pra ${formatDateBrazil(ag.dataAgendada)}.\n\nQuando quiser reagendar, é só me chamar! 😊`,
+              message: `${primeiroNome}, o agendamento do ${ag.veiculo} (${formatDateBrazil(ag.dataAgendada)}) foi cancelado. Estamos à disposição para reagendar.`,
             };
           }
           return {
             type: 'text',
-            message: `Ops, não consegui cancelar. 😅\n\nPode ligar pra oficina?`,
+            message: `Não foi possível cancelar o agendamento. Por favor, entre em contato com a oficina.`,
           };
         }
 
@@ -2471,7 +2497,7 @@ async function executeFunctionCall(
 
           return {
             type: 'list',
-            text: `${primeiroNome}, vamos remarcar o agendamento do seu ${ag.veiculo}! 📅\n\nAtualmente está marcado pra ${formatDateBrazil(ag.dataAgendada)}.\n\nEscolha uma nova data:`,
+            text: `${primeiroNome}, o agendamento atual do ${ag.veiculo} é para ${formatDateBrazil(ag.dataAgendada)}.\n\nSelecione uma nova data:`,
             listButton: 'Ver Horários',
             footerText: 'Escolha o novo horário',
             choices,
@@ -2552,7 +2578,7 @@ async function executeFunctionCall(
       if (resultados.length === 0) {
         return {
           type: 'text',
-          message: `${primeiroNome}, não encontrei esse produto no nosso estoque no momento. 😅\n\nQuer que eu verifique com o mecânico? Ou pode ligar pra oficina!`,
+          message: `${primeiroNome}, este produto não está disponível em estoque no momento. Para mais informações, entre em contato com a oficina.`,
         };
       }
 
@@ -2564,7 +2590,7 @@ async function executeFunctionCall(
         porCategoria[catNome].push(p);
       }
 
-      let mensagem = `${primeiroNome}, temos sim! Olha o que temos em estoque:\n`;
+      let mensagem = `${primeiroNome}, segue nosso estoque disponível:\n`;
       for (const [cat, items] of Object.entries(porCategoria)) {
         mensagem += `\n*${cat}*\n`;
         for (const p of items.slice(0, 5)) { // Max 5 por categoria
@@ -2576,7 +2602,7 @@ async function executeFunctionCall(
           mensagem += `  _...e mais ${items.length - 5} opções_\n`;
         }
       }
-      mensagem += `\nQuer agendar um serviço ou saber mais detalhes? 😊`;
+      mensagem += `\nDeseja agendar um serviço?`;
 
       return { type: 'text', message: mensagem };
     }
@@ -2588,7 +2614,7 @@ async function executeFunctionCall(
       if (servicos.length === 0) {
         return {
           type: 'text',
-          message: `${primeiroNome}, ainda não temos os preços cadastrados no sistema. 😅\n\nPode ligar pra oficina pra saber os valores?`,
+          message: `${primeiroNome}, os valores dos serviços serão informados conforme avaliação do veículo. Entre em contato com a oficina para mais detalhes.`,
         };
       }
 
@@ -2614,10 +2640,19 @@ async function executeFunctionCall(
 
       if (servicosEncontrados.length === 1) {
         const s = servicosEncontrados[0];
-        return {
-          type: 'text',
-          message: `${primeiroNome}, o preço de *${s.nome}* é:\n\n💰 *R$ ${s.preco.toFixed(2).replace('.', ',')}*\n\nQuer agendar? 😊`,
-        };
+        if (s.preco > 0) {
+          return {
+            type: 'text',
+            message: `${primeiroNome}, o valor de *${s.nome}* é *R$ ${s.preco.toFixed(2).replace('.', ',')}*. Deseja agendar?`,
+          };
+        } else {
+          return {
+            type: 'button',
+            text: `${primeiroNome}, o valor de *${s.nome}* será informado conforme avaliação do veículo. Deseja falar com um atendente para obter o valor?`,
+            footerText: '',
+            choices: ['Falar com atendente|transferir_preco', 'Não, obrigado|cancelar'],
+          };
+        }
       }
 
       // Múltiplos serviços - formatar por categoria
@@ -2628,14 +2663,18 @@ async function executeFunctionCall(
         porCategoria[cat].push(s);
       }
 
-      let mensagem = `${primeiroNome}, aqui estão nossos preços:\n`;
+      let mensagem = `${primeiroNome}, aqui estão nossos serviços:\n`;
       for (const [categoria, items] of Object.entries(porCategoria)) {
         mensagem += `\n*${categoria}*\n`;
         for (const s of items) {
-          mensagem += `  • ${s.nome}: R$ ${s.preco.toFixed(2).replace('.', ',')}\n`;
+          if (s.preco > 0) {
+            mensagem += `  • ${s.nome}: R$ ${s.preco.toFixed(2).replace('.', ',')}\n`;
+          } else {
+            mensagem += `  • ${s.nome}: consultar valor\n`;
+          }
         }
       }
-      mensagem += `\nQuer agendar algum serviço? 😊`;
+      mensagem += `\nDeseja agendar algum serviço?`;
 
       return { type: 'text', message: mensagem };
     }
@@ -2677,13 +2716,16 @@ async function executeFunctionCall(
       if (servicosEncontrados.length === 0) {
         return {
           type: 'text',
-          message: `${primeiroNome}, não encontrei esses serviços. 😅\n\nPode me dizer novamente o que você precisa?\n\nExemplo: troca de óleo, filtro de ar, alinhamento...`,
+          message: `${primeiroNome}, não localizamos esses serviços. Por favor, informe novamente o que precisa (ex: troca de óleo, filtro de ar).`,
         };
       }
 
-      // Calcular total
+      // Calcular total (ignorar serviços sem preço)
       const total = servicosEncontrados.reduce((acc, s) => acc + s.preco, 0);
-      const listaServicos = servicosEncontrados.map(s => `• ${s.nome}: R$ ${s.preco.toFixed(2).replace('.', ',')}`).join('\n');
+      const listaServicos = servicosEncontrados.map(s => {
+        if (s.preco > 0) return `• ${s.nome}: R$ ${s.preco.toFixed(2).replace('.', ',')}`;
+        return `• ${s.nome}: consultar valor`;
+      }).join('\n');
 
       // Guardar serviços no estado para usar quando confirmar
       (agendamento as any).servicosMultiplos = servicosEncontrados;
@@ -2713,7 +2755,7 @@ async function executeFunctionCall(
 
           return {
             type: 'list',
-            text: `${primeiroNome}, vou agendar esses serviços no seu ${agendamento.veiculoNome}:\n\n${listaServicos}\n\n💰 *Total: R$ ${total.toFixed(2).replace('.', ',')}*\n\nEscolha um horário:`,
+            text: `${primeiroNome}, serviços para o ${agendamento.veiculoNome}:\n\n${listaServicos}\n\n*Total: R$ ${total.toFixed(2).replace('.', ',')}*\n\nSelecione um horário:`,
             listButton: 'Ver Horários',
             footerText: 'Escolha o melhor horário',
             choices,
@@ -2735,7 +2777,7 @@ async function executeFunctionCall(
 
       return {
         type: 'list',
-        text: `${primeiroNome}, vou agendar esses serviços:\n\n${listaServicos}\n\n💰 *Total: R$ ${total.toFixed(2).replace('.', ',')}*\n\nQual veículo você quer trazer?`,
+        text: `${primeiroNome}, serviços selecionados:\n\n${listaServicos}\n\n*Total: R$ ${total.toFixed(2).replace('.', ',')}*\n\nQual veículo deseja trazer?`,
         listButton: 'Escolher Veículo',
         footerText: 'Selecione um',
         choices,
@@ -2746,7 +2788,7 @@ async function executeFunctionCall(
       if (!customerData) {
         return {
           type: 'text',
-          message: `${primeiroNome}, vou lembrar disso! Mas você ainda não está cadastrado. Quer se cadastrar primeiro?`,
+          message: `${primeiroNome}, para registrar sua preferência, é necessário ter cadastro. Deseja se cadastrar?`,
         };
       }
 
@@ -2764,13 +2806,13 @@ async function executeFunctionCall(
         };
         return {
           type: 'text',
-          message: `Anotado, ${primeiroNome}! ✍️\n\nVou lembrar que você prefere ${tipoNome[tipo] || tipo}: *${valor}*\n\nPosso te ajudar com mais alguma coisa?`,
+          message: `${primeiroNome}, registrado: ${tipoNome[tipo] || tipo} - *${valor}*. Posso ajudar com mais algo?`,
         };
       }
 
       return {
         type: 'text',
-        message: `Opa, tive um probleminha pra anotar. 😅\n\nMas pode me lembrar quando vier, ok?`,
+        message: `Não foi possível registrar a preferência. Por favor, informe novamente na sua próxima visita.`,
       };
     }
 
@@ -2778,34 +2820,71 @@ async function executeFunctionCall(
       if (!customerData) {
         return {
           type: 'text',
-          message: `Não encontrei seu cadastro por esse número. 😅\n\nQuer que eu te cadastre agora? Leva menos de 1 minuto! É só me passar seu nome completo.`,
+          message: `Não localizamos cadastro para este número. Para cadastrar, informe seu nome completo.`,
         };
       }
 
       if (customerData.historicoServicos.length === 0) {
         return {
           type: 'text',
-          message: `${primeiroNome}, você ainda não fez nenhum serviço aqui. 📋\n\nQuer agendar o primeiro? 😊`,
+          message: `${primeiroNome}, não há serviços registrados. Deseja agendar?`,
         };
       }
 
       let mensagem = `${primeiroNome}, aqui está seu histórico de serviços:\n`;
       for (const servico of customerData.historicoServicos) {
-        mensagem += `\n📅 ${servico}`;
+        mensagem += `\n- ${servico}`;
       }
 
       if (customerData.ultimoServico) {
         const diasDesdeUltimo = Math.floor((Date.now() - customerData.ultimoServico.data.getTime()) / (1000 * 60 * 60 * 24));
         if (diasDesdeUltimo > 180) {
-          mensagem += `\n\n⚠️ Já faz ${diasDesdeUltimo} dias desde o último serviço. Hora de uma revisão?`;
+          mensagem += `\n\nJá se passaram ${diasDesdeUltimo} dias desde o último serviço. Recomendamos agendar uma revisão.`;
         }
       }
 
       return { type: 'text', message: mensagem };
     }
 
+    case 'transferir_atendente': {
+      const motivo = (args.motivo as string) || 'cliente solicitou';
+
+      try {
+        // Buscar conversa ativa do cliente
+        const conversa = await prisma.conversa.findFirst({
+          where: {
+            empresaId,
+            telefone: phoneNumber,
+          },
+          orderBy: { ultimaData: 'desc' },
+        });
+
+        if (conversa) {
+          await prisma.conversa.update({
+            where: { id: conversa.id },
+            data: {
+              aiPaused: true,
+              aguardandoAtendente: true,
+              motivoTransferencia: motivo,
+            },
+          });
+        }
+
+        return {
+          type: 'text',
+          message: `${primeiroNome}, sua conversa foi transferida para um atendente. Em breve você será atendido.`,
+        };
+      } catch (error: any) {
+        console.error('[CHATBOT] Erro ao transferir para atendente:', error?.message);
+        return {
+          type: 'text',
+          message: `${primeiroNome}, não foi possível transferir neste momento. Por favor, entre em contato com a oficina diretamente.`,
+        };
+      }
+    }
+
     default: {
-      return { type: 'text', message: `Olá ${primeiroNome}! Como posso ajudar?` };
+      return { type: 'text', message: `${primeiroNome}, como posso ajudar?` };
     }
   }
 }

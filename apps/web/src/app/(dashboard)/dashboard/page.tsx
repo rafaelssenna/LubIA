@@ -99,6 +99,19 @@ interface LembretesData {
   count: number;
 }
 
+interface EmEsperaItem {
+  id: number;
+  telefone: string;
+  nome: string;
+  motivo: string;
+  desde: string;
+}
+
+interface EmEsperaData {
+  itens: EmEsperaItem[];
+  count: number;
+}
+
 const getStatusConfig = (status: string) => {
   switch (status) {
     case 'EM_ANDAMENTO':
@@ -135,6 +148,7 @@ export default function Dashboard() {
   const [vendasHoje, setVendasHoje] = useState<VendasHojeData | null>(null);
   const [aReceber, setAReceber] = useState<AReceberData | null>(null);
   const [lembretes, setLembretes] = useState<LembretesData | null>(null);
+  const [emEspera, setEmEspera] = useState<EmEsperaData | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -146,6 +160,7 @@ export default function Dashboard() {
         setVendasHoje(data.vendasHoje || null);
         setAReceber(data.aReceber || null);
         setLembretes(data.lembretes || null);
+        setEmEspera(data.emEspera || null);
       })
       .catch(() => {})
       .finally(() => setLoading(false));
@@ -453,6 +468,54 @@ export default function Dashboard() {
             </div>
           </div>
         </div>
+
+        {/* Em Espera - Clientes aguardando atendente */}
+        {emEspera && emEspera.count > 0 && (
+          <div className="bg-card rounded-2xl border border-orange-500/20 overflow-hidden">
+            <div className="p-3 border-b border-border flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="p-2 bg-orange-500/10 rounded-lg">
+                  <MessageCircle className="h-4 w-4 text-orange-400" />
+                </div>
+                <div>
+                  <h3 className="text-sm font-semibold text-foreground">Clientes em Espera</h3>
+                  <p className="text-xs text-foreground-muted">{emEspera.count} aguardando atendente</p>
+                </div>
+              </div>
+              <Link
+                href="/whatsapp"
+                className="flex items-center gap-1.5 px-3 py-1.5 bg-orange-500/10 rounded-lg text-orange-400 text-xs font-medium hover:bg-orange-500/20 transition-all"
+              >
+                Atender
+                <ArrowRight className="h-3 w-3" />
+              </Link>
+            </div>
+            <div className="p-3">
+              <div className="flex gap-3 overflow-x-auto custom-scrollbar pb-1">
+                {emEspera.itens.map((item) => {
+                  const tempoEspera = Math.floor((Date.now() - new Date(item.desde).getTime()) / (1000 * 60));
+                  const tempoLabel = tempoEspera < 60 ? `${tempoEspera}min` : `${Math.floor(tempoEspera / 60)}h ${tempoEspera % 60}min`;
+                  return (
+                    <Link
+                      key={item.id}
+                      href="/whatsapp"
+                      className="flex-shrink-0 p-3 rounded-xl border border-orange-500/30 bg-orange-500/5 min-w-[200px] max-w-[220px] hover:bg-orange-500/10 transition-all"
+                    >
+                      <div className="flex items-start justify-between gap-2 mb-2">
+                        <p className="text-sm font-medium text-foreground truncate">{item.nome}</p>
+                        <span className="px-1.5 py-0.5 rounded text-[10px] font-medium whitespace-nowrap bg-orange-500/20 text-orange-400">
+                          {tempoLabel}
+                        </span>
+                      </div>
+                      <p className="text-xs text-muted truncate">{item.motivo}</p>
+                      <p className="text-xs text-foreground-muted mt-1">{item.telefone}</p>
+                    </Link>
+                  );
+                })}
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Lembretes - Barra horizontal */}
         {lembretes && lembretes.count > 0 && (

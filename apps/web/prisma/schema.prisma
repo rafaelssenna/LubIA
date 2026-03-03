@@ -462,8 +462,10 @@ model Conversa {
   ultimaData     DateTime   @default(now())
   naoLidas       Int        @default(0)
   arquivada      Boolean    @default(false)
-  aiPaused       Boolean    @default(false)
-  bufferAte      DateTime?
+  aiPaused              Boolean    @default(false)
+  aguardandoAtendente   Boolean    @default(false)
+  motivoTransferencia   String?
+  bufferAte             DateTime?
   bufferProcessando Boolean @default(false)
   createdAt      DateTime   @default(now())
   updatedAt      DateTime   @updatedAt

@@ -36,6 +36,9 @@ interface Conversa {
   ultimaData: string;
   naoLidas: number;
   arquivada: boolean;
+  aiPaused?: boolean;
+  aguardandoAtendente?: boolean;
+  motivoTransferencia?: string | null;
 }
 
 interface Mensagem {
@@ -82,6 +85,7 @@ export default function WhatsAppPage() {
   const [sending, setSending] = useState(false);
   const [stats, setStats] = useState<Stats>({ total: 0, naoLidas: 0, hoje: 0 });
   const [busca, setBusca] = useState('');
+  const [filtro, setFiltro] = useState<'todas' | 'espera'>('todas');
   const [autoRefresh, setAutoRefresh] = useState(true);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
@@ -340,6 +344,34 @@ export default function WhatsAppPage() {
                 <RefreshCw size={18} className={loading ? 'animate-spin' : ''} />
               </button>
             </div>
+            {/* Filtro Todas / Em Espera */}
+            <div className="flex border-b border-border">
+              <button
+                onClick={() => setFiltro('todas')}
+                className={`flex-1 py-2 text-xs font-medium text-center transition-all ${
+                  filtro === 'todas'
+                    ? 'text-[#25D366] border-b-2 border-[#25D366]'
+                    : 'text-muted hover:text-foreground'
+                }`}
+              >
+                Todas
+              </button>
+              <button
+                onClick={() => setFiltro('espera')}
+                className={`flex-1 py-2 text-xs font-medium text-center transition-all relative ${
+                  filtro === 'espera'
+                    ? 'text-orange-400 border-b-2 border-orange-400'
+                    : 'text-muted hover:text-foreground'
+                }`}
+              >
+                Em Espera
+                {conversas.filter(c => c.aguardandoAtendente).length > 0 && (
+                  <span className="ml-1.5 inline-flex items-center justify-center w-5 h-5 text-[10px] font-bold bg-orange-500 text-white rounded-full">
+                    {conversas.filter(c => c.aguardandoAtendente).length}
+                  </span>
+                )}
+              </button>
+            </div>
             <div className="flex-1 overflow-y-auto">
               {loading ? (
                 <div className="flex items-center justify-center h-32">
@@ -348,13 +380,17 @@ export default function WhatsAppPage() {
                     <div className="absolute top-0 left-0 w-8 h-8 border-3 border-transparent border-t-[#25D366] rounded-full animate-spin"></div>
                   </div>
                 </div>
-              ) : conversas.length === 0 ? (
+              ) : (() => {
+                const conversasFiltradas = filtro === 'espera'
+                  ? conversas.filter(c => c.aguardandoAtendente)
+                  : conversas;
+                return conversasFiltradas.length === 0 ? (
                 <div className="flex flex-col items-center justify-center h-32 text-foreground-muted">
                   <MessageCircle size={32} className="mb-2 opacity-50" />
-                  <p className="text-sm">Nenhuma conversa</p>
+                  <p className="text-sm">{filtro === 'espera' ? 'Nenhum cliente em espera' : 'Nenhuma conversa'}</p>
                 </div>
               ) : (
-                conversas.map((conversa) => (
+                conversasFiltradas.map((conversa) => (
                   <div
                     key={conversa.id}
                     onClick={() => fetchMensagens(conversa.id)}
@@ -376,6 +412,11 @@ export default function WhatsAppPage() {
                           <span className="text-xs text-foreground-muted">{formatDate(conversa.ultimaData)}</span>
                         </div>
                         <p className="text-sm text-muted truncate mt-1">{conversa.ultimaMensagem || 'Nova conversa'}</p>
+                        {conversa.aguardandoAtendente && (
+                          <span className="inline-block mt-1 text-[10px] font-medium px-1.5 py-0.5 rounded bg-orange-500/20 text-orange-400">
+                            {conversa.motivoTransferencia || 'Aguardando atendente'}
+                          </span>
+                        )}
                       </div>
                       {conversa.naoLidas > 0 && (
                         <div className="w-6 h-6 bg-gradient-to-r from-[#25D366] to-[#128C7E] rounded-full flex items-center justify-center shadow-lg shadow-[#25D366]/30">
@@ -385,7 +426,8 @@ export default function WhatsAppPage() {
                     </div>
                   </div>
                 ))
-              )}
+              );
+              })()}
             </div>
           </div>
 

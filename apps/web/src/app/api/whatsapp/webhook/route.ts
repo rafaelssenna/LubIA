@@ -480,6 +480,26 @@ export async function POST(request: NextRequest) {
 
       // Respostas de botão/lista: processar imediatamente (sem buffer)
       if (buttonOrListId) {
+        // Botão "Falar com atendente" da consulta de preço
+        if (buttonOrListId === 'transferir_preco') {
+          console.log('[WEBHOOK] Botão transferir atendente - pausando IA para', from);
+          await prisma.conversa.update({
+            where: { id: conversa.id },
+            data: {
+              aiPaused: true,
+              aguardandoAtendente: true,
+              motivoTransferencia: 'preço não cadastrado',
+            },
+          });
+          const nomeCliente = pushName?.split(' ')[0] || 'Cliente';
+          const msgTransferencia = `${nomeCliente}, sua conversa foi transferida para um atendente. Em breve você será atendido.`;
+          const sentId = await sendWhatsAppMessage(token, from, msgTransferencia);
+          if (sentId) {
+            await saveMessage(from, null, msgTransferencia, true, empresaId, 'TEXTO', sentId);
+          }
+          return NextResponse.json({ success: true, processed: true });
+        }
+
         console.log('[WEBHOOK] Resposta de botão - processando imediatamente');
         await processMessageAndRespond(from, text, pushName, empresaId, token);
         return NextResponse.json({ success: true, processed: true });

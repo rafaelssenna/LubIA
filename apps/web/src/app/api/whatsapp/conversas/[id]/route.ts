@@ -113,6 +113,8 @@ export async function PUT(
         ...(arquivada !== undefined && { arquivada }),
         ...(nome !== undefined && { nome }),
         ...(aiPaused !== undefined && { aiPaused }),
+        // Ao retomar IA, resetar aguardandoAtendente
+        ...(aiPaused === false && { aguardandoAtendente: false, motivoTransferencia: null }),
       },
     });
 
