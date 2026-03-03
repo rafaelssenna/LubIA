@@ -2,7 +2,10 @@ import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { generateChatResponse, ChatResponse, ChatResponseList, ChatResponseButton, transcribeAudio } from '@/lib/chatbot';
 
+export const maxDuration = 30; // 30s para acomodar buffer de 15s + processamento IA
+
 const UAZAPI_URL = process.env.UAZAPI_URL || 'https://hia-clientes.uazapi.com';
+const BUFFER_MS = 15000; // 15 segundos de buffer
 
 // Tipo de mensagem baseado no enum do Prisma
 type TipoMensagem = 'TEXTO' | 'IMAGEM' | 'AUDIO' | 'VIDEO' | 'DOCUMENTO' | 'STICKER' | 'LOCALIZACAO';
@@ -463,20 +466,110 @@ export async function POST(request: NextRequest) {
       // Verificar se IA está pausada para esta conversa
       const conversa = await prisma.conversa.findFirst({
         where: { telefone: from, empresaId },
-        select: { aiPaused: true },
+        select: { id: true, aiPaused: true },
       });
 
-      // Processar mensagem e responder imediatamente (sem buffer)
-      // O buffer em memória não funciona bem em serverless (Vercel)
-      if (token && !conversa?.aiPaused) {
-        // Aguardar processamento completo antes de retornar
-        // (necessário em serverless para evitar que a função seja encerrada)
-        await processMessageAndRespond(from, text, pushName, empresaId, token);
-      } else if (conversa?.aiPaused) {
-        console.log('[WEBHOOK] IA pausada para', from, '- não respondendo');
+      if (!token || !conversa) {
+        return NextResponse.json({ success: true, processed: false });
       }
 
-      return NextResponse.json({ success: true, processed: true });
+      if (conversa.aiPaused) {
+        console.log('[WEBHOOK] IA pausada para', from, '- não respondendo');
+        return NextResponse.json({ success: true, processed: false });
+      }
+
+      // Respostas de botão/lista: processar imediatamente (sem buffer)
+      if (buttonOrListId) {
+        console.log('[WEBHOOK] Resposta de botão - processando imediatamente');
+        await processMessageAndRespond(from, text, pushName, empresaId, token);
+        return NextResponse.json({ success: true, processed: true });
+      }
+
+      // --- BUFFER DE MENSAGENS (15 segundos) ---
+      const bufferAte = new Date(Date.now() + BUFFER_MS);
+
+      // Definir/estender o deadline do buffer
+      await prisma.conversa.update({
+        where: { id: conversa.id },
+        data: {
+          bufferAte,
+          bufferProcessando: false, // resetar lock se estendendo
+        },
+      });
+
+      console.log('[WEBHOOK] Buffer definido até', bufferAte.toISOString(), 'para', from);
+
+      // Aguardar 15 segundos
+      await new Promise(resolve => setTimeout(resolve, BUFFER_MS));
+
+      // Re-ler o deadline do buffer
+      const conversaAtual = await prisma.conversa.findUnique({
+        where: { id: conversa.id },
+        select: { bufferAte: true },
+      });
+
+      // Se outra mensagem estendeu o buffer, sair (aquela função cuida)
+      if (!conversaAtual?.bufferAte || conversaAtual.bufferAte > new Date()) {
+        console.log('[WEBHOOK] Buffer estendido por mensagem mais nova, saindo');
+        return NextResponse.json({ success: true, buffered: true, delegated: true });
+      }
+
+      // Tentar "reivindicar" o buffer atomicamente
+      const claimed = await prisma.conversa.updateMany({
+        where: {
+          id: conversa.id,
+          bufferAte: { lte: new Date() },
+          bufferProcessando: false,
+        },
+        data: { bufferProcessando: true },
+      });
+
+      if (claimed.count === 0) {
+        console.log('[WEBHOOK] Buffer já reivindicado por outra função');
+        return NextResponse.json({ success: true, buffered: true, delegated: true });
+      }
+
+      // Buscar todas as mensagens não processadas do usuário
+      const mensagensPendentes = await prisma.mensagem.findMany({
+        where: {
+          conversaId: conversa.id,
+          enviada: false,
+          processadaPelaIA: false,
+        },
+        orderBy: { dataEnvio: 'asc' },
+      });
+
+      if (mensagensPendentes.length === 0) {
+        await prisma.conversa.update({
+          where: { id: conversa.id },
+          data: { bufferAte: null, bufferProcessando: false },
+        });
+        return NextResponse.json({ success: true, noMessages: true });
+      }
+
+      // Concatenar todas as mensagens em uma só
+      const mensagemCombinada = mensagensPendentes
+        .map(m => m.conteudo)
+        .join('\n');
+
+      console.log('[WEBHOOK] Processando', mensagensPendentes.length, 'mensagem(ns) concatenada(s):', mensagemCombinada.substring(0, 200));
+
+      // Processar a mensagem combinada com a IA
+      await processMessageAndRespond(from, mensagemCombinada, pushName, empresaId, token);
+
+      // Marcar todas como processadas e limpar buffer
+      await prisma.mensagem.updateMany({
+        where: { id: { in: mensagensPendentes.map(m => m.id) } },
+        data: { processadaPelaIA: true },
+      });
+
+      await prisma.conversa.update({
+        where: { id: conversa.id },
+        data: { bufferAte: null, bufferProcessando: false },
+      });
+
+      console.log('[WEBHOOK] Buffer processado com sucesso para', from, '(' + mensagensPendentes.length + ' msgs)');
+      return NextResponse.json({ success: true, processed: true, messageCount: mensagensPendentes.length });
 
     } else if (event === 'connection' || data.status) {
       // Evento de conexão/desconexão
