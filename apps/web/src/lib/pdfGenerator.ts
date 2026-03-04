@@ -116,6 +116,31 @@ export function generateOrdemPDF(ordem: OrdemPDF, empresaConfig?: EmpresaConfig)
   const pageWidth = doc.internal.pageSize.getWidth();
   const pageHeight = doc.internal.pageSize.getHeight();
   const margin = 14;
+  const footerSpace = 20; // Espaço reservado para o footer
+
+  // Helper: verifica se precisa de nova página
+  const checkPageBreak = (yPos: number, neededSpace: number): number => {
+    if (yPos + neededSpace > pageHeight - footerSpace) {
+      doc.addPage();
+      return 20; // Margem top da nova página
+    }
+    return yPos;
+  };
+
+  // Helper: desenha footer na página atual
+  const drawFooter = () => {
+    doc.setDrawColor(220, 220, 220);
+    doc.setLineWidth(0.3);
+    doc.line(margin, pageHeight - 15, pageWidth - margin, pageHeight - 15);
+
+    doc.setTextColor(150, 150, 150);
+    doc.setFontSize(7);
+    const footerParts = [config.endereco, config.telefone].filter(Boolean);
+    if (footerParts.length > 0) {
+      doc.text(footerParts.join(' | '), pageWidth / 2, pageHeight - 10, { align: 'center' });
+    }
+    doc.text(`Gerado em ${new Date().toLocaleString('pt-BR')}`, pageWidth / 2, pageHeight - 6, { align: 'center' });
+  };
 
   // Usar dados da empresa ou fallback
   const config = {
@@ -297,6 +322,7 @@ export function generateOrdemPDF(ordem: OrdemPDF, empresaConfig?: EmpresaConfig)
 
   // ============ SERVIÇOS EXTRAS ============
   if (ordem.servicosExtras && ordem.servicosExtras.length > 0) {
+    yPos = checkPageBreak(yPos, 30);
     doc.setTextColor(osColor[0], osColor[1], osColor[2]);
     doc.setFontSize(11);
     doc.setFont('helvetica', 'bold');
@@ -329,6 +355,7 @@ export function generateOrdemPDF(ordem: OrdemPDF, empresaConfig?: EmpresaConfig)
       alternateRowStyles: {
         fillColor: [248, 250, 252],
       },
+      margin: { bottom: footerSpace },
     });
 
     yPos = (doc as any).lastAutoTable.finalY + 8;
@@ -336,6 +363,7 @@ export function generateOrdemPDF(ordem: OrdemPDF, empresaConfig?: EmpresaConfig)
 
   // ============ PRODUTOS ============
   if (ordem.itensProduto && ordem.itensProduto.length > 0) {
+    yPos = checkPageBreak(yPos, 30);
     doc.setTextColor(59, 130, 246);
     doc.setFontSize(11);
     doc.setFont('helvetica', 'bold');
@@ -377,6 +405,7 @@ export function generateOrdemPDF(ordem: OrdemPDF, empresaConfig?: EmpresaConfig)
       alternateRowStyles: {
         fillColor: [248, 250, 252],
       },
+      margin: { bottom: footerSpace },
     });
 
     yPos = (doc as any).lastAutoTable.finalY + 8;
@@ -384,6 +413,10 @@ export function generateOrdemPDF(ordem: OrdemPDF, empresaConfig?: EmpresaConfig)
 
   // ============ OBSERVAÇÕES ============
   if (ordem.observacoes) {
+    const splitText = doc.splitTextToSize(ordem.observacoes, pageWidth - margin * 2 - 10);
+    const obsHeight = splitText.length * 5 + 8;
+    yPos = checkPageBreak(yPos, obsHeight + 20);
+
     doc.setTextColor(100, 100, 100);
     doc.setFontSize(11);
     doc.setFont('helvetica', 'bold');
@@ -393,9 +426,6 @@ export function generateOrdemPDF(ordem: OrdemPDF, empresaConfig?: EmpresaConfig)
     doc.setFillColor(255, 251, 235);
     doc.setDrawColor(251, 191, 36);
     doc.setLineWidth(0.3);
-
-    const splitText = doc.splitTextToSize(ordem.observacoes, pageWidth - margin * 2 - 10);
-    const obsHeight = splitText.length * 5 + 8;
     doc.roundedRect(margin, yPos, pageWidth - margin * 2, obsHeight, 2, 2, 'FD');
 
     doc.setTextColor(60, 60, 60);
@@ -406,7 +436,17 @@ export function generateOrdemPDF(ordem: OrdemPDF, empresaConfig?: EmpresaConfig)
     yPos += obsHeight + 8;
   }
 
-  // ============ TOTAL ============
+  // ============ DECLARAÇÃO ============
+  doc.setTextColor(100, 100, 100);
+  doc.setFontSize(8);
+  doc.setFont('helvetica', 'normal');
+  doc.text('Declaro que os serviços acima foram executados conforme solicitado.', margin, yPos);
+  yPos += 5;
+
+  // ============ TOTAL + ASSINATURA ============
+  // Garantir espaço para total (28) + assinatura (35) + footer (20) = 83
+  yPos = checkPageBreak(yPos, 85);
+
   // Se não tem serviços nem produtos, adiciona mensagem
   const hasItems = (ordem.servicosExtras && ordem.servicosExtras.length > 0) ||
                    (ordem.itensProduto && ordem.itensProduto.length > 0);
@@ -439,41 +479,25 @@ export function generateOrdemPDF(ordem: OrdemPDF, empresaConfig?: EmpresaConfig)
   yPos += 40;
 
   // ============ ASSINATURA ============
-  // Posicionar assinatura logo após o total, mas garantir espaço para footer
-  const signatureY = Math.min(yPos, pageHeight - 55);
-
   doc.setTextColor(100, 100, 100);
-  doc.setFontSize(8);
-  doc.setFont('helvetica', 'normal');
-  doc.text('Declaro que os serviços acima foram executados conforme solicitado.', margin, signatureY);
 
   // Linha de assinatura cliente
   doc.setDrawColor(180, 180, 180);
   doc.setLineWidth(0.3);
-  doc.line(margin, signatureY + 20, margin + 70, signatureY + 20);
+  doc.line(margin, yPos + 10, margin + 70, yPos + 10);
   doc.setFontSize(9);
-  doc.text('Assinatura do Cliente', margin + 35, signatureY + 27, { align: 'center' });
+  doc.text('Assinatura do Cliente', margin + 35, yPos + 17, { align: 'center' });
 
   // Data (no meio)
-  doc.line(pageWidth / 2 - 30, signatureY + 20, pageWidth / 2 + 30, signatureY + 20);
-  doc.text('Data: ____/____/____', pageWidth / 2, signatureY + 27, { align: 'center' });
+  doc.line(pageWidth / 2 - 30, yPos + 10, pageWidth / 2 + 30, yPos + 10);
+  doc.text('Data: ____/____/____', pageWidth / 2, yPos + 17, { align: 'center' });
 
   // Linha de assinatura oficina
-  doc.line(pageWidth - margin - 70, signatureY + 20, pageWidth - margin, signatureY + 20);
-  doc.text('Carimbo/Assinatura', pageWidth - margin - 35, signatureY + 27, { align: 'center' });
+  doc.line(pageWidth - margin - 70, yPos + 10, pageWidth - margin, yPos + 10);
+  doc.text('Carimbo/Assinatura', pageWidth - margin - 35, yPos + 17, { align: 'center' });
 
   // ============ FOOTER ============
-  doc.setDrawColor(220, 220, 220);
-  doc.setLineWidth(0.3);
-  doc.line(margin, pageHeight - 15, pageWidth - margin, pageHeight - 15);
-
-  doc.setTextColor(150, 150, 150);
-  doc.setFontSize(7);
-  const footerParts = [config.endereco, config.telefone].filter(Boolean);
-  if (footerParts.length > 0) {
-    doc.text(footerParts.join(' | '), pageWidth / 2, pageHeight - 10, { align: 'center' });
-  }
-  doc.text(`Gerado em ${new Date().toLocaleString('pt-BR')}`, pageWidth / 2, pageHeight - 6, { align: 'center' });
+  drawFooter();
 
   return doc;
 }
@@ -526,6 +550,28 @@ export function generateOrcamentoPDF(orcamento: OrcamentoPDF, empresaConfig?: Em
   const pageWidth = doc.internal.pageSize.getWidth();
   const pageHeight = doc.internal.pageSize.getHeight();
   const margin = 14;
+  const footerSpace = 20;
+
+  const checkPageBreak = (yPos: number, neededSpace: number): number => {
+    if (yPos + neededSpace > pageHeight - footerSpace) {
+      doc.addPage();
+      return 20;
+    }
+    return yPos;
+  };
+
+  const drawFooter = () => {
+    doc.setDrawColor(220, 220, 220);
+    doc.setLineWidth(0.3);
+    doc.line(margin, pageHeight - 15, pageWidth - margin, pageHeight - 15);
+    doc.setTextColor(150, 150, 150);
+    doc.setFontSize(7);
+    const footerParts = [config.endereco, config.telefone].filter(Boolean);
+    if (footerParts.length > 0) {
+      doc.text(footerParts.join(' | '), pageWidth / 2, pageHeight - 10, { align: 'center' });
+    }
+    doc.text(`Gerado em ${new Date().toLocaleString('pt-BR')}`, pageWidth / 2, pageHeight - 6, { align: 'center' });
+  };
 
   // Usar dados da empresa ou fallback
   const config = {
@@ -642,6 +688,7 @@ export function generateOrcamentoPDF(orcamento: OrcamentoPDF, empresaConfig?: Em
 
   // ============ SERVIÇOS EXTRAS ============
   if (orcamento.servicosExtras && orcamento.servicosExtras.length > 0) {
+    yPos = checkPageBreak(yPos, 30);
     doc.setTextColor(orcColor[0], orcColor[1], orcColor[2]);
     doc.setFontSize(11);
     doc.setFont('helvetica', 'bold');
@@ -674,6 +721,7 @@ export function generateOrcamentoPDF(orcamento: OrcamentoPDF, empresaConfig?: Em
       alternateRowStyles: {
         fillColor: [255, 250, 245],
       },
+      margin: { bottom: footerSpace },
     });
 
     yPos = (doc as any).lastAutoTable.finalY + 8;
@@ -681,6 +729,7 @@ export function generateOrcamentoPDF(orcamento: OrcamentoPDF, empresaConfig?: Em
 
   // ============ PRODUTOS ============
   if (orcamento.itensProduto && orcamento.itensProduto.length > 0) {
+    yPos = checkPageBreak(yPos, 30);
     doc.setTextColor(59, 130, 246);
     doc.setFontSize(11);
     doc.setFont('helvetica', 'bold');
@@ -717,6 +766,7 @@ export function generateOrcamentoPDF(orcamento: OrcamentoPDF, empresaConfig?: Em
       alternateRowStyles: {
         fillColor: [248, 250, 252],
       },
+      margin: { bottom: footerSpace },
     });
 
     yPos = (doc as any).lastAutoTable.finalY + 8;
@@ -724,6 +774,10 @@ export function generateOrcamentoPDF(orcamento: OrcamentoPDF, empresaConfig?: Em
 
   // ============ OBSERVAÇÕES ============
   if (orcamento.observacoes) {
+    const splitText = doc.splitTextToSize(orcamento.observacoes, pageWidth - margin * 2 - 10);
+    const obsHeight = splitText.length * 5 + 8;
+    yPos = checkPageBreak(yPos, obsHeight + 20);
+
     doc.setTextColor(100, 100, 100);
     doc.setFontSize(11);
     doc.setFont('helvetica', 'bold');
@@ -733,9 +787,6 @@ export function generateOrcamentoPDF(orcamento: OrcamentoPDF, empresaConfig?: Em
     doc.setFillColor(255, 251, 235);
     doc.setDrawColor(251, 191, 36);
     doc.setLineWidth(0.3);
-
-    const splitText = doc.splitTextToSize(orcamento.observacoes, pageWidth - margin * 2 - 10);
-    const obsHeight = splitText.length * 5 + 8;
     doc.roundedRect(margin, yPos, pageWidth - margin * 2, obsHeight, 2, 2, 'FD');
 
     doc.setTextColor(60, 60, 60);
@@ -746,7 +797,9 @@ export function generateOrcamentoPDF(orcamento: OrcamentoPDF, empresaConfig?: Em
     yPos += obsHeight + 8;
   }
 
-  // ============ TOTAL ============
+  // ============ TOTAL + TERMOS ============
+  // Garantir espaço para total (28) + termos (15) + footer (20) = 63
+  yPos = checkPageBreak(yPos, 65);
   yPos += 5;
 
   // Box do total (alinhado à direita)
@@ -767,26 +820,14 @@ export function generateOrcamentoPDF(orcamento: OrcamentoPDF, empresaConfig?: Em
   yPos += 40;
 
   // ============ TERMOS ============
-  const termsY = Math.min(yPos, pageHeight - 50);
-
   doc.setTextColor(100, 100, 100);
   doc.setFontSize(8);
   doc.setFont('helvetica', 'italic');
-  doc.text('Este orçamento não tem valor fiscal. Valores sujeitos a alteração sem aviso prévio.', margin, termsY);
-  doc.text('Orçamento válido mediante aprovação do cliente.', margin, termsY + 5);
+  doc.text('Este orçamento não tem valor fiscal. Valores sujeitos a alteração sem aviso prévio.', margin, yPos);
+  doc.text('Orçamento válido mediante aprovação do cliente.', margin, yPos + 5);
 
   // ============ FOOTER ============
-  doc.setDrawColor(220, 220, 220);
-  doc.setLineWidth(0.3);
-  doc.line(margin, pageHeight - 15, pageWidth - margin, pageHeight - 15);
-
-  doc.setTextColor(150, 150, 150);
-  doc.setFontSize(7);
-  const footerParts = [config.endereco, config.telefone].filter(Boolean);
-  if (footerParts.length > 0) {
-    doc.text(footerParts.join(' | '), pageWidth / 2, pageHeight - 10, { align: 'center' });
-  }
-  doc.text(`Gerado em ${new Date().toLocaleString('pt-BR')}`, pageWidth / 2, pageHeight - 6, { align: 'center' });
+  drawFooter();
 
   return doc;
 }
