@@ -516,6 +516,9 @@ model Configuracao {
   cnpj                 String?
   telefone             String?
   endereco             String?
+  logo                 String?  @db.Text
+  pdfCorOS             String?  @default("#22c55e") // Cor do header da O.S. (verde)
+  pdfCorOrcamento      String?  @default("#e85d04") // Cor do header do Orçamento (laranja)
   // WhatsApp/UazAPI
   uazapiInstanceId     String?
   uazapiToken          String?

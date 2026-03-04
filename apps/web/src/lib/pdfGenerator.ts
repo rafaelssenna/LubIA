@@ -6,6 +6,19 @@ export interface EmpresaConfig {
   cnpj?: string | null;
   telefone?: string | null;
   endereco?: string | null;
+  logo?: string | null;
+  pdfCorOS?: string | null;
+  pdfCorOrcamento?: string | null;
+}
+
+// Converter hex (#rrggbb) para [r, g, b]
+function hexToRgb(hex: string): [number, number, number] {
+  const h = hex.replace('#', '');
+  return [
+    parseInt(h.substring(0, 2), 16),
+    parseInt(h.substring(2, 4), 16),
+    parseInt(h.substring(4, 6), 16),
+  ];
 }
 
 interface OrdemPDF {
@@ -113,20 +126,36 @@ export function generateOrdemPDF(ordem: OrdemPDF, empresaConfig?: EmpresaConfig)
     endereco: empresaConfig?.endereco || DEFAULT_CONFIG.endereco,
   };
 
+  // Cor customizada da O.S.
+  const osColor = hexToRgb(empresaConfig?.pdfCorOS || '#22c55e');
+
   // ============ HEADER ============
   const headerHeight = config.endereco ? 52 : 45;
-  doc.setFillColor(34, 197, 94);
+  doc.setFillColor(osColor[0], osColor[1], osColor[2]);
   doc.rect(0, 0, pageWidth, headerHeight, 'F');
 
-  // Logo/Nome da oficina
+  // Logo da empresa (se existir)
+  const hasLogo = !!empresaConfig?.logo;
+  const textStartX = hasLogo ? margin + 35 : margin;
+
+  if (hasLogo && empresaConfig?.logo) {
+    try {
+      const logoFormat = empresaConfig.logo.startsWith('data:image/png') ? 'PNG' : 'JPEG';
+      doc.addImage(empresaConfig.logo, logoFormat, margin, 4, 30, 30);
+    } catch {
+      // Se a imagem falhar, ignora silenciosamente
+    }
+  }
+
+  // Nome da oficina
   doc.setTextColor(255, 255, 255);
-  doc.setFontSize(28);
+  doc.setFontSize(hasLogo ? 22 : 28);
   doc.setFont('helvetica', 'bold');
-  doc.text(config.nome, margin, 18);
+  doc.text(config.nome, textStartX, 18);
 
   doc.setFontSize(11);
   doc.setFont('helvetica', 'normal');
-  doc.text(config.subtitulo, margin, 26);
+  doc.text(config.subtitulo, textStartX, 26);
 
   // Dados da oficina no header
   doc.setFontSize(8);
@@ -135,10 +164,10 @@ export function generateOrdemPDF(ordem: OrdemPDF, empresaConfig?: EmpresaConfig)
     config.telefone ? `Tel: ${formatPhone(config.telefone)}` : '',
   ].filter(Boolean);
   if (infoParts.length > 0) {
-    doc.text(infoParts.join('  |  '), margin, 34);
+    doc.text(infoParts.join('  |  '), textStartX, 34);
   }
   if (config.endereco) {
-    doc.text(config.endereco, margin, 40);
+    doc.text(config.endereco, textStartX, 40);
   }
 
   // O.S. Number (lado direito)
@@ -162,13 +191,13 @@ export function generateOrdemPDF(ordem: OrdemPDF, empresaConfig?: EmpresaConfig)
   let yPos = headerHeight + 10;
 
   // ============ DADOS DO CLIENTE ============
-  doc.setTextColor(34, 197, 94);
+  doc.setTextColor(osColor[0], osColor[1], osColor[2]);
   doc.setFontSize(11);
   doc.setFont('helvetica', 'bold');
   doc.text('DADOS DO CLIENTE', margin, yPos);
 
   yPos += 3;
-  doc.setDrawColor(34, 197, 94);
+  doc.setDrawColor(osColor[0], osColor[1], osColor[2]);
   doc.setLineWidth(0.5);
   doc.line(margin, yPos, pageWidth - margin, yPos);
 
@@ -203,7 +232,7 @@ export function generateOrdemPDF(ordem: OrdemPDF, empresaConfig?: EmpresaConfig)
   yPos += 10;
 
   // ============ DADOS DO VEÍCULO ============
-  doc.setTextColor(34, 197, 94);
+  doc.setTextColor(osColor[0], osColor[1], osColor[2]);
   doc.setFontSize(11);
   doc.setFont('helvetica', 'bold');
   doc.text('DADOS DO VEÍCULO', margin, yPos);
@@ -268,7 +297,7 @@ export function generateOrdemPDF(ordem: OrdemPDF, empresaConfig?: EmpresaConfig)
 
   // ============ SERVIÇOS EXTRAS ============
   if (ordem.servicosExtras && ordem.servicosExtras.length > 0) {
-    doc.setTextColor(34, 197, 94);
+    doc.setTextColor(osColor[0], osColor[1], osColor[2]);
     doc.setFontSize(11);
     doc.setFont('helvetica', 'bold');
     doc.text('SERVIÇOS EXTRAS (MÃO DE OBRA)', margin, yPos);
@@ -284,7 +313,7 @@ export function generateOrdemPDF(ordem: OrdemPDF, empresaConfig?: EmpresaConfig)
       ]),
       theme: 'striped',
       headStyles: {
-        fillColor: [34, 197, 94],
+        fillColor: [osColor[0], osColor[1], osColor[2]],
         textColor: 255,
         fontStyle: 'bold',
         fontSize: 9,
@@ -396,7 +425,7 @@ export function generateOrdemPDF(ordem: OrdemPDF, empresaConfig?: EmpresaConfig)
   const totalBoxWidth = 90;
   const totalBoxX = pageWidth - margin - totalBoxWidth;
 
-  doc.setFillColor(34, 197, 94);
+  doc.setFillColor(osColor[0], osColor[1], osColor[2]);
   doc.roundedRect(totalBoxX, yPos, totalBoxWidth, 28, 3, 3, 'F');
 
   doc.setTextColor(255, 255, 255);
@@ -507,21 +536,37 @@ export function generateOrcamentoPDF(orcamento: OrcamentoPDF, empresaConfig?: Em
     endereco: empresaConfig?.endereco || DEFAULT_CONFIG.endereco,
   };
 
+  // Cor customizada do Orçamento
+  const orcColor = hexToRgb(empresaConfig?.pdfCorOrcamento || '#e85d04');
+
   // ============ HEADER ============
-  // Cor laranja para orçamento (diferenciar da O.S.)
+  // Cor personalizada do orçamento
   const orcHeaderHeight = config.endereco ? 52 : 45;
-  doc.setFillColor(232, 93, 4);
+  doc.setFillColor(orcColor[0], orcColor[1], orcColor[2]);
   doc.rect(0, 0, pageWidth, orcHeaderHeight, 'F');
 
-  // Logo/Nome da oficina
+  // Logo da empresa (se existir)
+  const orcHasLogo = !!empresaConfig?.logo;
+  const orcTextStartX = orcHasLogo ? margin + 35 : margin;
+
+  if (orcHasLogo && empresaConfig?.logo) {
+    try {
+      const orcLogoFormat = empresaConfig.logo.startsWith('data:image/png') ? 'PNG' : 'JPEG';
+      doc.addImage(empresaConfig.logo, orcLogoFormat, margin, 4, 30, 30);
+    } catch {
+      // Se a imagem falhar, ignora silenciosamente
+    }
+  }
+
+  // Nome da oficina
   doc.setTextColor(255, 255, 255);
-  doc.setFontSize(28);
+  doc.setFontSize(orcHasLogo ? 22 : 28);
   doc.setFont('helvetica', 'bold');
-  doc.text(config.nome, margin, 18);
+  doc.text(config.nome, orcTextStartX, 18);
 
   doc.setFontSize(11);
   doc.setFont('helvetica', 'normal');
-  doc.text(config.subtitulo, margin, 26);
+  doc.text(config.subtitulo, orcTextStartX, 26);
 
   // Dados da oficina no header
   doc.setFontSize(8);
@@ -530,10 +575,10 @@ export function generateOrcamentoPDF(orcamento: OrcamentoPDF, empresaConfig?: Em
     config.telefone ? `Tel: ${formatPhone(config.telefone)}` : '',
   ].filter(Boolean);
   if (orcInfoParts.length > 0) {
-    doc.text(orcInfoParts.join('  |  '), margin, 34);
+    doc.text(orcInfoParts.join('  |  '), orcTextStartX, 34);
   }
   if (config.endereco) {
-    doc.text(config.endereco, margin, 40);
+    doc.text(config.endereco, orcTextStartX, 40);
   }
 
   // Orçamento Number (lado direito)
@@ -558,13 +603,13 @@ export function generateOrcamentoPDF(orcamento: OrcamentoPDF, empresaConfig?: Em
 
   // ============ DADOS DO CLIENTE ============
   if (orcamento.nomeCliente || orcamento.telefoneCliente) {
-    doc.setTextColor(232, 93, 4);
+    doc.setTextColor(orcColor[0], orcColor[1], orcColor[2]);
     doc.setFontSize(11);
     doc.setFont('helvetica', 'bold');
     doc.text('DADOS DO CLIENTE', margin, yPos);
 
     yPos += 3;
-    doc.setDrawColor(232, 93, 4);
+    doc.setDrawColor(orcColor[0], orcColor[1], orcColor[2]);
     doc.setLineWidth(0.5);
     doc.line(margin, yPos, pageWidth - margin, yPos);
 
@@ -597,7 +642,7 @@ export function generateOrcamentoPDF(orcamento: OrcamentoPDF, empresaConfig?: Em
 
   // ============ SERVIÇOS EXTRAS ============
   if (orcamento.servicosExtras && orcamento.servicosExtras.length > 0) {
-    doc.setTextColor(232, 93, 4);
+    doc.setTextColor(orcColor[0], orcColor[1], orcColor[2]);
     doc.setFontSize(11);
     doc.setFont('helvetica', 'bold');
     doc.text('SERVIÇOS / MÃO DE OBRA', margin, yPos);
@@ -613,7 +658,7 @@ export function generateOrcamentoPDF(orcamento: OrcamentoPDF, empresaConfig?: Em
       ]),
       theme: 'striped',
       headStyles: {
-        fillColor: [232, 93, 4],
+        fillColor: [orcColor[0], orcColor[1], orcColor[2]],
         textColor: 255,
         fontStyle: 'bold',
         fontSize: 9,
@@ -708,7 +753,7 @@ export function generateOrcamentoPDF(orcamento: OrcamentoPDF, empresaConfig?: Em
   const totalBoxWidth = 90;
   const totalBoxX = pageWidth - margin - totalBoxWidth;
 
-  doc.setFillColor(232, 93, 4);
+  doc.setFillColor(orcColor[0], orcColor[1], orcColor[2]);
   doc.roundedRect(totalBoxX, yPos, totalBoxWidth, 28, 3, 3, 'F');
 
   doc.setTextColor(255, 255, 255);

@@ -30,6 +30,8 @@ import {
   CreditCard,
   Lightbulb,
   Shield,
+  Menu,
+  X,
 } from 'lucide-react';
 import { useSidebar } from '@/contexts/SidebarContext';
 import { useAuth } from '@/contexts/AuthContext';
@@ -104,11 +106,16 @@ const menuItems: MenuItem[] = [
 
 export default function Sidebar() {
   const pathname = usePathname();
-  const { collapsed, toggleCollapsed } = useSidebar();
+  const { collapsed, toggleCollapsed, mobileOpen, setMobileOpen } = useSidebar();
   const { logout, isAdmin, isSuperAdmin, user } = useAuth();
   const { theme } = useTheme();
   const [configIncomplete, setConfigIncomplete] = useState(false);
   const [expandedMenu, setExpandedMenu] = useState<string | null>(null);
+
+  // Fechar sidebar mobile ao navegar
+  useEffect(() => {
+    setMobileOpen(false);
+  }, [pathname, setMobileOpen]);
 
   // Filtrar menu baseado nas permissoes do role
   const userRole = (user?.role || 'ATENDENTE') as RoleUsuario;
@@ -163,29 +170,70 @@ export default function Sidebar() {
   }, [pathname]);
 
   return (
-    <aside
-      className={`fixed left-0 top-0 h-screen bg-sidebar-bg flex flex-col transition-all duration-300 z-50 shadow-xl border-r border-border ${
-        collapsed ? 'w-20' : 'w-72'
-      }`}
-    >
-      {/* Logo */}
-      <div className="p-4 border-b border-border">
-        <div className="flex items-center justify-center">
+    <>
+      {/* Mobile Header Bar */}
+      <div className="fixed top-0 left-0 right-0 h-14 bg-sidebar-bg border-b border-border flex items-center px-4 z-40 md:hidden">
+        <button
+          onClick={() => setMobileOpen(true)}
+          className="p-2 -ml-2 text-sidebar-text hover:text-sidebar-text-active rounded-lg hover:bg-sidebar-hover transition-all"
+        >
+          <Menu size={24} />
+        </button>
+        <div className="flex-1 flex justify-center">
           <Image
             src={theme === 'light' ? '/logo.tema.claro.png' : '/logo.png'}
-            alt="LoopIA Logo"
-            width={theme === 'light' ? (collapsed ? 90 : 337) : (collapsed ? 36 : 135)}
-            height={theme === 'light' ? (collapsed ? 90 : 100) : (collapsed ? 36 : 40)}
-            className="object-contain transition-all duration-300"
+            alt="LoopIA"
+            width={theme === 'light' ? 120 : 90}
+            height={theme === 'light' ? 36 : 28}
+            className="object-contain"
             priority
           />
         </div>
+        <div className="w-10" /> {/* Spacer para centralizar logo */}
       </div>
 
-      {/* Toggle button */}
+      {/* Mobile Backdrop */}
+      {mobileOpen && (
+        <div
+          className="fixed inset-0 bg-black/50 z-50 md:hidden"
+          onClick={() => setMobileOpen(false)}
+        />
+      )}
+
+      {/* Sidebar */}
+      <aside
+        className={`fixed left-0 top-0 h-screen bg-sidebar-bg flex flex-col transition-all duration-300 z-50 shadow-xl border-r border-border
+          ${collapsed ? 'w-20' : 'w-72'}
+          ${mobileOpen ? 'translate-x-0' : '-translate-x-full'} md:translate-x-0
+        `}
+      >
+      {/* Logo + Close button mobile */}
+      <div className="p-4 border-b border-border">
+        <div className="flex items-center justify-between">
+          <div className="flex-1 flex items-center justify-center">
+            <Image
+              src={theme === 'light' ? '/logo.tema.claro.png' : '/logo.png'}
+              alt="LoopIA Logo"
+              width={theme === 'light' ? (collapsed ? 90 : 337) : (collapsed ? 36 : 135)}
+              height={theme === 'light' ? (collapsed ? 90 : 100) : (collapsed ? 36 : 40)}
+              className="object-contain transition-all duration-300"
+              priority
+            />
+          </div>
+          {/* Close button - mobile only */}
+          <button
+            onClick={() => setMobileOpen(false)}
+            className="p-2 text-sidebar-text hover:text-sidebar-text-active rounded-lg hover:bg-sidebar-hover transition-all md:hidden"
+          >
+            <X size={20} />
+          </button>
+        </div>
+      </div>
+
+      {/* Toggle button - desktop only */}
       <button
         onClick={toggleCollapsed}
-        className="absolute -right-3 top-24 w-6 h-6 bg-primary rounded-full flex items-center justify-center text-primary-foreground hover:scale-110 transition-transform shadow-lg shadow-primary/40 border-2 border-background"
+        className="absolute -right-3 top-24 w-6 h-6 bg-primary rounded-full items-center justify-center text-primary-foreground hover:scale-110 transition-transform shadow-lg shadow-primary/40 border-2 border-background hidden md:flex"
       >
         {collapsed ? <ChevronRight size={14} /> : <ChevronLeft size={14} />}
       </button>
@@ -393,5 +441,6 @@ export default function Sidebar() {
         </button>
       </div>
     </aside>
+    </>
   );
 }

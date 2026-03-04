@@ -370,13 +370,13 @@ export default function LembretesPage() {
     <div className="space-y-8">
       <Header title="Lembretes" subtitle="Gerencie lembretes de manutenção" />
 
-      <div className="px-4 lg:px-8 space-y-8">
+      <div className="px-3 sm:px-4 lg:px-8 space-y-6 sm:space-y-8">
         {/* Stats */}
-        <div className="grid grid-cols-2 xl:grid-cols-4 gap-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 sm:gap-8">
           {/* Vencidos */}
           <div
             onClick={() => setFilterStatus(filterStatus === 'vencido' ? '' : 'vencido')}
-            className={`group relative overflow-hidden bg-gradient-to-br from-red-500/20 to-red-500/5 rounded-2xl p-6 border cursor-pointer transition-all duration-300 ${
+            className={`group relative overflow-hidden bg-gradient-to-br from-red-500/20 to-red-500/5 rounded-2xl p-4 sm:p-6 border cursor-pointer transition-all duration-300 ${
               filterStatus === 'vencido' ? 'border-red-500 ring-2 ring-red-500/30' : 'border-red-500/20 hover:border-red-500/40'
             }`}
           >
@@ -387,7 +387,7 @@ export default function LembretesPage() {
                 </div>
                 <span className="text-xs font-medium text-red-400 bg-red-500/10 px-2 py-1 rounded-full">Vencidos</span>
               </div>
-              <p className="text-4xl font-bold text-foreground mb-1">{stats.vencidos}</p>
+              <p className="text-2xl sm:text-4xl font-bold text-foreground mb-1">{stats.vencidos}</p>
               <p className="text-sm text-muted">atrasados</p>
             </div>
           </div>
@@ -395,7 +395,7 @@ export default function LembretesPage() {
           {/* Pendentes */}
           <div
             onClick={() => setFilterStatus(filterStatus === 'pendente' ? '' : 'pendente')}
-            className={`group relative overflow-hidden bg-gradient-to-br from-amber-500/20 to-amber-500/5 rounded-2xl p-6 border cursor-pointer transition-all duration-300 ${
+            className={`group relative overflow-hidden bg-gradient-to-br from-amber-500/20 to-amber-500/5 rounded-2xl p-4 sm:p-6 border cursor-pointer transition-all duration-300 ${
               filterStatus === 'pendente' ? 'border-amber-500 ring-2 ring-amber-500/30' : 'border-amber-500/20 hover:border-amber-500/40'
             }`}
           >
@@ -407,7 +407,7 @@ export default function LembretesPage() {
                 </div>
                 <span className="text-xs font-medium text-amber-400 bg-amber-500/10 px-2 py-1 rounded-full">Pendentes</span>
               </div>
-              <p className="text-4xl font-bold text-foreground mb-1">{stats.pendentes}</p>
+              <p className="text-2xl sm:text-4xl font-bold text-foreground mb-1">{stats.pendentes}</p>
               <p className="text-sm text-muted">aguardando</p>
             </div>
           </div>
@@ -415,7 +415,7 @@ export default function LembretesPage() {
           {/* Urgentes */}
           <div
             onClick={() => setFilterStatus('')}
-            className={`group relative overflow-hidden bg-gradient-to-br from-cyan-500/20 to-cyan-500/5 rounded-2xl p-6 border cursor-pointer transition-all duration-300 ${
+            className={`group relative overflow-hidden bg-gradient-to-br from-cyan-500/20 to-cyan-500/5 rounded-2xl p-4 sm:p-6 border cursor-pointer transition-all duration-300 ${
               !filterStatus ? 'border-cyan-500 ring-2 ring-cyan-500/30' : 'border-cyan-500/20 hover:border-cyan-500/40'
             }`}
           >
@@ -427,7 +427,7 @@ export default function LembretesPage() {
                 </div>
                 <span className="text-xs font-medium text-cyan-400 bg-cyan-500/10 px-2 py-1 rounded-full">Urgentes</span>
               </div>
-              <p className="text-4xl font-bold text-foreground mb-1">{stats.urgentes}</p>
+              <p className="text-2xl sm:text-4xl font-bold text-foreground mb-1">{stats.urgentes}</p>
               <p className="text-sm text-muted">próximos 3 dias</p>
             </div>
           </div>
@@ -435,7 +435,7 @@ export default function LembretesPage() {
           {/* Enviados */}
           <div
             onClick={() => setFilterStatus(filterStatus === 'enviado' ? '' : 'enviado')}
-            className={`group relative overflow-hidden bg-gradient-to-br from-emerald-500/20 to-emerald-500/5 rounded-2xl p-6 border cursor-pointer transition-all duration-300 ${
+            className={`group relative overflow-hidden bg-gradient-to-br from-emerald-500/20 to-emerald-500/5 rounded-2xl p-4 sm:p-6 border cursor-pointer transition-all duration-300 ${
               filterStatus === 'enviado' ? 'border-emerald-500 ring-2 ring-emerald-500/30' : 'border-emerald-500/20 hover:border-emerald-500/40'
             }`}
           >
@@ -447,15 +447,15 @@ export default function LembretesPage() {
                 </div>
                 <span className="text-xs font-medium text-emerald-400 bg-emerald-500/10 px-2 py-1 rounded-full">Enviados</span>
               </div>
-              <p className="text-4xl font-bold text-foreground mb-1">{stats.enviados}</p>
+              <p className="text-2xl sm:text-4xl font-bold text-foreground mb-1">{stats.enviados}</p>
               <p className="text-sm text-muted">notificados</p>
             </div>
           </div>
         </div>
 
         {/* Toolbar */}
-        <div className="flex flex-col md:flex-row gap-4 justify-between">
-          <div className="flex gap-3 flex-1">
+        <div className="flex flex-col md:flex-row gap-3 sm:gap-4 justify-between">
+          <div className="flex gap-2 sm:gap-3 flex-1">
             <div className="relative flex-1 max-w-md group">
               <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 text-zinc-500 group-focus-within:text-cyan-400 transition-colors" size={18} />
               <input
@@ -474,11 +474,11 @@ export default function LembretesPage() {
               <RefreshCw size={20} className={loading ? 'animate-spin' : ''} />
             </button>
           </div>
-          <div className="flex gap-3">
+          <div className="flex gap-2 sm:gap-3 flex-wrap">
             <button
               onClick={handleGerarLembretes}
               disabled={generating}
-              className="flex items-center gap-2 px-4 py-3 bg-purple-500/10 border border-purple-500/30 rounded-xl text-purple-400 font-medium hover:bg-purple-500/20 hover:border-purple-500/50 disabled:opacity-50 transition-all duration-200"
+              className="flex items-center gap-2 px-3 sm:px-4 py-2.5 sm:py-3 bg-purple-500/10 border border-purple-500/30 rounded-xl text-purple-400 font-medium hover:bg-purple-500/20 hover:border-purple-500/50 disabled:opacity-50 transition-all duration-200"
               title="Gerar lembretes automáticos baseado no km dos veiculos"
             >
               {generating ? <Loader2 size={18} className="animate-spin" /> : <RefreshCw size={18} />}
@@ -487,7 +487,7 @@ export default function LembretesPage() {
             <button
               onClick={handleEnviarTodos}
               disabled={sending || stats.vencidos + stats.pendentes === 0}
-              className="flex items-center gap-2 px-4 py-3 bg-[#25D366]/10 border border-[#25D366]/30 rounded-xl text-[#25D366] font-medium hover:bg-[#25D366]/20 hover:border-[#25D366]/50 disabled:opacity-50 transition-all duration-200"
+              className="flex items-center gap-2 px-3 sm:px-4 py-2.5 sm:py-3 bg-[#25D366]/10 border border-[#25D366]/30 rounded-xl text-[#25D366] font-medium hover:bg-[#25D366]/20 hover:border-[#25D366]/50 disabled:opacity-50 transition-all duration-200"
               title="Enviar todos os lembretes pendentes via WhatsApp"
             >
               {sending ? <Loader2 size={18} className="animate-spin" /> : <Send size={18} />}
@@ -495,10 +495,10 @@ export default function LembretesPage() {
             </button>
             <button
               onClick={openNewModal}
-              className="flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-primary to-[#2E7D32] hover:from-[#2E7D32] hover:to-primary text-white font-semibold rounded-xl transition-all duration-300 shadow-lg shadow-primary/25 hover:shadow-primary/40 hover:scale-[1.02]"
+              className="flex items-center justify-center gap-2 px-4 sm:px-6 py-2.5 sm:py-3 bg-gradient-to-r from-primary to-[#2E7D32] hover:from-[#2E7D32] hover:to-primary text-white font-semibold rounded-xl transition-all duration-300 shadow-lg shadow-primary/25 hover:shadow-primary/40 hover:scale-[1.02]"
             >
               <Plus size={20} />
-              <span className="hidden md:inline">Novo Lembrete</span>
+              <span className="hidden sm:inline">Novo Lembrete</span>
             </button>
           </div>
         </div>
@@ -529,10 +529,10 @@ export default function LembretesPage() {
                 return (
                   <div
                     key={lembrete.id}
-                    className="p-4 hover:bg-zinc-800/30 transition-all duration-200 group"
+                    className="p-3 sm:p-4 hover:bg-zinc-800/30 transition-all duration-200 group"
                   >
-                    <div className="flex items-center gap-4">
-                      <div className={`w-1.5 h-16 rounded-full ${urgenciaConfig.barColor}`}></div>
+                    <div className="flex items-start sm:items-center gap-3 sm:gap-4 flex-col sm:flex-row">
+                      <div className={`w-full sm:w-1.5 h-1.5 sm:h-16 rounded-full ${urgenciaConfig.barColor}`}></div>
 
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-3 mb-1.5">
@@ -579,7 +579,7 @@ export default function LembretesPage() {
                         )}
                       </div>
 
-                      <div className="flex gap-1.5 bg-zinc-900/50 rounded-xl p-1.5 border border-border">
+                      <div className="flex gap-1.5 bg-zinc-900/50 rounded-xl p-1.5 border border-border flex-wrap sm:flex-nowrap">
                         <button
                           onClick={() => sendWhatsApp(lembrete)}
                           className="p-2.5 bg-[#25D366]/10 rounded-lg text-[#25D366] hover:bg-[#25D366]/20 transition-all duration-200"
@@ -629,15 +629,15 @@ export default function LembretesPage() {
       {/* Modal Novo Lembrete */}
       {showModal && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-card border border-border rounded-2xl w-full max-w-lg shadow-2xl shadow-black/50">
-            <div className="p-6 border-b border-border flex items-center justify-between">
-              <h2 className="text-xl font-bold text-foreground">Novo Lembrete</h2>
+          <div className="bg-card border border-border rounded-2xl w-full max-w-lg shadow-2xl shadow-black/50 max-h-[90vh] overflow-y-auto">
+            <div className="p-3 sm:p-6 border-b border-border flex items-center justify-between">
+              <h2 className="text-lg sm:text-xl font-bold text-foreground">Novo Lembrete</h2>
               <button onClick={() => setShowModal(false)} className="p-2 hover:bg-zinc-800 rounded-lg text-muted hover:text-foreground transition-colors">
                 <X size={20} />
               </button>
             </div>
 
-            <div className="p-6 space-y-4">
+            <div className="p-3 sm:p-6 space-y-4">
               {/* Veiculo */}
               <div>
                 <label className="block text-sm font-medium text-muted mb-2">Veículo *</label>
@@ -706,17 +706,17 @@ export default function LembretesPage() {
               </div>
             </div>
 
-            <div className="p-6 border-t border-border flex gap-3 justify-end">
+            <div className="p-3 sm:p-6 border-t border-border flex gap-3 justify-end">
               <button
                 onClick={() => setShowModal(false)}
-                className="px-6 py-3 border border-border rounded-xl text-muted hover:bg-zinc-800 transition-colors"
+                className="px-4 sm:px-6 py-2.5 sm:py-3 border border-border rounded-xl text-muted hover:bg-zinc-800 transition-colors"
               >
                 Cancelar
               </button>
               <button
                 onClick={handleSubmit}
                 disabled={saving}
-                className="px-6 py-3 bg-gradient-to-r from-primary to-[#2E7D32] hover:from-[#2E7D32] hover:to-primary rounded-xl text-white font-semibold transition-all duration-300 shadow-lg shadow-primary/25 disabled:opacity-50"
+                className="px-4 sm:px-6 py-2.5 sm:py-3 bg-gradient-to-r from-primary to-[#2E7D32] hover:from-[#2E7D32] hover:to-primary rounded-xl text-white font-semibold transition-all duration-300 shadow-lg shadow-primary/25 disabled:opacity-50"
               >
                 {saving ? 'Salvando...' : 'Criar Lembrete'}
               </button>
@@ -728,27 +728,27 @@ export default function LembretesPage() {
       {/* Modal Confirmar Exclusao */}
       {showDeleteConfirm && deletingLembrete && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-card border border-border rounded-2xl w-full max-w-md shadow-2xl shadow-black/50">
-            <div className="p-6">
+          <div className="bg-card border border-border rounded-2xl w-full max-w-md shadow-2xl shadow-black/50 max-h-[90vh] overflow-y-auto">
+            <div className="p-4 sm:p-6">
               <div className="w-14 h-14 mx-auto mb-4 bg-red-500/10 rounded-2xl flex items-center justify-center border border-red-500/20">
                 <Trash2 className="text-red-400" size={28} />
               </div>
-              <h3 className="text-xl font-bold text-foreground text-center mb-2">Excluir Lembrete?</h3>
+              <h3 className="text-lg sm:text-xl font-bold text-foreground text-center mb-2">Excluir Lembrete?</h3>
               <p className="text-muted text-center text-sm">
                 O lembrete de {tipoLabels[deletingLembrete.tipo] || deletingLembrete.tipo} para{' '}
                 <strong className="text-foreground">{formatPlate(deletingLembrete.veiculo.placa)}</strong> será excluído permanentemente.
               </p>
             </div>
-            <div className="p-6 border-t border-border flex gap-3">
+            <div className="p-4 sm:p-6 border-t border-border flex gap-3">
               <button
                 onClick={() => { setShowDeleteConfirm(false); setDeletingLembrete(null); }}
-                className="flex-1 px-6 py-3 border border-border rounded-xl text-muted hover:bg-zinc-800 transition-colors"
+                className="flex-1 px-4 sm:px-6 py-2.5 sm:py-3 border border-border rounded-xl text-muted hover:bg-zinc-800 transition-colors"
               >
                 Cancelar
               </button>
               <button
                 onClick={handleDelete}
-                className="flex-1 px-6 py-3 bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-600 rounded-xl text-white font-semibold transition-all duration-300 shadow-lg shadow-red-500/25"
+                className="flex-1 px-4 sm:px-6 py-2.5 sm:py-3 bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-600 rounded-xl text-white font-semibold transition-all duration-300 shadow-lg shadow-red-500/25"
               >
                 Excluir
               </button>

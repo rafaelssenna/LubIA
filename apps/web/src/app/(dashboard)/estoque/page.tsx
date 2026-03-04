@@ -930,9 +930,9 @@ function EstoquePageContent() {
     <div className="space-y-8">
       <Header title="Controle de Estoque" subtitle="Gerencie produtos e movimentações" />
 
-      <div className="px-4 lg:px-8 space-y-8">
+      <div className="px-3 sm:px-4 lg:px-8 space-y-8">
         {/* Stats Cards */}
-        <div className="grid grid-cols-2 xl:grid-cols-4 gap-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-8">
           {/* Produtos */}
           <div className="group relative overflow-hidden bg-gradient-to-br from-emerald-500/20 to-emerald-500/5 rounded-2xl p-6 border border-emerald-500/20 hover:border-emerald-500/40 transition-all duration-300">
             <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-500/10 rounded-full blur-3xl group-hover:scale-150 transition-transform duration-500"></div>
@@ -1020,7 +1020,7 @@ function EstoquePageContent() {
         {/* Toolbar */}
         <div className="bg-card border border-border rounded-2xl p-4">
           <div className="flex flex-col md:flex-row gap-4 justify-between">
-          <div className="flex gap-3 flex-1">
+          <div className="flex flex-wrap gap-3 flex-1">
             <div className="relative flex-1 max-w-md">
               <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-foreground-muted" size={18} />
               <input
@@ -1108,7 +1108,7 @@ function EstoquePageContent() {
         </div>
 
         {/* Action Buttons */}
-        <div className="flex justify-end gap-3">
+        <div className="flex flex-wrap justify-end gap-3">
           <button
             onClick={() => setShowOCR(true)}
             className="group relative flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 rounded-xl text-white font-medium hover:shadow-lg hover:shadow-purple-500/30 hover:scale-[1.02] active:scale-[0.98] transition-all duration-200 overflow-hidden"
@@ -1117,7 +1117,7 @@ function EstoquePageContent() {
             <div className="absolute inset-0 bg-gradient-to-r from-blue-400 to-purple-400 opacity-0 group-hover:opacity-20 transition-opacity" />
             <Sparkles size={18} className="text-yellow-300 animate-pulse" />
             <FileText size={20} />
-            <span>Escanear NF</span>
+            <span className="hidden sm:inline">Escanear NF</span>
             <span className="text-xs bg-white/20 px-2 py-0.5 rounded-full">IA</span>
           </button>
           <button
@@ -1125,7 +1125,7 @@ function EstoquePageContent() {
             className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-primary to-primary-dark rounded-xl text-white font-medium hover:shadow-lg hover:shadow-green-500/10 hover:scale-[1.02] active:scale-[0.98] transition-all duration-200"
           >
             <Plus size={20} />
-            Novo Produto
+            <span className="hidden sm:inline">Novo Produto</span>
           </button>
         </div>
 
@@ -1371,12 +1371,12 @@ function EstoquePageContent() {
       {showModal && (
         <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 p-4">
           <div className="bg-card border border-border rounded-2xl w-full max-w-lg animate-fade-in max-h-[90vh] overflow-y-auto shadow-2xl">
-            <div className="p-6 border-b border-border">
-              <h2 className="text-xl font-semibold text-foreground">Novo Produto</h2>
+            <div className="p-4 sm:p-6 border-b border-border">
+              <h2 className="text-lg sm:text-xl font-semibold text-foreground">Novo Produto</h2>
               <p className="text-sm text-muted mt-1">Cadastre um novo produto no estoque</p>
             </div>
-            <div className="p-6 space-y-4">
-              <div className="grid grid-cols-2 gap-4">
+            <div className="p-4 sm:p-6 space-y-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-muted mb-2">Código</label>
                   <input
@@ -1408,7 +1408,7 @@ function EstoquePageContent() {
                   className="w-full bg-background border border-border rounded-xl px-4 py-3 text-foreground placeholder-[#616161] focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/20 transition-all duration-200"
                 />
               </div>
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-muted mb-2">Categoria</label>
                   <select
@@ -1459,7 +1459,7 @@ function EstoquePageContent() {
                   </p>
                 </div>
               )}
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-muted mb-2">Quantidade Inicial</label>
                   <input
@@ -1481,7 +1481,7 @@ function EstoquePageContent() {
                   />
                 </div>
               </div>
-              <div className="grid grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-muted mb-2">Preço Compra</label>
                   <input
@@ -1505,7 +1505,7 @@ function EstoquePageContent() {
                   />
                 </div>
               </div>
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-muted mb-2">NCM</label>
                   <input
@@ -1550,7 +1550,7 @@ function EstoquePageContent() {
                 )}
               </div>
             </div>
-            <div className="p-6 border-t border-border flex gap-3 justify-end">
+            <div className="p-4 sm:p-6 border-t border-border flex gap-3 justify-end">
               <button
                 onClick={() => setShowModal(false)}
                 className="px-6 py-3 border border-border rounded-xl text-muted hover:bg-background hover:text-foreground transition-all duration-200"
@@ -1572,14 +1572,14 @@ function EstoquePageContent() {
       {showMovModal && selectedProduto && (
         <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 p-4">
           <div className="bg-card border border-border rounded-2xl w-full max-w-md animate-fade-in shadow-2xl">
-            <div className="p-6 border-b border-border">
-              <h2 className="text-xl font-semibold text-foreground">
+            <div className="p-4 sm:p-6 border-b border-border">
+              <h2 className="text-lg sm:text-xl font-semibold text-foreground">
                 {movTipo === 'ENTRADA' ? 'Entrada de Estoque' : 'Saída de Estoque'}
               </h2>
               <p className="text-sm text-muted mt-1">{selectedProduto.nome}</p>
               <p className="text-xs text-muted">Estoque atual: {selectedProduto.quantidade} {selectedProduto.unidade}</p>
             </div>
-            <div className="p-6 space-y-4">
+            <div className="p-4 sm:p-6 space-y-4">
               <div>
                 <label className="block text-sm font-medium text-muted mb-2">Quantidade</label>
                 <input
@@ -1601,7 +1601,7 @@ function EstoquePageContent() {
                 />
               </div>
             </div>
-            <div className="p-6 border-t border-border flex gap-3 justify-end">
+            <div className="p-4 sm:p-6 border-t border-border flex gap-3 justify-end">
               <button
                 onClick={() => {
                   setShowMovModal(false);
@@ -1695,10 +1695,10 @@ function EstoquePageContent() {
       {showOcrItems && ocrItems.length > 0 && (
         <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 p-4">
           <div className="bg-card border border-border rounded-2xl shadow-2xl w-full max-w-5xl animate-fade-in max-h-[90vh] overflow-hidden flex flex-col">
-            <div className="p-6 border-b border-border">
+            <div className="p-4 sm:p-6 border-b border-border">
               <div className="flex items-start justify-between">
                 <div>
-                  <h2 className="text-xl font-semibold text-foreground">Itens da Nota Fiscal</h2>
+                  <h2 className="text-lg sm:text-xl font-semibold text-foreground">Itens da Nota Fiscal</h2>
                   <p className="text-sm text-muted mt-1">
                     {ocrResult?.numeroNF && `NF: ${ocrResult.numeroNF} • `}
                     {ocrResult?.fornecedor && `${ocrResult.fornecedor} • `}
@@ -1713,7 +1713,7 @@ function EstoquePageContent() {
                 )}
               </div>
             </div>
-            <div className="flex-1 overflow-y-auto p-6 space-y-4">
+            <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-4">
               {ocrItems.map((item, index) => (
                 <div
                   key={index}
@@ -1782,7 +1782,7 @@ function EstoquePageContent() {
                           className="w-full bg-card border border-border rounded-lg px-3 py-2 text-foreground text-sm focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/20 transition-all duration-200"
                         />
                       </div>
-                      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
                         <div>
                           <label className="block text-xs text-muted mb-1">Categoria</label>
                           <select
@@ -1891,7 +1891,7 @@ function EstoquePageContent() {
                           )}
                         </div>
                       )}
-                      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
                         <div>
                           <label className="block text-xs text-muted mb-1">Quantidade</label>
                           <input
@@ -1963,7 +1963,7 @@ function EstoquePageContent() {
                 </div>
               ))}
             </div>
-            <div className="p-6 border-t border-border flex gap-3 justify-between">
+            <div className="p-4 sm:p-6 border-t border-border flex gap-3 justify-between">
               <button
                 onClick={() => {
                   setShowOcrItems(false);
@@ -2070,12 +2070,12 @@ function EstoquePageContent() {
       {showEditModal && editingProduto && (
         <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 p-4">
           <div className="bg-card border border-border rounded-2xl shadow-2xl w-full max-w-lg animate-fade-in max-h-[90vh] overflow-y-auto">
-            <div className="p-6 border-b border-border">
-              <h2 className="text-xl font-semibold text-foreground">Editar Produto</h2>
+            <div className="p-4 sm:p-6 border-b border-border">
+              <h2 className="text-lg sm:text-xl font-semibold text-foreground">Editar Produto</h2>
               <p className="text-sm text-muted mt-1">Atualize as informações do produto</p>
             </div>
-            <div className="p-6 space-y-4">
-              <div className="grid grid-cols-2 gap-4">
+            <div className="p-4 sm:p-6 space-y-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-muted mb-2">Código</label>
                   <input
@@ -2104,7 +2104,7 @@ function EstoquePageContent() {
                   className="w-full bg-background border border-border rounded-xl px-4 py-3 text-foreground placeholder-[#616161] focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/20 transition-all duration-200"
                 />
               </div>
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-muted mb-2">Categoria</label>
                   <select
@@ -2152,7 +2152,7 @@ function EstoquePageContent() {
                   />
                 </div>
               )}
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-muted mb-2">Quantidade</label>
                   <input
@@ -2172,7 +2172,7 @@ function EstoquePageContent() {
                   />
                 </div>
               </div>
-              <div className="grid grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-muted mb-2">Preço Compra</label>
                   <input
@@ -2194,7 +2194,7 @@ function EstoquePageContent() {
                   />
                 </div>
               </div>
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-muted mb-2">NCM</label>
                   <input
@@ -2234,7 +2234,7 @@ function EstoquePageContent() {
                 </select>
               </div>
             </div>
-            <div className="p-6 border-t border-border flex gap-3 justify-end">
+            <div className="p-4 sm:p-6 border-t border-border flex gap-3 justify-end">
               <button
                 onClick={() => {
                   setShowEditModal(false);
@@ -2259,10 +2259,10 @@ function EstoquePageContent() {
       {showDeleteConfirm && deletingProduto && (
         <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 p-4">
           <div className="bg-card border border-border rounded-2xl shadow-2xl w-full max-w-md animate-fade-in">
-            <div className="p-6 border-b border-border">
-              <h2 className="text-xl font-semibold text-foreground">Confirmar Exclusão</h2>
+            <div className="p-4 sm:p-6 border-b border-border">
+              <h2 className="text-lg sm:text-xl font-semibold text-foreground">Confirmar Exclusão</h2>
             </div>
-            <div className="p-6">
+            <div className="p-4 sm:p-6">
               <div className="flex items-center gap-4 mb-4">
                 <div className="p-3 bg-red-500/10 rounded-xl">
                   <Trash2 size={24} className="text-red-400" />
@@ -2276,7 +2276,7 @@ function EstoquePageContent() {
                 Tem certeza que deseja excluir este produto? Esta ação não pode ser desfeita.
               </p>
             </div>
-            <div className="p-6 border-t border-border flex gap-3 justify-end">
+            <div className="p-4 sm:p-6 border-t border-border flex gap-3 justify-end">
               <button
                 onClick={() => {
                   setShowDeleteConfirm(false);
@@ -2300,15 +2300,15 @@ function EstoquePageContent() {
       {/* Modal Histórico de Movimentações */}
       {showHistoryModal && historyProduto && (
         <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-card border border-border rounded-2xl shadow-2xl w-full max-w-2xl animate-fade-in max-h-[80vh] overflow-hidden flex flex-col">
-            <div className="p-6 border-b border-border">
-              <h2 className="text-xl font-semibold text-foreground">Histórico de Movimentações</h2>
+          <div className="bg-card border border-border rounded-2xl shadow-2xl w-full max-w-2xl animate-fade-in max-h-[90vh] overflow-hidden flex flex-col">
+            <div className="p-4 sm:p-6 border-b border-border">
+              <h2 className="text-lg sm:text-xl font-semibold text-foreground">Histórico de Movimentações</h2>
               <p className="text-sm text-muted mt-1">{historyProduto.nome}</p>
               <p className="text-xs text-muted">
                 {historyProduto.codigo} • Estoque atual: {historyProduto.quantidade} {historyProduto.unidade}
               </p>
             </div>
-            <div className="flex-1 overflow-y-auto p-6">
+            <div className="flex-1 overflow-y-auto p-4 sm:p-6">
               {loadingHistory ? (
                 <div className="text-center py-8 text-muted">Carregando...</div>
               ) : movimentacoes.length === 0 ? (
@@ -2363,7 +2363,7 @@ function EstoquePageContent() {
                 </div>
               )}
             </div>
-            <div className="p-6 border-t border-border flex justify-end">
+            <div className="p-4 sm:p-6 border-t border-border flex justify-end">
               <button
                 onClick={() => {
                   setShowHistoryModal(false);

@@ -161,6 +161,9 @@ function OrcamentosPageContent() {
           cnpj: data.data.cnpj,
           telefone: data.data.telefone,
           endereco: data.data.endereco,
+          logo: data.data.logo,
+          pdfCorOS: data.data.pdfCorOS,
+          pdfCorOrcamento: data.data.pdfCorOrcamento,
         });
       }
     } catch (error) {
@@ -555,8 +558,8 @@ function OrcamentosPageContent() {
       />
 
       {/* Stats Banner */}
-      <div className="px-4 lg:px-8 space-y-8">
-      <div className="grid grid-cols-2 xl:grid-cols-4 gap-8">
+      <div className="px-3 sm:px-4 lg:px-8 space-y-8">
+      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 sm:gap-8">
         <div className="group relative overflow-hidden bg-gradient-to-br from-[#E85D04]/20 to-[#E85D04]/5 rounded-2xl p-6 border border-[#E85D04]/20 hover:border-[#E85D04]/40 transition-all duration-300">
           <div className="absolute top-0 right-0 w-32 h-32 bg-[#E85D04]/10 rounded-full blur-3xl group-hover:scale-150 transition-transform duration-500"></div>
           <div className="relative">
@@ -615,8 +618,8 @@ function OrcamentosPageContent() {
       </div>
 
       {/* Actions Bar */}
-      <div className="flex flex-col lg:flex-row gap-4 items-start lg:items-center justify-between bg-card rounded-2xl p-4 border border-border">
-        <div className="flex flex-col sm:flex-row gap-3 flex-1 w-full lg:w-auto">
+      <div className="flex flex-col lg:flex-row gap-2 sm:gap-4 items-start lg:items-center justify-between bg-card rounded-2xl p-4 border border-border">
+        <div className="flex flex-col sm:flex-row flex-wrap gap-2 sm:gap-3 flex-1 w-full lg:w-auto">
           <div className="relative flex-1 min-w-[280px]">
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-foreground-muted" />
             <input
@@ -641,10 +644,10 @@ function OrcamentosPageContent() {
         </div>
         <button
           onClick={openNewModal}
-          className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-[#E85D04] to-[#ff6b1a] hover:from-[#ff6b1a] hover:to-[#E85D04] text-white font-semibold rounded-xl transition-all duration-300 shadow-lg shadow-[#E85D04]/25 hover:shadow-[#E85D04]/40 hover:scale-[1.02] w-full lg:w-auto justify-center"
+          className="flex items-center gap-2 px-4 sm:px-6 py-3 bg-gradient-to-r from-[#E85D04] to-[#ff6b1a] hover:from-[#ff6b1a] hover:to-[#E85D04] text-white font-semibold rounded-xl transition-all duration-300 shadow-lg shadow-[#E85D04]/25 hover:shadow-[#E85D04]/40 hover:scale-[1.02] w-full lg:w-auto justify-center"
         >
           <Plus className="h-5 w-5" />
-          <span>Novo Orçamento</span>
+          <span className="hidden sm:inline">Novo Orçamento</span>
         </button>
       </div>
 
@@ -675,8 +678,8 @@ function OrcamentosPageContent() {
                 key={orcamento.id}
                 className="group bg-card hover:bg-card rounded-2xl border border-border hover:border-border/50 transition-all duration-300 overflow-hidden"
               >
-                <div className="p-6">
-                  <div className="flex flex-col lg:flex-row lg:items-center gap-6">
+                <div className="p-4 sm:p-6">
+                  <div className="flex flex-col lg:flex-row lg:items-center gap-4 sm:gap-6">
                     {/* Número e Data */}
                     <div className="flex items-center gap-4 min-w-[180px]">
                       <div className="p-3 bg-[#E85D04]/10 rounded-xl group-hover:bg-[#E85D04]/20 transition-colors">
@@ -721,7 +724,7 @@ function OrcamentosPageContent() {
                     </div>
 
                     {/* Actions */}
-                    <div className="flex items-center gap-2 pl-4 border-l border-border">
+                    <div className="flex flex-wrap items-center gap-2 pl-0 lg:pl-4 border-l-0 lg:border-l border-border">
                       <button
                         onClick={() => {
                           setSelectedOrcamento(orcamento);
@@ -794,7 +797,7 @@ function OrcamentosPageContent() {
 
       {/* Pagination */}
       {totalPages > 1 && (
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-4 bg-card rounded-2xl p-4 border border-border">
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-3 bg-card rounded-2xl px-3 sm:px-4 py-4 border border-border">
           <p className="text-sm text-muted">
             Mostrando <span className="text-foreground font-medium">{((currentPage - 1) * itemsPerPage) + 1}</span> a{' '}
             <span className="text-foreground font-medium">{Math.min(currentPage * itemsPerPage, totalItems)}</span> de{' '}
@@ -851,9 +854,9 @@ function OrcamentosPageContent() {
       {showModal && (
         <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4">
           <div className="bg-card rounded-2xl w-full max-w-2xl max-h-[90vh] overflow-hidden flex flex-col border border-border">
-            <div className="flex items-center justify-between p-6 border-b border-border">
+            <div className="flex items-center justify-between p-4 sm:p-6 border-b border-border">
               <div>
-                <h2 className="text-2xl font-bold text-foreground">
+                <h2 className="text-lg sm:text-xl font-bold text-foreground">
                   {editingOrcamento ? 'Editar Orçamento' : 'Novo Orçamento'}
                 </h2>
                 <p className="text-sm text-muted mt-1">
@@ -868,7 +871,7 @@ function OrcamentosPageContent() {
               </button>
             </div>
 
-            <div className="flex-1 overflow-y-auto p-6 space-y-6">
+            <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-6">
               {/* Cliente */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
@@ -1051,7 +1054,7 @@ function OrcamentosPageContent() {
               </div>
             </div>
 
-            <div className="p-6 border-t border-border flex justify-between">
+            <div className="p-4 sm:p-6 border-t border-border flex justify-between">
               <button
                 onClick={() => setShowModal(false)}
                 className="px-6 py-3 text-muted hover:text-white transition-colors"
@@ -1075,9 +1078,9 @@ function OrcamentosPageContent() {
       {showDetailModal && selectedOrcamento && (
         <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4">
           <div className="bg-card rounded-2xl w-full max-w-lg max-h-[90vh] overflow-hidden flex flex-col border border-border">
-            <div className="flex items-center justify-between p-6 border-b border-border">
+            <div className="flex items-center justify-between p-4 sm:p-6 border-b border-border">
               <div>
-                <h2 className="text-2xl font-bold text-foreground">
+                <h2 className="text-lg sm:text-xl font-bold text-foreground">
                   {selectedOrcamento.numero}
                 </h2>
                 <p className="text-sm text-muted mt-1">{formatDate(selectedOrcamento.createdAt)}</p>
@@ -1093,7 +1096,7 @@ function OrcamentosPageContent() {
               </button>
             </div>
 
-            <div className="flex-1 overflow-y-auto p-6 space-y-6">
+            <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-6">
               {/* Status */}
               <div className="flex items-center justify-between p-4 bg-background-secondary rounded-xl">
                 <span className="text-muted">Status:</span>
@@ -1166,7 +1169,7 @@ function OrcamentosPageContent() {
               </div>
 
               {/* Actions */}
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <button
                   onClick={() => downloadOrcamentoPDF(selectedOrcamento as any, empresaConfig || undefined)}
                   className="flex items-center justify-center gap-2 px-4 py-3 bg-[#E85D04] hover:bg-[#E85D04]/90 text-foreground font-medium rounded-xl transition-colors"
@@ -1211,13 +1214,13 @@ function OrcamentosPageContent() {
       {/* Delete Confirmation Modal */}
       {showDeleteConfirm && selectedOrcamento && (
         <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-card rounded-2xl w-full max-w-sm p-6 border border-border">
+          <div className="bg-card rounded-2xl w-full max-w-sm p-4 sm:p-6 border border-border">
             <div className="flex items-center gap-4 mb-6">
               <div className="p-4 bg-red-500/10 rounded-full">
                 <Trash2 className="h-8 w-8 text-red-500" />
               </div>
               <div>
-                <h3 className="text-xl font-bold text-foreground">Excluir Orçamento</h3>
+                <h3 className="text-lg sm:text-xl font-bold text-foreground">Excluir Orçamento</h3>
                 <p className="text-muted">{selectedOrcamento.numero}</p>
               </div>
             </div>
@@ -1251,9 +1254,9 @@ function OrcamentosPageContent() {
       {showConvertModal && convertingOrcamento && (
         <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4">
           <div className="bg-card rounded-2xl w-full max-w-lg max-h-[90vh] overflow-hidden flex flex-col border border-border">
-            <div className="flex items-center justify-between p-6 border-b border-border">
+            <div className="flex items-center justify-between p-4 sm:p-6 border-b border-border">
               <div>
-                <h2 className="text-2xl font-bold text-foreground">Converter em O.S.</h2>
+                <h2 className="text-lg sm:text-xl font-bold text-foreground">Converter em O.S.</h2>
                 <p className="text-sm text-muted mt-1">
                   {convertingOrcamento.numero} - {convertingOrcamento.nomeCliente || 'Cliente não informado'}
                 </p>
@@ -1269,7 +1272,7 @@ function OrcamentosPageContent() {
               </button>
             </div>
 
-            <div className="flex-1 overflow-y-auto p-6 space-y-6">
+            <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-6">
               {/* Toggle Tabs */}
               <div className="flex gap-2 p-1 bg-background-secondary rounded-xl">
                 <button
@@ -1373,7 +1376,7 @@ function OrcamentosPageContent() {
                       <User className="h-4 w-4" />
                       Dados do Cliente
                     </h4>
-                    <div className="grid grid-cols-2 gap-3">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                       <div>
                         <label className="block text-xs text-foreground-muted mb-1">Nome *</label>
                         <input
@@ -1403,7 +1406,7 @@ function OrcamentosPageContent() {
                       <Package className="h-4 w-4" />
                       Dados do Veículo
                     </h4>
-                    <div className="grid grid-cols-4 gap-3">
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                       <div>
                         <label className="block text-xs text-foreground-muted mb-1">Placa *</label>
                         <input
@@ -1477,7 +1480,7 @@ function OrcamentosPageContent() {
             </div>
 
             {/* Actions */}
-            <div className="p-6 border-t border-border">
+            <div className="p-4 sm:p-6 border-t border-border">
               <div className="flex gap-3">
                 <button
                   onClick={() => {

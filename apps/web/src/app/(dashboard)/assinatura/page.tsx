@@ -274,10 +274,10 @@ function AssinaturaContent() {
     <div className="space-y-8">
       <Header title="Assinatura" subtitle="Gerencie seu plano" />
 
-      <div className="px-4 lg:px-8 space-y-8 max-w-4xl mx-auto">
+      <div className="px-3 sm:px-4 lg:px-8 space-y-6 sm:space-y-8 max-w-4xl mx-auto">
         {/* Alerta de Bloqueio */}
         {(isBlocked || isTrialExpired) && (
-          <div className="bg-red-500/10 border border-red-500/30 rounded-2xl p-8 text-center">
+          <div className="bg-red-500/10 border border-red-500/30 rounded-2xl p-4 sm:p-8 text-center">
             <XCircle size={48} className="text-red-400 mx-auto mb-4" />
             <h2 className="text-2xl font-bold text-foreground mb-2">
               {isTrialExpired ? 'Período de Teste Expirado' : 'Sistema Bloqueado'}
@@ -309,14 +309,14 @@ function AssinaturaContent() {
 
         {/* Status Card */}
         <div className="bg-card border border-border rounded-2xl overflow-hidden">
-          <div className="p-6 border-b border-border flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <div className={`p-3 bg-${statusDisplay.color}-500/10 rounded-xl border border-${statusDisplay.color}-500/20`}>
+          <div className="p-3 sm:p-6 border-b border-border flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+            <div className="flex items-center gap-3 sm:gap-4">
+              <div className={`p-2 sm:p-3 bg-${statusDisplay.color}-500/10 rounded-xl border border-${statusDisplay.color}-500/20`}>
                 <StatusIcon size={22} className={`text-${statusDisplay.color}-400`} />
               </div>
               <div>
-                <h2 className="text-lg font-bold text-foreground">Status da Assinatura</h2>
-                <p className="text-sm text-muted">{statusDisplay.description}</p>
+                <h2 className="text-base sm:text-lg font-bold text-foreground">Status da Assinatura</h2>
+                <p className="text-xs sm:text-sm text-muted">{statusDisplay.description}</p>
               </div>
             </div>
             <span className={`px-4 py-2 bg-${statusDisplay.color}-500/10 text-${statusDisplay.color}-400 text-sm font-semibold rounded-xl border border-${statusDisplay.color}-500/20`}>
@@ -324,7 +324,7 @@ function AssinaturaContent() {
             </span>
           </div>
 
-          <div className="p-6 space-y-4">
+          <div className="p-3 sm:p-6 space-y-4">
             {subscription?.status === 'TRIAL' && (
               <>
                 <div className="flex items-center justify-between p-4 bg-blue-500/5 border border-blue-500/20 rounded-xl">
@@ -339,7 +339,7 @@ function AssinaturaContent() {
 
                 {/* Quando começa a cobrar */}
                 {subscription.nextBillingDate && (
-                  <div className="flex items-center justify-between p-4 bg-blue-500/5 border border-blue-500/20 rounded-xl">
+                  <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 p-3 sm:p-4 bg-blue-500/5 border border-blue-500/20 rounded-xl">
                     <div className="flex items-center gap-3">
                       <Calendar size={20} className="text-blue-400" />
                       <span className="text-foreground">Primeira cobrança</span>
@@ -352,7 +352,7 @@ function AssinaturaContent() {
 
                 {/* Valor que será cobrado */}
                 {subscription.amount && (
-                  <div className="flex items-center justify-between p-4 bg-blue-500/5 border border-blue-500/20 rounded-xl">
+                  <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 p-3 sm:p-4 bg-blue-500/5 border border-blue-500/20 rounded-xl">
                     <div className="flex items-center gap-3">
                       <DollarSign size={20} className="text-blue-400" />
                       <span className="text-foreground">Valor após o teste</span>
@@ -365,7 +365,7 @@ function AssinaturaContent() {
 
                 {/* Método de pagamento salvo */}
                 {subscription.paymentMethod && (
-                  <div className="flex items-center justify-between p-4 bg-zinc-500/5 border border-zinc-500/20 rounded-xl">
+                  <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 p-3 sm:p-4 bg-zinc-500/5 border border-zinc-500/20 rounded-xl">
                     <div className="flex items-center gap-3">
                       <Wallet size={20} className="text-zinc-400" />
                       <span className="text-foreground">Cartão cadastrado</span>
@@ -385,7 +385,7 @@ function AssinaturaContent() {
               <>
                 {/* Próxima cobrança */}
                 {subscription.nextBillingDate && (
-                  <div className="flex items-center justify-between p-4 bg-emerald-500/5 border border-emerald-500/20 rounded-xl">
+                  <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 p-3 sm:p-4 bg-emerald-500/5 border border-emerald-500/20 rounded-xl">
                     <div className="flex items-center gap-3">
                       <Calendar size={20} className="text-emerald-400" />
                       <span className="text-foreground">Próxima cobrança</span>
@@ -398,7 +398,7 @@ function AssinaturaContent() {
 
                 {/* Valor da assinatura */}
                 {subscription.amount && (
-                  <div className="flex items-center justify-between p-4 bg-emerald-500/5 border border-emerald-500/20 rounded-xl">
+                  <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 p-3 sm:p-4 bg-emerald-500/5 border border-emerald-500/20 rounded-xl">
                     <div className="flex items-center gap-3">
                       <DollarSign size={20} className="text-emerald-400" />
                       <span className="text-foreground">Valor mensal</span>
@@ -411,7 +411,7 @@ function AssinaturaContent() {
 
                 {/* Método de pagamento */}
                 {subscription.paymentMethod && (
-                  <div className="flex items-center justify-between p-4 bg-zinc-500/5 border border-zinc-500/20 rounded-xl">
+                  <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 p-3 sm:p-4 bg-zinc-500/5 border border-zinc-500/20 rounded-xl">
                     <div className="flex items-center gap-3">
                       <Wallet size={20} className="text-zinc-400" />
                       <span className="text-foreground">Forma de pagamento</span>
@@ -427,7 +427,7 @@ function AssinaturaContent() {
 
                 {/* Aviso de cancelamento pendente */}
                 {subscription.cancelAtPeriodEnd && (
-                  <div className="flex items-center gap-3 p-4 bg-yellow-500/10 border border-yellow-500/30 rounded-xl">
+                  <div className="flex items-center gap-3 p-3 sm:p-4 bg-yellow-500/10 border border-yellow-500/30 rounded-xl">
                     <AlertTriangle size={20} className="text-yellow-400" />
                     <span className="text-yellow-400">
                       Sua assinatura será cancelada em {new Date(subscription.nextBillingDate!).toLocaleDateString('pt-BR')}
@@ -449,7 +449,7 @@ function AssinaturaContent() {
             )}
 
             {/* Botões de Ação */}
-            <div className="flex flex-wrap gap-4 pt-4">
+            <div className="flex flex-col sm:flex-row flex-wrap gap-3 sm:gap-4 pt-4">
               {/* Botão Assinar - só aparece quando precisa reativar (UNPAID, CANCELED, PAST_DUE) */}
               {(subscription?.status === 'UNPAID' || subscription?.status === 'CANCELED' || subscription?.status === 'PAST_DUE') && (
                 <button
@@ -515,7 +515,7 @@ function AssinaturaContent() {
             {/* Modal de Confirmação de Cancelamento */}
             {showCancelConfirm && (
               <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-                <div className="bg-card border border-border rounded-2xl p-6 max-w-md w-full">
+                <div className="bg-card border border-border rounded-2xl p-3 sm:p-6 max-w-md w-full max-h-[90vh] overflow-y-auto">
                   <div className="flex items-center gap-3 mb-4">
                     <div className="p-3 bg-red-500/10 rounded-xl">
                       <AlertTriangle size={24} className="text-red-400" />
@@ -542,7 +542,7 @@ function AssinaturaContent() {
                     </li>
                   </ul>
 
-                  <div className="flex gap-3">
+                  <div className="flex flex-col-reverse sm:flex-row gap-3">
                     <button
                       onClick={() => setShowCancelConfirm(false)}
                       className="flex-1 px-4 py-3 bg-zinc-800 border border-border rounded-xl text-foreground font-medium hover:bg-zinc-700 transition-colors"
@@ -570,11 +570,11 @@ function AssinaturaContent() {
 
         {/* Benefícios */}
         <div className="bg-card border border-border rounded-2xl overflow-hidden">
-          <div className="p-6 border-b border-border">
+          <div className="p-3 sm:p-6 border-b border-border">
             <h2 className="text-lg font-bold text-foreground">O que está incluído</h2>
           </div>
 
-          <div className="p-6 grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="p-3 sm:p-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
             <div className="p-4 bg-zinc-900/50 rounded-xl border border-border">
               <div className="p-2 bg-primary/10 rounded-lg w-fit mb-3">
                 <Sparkles size={20} className="text-primary" />

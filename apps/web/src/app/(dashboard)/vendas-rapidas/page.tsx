@@ -290,7 +290,7 @@ export default function VendasRapidasPage() {
     <>
       <Header title="Vendas Rápidas" subtitle="Venda de balcão sem cadastro de cliente" />
 
-      <div className="p-8 space-y-6">
+      <div className="px-3 sm:px-4 lg:px-8 py-6 space-y-6">
         {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <div className="bg-card rounded-2xl p-6 border border-white/10">
@@ -331,7 +331,7 @@ export default function VendasRapidasPage() {
         </div>
 
         {/* Actions */}
-        <div className="flex flex-col md:flex-row gap-4 justify-between">
+        <div className="flex flex-col md:flex-row flex-wrap gap-4 justify-between">
           <div className="relative flex-1 max-w-md">
             <Search size={20} className="absolute left-4 top-1/2 -translate-y-1/2 text-foreground-muted" />
             <input
@@ -347,7 +347,7 @@ export default function VendasRapidasPage() {
             className="flex items-center gap-2 px-6 py-3 bg-primary text-white rounded-xl hover:bg-primary-dark transition-colors"
           >
             <Plus size={20} />
-            Nova Venda
+            <span className="hidden sm:inline">Nova Venda</span>
           </button>
         </div>
 
@@ -437,8 +437,8 @@ export default function VendasRapidasPage() {
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
           <div className="bg-card rounded-2xl w-full max-w-3xl max-h-[90vh] overflow-hidden flex flex-col">
             {/* Header */}
-            <div className="flex items-center justify-between p-6 border-b border-white/10">
-              <h2 className="text-xl font-semibold text-foreground">Nova Venda Rápida</h2>
+            <div className="flex items-center justify-between p-4 sm:p-6 border-b border-white/10">
+              <h2 className="text-lg sm:text-xl font-semibold text-foreground">Nova Venda Rápida</h2>
               <button
                 onClick={() => {
                   setShowNovaVenda(false);
@@ -451,7 +451,7 @@ export default function VendasRapidasPage() {
             </div>
 
             {/* Content */}
-            <div className="flex-1 overflow-y-auto p-6 space-y-6">
+            <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-6">
               {/* Cliente (opcional) */}
               <div>
                 <label className="block text-sm text-muted mb-2">Nome do Cliente (opcional)</label>
@@ -535,7 +535,7 @@ export default function VendasRapidasPage() {
                       return (
                         <div
                           key={item.produtoId}
-                          className="flex items-center gap-4 bg-background rounded-xl border border-white/10 p-4"
+                          className="flex flex-wrap items-center gap-4 bg-background rounded-xl border border-white/10 p-4"
                         >
                           <div className="flex-1">
                             <p className="text-white font-medium">{item.produtoNome}</p>
@@ -632,8 +632,8 @@ export default function VendasRapidasPage() {
             </div>
 
             {/* Footer */}
-            <div className="p-6 border-t border-white/10 bg-background">
-              <div className="flex items-center justify-between">
+            <div className="p-4 sm:p-6 border-t border-white/10 bg-background">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                 <div className="space-y-1">
                   {descontoPercent > 0 ? (
                     <>
@@ -698,9 +698,9 @@ export default function VendasRapidasPage() {
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
           <div className="bg-card rounded-2xl w-full max-w-lg max-h-[90vh] overflow-hidden flex flex-col">
             {/* Header */}
-            <div className="flex items-center justify-between p-6 border-b border-white/10">
+            <div className="flex items-center justify-between p-4 sm:p-6 border-b border-white/10">
               <div>
-                <h2 className="text-xl font-semibold text-foreground">Venda {vendaSelecionada.numero}</h2>
+                <h2 className="text-lg sm:text-xl font-semibold text-foreground">Venda {vendaSelecionada.numero}</h2>
                 <p className="text-muted text-sm">{formatDate(vendaSelecionada.createdAt)}</p>
               </div>
               <button
@@ -715,7 +715,7 @@ export default function VendasRapidasPage() {
             </div>
 
             {/* Content */}
-            <div className="flex-1 overflow-y-auto p-6 space-y-4">
+            <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-4">
               {vendaSelecionada.nomeCliente && (
                 <div>
                   <p className="text-muted text-sm">Cliente</p>
@@ -747,8 +747,8 @@ export default function VendasRapidasPage() {
             </div>
 
             {/* Footer */}
-            <div className="p-6 border-t border-white/10 bg-background">
-              <div className="flex items-center justify-between">
+            <div className="p-4 sm:p-6 border-t border-white/10 bg-background">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                 <div>
                   <p className="text-muted text-sm">Total</p>
                   <p className="text-2xl font-bold text-emerald-400">{formatCurrency(vendaSelecionada.total)}</p>

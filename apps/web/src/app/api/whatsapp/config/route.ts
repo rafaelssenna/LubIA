@@ -40,6 +40,9 @@ export async function GET() {
         chatbotBoasVindas: config.chatbotBoasVindas,
         informacoesNegocio: (config as any).informacoesNegocio,
         chatbotFaq: (config as any).chatbotFaq,
+        logo: (config as any).logo,
+        pdfCorOS: (config as any).pdfCorOS || '#22c55e',
+        pdfCorOrcamento: (config as any).pdfCorOrcamento || '#e85d04',
       },
     });
   } catch (error: any) {
@@ -92,6 +95,9 @@ export async function PUT(request: NextRequest) {
     if (body.chatbotBoasVindas !== undefined) updateData.chatbotBoasVindas = body.chatbotBoasVindas;
     if (body.informacoesNegocio !== undefined) updateData.informacoesNegocio = body.informacoesNegocio;
     if (body.chatbotFaq !== undefined) updateData.chatbotFaq = body.chatbotFaq;
+    if (body.logo !== undefined) updateData.logo = body.logo;
+    if (body.pdfCorOS !== undefined) updateData.pdfCorOS = body.pdfCorOS;
+    if (body.pdfCorOrcamento !== undefined) updateData.pdfCorOrcamento = body.pdfCorOrcamento;
 
     const config = await prisma.configuracao.update({
       where: { id: existing.id },

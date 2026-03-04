@@ -211,10 +211,10 @@ function UsuariosPageContent() {
         subtitle="Gerencie os usuários da sua empresa"
       />
 
-      <div className="px-4 lg:px-8 space-y-8">
+      <div className="px-3 sm:px-4 lg:px-8 space-y-6 sm:space-y-8">
         {/* Search and Actions */}
-        <div className="flex flex-col md:flex-row gap-4">
-          <div className="relative flex-1 max-w-md group">
+        <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
+          <div className="relative flex-1 sm:max-w-md group">
             <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-5 w-5 text-zinc-500 group-focus-within:text-purple-400 transition-colors" />
             <input
               type="text"
@@ -226,10 +226,10 @@ function UsuariosPageContent() {
           </div>
           <button
             onClick={openNewModal}
-            className="flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-primary to-[#2E7D32] hover:from-[#2E7D32] hover:to-primary text-white font-semibold rounded-xl transition-all duration-300 shadow-lg shadow-primary/25 hover:shadow-primary/40 hover:scale-[1.02]"
+            className="flex items-center justify-center gap-2 px-4 sm:px-6 py-2.5 sm:py-3 bg-gradient-to-r from-primary to-[#2E7D32] hover:from-[#2E7D32] hover:to-primary text-white font-semibold rounded-xl transition-all duration-300 shadow-lg shadow-primary/25 hover:shadow-primary/40 hover:scale-[1.02]"
           >
             <Plus className="h-5 w-5" />
-            <span>Novo Usuário</span>
+            <span className="hidden sm:inline">Novo Usuário</span>
           </button>
         </div>
 
@@ -253,11 +253,11 @@ function UsuariosPageContent() {
               <table className="w-full">
                 <thead className="bg-zinc-900/50 border-b border-border">
                   <tr>
-                    <th className="text-left px-6 py-4 text-xs font-semibold text-muted uppercase tracking-wider">Usuário</th>
-                    <th className="text-left px-6 py-4 text-xs font-semibold text-muted uppercase tracking-wider">Nível</th>
-                    <th className="text-left px-6 py-4 text-xs font-semibold text-muted uppercase tracking-wider">Status</th>
-                    <th className="text-left px-6 py-4 text-xs font-semibold text-muted uppercase tracking-wider">Último Login</th>
-                    <th className="text-right px-6 py-4 text-xs font-semibold text-muted uppercase tracking-wider">Ações</th>
+                    <th className="text-left px-3 sm:px-6 py-3 sm:py-4 text-xs font-semibold text-muted uppercase tracking-wider">Usuário</th>
+                    <th className="text-left px-3 sm:px-6 py-3 sm:py-4 text-xs font-semibold text-muted uppercase tracking-wider">Nível</th>
+                    <th className="text-left px-3 sm:px-6 py-3 sm:py-4 text-xs font-semibold text-muted uppercase tracking-wider">Status</th>
+                    <th className="text-left px-3 sm:px-6 py-3 sm:py-4 text-xs font-semibold text-muted uppercase tracking-wider">Último Login</th>
+                    <th className="text-right px-3 sm:px-6 py-3 sm:py-4 text-xs font-semibold text-muted uppercase tracking-wider">Ações</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-zinc-800/50">
@@ -266,24 +266,24 @@ function UsuariosPageContent() {
 
                     return (
                       <tr key={usuario.id} className="hover:bg-zinc-800/30 transition-colors group">
-                        <td className="px-6 py-4">
-                          <div className="flex items-center gap-4">
-                            <div className="p-2.5 bg-purple-500/10 rounded-xl border border-purple-500/20">
+                        <td className="px-3 sm:px-6 py-3 sm:py-4">
+                          <div className="flex items-center gap-3 sm:gap-4">
+                            <div className="p-2 sm:p-2.5 bg-purple-500/10 rounded-xl border border-purple-500/20">
                               <User className="h-5 w-5 text-purple-400" />
                             </div>
                             <div>
-                              <p className="text-foreground font-semibold">{usuario.nome}</p>
-                              <p className="text-sm text-muted">{usuario.email}</p>
+                              <p className="text-foreground font-semibold text-sm sm:text-base">{usuario.nome}</p>
+                              <p className="text-xs sm:text-sm text-muted">{usuario.email}</p>
                             </div>
                           </div>
                         </td>
-                        <td className="px-6 py-4">
+                        <td className="px-3 sm:px-6 py-3 sm:py-4">
                           <span className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium border ${roleInfo.bg} ${roleInfo.color} border-current/20`}>
                             <Shield className="h-3.5 w-3.5" />
                             {roleInfo.label}
                           </span>
                         </td>
-                        <td className="px-6 py-4">
+                        <td className="px-3 sm:px-6 py-3 sm:py-4">
                           {usuario.ativo ? (
                             <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
                               <CheckCircle className="h-4 w-4" />
@@ -296,12 +296,12 @@ function UsuariosPageContent() {
                             </span>
                           )}
                         </td>
-                        <td className="px-6 py-4">
+                        <td className="px-3 sm:px-6 py-3 sm:py-4">
                           <span className="text-muted text-sm">
                             {formatDate(usuario.lastLoginAt)}
                           </span>
                         </td>
-                        <td className="px-6 py-4">
+                        <td className="px-3 sm:px-6 py-3 sm:py-4">
                           <div className="flex items-center justify-end gap-1.5">
                             <button
                               onClick={() => openEditModal(usuario)}
@@ -335,7 +335,7 @@ function UsuariosPageContent() {
       {showModal && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
           <div className="bg-card border border-border rounded-2xl w-full max-w-md overflow-hidden shadow-2xl shadow-black/50 max-h-[90vh] overflow-y-auto">
-            <div className="flex items-center justify-between p-6 border-b border-border sticky top-0 bg-card">
+            <div className="flex items-center justify-between p-3 sm:p-6 border-b border-border sticky top-0 bg-card">
               <h2 className="text-xl font-bold text-foreground">
                 {editingUsuario ? 'Editar Usuário' : 'Novo Usuário'}
               </h2>
@@ -347,7 +347,7 @@ function UsuariosPageContent() {
               </button>
             </div>
 
-            <div className="p-6 space-y-4">
+            <div className="p-3 sm:p-6 space-y-4">
               {/* Nome */}
               <div>
                 <label className="block text-sm font-medium text-muted mb-2">
@@ -527,17 +527,17 @@ function UsuariosPageContent() {
               )}
             </div>
 
-            <div className="p-6 border-t border-border flex justify-end gap-3 sticky bottom-0 bg-card">
+            <div className="p-3 sm:p-6 border-t border-border flex justify-end gap-3 sticky bottom-0 bg-card">
               <button
                 onClick={() => setShowModal(false)}
-                className="px-6 py-3 border border-border rounded-xl text-muted hover:bg-zinc-800 transition-colors"
+                className="px-4 sm:px-6 py-2.5 sm:py-3 border border-border rounded-xl text-muted hover:bg-zinc-800 transition-colors"
               >
                 Cancelar
               </button>
               <button
                 onClick={handleSubmit}
                 disabled={saving}
-                className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-primary to-[#2E7D32] hover:from-[#2E7D32] hover:to-primary text-white font-semibold rounded-xl transition-all duration-300 shadow-lg shadow-primary/25 disabled:opacity-50"
+                className="flex items-center gap-2 px-4 sm:px-6 py-2.5 sm:py-3 bg-gradient-to-r from-primary to-[#2E7D32] hover:from-[#2E7D32] hover:to-primary text-white font-semibold rounded-xl transition-all duration-300 shadow-lg shadow-primary/25 disabled:opacity-50"
               >
                 {saving && <Loader2 className="h-4 w-4 animate-spin" />}
                 {editingUsuario ? 'Salvar' : 'Criar Usuário'}
@@ -550,31 +550,31 @@ function UsuariosPageContent() {
       {/* Delete Confirmation Modal */}
       {showDeleteConfirm && selectedUsuario && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-card border border-border rounded-2xl w-full max-w-sm shadow-2xl shadow-black/50">
-            <div className="p-6">
+          <div className="bg-card border border-border rounded-2xl w-full max-w-sm shadow-2xl shadow-black/50 max-h-[90vh] overflow-y-auto">
+            <div className="p-4 sm:p-6">
               <div className="w-14 h-14 mx-auto mb-4 bg-red-500/10 rounded-2xl flex items-center justify-center border border-red-500/20">
                 <Trash2 className="h-7 w-7 text-red-400" />
               </div>
-              <h3 className="text-xl font-bold text-foreground text-center mb-2">Excluir Usuário</h3>
+              <h3 className="text-lg sm:text-xl font-bold text-foreground text-center mb-2">Excluir Usuário</h3>
               <p className="text-muted text-center text-sm mb-1">{selectedUsuario.nome}</p>
               <p className="text-foreground-muted text-center text-sm">
                 Tem certeza que deseja excluir este usuario? Esta ação não pode ser desfeita.
               </p>
             </div>
-            <div className="p-6 border-t border-border flex gap-3">
+            <div className="p-4 sm:p-6 border-t border-border flex gap-3">
               <button
                 onClick={() => {
                   setShowDeleteConfirm(false);
                   setSelectedUsuario(null);
                 }}
-                className="flex-1 px-6 py-3 border border-border text-muted rounded-xl hover:bg-zinc-800 transition-colors"
+                className="flex-1 px-4 sm:px-6 py-2.5 sm:py-3 border border-border text-muted rounded-xl hover:bg-zinc-800 transition-colors"
               >
                 Cancelar
               </button>
               <button
                 onClick={handleDelete}
                 disabled={saving}
-                className="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-600 text-white font-semibold rounded-xl transition-all duration-300 shadow-lg shadow-red-500/25 disabled:opacity-50"
+                className="flex-1 flex items-center justify-center gap-2 px-4 sm:px-6 py-2.5 sm:py-3 bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-600 text-white font-semibold rounded-xl transition-all duration-300 shadow-lg shadow-red-500/25 disabled:opacity-50"
               >
                 {saving && <Loader2 className="h-4 w-4 animate-spin" />}
                 Excluir

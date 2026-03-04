@@ -191,6 +191,9 @@ function OrdensPageContent() {
           cnpj: data.data.cnpj,
           telefone: data.data.telefone,
           endereco: data.data.endereco,
+          logo: data.data.logo,
+          pdfCorOS: data.data.pdfCorOS,
+          pdfCorOrcamento: data.data.pdfCorOrcamento,
         });
       }
     } catch (error) {
@@ -580,9 +583,9 @@ function OrdensPageContent() {
     <div className="space-y-8">
       <Header title="Ordens de Serviço" subtitle="Gerencie suas O.S." />
 
-      <div className="px-4 lg:px-8 space-y-8">
+      <div className="px-3 sm:px-4 lg:px-8 space-y-8">
         {/* Stats Cards */}
-        <div className="grid grid-cols-2 xl:grid-cols-4 gap-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 sm:gap-8">
           {/* Total O.S. */}
           <button
             onClick={() => { setStatusFilter(''); setViewMode('lista'); }}
@@ -667,8 +670,8 @@ function OrdensPageContent() {
         </div>
 
         {/* Toolbar */}
-        <div className="flex flex-col md:flex-row gap-4 justify-between">
-          <div className="flex flex-1 gap-4 items-center">
+        <div className="flex flex-col md:flex-row gap-2 sm:gap-4 justify-between">
+          <div className="flex flex-1 flex-wrap gap-2 sm:gap-3 items-center">
             {/* View Mode Toggle */}
             <div className="flex items-center gap-1 bg-card border border-border rounded-xl p-1">
               <button
@@ -730,7 +733,7 @@ function OrdensPageContent() {
                     <option key={cliente.id} value={cliente.id}>{cliente.nome}</option>
                   ))}
                 </select>
-                <div className="flex items-center gap-2">
+                <div className="flex flex-wrap items-center gap-2">
                   <input
                     type="date"
                     value={dataInicio}
@@ -785,16 +788,16 @@ function OrdensPageContent() {
           </div>
           <button
             onClick={() => openNewModal()}
-            className="flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-primary to-primary-dark hover:from-primary-dark hover:to-primary text-white font-semibold rounded-xl transition-all duration-300 shadow-lg shadow-primary/25 hover:shadow-primary/40 hover:scale-[1.02]"
+            className="flex items-center justify-center gap-2 px-4 sm:px-6 py-3 bg-gradient-to-r from-primary to-primary-dark hover:from-primary-dark hover:to-primary text-white font-semibold rounded-xl transition-all duration-300 shadow-lg shadow-primary/25 hover:shadow-primary/40 hover:scale-[1.02]"
           >
             <Plus size={18} />
-            Nova O.S.
+            <span className="hidden sm:inline">Nova O.S.</span>
           </button>
         </div>
 
         {/* Calendar View */}
         {viewMode === 'calendario' && (
-          <div className="bg-card border border-border rounded-2xl overflow-hidden">
+          <div className="bg-card border border-border rounded-2xl overflow-hidden overflow-x-auto">
             {/* Calendar Header */}
             <div className="grid grid-cols-8 border-b border-border">
               <div className="p-4 text-foreground-muted text-sm font-medium">Horario</div>
@@ -992,7 +995,7 @@ function OrdensPageContent() {
 
           {/* Paginacao */}
           {totalPages > 1 && (
-            <div className="flex items-center justify-between bg-card border border-border rounded-2xl px-6 py-4">
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-3 bg-card border border-border rounded-2xl px-4 sm:px-6 py-4">
               <p className="text-sm text-muted">
                 Mostrando {((currentPage - 1) * itemsPerPage) + 1} - {Math.min(currentPage * itemsPerPage, totalItems)} de {totalItems} ordens
               </p>
@@ -1025,9 +1028,9 @@ function OrdensPageContent() {
       {showModal && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
           <div className="bg-card border border-border rounded-2xl w-full max-w-2xl max-h-[90vh] overflow-hidden flex flex-col shadow-2xl shadow-black/50">
-            <div className="p-6 border-b border-border flex items-center justify-between">
+            <div className="p-4 sm:p-6 border-b border-border flex items-center justify-between">
               <div>
-                <h2 className="text-xl font-semibold text-foreground">{editingOrdem ? 'Editar Ordem de Servico' : 'Nova Ordem de Servico'}</h2>
+                <h2 className="text-lg sm:text-xl font-semibold text-foreground">{editingOrdem ? 'Editar Ordem de Servico' : 'Nova Ordem de Servico'}</h2>
                 <p className="text-sm text-muted mt-1">Passo {step} de 3</p>
               </div>
               <button onClick={() => { setShowModal(false); setEditingOrdem(null); }} className="p-2 hover:bg-zinc-800 rounded-xl text-muted hover:text-white transition-all duration-200">
@@ -1035,7 +1038,7 @@ function OrdensPageContent() {
               </button>
             </div>
 
-            <div className="flex-1 overflow-y-auto p-6">
+            <div className="flex-1 overflow-y-auto p-4 sm:p-6">
               {/* Step 1: Select Vehicle */}
               {step === 1 && (
                 <div className="space-y-4">
@@ -1144,7 +1147,7 @@ function OrdensPageContent() {
                       {/* Campos opcionais */}
                       <div className="space-y-3">
                         <p className="text-xs text-foreground-muted uppercase tracking-wider">Opcional</p>
-                        <div className="grid grid-cols-2 gap-3">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                           <input
                             type="text"
                             value={novoVeiculo.clienteNome}
@@ -1408,7 +1411,7 @@ function OrdensPageContent() {
               )}
             </div>
 
-            <div className="p-6 border-t border-border flex gap-3 justify-between">
+            <div className="p-4 sm:p-6 border-t border-border flex gap-3 justify-between">
               <button
                 onClick={() => step > 1 ? setStep(step - 1) : (setShowModal(false), setEditingOrdem(null))}
                 className="px-6 py-3 border border-border rounded-xl text-muted hover:bg-background transition-colors"
@@ -1492,9 +1495,9 @@ function OrdensPageContent() {
       {showDetailModal && selectedOrdem && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
           <div className="bg-card border border-border rounded-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto shadow-2xl shadow-black/50">
-            <div className="p-6 border-b border-border flex items-center justify-between">
+            <div className="p-4 sm:p-6 border-b border-border flex items-center justify-between">
               <div>
-                <h2 className="text-xl font-semibold text-foreground">O.S. #{selectedOrdem.numero.slice(-8).toUpperCase()}</h2>
+                <h2 className="text-lg sm:text-xl font-semibold text-foreground">O.S. #{selectedOrdem.numero.slice(-8).toUpperCase()}</h2>
                 <div className="flex items-center gap-2 mt-1">
                   {(() => {
                     const status = statusConfig[selectedOrdem.status];
@@ -1510,9 +1513,9 @@ function OrdensPageContent() {
                 <X size={20} />
               </button>
             </div>
-            <div className="p-6 space-y-4">
+            <div className="p-4 sm:p-6 space-y-4">
               {/* Vehicle & Client Info */}
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="p-4 bg-background rounded-xl">
                   <div className="flex items-center gap-2 text-muted mb-2">
                     <Car size={16} />
@@ -1532,7 +1535,7 @@ function OrdensPageContent() {
               </div>
 
               {/* Dates */}
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
                 <div className="p-4 bg-background rounded-xl">
                   <p className="text-xs text-muted mb-1">Criada em</p>
                   <p className="text-foreground">{formatDateTime(selectedOrdem.createdAt)}</p>
@@ -1609,7 +1612,7 @@ function OrdensPageContent() {
                 </div>
               </div>
             </div>
-            <div className="p-6 border-t border-border flex gap-3 justify-end">
+            <div className="p-4 sm:p-6 border-t border-border flex flex-wrap gap-3 justify-end">
               {(selectedOrdem.status === 'AGENDADO' || selectedOrdem.status === 'EM_ANDAMENTO' || selectedOrdem.status === 'AGUARDANDO_PECAS') && (
                 <button
                   onClick={() => {
@@ -1657,10 +1660,10 @@ function OrdensPageContent() {
       {showDeleteConfirm && selectedOrdem && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
           <div className="bg-card border border-border rounded-2xl w-full max-w-md shadow-2xl shadow-black/50">
-            <div className="p-6 border-b border-border">
-              <h2 className="text-xl font-semibold text-foreground">Confirmar Exclusao</h2>
+            <div className="p-4 sm:p-6 border-b border-border">
+              <h2 className="text-lg sm:text-xl font-semibold text-foreground">Confirmar Exclusao</h2>
             </div>
-            <div className="p-6">
+            <div className="p-4 sm:p-6">
               <div className="flex items-center gap-4 mb-4">
                 <div className="p-3 bg-red-500/10 rounded-xl border border-red-500/20">
                   <Trash2 size={24} className="text-red-400" />
@@ -1674,7 +1677,7 @@ function OrdensPageContent() {
                 Tem certeza que deseja excluir esta O.S.? Esta ação não pode ser desfeita.
               </p>
             </div>
-            <div className="p-6 border-t border-border flex gap-3 justify-end">
+            <div className="p-4 sm:p-6 border-t border-border flex gap-3 justify-end">
               <button
                 onClick={() => {
                   setShowDeleteConfirm(false);
@@ -1699,11 +1702,11 @@ function OrdensPageContent() {
       {/* Modal Confirmar Conclusao */}
       {showConcluirConfirm && selectedOrdem && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-card border border-border rounded-2xl w-full max-w-md shadow-2xl shadow-black/50">
-            <div className="p-6 border-b border-border">
-              <h2 className="text-xl font-semibold text-foreground">Concluir O.S.</h2>
+          <div className="bg-card border border-border rounded-2xl w-full max-w-md max-h-[90vh] overflow-hidden flex flex-col shadow-2xl shadow-black/50">
+            <div className="p-4 sm:p-6 border-b border-border">
+              <h2 className="text-lg sm:text-xl font-semibold text-foreground">Concluir O.S.</h2>
             </div>
-            <div className="p-6">
+            <div className="flex-1 overflow-y-auto p-4 sm:p-6">
               <div className="flex items-center gap-4 mb-4">
                 <div className="p-3 bg-emerald-500/10 rounded-xl border border-emerald-500/20">
                   <CheckCircle size={24} className="text-emerald-400" />
@@ -1797,7 +1800,7 @@ function OrdensPageContent() {
                 Confirma a conclusao desta ordem de servico?
               </p>
             </div>
-            <div className="p-6 border-t border-border flex gap-3 justify-end">
+            <div className="p-4 sm:p-6 border-t border-border flex gap-3 justify-end">
               <button
                 onClick={() => {
                   setShowConcluirConfirm(false);

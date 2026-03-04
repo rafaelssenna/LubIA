@@ -532,17 +532,17 @@ function DevolucoesPageContent() {
     <>
       <Header title="Devoluções" subtitle="Gerenciar devoluções e trocas de vendas rápidas" />
 
-      <div className="p-8 space-y-6">
+      <div className="p-3 sm:p-4 lg:p-8 space-y-6">
         {/* Form de Nova Devolução */}
         <div className="bg-card rounded-2xl border border-white/10 overflow-hidden">
-          <div className="p-6 border-b border-white/10">
+          <div className="p-3 sm:p-6 border-b border-white/10">
             <h2 className="text-lg font-semibold text-foreground flex items-center gap-2">
               <RotateCcw size={20} className="text-primary" />
               Nova Devolução
             </h2>
           </div>
 
-          <div className="p-6">
+          <div className="p-3 sm:p-6">
             {/* Step 1: Buscar Venda */}
             {step === 'buscar' && (
               <div className="space-y-4">
@@ -550,7 +550,7 @@ function DevolucoesPageContent() {
                   <label className="block text-sm text-muted mb-2">
                     Número da Venda (ex: VR-0001)
                   </label>
-                  <div className="flex gap-3">
+                  <div className="flex gap-2 sm:gap-3 flex-col sm:flex-row">
                     <div className="relative flex-1">
                       <Search
                         size={20}
@@ -597,7 +597,7 @@ function DevolucoesPageContent() {
                           key={v.id}
                           onClick={() => selecionarVenda(v.id)}
                           disabled={searchingVenda}
-                          className="w-full flex items-center justify-between p-3 bg-background rounded-xl border border-white/10 hover:border-primary/50 hover:bg-primary/5 transition-all text-left disabled:opacity-50"
+                          className="w-full flex items-center justify-between p-3 bg-background rounded-xl border border-white/10 hover:border-primary/50 hover:bg-primary/5 transition-all text-left disabled:opacity-50 gap-2"
                         >
                           <div>
                             <p className="text-primary font-mono font-medium">{v.numero}</p>
@@ -618,10 +618,10 @@ function DevolucoesPageContent() {
             {step === 'itens' && venda && (
               <div className="space-y-6">
                 {/* Venda Info */}
-                <div className="bg-background rounded-xl p-4 border border-white/10">
-                  <div className="flex items-center justify-between">
+                <div className="bg-background rounded-xl p-3 sm:p-4 border border-white/10">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                     <div>
-                      <p className="text-primary font-mono font-medium text-lg">
+                      <p className="text-primary font-mono font-medium text-base sm:text-lg">
                         {venda.numero}
                       </p>
                       <p className="text-muted text-sm">
@@ -667,7 +667,7 @@ function DevolucoesPageContent() {
                 {/* Motivo */}
                 <div>
                   <label className="block text-sm text-muted mb-2">Motivo</label>
-                  <div className="grid grid-cols-3 gap-3">
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 sm:gap-3">
                     {(['DEFEITO', 'ARREPENDIMENTO', 'OUTRO'] as const).map((m) => (
                       <button
                         key={m}
@@ -714,10 +714,10 @@ function DevolucoesPageContent() {
                                 : 'bg-background border-white/10'
                             }`}
                           >
-                            <div className="flex items-center gap-4">
+                            <div className="flex items-start sm:items-center gap-3 sm:gap-4 flex-wrap sm:flex-nowrap">
                               <button
                                 onClick={() => toggleItemSelection(item)}
-                                className={`w-6 h-6 rounded-lg border-2 flex items-center justify-center transition-colors ${
+                                className={`w-6 h-6 rounded-lg border-2 flex items-center justify-center transition-colors shrink-0 ${
                                   selected
                                     ? 'bg-primary border-primary'
                                     : 'border-white/30 hover:border-primary'
@@ -726,9 +726,9 @@ function DevolucoesPageContent() {
                                 {selected && <Check size={14} className="text-white" />}
                               </button>
 
-                              <div className="flex-1">
-                                <p className="text-white font-medium">{item.produto.nome}</p>
-                                <p className="text-muted text-sm">
+                              <div className="flex-1 min-w-0">
+                                <p className="text-white font-medium text-sm sm:text-base">{item.produto.nome}</p>
+                                <p className="text-muted text-xs sm:text-sm">
                                   {item.produto.codigo}
                                   {item.quantidadeDevolvida > 0 && (
                                     <span className="text-amber-400 ml-2">
@@ -759,7 +759,7 @@ function DevolucoesPageContent() {
                               )}
 
                               <div className="text-right min-w-[80px]">
-                                <p className="text-foreground-muted text-sm">
+                                <p className="text-foreground-muted text-xs sm:text-sm">
                                   Disp: {item.quantidadeDisponivel}
                                 </p>
                                 <p className="text-emerald-400 font-medium">
@@ -784,9 +784,9 @@ function DevolucoesPageContent() {
                                         {selected.produtosTroca.map((prodTroca) => (
                                           <div
                                             key={prodTroca.produtoId}
-                                            className="bg-blue-500/10 rounded-lg p-3"
+                                            className="bg-blue-500/10 rounded-lg p-2 sm:p-3"
                                           >
-                                            <div className="flex items-center justify-between">
+                                            <div className="flex items-center justify-between flex-wrap gap-2">
                                               <div className="flex-1 min-w-0">
                                                 <p className="text-blue-400 font-medium truncate">
                                                   {prodTroca.produtoNome}
@@ -920,12 +920,12 @@ function DevolucoesPageContent() {
                 </div>
 
                 {/* Footer */}
-                <div className="flex items-center justify-between pt-4 border-t border-white/10">
+                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between pt-4 border-t border-white/10 gap-4">
                   <div>
                     {tipoDevolucao === 'REEMBOLSO' ? (
                       <>
                         <p className="text-muted text-sm">Valor a reembolsar</p>
-                        <p className="text-2xl font-bold text-emerald-400">
+                        <p className="text-xl sm:text-2xl font-bold text-emerald-400">
                           {formatCurrency(totalDevolucao)}
                         </p>
                       </>
@@ -943,24 +943,24 @@ function DevolucoesPageContent() {
                           <span className="text-muted font-medium">
                             {diferencaTroca > 0 ? 'Cliente paga:' : diferencaTroca < 0 ? 'Cliente recebe:' : 'Sem diferença'}
                           </span>
-                          <span className={`text-xl font-bold ${diferencaTroca > 0 ? 'text-amber-400' : diferencaTroca < 0 ? 'text-emerald-400' : 'text-white'}`}>
+                          <span className={`text-lg sm:text-xl font-bold ${diferencaTroca > 0 ? 'text-amber-400' : diferencaTroca < 0 ? 'text-emerald-400' : 'text-white'}`}>
                             {diferencaTroca !== 0 ? formatCurrency(Math.abs(diferencaTroca)) : '-'}
                           </span>
                         </div>
                       </div>
                     )}
                   </div>
-                  <div className="flex gap-3">
+                  <div className="flex gap-2 sm:gap-3 w-full sm:w-auto">
                     <button
                       onClick={resetForm}
-                      className="px-6 py-3 bg-white/10 text-white rounded-xl hover:bg-white/20 transition-colors"
+                      className="flex-1 sm:flex-none px-4 sm:px-6 py-2.5 sm:py-3 bg-white/10 text-white rounded-xl hover:bg-white/20 transition-colors"
                     >
                       Cancelar
                     </button>
                     <button
                       onClick={confirmarDevolucao}
                       disabled={saving || itensParaDevolver.length === 0}
-                      className={`px-6 py-3 text-white rounded-xl transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 ${
+                      className={`flex-1 sm:flex-none px-4 sm:px-6 py-2.5 sm:py-3 text-white rounded-xl transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 ${
                         tipoDevolucao === 'TROCA'
                           ? 'bg-blue-500 hover:bg-blue-600'
                           : 'bg-emerald-500 hover:bg-emerald-600'
@@ -987,14 +987,14 @@ function DevolucoesPageContent() {
 
         {/* Lista de Devoluções */}
         <div className="bg-card rounded-2xl border border-white/10 overflow-hidden">
-          <div className="p-6 border-b border-white/10 flex items-center justify-between">
-            <h2 className="text-lg font-semibold text-foreground">Histórico de Devoluções</h2>
-            <div className="flex gap-2">
+          <div className="p-3 sm:p-6 border-b border-white/10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+            <h2 className="text-base sm:text-lg font-semibold text-foreground">Histórico de Devoluções</h2>
+            <div className="flex gap-2 flex-wrap">
               {(['', 'TROCA', 'REEMBOLSO'] as const).map((tipo) => (
                 <button
                   key={tipo || 'all'}
                   onClick={() => setFiltroTipo(tipo)}
-                  className={`px-4 py-2 rounded-lg text-sm transition-colors ${
+                  className={`px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg text-sm transition-colors ${
                     filtroTipo === tipo
                       ? 'bg-primary text-white'
                       : 'bg-white/5 text-muted hover:bg-white/10'
@@ -1018,13 +1018,13 @@ function DevolucoesPageContent() {
               <table className="w-full">
                 <thead>
                   <tr className="border-b border-white/10">
-                    <th className="text-left p-4 text-muted font-medium">Número</th>
-                    <th className="text-left p-4 text-muted font-medium">Venda</th>
-                    <th className="text-left p-4 text-muted font-medium">Tipo</th>
-                    <th className="text-left p-4 text-muted font-medium">Motivo</th>
-                    <th className="text-left p-4 text-muted font-medium">Valor</th>
-                    <th className="text-left p-4 text-muted font-medium">Data</th>
-                    <th className="text-right p-4 text-muted font-medium">Ações</th>
+                    <th className="text-left p-2 sm:p-4 text-muted font-medium text-xs sm:text-sm">Número</th>
+                    <th className="text-left p-2 sm:p-4 text-muted font-medium text-xs sm:text-sm">Venda</th>
+                    <th className="text-left p-2 sm:p-4 text-muted font-medium text-xs sm:text-sm">Tipo</th>
+                    <th className="text-left p-2 sm:p-4 text-muted font-medium text-xs sm:text-sm">Motivo</th>
+                    <th className="text-left p-2 sm:p-4 text-muted font-medium text-xs sm:text-sm">Valor</th>
+                    <th className="text-left p-2 sm:p-4 text-muted font-medium text-xs sm:text-sm">Data</th>
+                    <th className="text-right p-2 sm:p-4 text-muted font-medium text-xs sm:text-sm">Ações</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -1033,11 +1033,11 @@ function DevolucoesPageContent() {
                       key={dev.id}
                       className="border-b border-white/5 hover:bg-white/5 transition-colors"
                     >
-                      <td className="p-4">
-                        <span className="text-primary font-mono font-medium">{dev.numero}</span>
+                      <td className="p-2 sm:p-4">
+                        <span className="text-primary font-mono font-medium text-sm sm:text-base">{dev.numero}</span>
                       </td>
-                      <td className="p-4 text-foreground">{dev.venda?.numero || '-'}</td>
-                      <td className="p-4">
+                      <td className="p-2 sm:p-4 text-foreground text-sm sm:text-base">{dev.venda?.numero || '-'}</td>
+                      <td className="p-2 sm:p-4">
                         <span
                           className={`px-2 py-1 rounded-lg text-xs font-medium ${
                             dev.tipo === 'TROCA'
@@ -1048,20 +1048,20 @@ function DevolucoesPageContent() {
                           {dev.tipo}
                         </span>
                       </td>
-                      <td className="p-4 text-muted">{getMotivoLabel(dev.motivo)}</td>
-                      <td className="p-4">
-                        <span className="text-emerald-400 font-medium">
+                      <td className="p-2 sm:p-4 text-muted text-sm sm:text-base">{getMotivoLabel(dev.motivo)}</td>
+                      <td className="p-2 sm:p-4">
+                        <span className="text-emerald-400 font-medium text-sm sm:text-base">
                           {formatCurrency(dev.valorTotal)}
                         </span>
                       </td>
-                      <td className="p-4 text-muted">{formatDate(dev.createdAt)}</td>
-                      <td className="p-4 text-right">
+                      <td className="p-2 sm:p-4 text-muted text-sm sm:text-base">{formatDate(dev.createdAt)}</td>
+                      <td className="p-2 sm:p-4 text-right">
                         <button
                           onClick={() => {
                             setDevolucaoSelecionada(dev);
                             setShowDetalhes(true);
                           }}
-                          className="px-3 py-1.5 bg-white/5 hover:bg-white/10 text-foreground rounded-lg transition-colors"
+                          className="px-2 sm:px-3 py-1.5 bg-white/5 hover:bg-white/10 text-foreground rounded-lg transition-colors text-xs sm:text-sm whitespace-nowrap"
                         >
                           Ver detalhes
                         </button>
@@ -1075,7 +1075,7 @@ function DevolucoesPageContent() {
 
           {/* Pagination */}
           {totalPages > 1 && (
-            <div className="flex items-center justify-center gap-2 p-4 border-t border-white/10">
+            <div className="flex items-center justify-center gap-2 p-3 sm:p-4 border-t border-white/10">
               <button
                 onClick={() => setPage((p) => Math.max(1, p - 1))}
                 disabled={page === 1}
@@ -1103,7 +1103,7 @@ function DevolucoesPageContent() {
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
           <div className="bg-card rounded-2xl w-full max-w-lg max-h-[90vh] overflow-hidden flex flex-col">
             {/* Header */}
-            <div className="flex items-center justify-between p-6 border-b border-white/10">
+            <div className="flex items-center justify-between p-3 sm:p-6 border-b border-white/10">
               <div>
                 <h2 className="text-xl font-semibold text-foreground">
                   Devolução {devolucaoSelecionada.numero}
@@ -1122,8 +1122,8 @@ function DevolucoesPageContent() {
             </div>
 
             {/* Content */}
-            <div className="flex-1 overflow-y-auto p-6 space-y-4">
-              <div className="grid grid-cols-2 gap-4">
+            <div className="flex-1 overflow-y-auto p-3 sm:p-6 space-y-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                 <div>
                   <p className="text-muted text-sm">Venda</p>
                   <p className="text-white font-medium">
@@ -1202,11 +1202,11 @@ function DevolucoesPageContent() {
             </div>
 
             {/* Footer */}
-            <div className="p-6 border-t border-white/10 bg-background">
+            <div className="p-3 sm:p-6 border-t border-white/10 bg-background">
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-muted text-sm">Valor Total</p>
-                  <p className="text-2xl font-bold text-emerald-400">
+                  <p className="text-xl sm:text-2xl font-bold text-emerald-400">
                     {formatCurrency(devolucaoSelecionada.valorTotal)}
                   </p>
                 </div>
@@ -1215,7 +1215,7 @@ function DevolucoesPageContent() {
                     setShowDetalhes(false);
                     setDevolucaoSelecionada(null);
                   }}
-                  className="px-6 py-3 bg-white/10 text-white rounded-xl hover:bg-white/20 transition-colors"
+                  className="px-4 sm:px-6 py-2.5 sm:py-3 bg-white/10 text-white rounded-xl hover:bg-white/20 transition-colors"
                 >
                   Fechar
                 </button>

@@ -24,8 +24,12 @@ import {
   Store,
   HelpCircle,
   Info,
+  Upload,
+  Image,
+  X,
+  Palette,
 } from 'lucide-react';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 
 interface Config {
   nomeOficina: string | null;
@@ -43,6 +47,9 @@ interface Config {
   chatbotBoasVindas: string | null;
   informacoesNegocio: string | null;
   chatbotFaq: string | null;
+  logo: string | null;
+  pdfCorOS: string;
+  pdfCorOrcamento: string;
 }
 
 interface FaqItem {
@@ -187,6 +194,56 @@ export default function ConfiguraçõesPage() {
   const [telefone, setTelefone] = useState('');
   const [endereco, setEndereço] = useState('');
   const [buscandoCnpj, setBuscandoCnpj] = useState(false);
+  const [logo, setLogo] = useState<string | null>(null);
+  const logoInputRef = useRef<HTMLInputElement>(null);
+  const [pdfCorOS, setPdfCorOS] = useState('#22c55e');
+  const [pdfCorOrcamento, setPdfCorOrcamento] = useState('#e85d04');
+
+  // Redimensionar imagem para logo (max 400x400, JPEG 0.8)
+  const handleLogoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (!file.type.startsWith('image/')) {
+      toast.error('Selecione uma imagem (PNG, JPG ou WebP)');
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const img = new window.Image();
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        const maxSize = 400;
+        let { width, height } = img;
+
+        if (width > maxSize || height > maxSize) {
+          if (width > height) {
+            height = (height / width) * maxSize;
+            width = maxSize;
+          } else {
+            width = (width / height) * maxSize;
+            height = maxSize;
+          }
+        }
+
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        if (ctx) {
+          ctx.drawImage(img, 0, 0, width, height);
+          const base64 = canvas.toDataURL('image/png');
+          setLogo(base64);
+          toast.success('Logo carregada!');
+        }
+      };
+      img.src = event.target?.result as string;
+    };
+    reader.readAsDataURL(file);
+
+    // Limpar input para permitir re-upload do mesmo arquivo
+    if (logoInputRef.current) logoInputRef.current.value = '';
+  };
 
   // Buscar dados da empresa pelo CNPJ na Receita Federal
   const buscarDadosCnpj = async (cnpjValue: string) => {
@@ -285,6 +342,9 @@ export default function ConfiguraçõesPage() {
         }
         setChatbotBoasVindas(data.data.chatbotBoasVindas || 'Olá! Sou a LoopIA, assistente virtual da oficina.');
         setInformacoesNegocio(data.data.informacoesNegocio || '');
+        setLogo(data.data.logo || null);
+        setPdfCorOS(data.data.pdfCorOS || '#22c55e');
+        setPdfCorOrcamento(data.data.pdfCorOrcamento || '#e85d04');
         // Carregar FAQ
         try {
           if (data.data.chatbotFaq) {
@@ -520,6 +580,9 @@ export default function ConfiguraçõesPage() {
           chatbotBoasVindas,
           informacoesNegocio,
           chatbotFaq: JSON.stringify(faqItems.filter(f => f.pergunta.trim() && f.resposta.trim())),
+          logo,
+          pdfCorOS,
+          pdfCorOrcamento,
         }),
       });
 
@@ -615,10 +678,10 @@ export default function ConfiguraçõesPage() {
     <div className="space-y-8">
       <Header title="Configurações" subtitle="Configure o sistema" />
 
-      <div className="px-4 lg:px-8 space-y-8 max-w-4xl mx-auto">
+      <div className="px-3 sm:px-4 lg:px-8 space-y-8 max-w-4xl mx-auto">
         {/* Dados da Oficina */}
         <div className="bg-card border border-border rounded-2xl overflow-hidden">
-          <div className="p-6 border-b border-border flex items-center gap-4">
+          <div className="p-4 sm:p-6 border-b border-border flex items-center gap-4">
             <div className="p-3 bg-blue-500/10 rounded-xl border border-blue-500/20">
               <Building2 size={22} className="text-blue-400" />
             </div>
@@ -628,7 +691,7 @@ export default function ConfiguraçõesPage() {
             </div>
           </div>
 
-          <div className="p-6 grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="p-3 sm:p-6 grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-muted mb-2">Nome da Oficina</label>
               <input
@@ -682,6 +745,148 @@ export default function ConfiguraçõesPage() {
               />
             </div>
 
+            {/* Upload Logo */}
+            <div className="md:col-span-2">
+              <label className="flex items-center gap-2 text-sm font-medium text-muted mb-2">
+                <Image size={14} />
+                Logo da Empresa
+              </label>
+              <div className="flex items-start gap-4">
+                {logo ? (
+                  <div className="relative group">
+                    <img
+                      src={logo}
+                      alt="Logo"
+                      className="w-24 h-24 object-contain bg-zinc-900/50 border border-border rounded-xl p-2"
+                    />
+                    <button
+                      onClick={() => setLogo(null)}
+                      className="absolute -top-2 -right-2 p-1 bg-red-500 rounded-full text-white opacity-0 group-hover:opacity-100 transition-opacity"
+                      title="Remover logo"
+                    >
+                      <X size={14} />
+                    </button>
+                  </div>
+                ) : (
+                  <button
+                    onClick={() => logoInputRef.current?.click()}
+                    className="w-24 h-24 flex flex-col items-center justify-center gap-2 bg-zinc-900/50 border-2 border-dashed border-border rounded-xl text-muted hover:border-blue-500/50 hover:text-blue-400 transition-all cursor-pointer"
+                  >
+                    <Upload size={20} />
+                    <span className="text-xs">Enviar</span>
+                  </button>
+                )}
+                <input
+                  ref={logoInputRef}
+                  type="file"
+                  accept="image/png,image/jpeg,image/webp"
+                  onChange={handleLogoUpload}
+                  className="hidden"
+                />
+                {logo && (
+                  <button
+                    onClick={() => logoInputRef.current?.click()}
+                    className="px-3 py-2 bg-zinc-900/50 border border-border rounded-xl text-sm text-muted hover:text-foreground hover:border-blue-500/50 transition-all"
+                  >
+                    Trocar
+                  </button>
+                )}
+              </div>
+              <p className="mt-1.5 text-xs text-foreground-muted">
+                PNG, JPG ou WebP. Será redimensionada automaticamente.
+              </p>
+            </div>
+
+            {/* Cores dos PDFs */}
+            <div className="md:col-span-2">
+              <label className="block text-sm font-medium text-muted mb-3 flex items-center gap-2">
+                <Palette size={16} />
+                Cores dos documentos PDF
+              </label>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="flex items-center gap-3">
+                  <input
+                    type="color"
+                    value={pdfCorOS}
+                    onChange={(e) => setPdfCorOS(e.target.value)}
+                    className="w-10 h-10 rounded-lg border border-border cursor-pointer bg-transparent"
+                    title="Cor da O.S."
+                  />
+                  <div>
+                    <p className="text-sm font-medium text-foreground">Ordem de Serviço</p>
+                    <p className="text-xs text-muted">{pdfCorOS}</p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-3">
+                  <input
+                    type="color"
+                    value={pdfCorOrcamento}
+                    onChange={(e) => setPdfCorOrcamento(e.target.value)}
+                    className="w-10 h-10 rounded-lg border border-border cursor-pointer bg-transparent"
+                    title="Cor do Orçamento"
+                  />
+                  <div>
+                    <p className="text-sm font-medium text-foreground">Orçamento</p>
+                    <p className="text-xs text-muted">{pdfCorOrcamento}</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Preview dos PDFs */}
+            <div className="md:col-span-2">
+              <label className="block text-sm font-medium text-muted mb-2">Preview nos documentos</label>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {/* Preview O.S. */}
+                <div className="rounded-xl overflow-hidden border border-border">
+                  <div className="p-4 flex items-center gap-3" style={{ backgroundColor: pdfCorOS }}>
+                    {logo && (
+                      <img src={logo} alt="Logo" className="w-10 h-10 object-contain bg-white/20 rounded-lg p-0.5" />
+                    )}
+                    <div className="flex-1 min-w-0">
+                      <p className="text-white font-bold text-sm truncate">{nomeOficina || 'Nome da Oficina'}</p>
+                      <p className="text-white/70 text-[10px]">Centro Automotivo</p>
+                      {cnpj && <p className="text-white/60 text-[9px]">CNPJ: {cnpj}</p>}
+                    </div>
+                    <div className="text-right shrink-0">
+                      <p className="text-white/90 text-[10px] font-bold">ORDEM DE SERVIÇO</p>
+                      <p className="text-white font-bold text-sm">#ABC12345</p>
+                    </div>
+                  </div>
+                  <div className="bg-zinc-900/50 p-3">
+                    <div className="flex gap-4 text-[10px] text-muted">
+                      <span>Cliente: João Silva</span>
+                      <span>Veículo: Gol 2020</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Preview Orçamento */}
+                <div className="rounded-xl overflow-hidden border border-border">
+                  <div className="p-4 flex items-center gap-3" style={{ backgroundColor: pdfCorOrcamento }}>
+                    {logo && (
+                      <img src={logo} alt="Logo" className="w-10 h-10 object-contain bg-white/20 rounded-lg p-0.5" />
+                    )}
+                    <div className="flex-1 min-w-0">
+                      <p className="text-white font-bold text-sm truncate">{nomeOficina || 'Nome da Oficina'}</p>
+                      <p className="text-white/70 text-[10px]">Centro Automotivo</p>
+                      {cnpj && <p className="text-white/60 text-[9px]">CNPJ: {cnpj}</p>}
+                    </div>
+                    <div className="text-right shrink-0">
+                      <p className="text-white/90 text-[10px] font-bold">ORÇAMENTO</p>
+                      <p className="text-white font-bold text-sm">ORC-001</p>
+                    </div>
+                  </div>
+                  <div className="bg-zinc-900/50 p-3">
+                    <div className="flex gap-4 text-[10px] text-muted">
+                      <span>Cliente: Maria Santos</span>
+                      <span>Veículo: HB20 2022</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
             {/* Botao Salvar */}
             <div className="md:col-span-2 flex justify-end pt-2">
               <button
@@ -702,7 +907,7 @@ export default function ConfiguraçõesPage() {
 
         {/* Filiais/Fornecedores */}
         <div className="bg-card border border-border rounded-2xl overflow-hidden">
-          <div className="p-6 border-b border-border flex items-center justify-between">
+          <div className="p-4 sm:p-6 border-b border-border flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
             <div className="flex items-center gap-4">
               <div className="p-3 bg-purple-500/10 rounded-xl border border-purple-500/20">
                 <Store size={22} className="text-purple-400" />
@@ -718,26 +923,27 @@ export default function ConfiguraçõesPage() {
                 setFilialForm({ nome: '', cnpj: '' });
                 setShowFilialModal(true);
               }}
-              className="flex items-center gap-2 px-4 py-3 bg-purple-500/10 border border-purple-500/30 rounded-xl text-purple-400 font-medium hover:bg-purple-500/20 hover:border-purple-500/50 transition-all"
+              className="flex items-center gap-2 px-4 py-3 min-h-[44px] bg-purple-500/10 border border-purple-500/30 rounded-xl text-purple-400 font-medium hover:bg-purple-500/20 hover:border-purple-500/50 transition-all"
             >
               <Plus size={18} />
-              Nova Filial
+              <span className="hidden sm:inline">Nova Filial</span>
+              <span className="sm:hidden">Nova</span>
             </button>
           </div>
 
-          <div className="p-6">
+          <div className="p-3 sm:p-6">
             {filiais.length > 0 ? (
               <div className="space-y-3">
                 {filiais.map((filial) => (
                   <div
                     key={filial.id}
-                    className={`flex items-center justify-between p-4 rounded-xl border transition-all ${
+                    className={`flex flex-col sm:flex-row sm:items-center justify-between p-3 sm:p-4 rounded-xl border transition-all gap-3 ${
                       filial.ativo
                         ? 'bg-zinc-900/50 border-border hover:border-purple-500/30'
                         : 'bg-zinc-900/30 border-border opacity-60'
                     }`}
                   >
-                    <div className="flex items-center gap-4">
+                    <div className="flex items-center gap-3 sm:gap-4">
                       <div className="p-2.5 bg-purple-500/10 rounded-xl border border-purple-500/20">
                         <Store size={18} className="text-purple-400" />
                       </div>
@@ -787,13 +993,13 @@ export default function ConfiguraçõesPage() {
         {/* Modal Filial */}
         {showFilialModal && (
           <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-            <div className="bg-card border border-border rounded-2xl w-full max-w-md shadow-2xl shadow-black/50">
-              <div className="p-6 border-b border-border">
+            <div className="bg-card border border-border rounded-2xl w-full max-w-md shadow-2xl shadow-black/50 max-h-[90vh] overflow-y-auto">
+              <div className="p-3 sm:p-6 border-b border-border">
                 <h2 className="text-xl font-bold text-foreground">
                   {editingFilial ? 'Editar Filial' : 'Nova Filial'}
                 </h2>
               </div>
-              <div className="p-6 space-y-4">
+              <div className="p-3 sm:p-6 space-y-4">
                 <div>
                   <label className="block text-sm font-medium text-muted mb-2">Nome da Filial</label>
                   <input
@@ -815,21 +1021,21 @@ export default function ConfiguraçõesPage() {
                   />
                 </div>
               </div>
-              <div className="p-6 border-t border-border flex gap-3 justify-end">
+              <div className="p-3 sm:p-6 border-t border-border flex gap-3 justify-end">
                 <button
                   onClick={() => {
                     setShowFilialModal(false);
                     setEditingFilial(null);
                     setFilialForm({ nome: '', cnpj: '' });
                   }}
-                  className="px-6 py-3 border border-border rounded-xl text-muted hover:bg-zinc-800 transition-colors"
+                  className="px-6 py-3 min-h-[44px] border border-border rounded-xl text-muted hover:bg-zinc-800 transition-colors"
                 >
                   Cancelar
                 </button>
                 <button
                   onClick={handleSaveFilial}
                   disabled={savingFilial}
-                  className="px-6 py-3 bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-500 rounded-xl text-white font-semibold transition-all duration-300 shadow-lg shadow-purple-500/25 disabled:opacity-50"
+                  className="px-6 py-3 min-h-[44px] bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-500 rounded-xl text-white font-semibold transition-all duration-300 shadow-lg shadow-purple-500/25 disabled:opacity-50"
                 >
                   {savingFilial ? (
                     <Loader2 className="animate-spin" size={20} />
@@ -847,13 +1053,13 @@ export default function ConfiguraçõesPage() {
         {/* Modal Servico */}
         {showServicoModal && (
           <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-            <div className="bg-card border border-border rounded-2xl w-full max-w-md shadow-2xl shadow-black/50">
-              <div className="p-6 border-b border-border">
+            <div className="bg-card border border-border rounded-2xl w-full max-w-md shadow-2xl shadow-black/50 max-h-[90vh] overflow-y-auto">
+              <div className="p-3 sm:p-6 border-b border-border">
                 <h2 className="text-xl font-bold text-foreground">
                   {editingServico ? 'Editar Serviço' : 'Novo Serviço'}
                 </h2>
               </div>
-              <div className="p-6 space-y-4" style={{ maxHeight: '60vh', overflowY: 'auto' }}>
+              <div className="p-3 sm:p-6 space-y-4">
                 <div>
                   <label className="block text-sm font-medium text-muted mb-2">Nome do Serviço *</label>
                   <input
@@ -919,21 +1125,21 @@ export default function ConfiguraçõesPage() {
                   </div>
                 </div>
               </div>
-              <div className="p-6 border-t border-border flex gap-3 justify-end">
+              <div className="p-3 sm:p-6 border-t border-border flex gap-3 justify-end">
                 <button
                   onClick={() => {
                     setShowServicoModal(false);
                     setEditingServico(null);
                     setServicoForm({ nome: '', categoria: 'TROCA_OLEO', precoBase: '', intervaloKm: '', intervaloDias: '' });
                   }}
-                  className="px-6 py-3 border border-border rounded-xl text-muted hover:bg-zinc-800 transition-colors"
+                  className="px-6 py-3 min-h-[44px] border border-border rounded-xl text-muted hover:bg-zinc-800 transition-colors"
                 >
                   Cancelar
                 </button>
                 <button
                   onClick={handleSaveServico}
                   disabled={savingServico}
-                  className="px-6 py-3 bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-500 rounded-xl text-white font-semibold transition-all duration-300 shadow-lg shadow-purple-500/25 disabled:opacity-50"
+                  className="px-6 py-3 min-h-[44px] bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-500 rounded-xl text-white font-semibold transition-all duration-300 shadow-lg shadow-purple-500/25 disabled:opacity-50"
                 >
                   {savingServico ? (
                     <Loader2 className="animate-spin" size={20} />
@@ -950,7 +1156,7 @@ export default function ConfiguraçõesPage() {
 
         {/* Integração WhatsApp */}
         <div className="bg-card border border-border rounded-2xl overflow-hidden">
-          <div className="p-6 border-b border-border flex items-center justify-between">
+          <div className="p-4 sm:p-6 border-b border-border flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
             <div className="flex items-center gap-4">
               <div className="p-3 bg-[#25D366]/10 rounded-xl border border-[#25D366]/20">
                 <MessageCircle size={22} className="text-[#25D366]" />
@@ -975,11 +1181,11 @@ export default function ConfiguraçõesPage() {
             </div>
           </div>
 
-          <div className="p-6 space-y-6">
+          <div className="p-3 sm:p-6 space-y-6">
             {/* Status e Conexao */}
             {whatsappStatus?.connected ? (
-              <div className="bg-emerald-500/5 border border-emerald-500/20 rounded-xl p-5">
-                <div className="flex items-center justify-between">
+              <div className="bg-emerald-500/5 border border-emerald-500/20 rounded-xl p-3 sm:p-5">
+                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
                   <div className="flex items-center gap-4">
                     <div className="w-14 h-14 bg-[#25D366]/20 rounded-2xl flex items-center justify-center border border-[#25D366]/30">
                       <Smartphone size={26} className="text-[#25D366]" />
@@ -1061,13 +1267,13 @@ export default function ConfiguraçõesPage() {
 
         {/* Chatbot LoopIA */}
         <div className="bg-card border border-border rounded-2xl overflow-hidden">
-          <div className="p-6 border-b border-border flex items-center justify-between">
-            <div className="flex items-center gap-4">
+          <div className="p-4 sm:p-6 border-b border-border flex items-center justify-between gap-3">
+            <div className="flex items-center gap-3 sm:gap-4">
               <div className="p-3 bg-purple-500/10 rounded-xl border border-purple-500/20">
                 <Bot size={22} className="text-purple-400" />
               </div>
               <div>
-                <h2 className="text-lg font-bold text-foreground">Chatbot LoopIA</h2>
+                <h2 className="text-base sm:text-lg font-bold text-foreground">Chatbot LoopIA</h2>
                 <p className="text-sm text-muted">Assistente virtual com inteligência artificial</p>
               </div>
             </div>
@@ -1086,7 +1292,7 @@ export default function ConfiguraçõesPage() {
           </div>
 
           {chatbotEnabled && (
-            <div className="p-6 space-y-4">
+            <div className="p-3 sm:p-6 space-y-4">
               <div>
                 <label className="block text-sm font-medium text-muted mb-2">Nome do Assistente</label>
                 <input
@@ -1105,7 +1311,7 @@ export default function ConfiguraçõesPage() {
                   {DIAS_SEMANA.map((dia) => (
                     <div
                       key={dia.key}
-                      className={`flex items-center gap-3 p-2.5 rounded-lg transition-all ${
+                      className={`flex flex-wrap items-center gap-2 sm:gap-3 p-2 sm:p-2.5 rounded-lg transition-all ${
                         chatbotHorário[dia.key].ativo ? 'bg-zinc-800/50' : 'bg-transparent opacity-50'
                       }`}
                     >
@@ -1159,7 +1365,7 @@ export default function ConfiguraçõesPage() {
 
               {/* Serviços do Sistema */}
               <div>
-                <div className="flex items-center justify-between mb-2">
+                <div className="flex flex-wrap items-center justify-between gap-2 mb-2">
                   <label className="block text-sm font-medium text-muted">
                     Serviços que a LoopIA conhece
                   </label>
@@ -1169,7 +1375,7 @@ export default function ConfiguraçõesPage() {
                       setServicoForm({ nome: '', categoria: 'TROCA_OLEO', precoBase: '', intervaloKm: '', intervaloDias: '' });
                       setShowServicoModal(true);
                     }}
-                    className="flex items-center gap-1.5 px-3 py-1.5 bg-purple-500/10 border border-purple-500/30 rounded-lg text-purple-400 text-xs font-medium hover:bg-purple-500/20 transition-all"
+                    className="flex items-center gap-1.5 px-3 py-1.5 min-h-[44px] bg-purple-500/10 border border-purple-500/30 rounded-lg text-purple-400 text-xs font-medium hover:bg-purple-500/20 transition-all"
                   >
                     <Plus size={14} />
                     Novo Serviço
@@ -1257,14 +1463,14 @@ export default function ConfiguraçõesPage() {
 
               {/* FAQ - Perguntas Frequentes */}
               <div>
-                <div className="flex items-center justify-between mb-2">
+                <div className="flex flex-wrap items-center justify-between gap-2 mb-2">
                   <label className="flex items-center gap-2 text-sm font-medium text-muted">
                     <HelpCircle size={14} />
                     Perguntas Frequentes (FAQ)
                   </label>
                   <button
                     onClick={() => setFaqItems([...faqItems, { pergunta: '', resposta: '' }])}
-                    className="flex items-center gap-1.5 px-3 py-1.5 bg-purple-500/10 border border-purple-500/30 rounded-lg text-purple-400 text-xs font-medium hover:bg-purple-500/20 transition-all"
+                    className="flex items-center gap-1.5 px-3 py-1.5 min-h-[44px] bg-purple-500/10 border border-purple-500/30 rounded-lg text-purple-400 text-xs font-medium hover:bg-purple-500/20 transition-all"
                   >
                     <Plus size={14} />
                     Adicionar
@@ -1346,7 +1552,7 @@ export default function ConfiguraçõesPage() {
           )}
 
           {!chatbotEnabled && (
-            <div className="p-6 text-center">
+            <div className="p-3 sm:p-6 text-center">
               <div className="p-4 bg-zinc-800/50 rounded-2xl w-fit mx-auto mb-4">
                 <Power size={28} className="text-zinc-500" />
               </div>
@@ -1361,7 +1567,7 @@ export default function ConfiguraçõesPage() {
           <button
             onClick={handleSaveConfig}
             disabled={saving}
-            className="flex items-center gap-2 px-8 py-3 bg-gradient-to-r from-primary to-primary-dark hover:from-primary-dark hover:to-primary rounded-xl text-white font-semibold transition-all duration-300 shadow-lg shadow-primary/25 hover:shadow-primary/40 disabled:opacity-50"
+            className="flex items-center gap-2 px-6 sm:px-8 py-3 min-h-[44px] bg-gradient-to-r from-primary to-primary-dark hover:from-primary-dark hover:to-primary rounded-xl text-white font-semibold transition-all duration-300 shadow-lg shadow-primary/25 hover:shadow-primary/40 disabled:opacity-50"
           >
             {saving ? (
               <Loader2 className="animate-spin" size={20} />
@@ -1373,9 +1579,9 @@ export default function ConfiguraçõesPage() {
         </div>
 
         {/* Versão */}
-        <div className="bg-card border border-border rounded-2xl p-6">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
+        <div className="bg-card border border-border rounded-2xl p-3 sm:p-6">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+            <div className="flex items-center gap-3 sm:gap-4">
               <div className="p-3 bg-zinc-800/50 rounded-xl border border-border/50">
                 <Settings size={24} className="text-zinc-400" />
               </div>

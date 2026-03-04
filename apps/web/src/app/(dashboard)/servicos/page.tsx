@@ -272,12 +272,12 @@ export default function ServicosPage() {
     <div className="min-h-screen bg-background">
       <Header title="Catálogo de Serviços" subtitle="Gerencie os serviços oferecidos" />
 
-      <div className="p-6 space-y-6 animate-fade-in">
+      <div className="p-3 sm:p-6 space-y-4 sm:space-y-6 animate-fade-in">
         {/* Stats */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <div className="bg-card border border-border rounded-xl p-4 hover:border-green-500/30 hover:shadow-lg hover:shadow-green-500/10 transition-all duration-300">
-            <div className="flex items-center gap-3">
-              <div className="p-2.5 bg-primary/20 rounded-xl ring-1 ring-primary/20">
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
+          <div className="bg-card border border-border rounded-xl p-3 sm:p-4 hover:border-green-500/30 hover:shadow-lg hover:shadow-green-500/10 transition-all duration-300">
+            <div className="flex items-center gap-2 sm:gap-3">
+              <div className="p-2 sm:p-2.5 bg-primary/20 rounded-xl ring-1 ring-primary/20">
                 <Wrench size={20} className="text-primary" />
               </div>
               <div>
@@ -286,9 +286,9 @@ export default function ServicosPage() {
               </div>
             </div>
           </div>
-          <div className="bg-card border border-border rounded-xl p-4 hover:border-amber-500/30 hover:shadow-lg hover:shadow-amber-500/5 transition-all duration-300">
-            <div className="flex items-center gap-3">
-              <div className="p-2.5 bg-amber-500/10 rounded-xl ring-1 ring-amber-500/20">
+          <div className="bg-card border border-border rounded-xl p-3 sm:p-4 hover:border-amber-500/30 hover:shadow-lg hover:shadow-amber-500/5 transition-all duration-300">
+            <div className="flex items-center gap-2 sm:gap-3">
+              <div className="p-2 sm:p-2.5 bg-amber-500/10 rounded-xl ring-1 ring-amber-500/20">
                 <Package size={20} className="text-amber-400" />
               </div>
               <div>
@@ -297,9 +297,9 @@ export default function ServicosPage() {
               </div>
             </div>
           </div>
-          <div className="bg-card border border-border rounded-xl p-4 hover:border-blue-500/30 hover:shadow-lg hover:shadow-blue-500/5 transition-all duration-300">
-            <div className="flex items-center gap-3">
-              <div className="p-2.5 bg-blue-500/10 rounded-xl ring-1 ring-blue-500/20">
+          <div className="bg-card border border-border rounded-xl p-3 sm:p-4 hover:border-blue-500/30 hover:shadow-lg hover:shadow-blue-500/5 transition-all duration-300">
+            <div className="flex items-center gap-2 sm:gap-3">
+              <div className="p-2 sm:p-2.5 bg-blue-500/10 rounded-xl ring-1 ring-blue-500/20">
                 <DollarSign size={20} className="text-blue-400" />
               </div>
               <div>
@@ -310,9 +310,9 @@ export default function ServicosPage() {
               </div>
             </div>
           </div>
-          <div className="bg-card border border-border rounded-xl p-4 hover:border-purple-500/30 hover:shadow-lg hover:shadow-purple-500/5 transition-all duration-300">
-            <div className="flex items-center gap-3">
-              <div className="p-2.5 bg-purple-500/10 rounded-xl ring-1 ring-purple-500/20">
+          <div className="bg-card border border-border rounded-xl p-3 sm:p-4 hover:border-purple-500/30 hover:shadow-lg hover:shadow-purple-500/5 transition-all duration-300">
+            <div className="flex items-center gap-2 sm:gap-3">
+              <div className="p-2 sm:p-2.5 bg-purple-500/10 rounded-xl ring-1 ring-purple-500/20">
                 <Clock size={20} className="text-purple-400" />
               </div>
               <div>
@@ -324,8 +324,8 @@ export default function ServicosPage() {
         </div>
 
         {/* Toolbar */}
-        <div className="flex flex-col md:flex-row gap-4 justify-between">
-          <div className="flex gap-3 flex-1">
+        <div className="flex flex-col md:flex-row gap-3 sm:gap-4 justify-between">
+          <div className="flex flex-wrap gap-2 sm:gap-3 flex-1">
             <div className="relative flex-1 max-w-md group">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-[#6B7280] group-focus-within:text-primary transition-colors" size={18} />
               <input
@@ -354,7 +354,7 @@ export default function ServicosPage() {
             className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-primary to-primary-dark rounded-xl text-white font-medium hover:shadow-lg hover:shadow-green-500/10 hover:scale-[1.02] active:scale-[0.98] transition-all duration-200"
           >
             <Plus size={20} />
-            Novo Serviço
+            <span className="hidden sm:inline">Novo Serviço</span>
           </button>
         </div>
 
@@ -370,7 +370,7 @@ export default function ServicosPage() {
             {servicos.map((servico) => (
               <div
                 key={servico.id}
-                className={`bg-card border rounded-2xl p-6 transition-all duration-300 ${
+                className={`bg-card border rounded-2xl p-4 sm:p-6 transition-all duration-300 ${
                   servico.ativo
                     ? 'border-border hover:border-primary/40 hover:shadow-lg hover:shadow-green-500/10'
                     : 'border-border/50 opacity-60'
@@ -433,8 +433,8 @@ export default function ServicosPage() {
       {/* Modal Novo Serviço */}
       {showModal && (
         <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-card border border-border rounded-2xl w-full max-w-lg animate-fade-in shadow-2xl">
-            <div className="p-6 border-b border-border flex items-center justify-between">
+          <div className="bg-card border border-border rounded-2xl w-full max-w-lg animate-fade-in shadow-2xl max-h-[90vh] overflow-y-auto">
+            <div className="p-3 sm:p-6 border-b border-border flex items-center justify-between">
               <div>
                 <h2 className="text-xl font-semibold text-foreground">Novo Serviço</h2>
                 <p className="text-sm text-[#6B7280] mt-1">Cadastre um novo serviço no catálogo</p>
@@ -446,7 +446,7 @@ export default function ServicosPage() {
                 <X size={20} />
               </button>
             </div>
-            <div className="p-6 space-y-4" style={{ maxHeight: '60vh', overflowY: 'auto' }}>
+            <div className="p-3 sm:p-6 space-y-4">
               <div>
                 <label className="block text-sm font-medium text-muted mb-2">Nome do Serviço *</label>
                 <input
@@ -506,7 +506,7 @@ export default function ServicosPage() {
                 </div>
               </div>
             </div>
-            <div className="p-6 border-t border-border flex gap-3 justify-end shrink-0">
+            <div className="p-3 sm:p-6 border-t border-border flex flex-col-reverse sm:flex-row gap-3 justify-end shrink-0">
               <button
                 onClick={() => setShowModal(false)}
                 className="px-6 py-3 border border-border rounded-xl text-muted hover:bg-background hover:text-foreground transition-all duration-200"
@@ -528,8 +528,8 @@ export default function ServicosPage() {
       {/* Modal Editar Serviço */}
       {showEditModal && editingServico && (
         <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-card border border-border rounded-2xl w-full max-w-lg animate-fade-in shadow-2xl">
-            <div className="p-6 border-b border-border flex items-center justify-between">
+          <div className="bg-card border border-border rounded-2xl w-full max-w-lg animate-fade-in shadow-2xl max-h-[90vh] overflow-y-auto">
+            <div className="p-3 sm:p-6 border-b border-border flex items-center justify-between">
               <div>
                 <h2 className="text-xl font-semibold text-foreground">Editar Serviço</h2>
                 <p className="text-sm text-[#6B7280] mt-1">Atualize as informações do serviço</p>
@@ -544,7 +544,7 @@ export default function ServicosPage() {
                 <X size={20} />
               </button>
             </div>
-            <div className="p-6 space-y-4" style={{ maxHeight: '60vh', overflowY: 'auto' }}>
+            <div className="p-3 sm:p-6 space-y-4">
               <div>
                 <label className="block text-sm font-medium text-[#9E9E9E] mb-2">Nome do Serviço *</label>
                 <input
@@ -602,7 +602,7 @@ export default function ServicosPage() {
                 </div>
               </div>
             </div>
-            <div className="p-6 border-t border-[#333333] flex gap-3 justify-end shrink-0">
+            <div className="p-3 sm:p-6 border-t border-[#333333] flex flex-col-reverse sm:flex-row gap-3 justify-end shrink-0">
               <button
                 onClick={() => {
                   setShowEditModal(false);
@@ -627,11 +627,11 @@ export default function ServicosPage() {
       {/* Modal Confirmar Exclusão */}
       {showDeleteConfirm && deletingServico && (
         <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-card border border-border rounded-2xl w-full max-w-md animate-fade-in shadow-2xl">
-            <div className="p-6 border-b border-border">
+          <div className="bg-card border border-border rounded-2xl w-full max-w-md animate-fade-in shadow-2xl max-h-[90vh] overflow-y-auto">
+            <div className="p-3 sm:p-6 border-b border-border">
               <h2 className="text-xl font-semibold text-foreground">Confirmar Exclusão</h2>
             </div>
-            <div className="p-6">
+            <div className="p-3 sm:p-6">
               <div className="flex items-center gap-4 mb-4">
                 <div className="p-3 bg-red-500/10 rounded-xl ring-1 ring-red-500/20">
                   <Trash2 size={24} className="text-red-400" />
@@ -645,7 +645,7 @@ export default function ServicosPage() {
                 Tem certeza que deseja excluir este serviço? Esta ação não pode ser desfeita.
               </p>
             </div>
-            <div className="p-6 border-t border-border flex gap-3 justify-end">
+            <div className="p-3 sm:p-6 border-t border-border flex flex-col-reverse sm:flex-row gap-3 justify-end">
               <button
                 onClick={() => {
                   setShowDeleteConfirm(false);

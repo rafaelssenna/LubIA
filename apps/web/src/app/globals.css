@@ -354,3 +354,57 @@ input:focus, select:focus, textarea:focus {
 .light .custom-scrollbar::-webkit-scrollbar-thumb:hover {
   background: #43A047;
 }
+
+/* ===== LIGHT MODE OVERRIDES ===== */
+/* Corrige cores hardcoded do dark mode para funcionar no light mode */
+
+/* Backgrounds escuros → claros */
+.light [class*="bg-zinc-900"] {
+  background-color: var(--input-bg) !important;
+}
+
+.light [class*="bg-zinc-800"] {
+  background-color: var(--background-secondary) !important;
+}
+
+.light [class*="bg-zinc-700"] {
+  background-color: var(--background-tertiary) !important;
+}
+
+/* Hover states */
+.light [class*="hover\:bg-zinc-800"]:hover,
+.light [class*="hover\:bg-zinc-700"]:hover {
+  background-color: var(--card-hover) !important;
+}
+
+/* Placeholders */
+.light input::placeholder,
+.light textarea::placeholder {
+  color: var(--muted) !important;
+}
+
+/* Text colors que ficam invisíveis em light mode */
+.light [class*="text-zinc-400"],
+.light [class*="text-zinc-500"] {
+  color: var(--muted) !important;
+}
+
+/* Borders */
+.light [class*="border-zinc-600"],
+.light [class*="border-zinc-700"] {
+  border-color: var(--border) !important;
+}
+
+/* Select options legíveis em light mode */
+.light select option {
+  background-color: var(--card);
+  color: var(--foreground);
+}
+
+/* ===== MOBILE LAYOUT ===== */
+@media (max-width: 767px) {
+  /* Mobile header space */
+  .mobile-content {
+    padding-top: 56px;
+  }
+}

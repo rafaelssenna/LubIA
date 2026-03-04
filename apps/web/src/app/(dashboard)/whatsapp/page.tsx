@@ -23,6 +23,7 @@ import {
   AlertCircle,
   Bot,
   UserRound,
+  ArrowLeft,
 } from 'lucide-react';
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { useToast } from '@/components/Toast';
@@ -253,9 +254,9 @@ export default function WhatsAppPage() {
     <div className="space-y-8">
       <Header title="WhatsApp Business" subtitle="Central de comunicação com clientes" />
 
-      <div className="px-4 lg:px-8 space-y-8">
+      <div className="px-3 sm:px-4 lg:px-8 space-y-8">
         {/* Stats Rapidos */}
-        <div className="grid grid-cols-2 xl:grid-cols-4 gap-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-8">
           {/* Conversas */}
           <div className="group relative overflow-hidden bg-gradient-to-br from-[#25D366]/20 to-[#25D366]/5 rounded-2xl p-6 border border-[#25D366]/20 hover:border-[#25D366]/40 transition-all duration-300">
             <div className="absolute top-0 right-0 w-32 h-32 bg-[#25D366]/10 rounded-full blur-3xl group-hover:scale-150 transition-transform duration-500"></div>
@@ -325,7 +326,7 @@ export default function WhatsAppPage() {
         {/* Chat Interface */}
         <div className="bg-card border border-border rounded-2xl overflow-hidden h-[calc(100vh-380px)] flex shadow-2xl shadow-black/50">
           {/* Lista de Conversas */}
-          <div className="w-96 border-r border-border flex flex-col">
+          <div className={`w-full md:w-96 border-r border-border flex flex-col ${selectedConversation ? 'hidden md:flex' : 'flex'}`}>
             <div className="p-4 border-b border-border flex gap-2">
               <div className="relative group flex-1">
                 <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 text-zinc-500 group-focus-within:text-[#25D366] transition-colors" size={18} />
@@ -432,12 +433,18 @@ export default function WhatsAppPage() {
           </div>
 
           {/* Area de Chat */}
-          <div className="flex-1 flex flex-col">
+          <div className={`flex-1 flex flex-col ${selectedConversation ? 'flex' : 'hidden md:flex'}`}>
             {selectedConversation ? (
               <>
                 {/* Header do Chat */}
                 <div className="p-4 border-b border-border flex items-center justify-between bg-zinc-900/50">
-                  <div className="flex items-center gap-4">
+                  <div className="flex items-center gap-2 sm:gap-4">
+                    <button
+                      onClick={() => setSelectedConversation(null)}
+                      className="md:hidden p-2 hover:bg-zinc-800 rounded-lg transition-all text-muted hover:text-foreground"
+                    >
+                      <ArrowLeft size={20} />
+                    </button>
                     <div className="relative">
                       <div className="w-11 h-11 bg-gradient-to-br from-[#25D366] to-[#128C7E] rounded-xl flex items-center justify-center text-white font-bold shadow-lg shadow-[#25D366]/20">
                         {selectedConversation.nome.charAt(0).toUpperCase()}
@@ -572,15 +579,15 @@ export default function WhatsAppPage() {
                 )}
 
                 {/* Input de Mensagem */}
-                <div className="p-4 border-t border-border bg-zinc-900/50">
-                  <div className="flex items-center gap-2">
-                    <button className="p-2.5 hover:bg-zinc-800 rounded-lg transition-all text-muted hover:text-amber-400">
+                <div className="p-2 sm:p-4 border-t border-border bg-zinc-900/50">
+                  <div className="flex items-center gap-1 sm:gap-2">
+                    <button className="hidden sm:block p-2.5 hover:bg-zinc-800 rounded-lg transition-all text-muted hover:text-amber-400">
                       <Smile size={20} />
                     </button>
-                    <button className="p-2.5 hover:bg-zinc-800 rounded-lg transition-all text-muted hover:text-foreground">
+                    <button className="hidden sm:block p-2.5 hover:bg-zinc-800 rounded-lg transition-all text-muted hover:text-foreground">
                       <Paperclip size={20} />
                     </button>
-                    <button className="p-2.5 hover:bg-zinc-800 rounded-lg transition-all text-muted hover:text-blue-400">
+                    <button className="hidden sm:block p-2.5 hover:bg-zinc-800 rounded-lg transition-all text-muted hover:text-blue-400">
                       <Image size={20} />
                     </button>
                     <button

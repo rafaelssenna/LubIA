@@ -189,11 +189,11 @@ export default function Dashboard() {
     <div className="space-y-8">
       <Header title="Dashboard" subtitle="Visão geral da oficina" />
 
-      <div className="px-4 lg:px-8 space-y-8">
+      <div className="px-3 sm:px-4 lg:px-8 space-y-8">
         {/* Stats Cards */}
-        <div className="grid grid-cols-2 xl:grid-cols-4 gap-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 sm:gap-8">
           {/* Clientes */}
-          <div className="group relative overflow-hidden bg-gradient-to-br from-blue-500/20 to-blue-500/5 rounded-2xl p-6 border border-blue-500/20 hover:border-blue-500/40 transition-all duration-300">
+          <div className="group relative overflow-hidden bg-gradient-to-br from-blue-500/20 to-blue-500/5 rounded-2xl p-4 sm:p-6 border border-blue-500/20 hover:border-blue-500/40 transition-all duration-300">
             <div className="absolute top-0 right-0 w-32 h-32 bg-blue-500/10 rounded-full blur-3xl group-hover:scale-150 transition-transform duration-500"></div>
             <div className="relative">
               <div className="flex items-center justify-between mb-4">
@@ -202,13 +202,13 @@ export default function Dashboard() {
                 </div>
                 <span className="text-xs font-medium text-blue-400 bg-blue-500/10 px-2 py-1 rounded-full">Clientes</span>
               </div>
-              <p className="text-4xl font-bold text-foreground mb-1">{stats?.clientes || 0}</p>
+              <p className="text-2xl sm:text-4xl font-bold text-foreground mb-1">{stats?.clientes || 0}</p>
               <p className="text-sm text-muted">cadastrados</p>
             </div>
           </div>
 
           {/* Veículos */}
-          <div className="group relative overflow-hidden bg-gradient-to-br from-purple-500/20 to-purple-500/5 rounded-2xl p-6 border border-purple-500/20 hover:border-purple-500/40 transition-all duration-300">
+          <div className="group relative overflow-hidden bg-gradient-to-br from-purple-500/20 to-purple-500/5 rounded-2xl p-4 sm:p-6 border border-purple-500/20 hover:border-purple-500/40 transition-all duration-300">
             <div className="absolute top-0 right-0 w-32 h-32 bg-purple-500/10 rounded-full blur-3xl group-hover:scale-150 transition-transform duration-500"></div>
             <div className="relative">
               <div className="flex items-center justify-between mb-4">
@@ -217,13 +217,13 @@ export default function Dashboard() {
                 </div>
                 <span className="text-xs font-medium text-purple-400 bg-purple-500/10 px-2 py-1 rounded-full">Veículos</span>
               </div>
-              <p className="text-4xl font-bold text-foreground mb-1">{stats?.veiculos || 0}</p>
+              <p className="text-2xl sm:text-4xl font-bold text-foreground mb-1">{stats?.veiculos || 0}</p>
               <p className="text-sm text-muted">registrados</p>
             </div>
           </div>
 
           {/* O.S. do Mês */}
-          <div className="group relative overflow-hidden bg-gradient-to-br from-emerald-500/20 to-emerald-500/5 rounded-2xl p-6 border border-emerald-500/20 hover:border-emerald-500/40 transition-all duration-300">
+          <div className="group relative overflow-hidden bg-gradient-to-br from-emerald-500/20 to-emerald-500/5 rounded-2xl p-4 sm:p-6 border border-emerald-500/20 hover:border-emerald-500/40 transition-all duration-300">
             <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-500/10 rounded-full blur-3xl group-hover:scale-150 transition-transform duration-500"></div>
             <div className="relative">
               <div className="flex items-center justify-between mb-4">
@@ -232,13 +232,13 @@ export default function Dashboard() {
                 </div>
                 <span className="text-xs font-medium text-emerald-400 bg-emerald-500/10 px-2 py-1 rounded-full">O.S. Mês</span>
               </div>
-              <p className="text-4xl font-bold text-foreground mb-1">{stats?.ordensMes || 0}</p>
+              <p className="text-2xl sm:text-4xl font-bold text-foreground mb-1">{stats?.ordensMes || 0}</p>
               <p className="text-sm text-muted">ordens de serviço</p>
             </div>
           </div>
 
           {/* Faturamento */}
-          <div className="group relative overflow-hidden bg-gradient-to-br from-amber-500/20 to-amber-500/5 rounded-2xl p-6 border border-amber-500/20 hover:border-amber-500/40 transition-all duration-300">
+          <div className="group relative overflow-hidden bg-gradient-to-br from-amber-500/20 to-amber-500/5 rounded-2xl p-4 sm:p-6 border border-amber-500/20 hover:border-amber-500/40 transition-all duration-300">
             <div className="absolute top-0 right-0 w-32 h-32 bg-amber-500/10 rounded-full blur-3xl group-hover:scale-150 transition-transform duration-500"></div>
             <div className="relative">
               <div className="flex items-center justify-between mb-4">
@@ -247,14 +247,14 @@ export default function Dashboard() {
                 </div>
                 <span className="text-xs font-medium text-amber-400 bg-amber-500/10 px-2 py-1 rounded-full">Faturamento</span>
               </div>
-              <p className="text-3xl font-bold text-foreground mb-1">{formatCurrency(stats?.faturamento || 0)}</p>
+              <p className="text-xl sm:text-3xl font-bold text-foreground mb-1">{formatCurrency(stats?.faturamento || 0)}</p>
               <p className="text-sm text-muted">este mês</p>
             </div>
           </div>
         </div>
 
         {/* Grid de 3 colunas: Serviços, Vendas, Crédito Pessoal */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
           {/* Serviços de Hoje */}
           <div className="bg-card rounded-2xl border border-border overflow-hidden">
             <div className="p-4 border-b border-border flex items-center justify-between">
@@ -471,7 +471,7 @@ export default function Dashboard() {
 
         {/* Em Espera - Clientes aguardando atendente */}
         <div className="bg-card rounded-2xl border border-orange-500/20 overflow-hidden">
-          <div className="p-3 border-b border-border flex items-center justify-between">
+          <div className="p-3 border-b border-border flex flex-wrap items-center justify-between gap-2">
             <div className="flex items-center gap-3">
               <div className="p-2 bg-orange-500/10 rounded-lg">
                 <MessageCircle className="h-4 w-4 text-orange-400" />
@@ -484,7 +484,7 @@ export default function Dashboard() {
             {emEspera && emEspera.count > 0 && (
               <Link
                 href="/whatsapp"
-                className="flex items-center gap-1.5 px-3 py-1.5 bg-orange-500/10 rounded-lg text-orange-400 text-xs font-medium hover:bg-orange-500/20 transition-all"
+                className="flex items-center gap-1.5 px-3 py-1.5 min-h-[44px] bg-orange-500/10 rounded-lg text-orange-400 text-xs font-medium hover:bg-orange-500/20 transition-all"
               >
                 Atender
                 <ArrowRight className="h-3 w-3" />
@@ -527,7 +527,7 @@ export default function Dashboard() {
         {/* Lembretes - Barra horizontal */}
         {lembretes && lembretes.count > 0 && (
           <div className="bg-card rounded-2xl border border-cyan-500/20 overflow-hidden">
-            <div className="p-3 border-b border-border flex items-center justify-between">
+            <div className="p-3 border-b border-border flex flex-wrap items-center justify-between gap-2">
               <div className="flex items-center gap-3">
                 <div className="p-2 bg-cyan-500/10 rounded-lg">
                   <Bell className="h-4 w-4 text-cyan-400" />
@@ -539,7 +539,7 @@ export default function Dashboard() {
               </div>
               <Link
                 href="/lembretes"
-                className="flex items-center gap-1.5 px-3 py-1.5 bg-cyan-500/10 rounded-lg text-cyan-400 text-xs font-medium hover:bg-cyan-500/20 transition-all"
+                className="flex items-center gap-1.5 px-3 py-1.5 min-h-[44px] bg-cyan-500/10 rounded-lg text-cyan-400 text-xs font-medium hover:bg-cyan-500/20 transition-all"
               >
                 Ver todos
                 <ArrowRight className="h-3 w-3" />

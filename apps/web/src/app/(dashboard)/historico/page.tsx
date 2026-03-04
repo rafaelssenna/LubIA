@@ -129,7 +129,7 @@ export default function HistoricoPage() {
     <div className="flex-1 flex flex-col h-screen overflow-hidden">
       <Header title="Histórico de Vendas" subtitle="Acompanhe suas vendas e serviços concluídos" />
 
-      <div className="flex-1 p-6 overflow-y-auto custom-scrollbar">
+      <div className="flex-1 p-3 sm:p-4 lg:p-6 overflow-y-auto custom-scrollbar">
         {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
           <div className="bg-card border border-border rounded-2xl p-5">
@@ -172,10 +172,10 @@ export default function HistoricoPage() {
             </div>
 
             {/* Type Filter */}
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 flex-wrap">
               <button
                 onClick={() => setTipoFilter('todos')}
-                className={`px-4 py-2.5 rounded-xl text-sm font-medium transition-all ${
+                className={`px-3 sm:px-4 py-2.5 rounded-xl text-sm font-medium transition-all ${
                   tipoFilter === 'todos'
                     ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30'
                     : 'bg-background-secondary text-muted border border-border hover:border-border'
@@ -185,25 +185,26 @@ export default function HistoricoPage() {
               </button>
               <button
                 onClick={() => setTipoFilter('os')}
-                className={`px-4 py-2.5 rounded-xl text-sm font-medium transition-all flex items-center gap-2 ${
+                className={`px-3 sm:px-4 py-2.5 rounded-xl text-sm font-medium transition-all flex items-center gap-2 ${
                   tipoFilter === 'os'
                     ? 'bg-blue-500/20 text-blue-400 border border-blue-500/30'
                     : 'bg-background-secondary text-muted border border-border hover:border-border'
                 }`}
               >
                 <ClipboardList size={16} />
-                O.S.
+                <span className="hidden sm:inline">O.S.</span>
+                <span className="sm:hidden">OS</span>
               </button>
               <button
                 onClick={() => setTipoFilter('vendas')}
-                className={`px-4 py-2.5 rounded-xl text-sm font-medium transition-all flex items-center gap-2 ${
+                className={`px-3 sm:px-4 py-2.5 rounded-xl text-sm font-medium transition-all flex items-center gap-2 ${
                   tipoFilter === 'vendas'
                     ? 'bg-purple-500/20 text-purple-400 border border-purple-500/30'
                     : 'bg-background-secondary text-muted border border-border hover:border-border'
                 }`}
               >
                 <ShoppingCart size={16} />
-                Vendas
+                <span className="hidden sm:inline">Vendas</span>
               </button>
             </div>
 
@@ -217,13 +218,13 @@ export default function HistoricoPage() {
               }`}
             >
               <Filter size={16} />
-              Filtros
+              <span className="hidden sm:inline">Filtros</span>
             </button>
           </div>
 
           {/* Expanded Filters */}
           {showFilters && (
-            <div className="mt-4 pt-4 border-t border-border flex flex-wrap gap-4 items-end">
+            <div className="mt-4 pt-4 border-t border-border flex flex-wrap gap-2 sm:gap-4 items-end">
               <div>
                 <label className="block text-xs text-foreground-muted mb-1">Data Início</label>
                 <input
@@ -280,11 +281,11 @@ export default function HistoricoPage() {
                     key={`${item.tipo}-${item.id}`}
                     className="p-4 hover:bg-background-secondary/50 transition-colors"
                   >
-                    <div className="flex items-center justify-between gap-4">
-                      <div className="flex items-center gap-4 min-w-0 flex-1">
+                    <div className="flex items-start sm:items-center justify-between gap-2 sm:gap-4 flex-col sm:flex-row">
+                      <div className="flex items-center gap-3 sm:gap-4 min-w-0 flex-1">
                         {/* Type Badge */}
                         <div
-                          className={`shrink-0 w-10 h-10 rounded-xl flex items-center justify-center ${
+                          className={`shrink-0 w-9 h-9 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center ${
                             item.tipo === 'OS'
                               ? 'bg-blue-500/10'
                               : 'bg-purple-500/10'
@@ -328,7 +329,7 @@ export default function HistoricoPage() {
                       </div>
 
                       {/* Right Side */}
-                      <div className="flex items-center gap-4 shrink-0">
+                      <div className="flex items-center gap-3 sm:gap-4 shrink-0 self-end sm:self-auto">
                         {/* Payment Method */}
                         {pagamento && (
                           <div className={`flex items-center gap-1.5 ${pagamento.color}`}>
@@ -339,7 +340,7 @@ export default function HistoricoPage() {
 
                         {/* Total */}
                         <div className="text-right">
-                          <p className="font-bold text-emerald-400">
+                          <p className="font-bold text-emerald-400 text-sm sm:text-base">
                             {formatCurrency(item.total)}
                           </p>
                           <p className="text-xs text-foreground-muted">
@@ -357,8 +358,8 @@ export default function HistoricoPage() {
 
         {/* Pagination */}
         {totalPages > 1 && (
-          <div className="flex items-center justify-between mt-4 bg-card border border-border rounded-2xl px-6 py-4">
-            <p className="text-sm text-muted">
+          <div className="flex items-center justify-between mt-4 bg-card border border-border rounded-2xl px-3 sm:px-6 py-3 sm:py-4 flex-col sm:flex-row gap-2">
+            <p className="text-xs sm:text-sm text-muted">
               Mostrando {((page - 1) * 20) + 1} - {Math.min(page * 20, total)} de {total} registros
             </p>
             <div className="flex items-center gap-2">

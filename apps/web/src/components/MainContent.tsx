@@ -16,15 +16,14 @@ export default function MainContent({ children }: MainContentProps) {
     setMounted(true);
   }, []);
 
-  // Valor padrão para SSR e antes do mount
+  // No mobile: sem margin. No desktop: margin conforme sidebar
   const marginClass = mounted
-    ? collapsed ? 'ml-20' : 'ml-72'
-    : 'ml-72';
+    ? collapsed ? 'ml-0 md:ml-20' : 'ml-0 md:ml-72'
+    : 'ml-0 md:ml-72';
 
   return (
     <main
-      className={`flex-1 min-w-0 transition-all duration-300 ${marginClass}`}
-      style={{ marginLeft: mounted ? undefined : '288px' }}
+      className={`flex-1 min-w-0 transition-all duration-300 pt-14 md:pt-0 ${marginClass}`}
     >
       {children}
     </main>

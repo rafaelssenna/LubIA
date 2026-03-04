@@ -321,11 +321,11 @@ function ClientesPageContent() {
     <div className="space-y-8">
       <Header title="Clientes" subtitle="Gerencie seus clientes" />
 
-      <div className="px-4 lg:px-8 space-y-8">
+      <div className="px-3 sm:px-4 lg:px-8 space-y-8">
         {/* Stats Cards */}
-        <div className="grid grid-cols-2 xl:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-8">
           {/* Total Clientes */}
-          <div className="group relative overflow-hidden bg-gradient-to-br from-blue-500/20 to-blue-500/5 rounded-2xl p-6 border border-blue-500/20 hover:border-blue-500/40 transition-all duration-300">
+          <div className="group relative overflow-hidden bg-gradient-to-br from-blue-500/20 to-blue-500/5 rounded-2xl p-4 sm:p-6 border border-blue-500/20 hover:border-blue-500/40 transition-all duration-300">
             <div className="absolute top-0 right-0 w-32 h-32 bg-blue-500/10 rounded-full blur-3xl group-hover:scale-150 transition-transform duration-500"></div>
             <div className="relative">
               <div className="flex items-center justify-between mb-4">
@@ -340,7 +340,7 @@ function ClientesPageContent() {
           </div>
 
           {/* Total Veículos */}
-          <div className="group relative overflow-hidden bg-gradient-to-br from-purple-500/20 to-purple-500/5 rounded-2xl p-6 border border-purple-500/20 hover:border-purple-500/40 transition-all duration-300">
+          <div className="group relative overflow-hidden bg-gradient-to-br from-purple-500/20 to-purple-500/5 rounded-2xl p-4 sm:p-6 border border-purple-500/20 hover:border-purple-500/40 transition-all duration-300">
             <div className="absolute top-0 right-0 w-32 h-32 bg-purple-500/10 rounded-full blur-3xl group-hover:scale-150 transition-transform duration-500"></div>
             <div className="relative">
               <div className="flex items-center justify-between mb-4">
@@ -357,7 +357,7 @@ function ClientesPageContent() {
           </div>
 
           {/* Mensagens */}
-          <div className="group relative overflow-hidden bg-gradient-to-br from-emerald-500/20 to-emerald-500/5 rounded-2xl p-6 border border-emerald-500/20 hover:border-emerald-500/40 transition-all duration-300 hidden xl:block">
+          <div className="group relative overflow-hidden bg-gradient-to-br from-emerald-500/20 to-emerald-500/5 rounded-2xl p-4 sm:p-6 border border-emerald-500/20 hover:border-emerald-500/40 transition-all duration-300 hidden xl:block">
             <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-500/10 rounded-full blur-3xl group-hover:scale-150 transition-transform duration-500"></div>
             <div className="relative">
               <div className="flex items-center justify-between mb-4">
@@ -373,7 +373,7 @@ function ClientesPageContent() {
         </div>
 
         {/* Toolbar */}
-        <div className="flex flex-col md:flex-row gap-4 justify-between">
+        <div className="flex flex-col md:flex-row flex-wrap gap-4 justify-between">
           <div className="relative flex-1 max-w-md">
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-500" size={18} />
             <input
@@ -393,12 +393,13 @@ function ClientesPageContent() {
             className="flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-primary to-[#2E7D32] hover:from-[#2E7D32] hover:to-primary text-white font-semibold rounded-xl transition-all duration-300 shadow-lg shadow-primary/25 hover:shadow-primary/40 hover:scale-[1.02]"
           >
             <Plus size={18} />
-            Novo Cliente
+            <span className="hidden sm:inline">Novo Cliente</span>
+            <span className="sm:hidden">Novo</span>
           </button>
         </div>
 
         {/* Lista de Clientes */}
-        <div className="bg-card rounded-2xl border border-border overflow-hidden">
+        <div className="bg-card rounded-2xl border border-border overflow-hidden overflow-x-auto">
           {clientes.length === 0 ? (
             <div className="p-12 text-center">
               <div className="p-4 bg-zinc-800/50 rounded-full w-fit mx-auto mb-4">
@@ -486,17 +487,17 @@ function ClientesPageContent() {
       {/* Modal Novo Cliente */}
       {showModal && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-card border border-border rounded-2xl w-full max-w-md shadow-2xl shadow-black/50">
-            <div className="p-6 border-b border-border flex items-center justify-between">
+          <div className="bg-card border border-border rounded-2xl w-full max-w-md max-h-[90vh] overflow-y-auto shadow-2xl shadow-black/50">
+            <div className="p-4 sm:p-6 border-b border-border flex items-center justify-between">
               <div>
-                <h2 className="text-xl font-semibold text-foreground">Novo Cliente</h2>
+                <h2 className="text-lg sm:text-xl font-semibold text-foreground">Novo Cliente</h2>
                 <p className="text-sm text-muted mt-1">Cadastre um novo cliente</p>
               </div>
               <button onClick={() => setShowModal(false)} className="p-2 hover:bg-zinc-800 rounded-xl text-muted hover:text-foreground transition-all duration-200">
                 <X size={20} />
               </button>
             </div>
-            <div className="p-6 space-y-4 max-h-[60vh] overflow-y-auto">
+            <div className="p-4 sm:p-6 space-y-4 max-h-[60vh] overflow-y-auto">
               <div>
                 <label className="block text-sm font-medium text-muted mb-2">Nome *</label>
                 <input
@@ -632,7 +633,7 @@ function ClientesPageContent() {
                 </div>
               </div>
             </div>
-            <div className="p-6 border-t border-border flex gap-3 justify-end">
+            <div className="p-4 sm:p-6 border-t border-border flex gap-3 justify-end">
               <button
                 onClick={() => setShowModal(false)}
                 className="px-6 py-3 border border-border rounded-xl text-muted hover:bg-zinc-800 transition-all duration-200"
@@ -654,17 +655,17 @@ function ClientesPageContent() {
       {/* Modal Editar Cliente */}
       {showEditModal && selectedCliente && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-card border border-border rounded-2xl w-full max-w-md shadow-2xl shadow-black/50">
-            <div className="p-6 border-b border-border flex items-center justify-between">
+          <div className="bg-card border border-border rounded-2xl w-full max-w-md max-h-[90vh] overflow-y-auto shadow-2xl shadow-black/50">
+            <div className="p-4 sm:p-6 border-b border-border flex items-center justify-between">
               <div>
-                <h2 className="text-xl font-semibold text-foreground">Editar Cliente</h2>
+                <h2 className="text-lg sm:text-xl font-semibold text-foreground">Editar Cliente</h2>
                 <p className="text-sm text-muted mt-1">Atualize as informações do cliente</p>
               </div>
               <button onClick={() => setShowEditModal(false)} className="p-2 hover:bg-zinc-800 rounded-xl text-muted hover:text-foreground transition-all duration-200">
                 <X size={20} />
               </button>
             </div>
-            <div className="p-6 space-y-4 max-h-[60vh] overflow-y-auto">
+            <div className="p-4 sm:p-6 space-y-4 max-h-[60vh] overflow-y-auto">
               <div>
                 <label className="block text-sm font-medium text-muted mb-2">Nome *</label>
                 <input
@@ -797,7 +798,7 @@ function ClientesPageContent() {
                 </div>
               </div>
             </div>
-            <div className="p-6 border-t border-border flex gap-3 justify-end">
+            <div className="p-4 sm:p-6 border-t border-border flex gap-3 justify-end">
               <button
                 onClick={() => setShowEditModal(false)}
                 className="px-6 py-3 border border-border rounded-xl text-muted hover:bg-zinc-800 transition-all duration-200"
@@ -819,11 +820,11 @@ function ClientesPageContent() {
       {/* Modal Confirmar Exclusão */}
       {showDeleteConfirm && selectedCliente && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-card border border-border rounded-2xl w-full max-w-md shadow-2xl shadow-black/50">
-            <div className="p-6 border-b border-border">
-              <h2 className="text-xl font-semibold text-foreground">Confirmar Exclusão</h2>
+          <div className="bg-card border border-border rounded-2xl w-full max-w-md max-h-[90vh] overflow-y-auto shadow-2xl shadow-black/50">
+            <div className="p-4 sm:p-6 border-b border-border">
+              <h2 className="text-lg sm:text-xl font-semibold text-foreground">Confirmar Exclusão</h2>
             </div>
-            <div className="p-6">
+            <div className="p-4 sm:p-6">
               <div className="flex items-center gap-4 mb-4">
                 <div className="p-3 bg-red-500/10 rounded-xl border border-red-500/20">
                   <Trash2 size={24} className="text-red-400" />
@@ -844,7 +845,7 @@ function ClientesPageContent() {
                 </p>
               )}
             </div>
-            <div className="p-6 border-t border-border flex gap-3 justify-end">
+            <div className="p-4 sm:p-6 border-t border-border flex gap-3 justify-end">
               <button
                 onClick={() => {
                   setShowDeleteConfirm(false);
@@ -872,13 +873,13 @@ function ClientesPageContent() {
       {showDetailModal && selectedCliente && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
           <div className="bg-card border border-border rounded-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto shadow-2xl shadow-black/50">
-            <div className="p-6 border-b border-border flex items-center justify-between">
+            <div className="p-4 sm:p-6 border-b border-border flex items-center justify-between">
               <div className="flex items-center gap-4">
                 <div className="w-14 h-14 bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl flex items-center justify-center text-white text-2xl font-bold shadow-lg shadow-blue-500/25">
                   {capitalize(selectedCliente.nome).charAt(0)}
                 </div>
                 <div>
-                  <h2 className="text-xl font-semibold text-foreground">{capitalize(selectedCliente.nome)}</h2>
+                  <h2 className="text-lg sm:text-xl font-semibold text-foreground">{capitalize(selectedCliente.nome)}</h2>
                   <p className="text-sm text-muted">Cliente #{selectedCliente.id}</p>
                 </div>
               </div>
@@ -886,8 +887,8 @@ function ClientesPageContent() {
                 <X size={20} />
               </button>
             </div>
-            <div className="p-6 space-y-4">
-              <div className="grid grid-cols-2 gap-4">
+            <div className="p-4 sm:p-6 space-y-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="p-4 bg-zinc-900 rounded-xl border border-border">
                   <div className="flex items-center gap-2 text-muted mb-1">
                     <Phone size={14} className="text-emerald-400" />
@@ -953,7 +954,7 @@ function ClientesPageContent() {
                 </div>
               )}
             </div>
-            <div className="p-6 border-t border-border flex gap-3 justify-end">
+            <div className="p-4 sm:p-6 border-t border-border flex gap-3 justify-end">
               <button
                 onClick={() => {
                   window.open(`https://wa.me/55${selectedCliente.telefone.replace(/\D/g, '')}`, '_blank');
