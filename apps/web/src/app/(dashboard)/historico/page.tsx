@@ -20,6 +20,11 @@ import {
 } from 'lucide-react';
 import { useState, useEffect } from 'react';
 
+interface PagamentoItem {
+  tipo: string;
+  valor: number;
+}
+
 interface HistoricoItem {
   id: number;
   tipo: 'OS' | 'VENDA';
@@ -30,6 +35,7 @@ interface HistoricoItem {
   itens: string;
   total: number;
   formaPagamento: string | null;
+  pagamentos?: PagamentoItem[];
   data: string;
   status: string | null;
 }
@@ -44,6 +50,7 @@ const formaPagamentoConfig: Record<string, { label: string; icon: any; color: st
   PIX: { label: 'PIX', icon: Smartphone, color: 'text-cyan-400' },
   CREDITO: { label: 'Crédito', icon: CreditCard, color: 'text-purple-400' },
   DEBITO: { label: 'Débito', icon: CreditCard, color: 'text-blue-400' },
+  CREDITO_PESSOAL: { label: 'Crédito Pessoal', icon: DollarSign, color: 'text-amber-400' },
 };
 
 export default function HistoricoPage() {
@@ -271,10 +278,14 @@ export default function HistoricoPage() {
           ) : (
             <div className="divide-y divide-border">
               {items.map((item) => {
-                const pagamento = item.formaPagamento
-                  ? formaPagamentoConfig[item.formaPagamento]
-                  : null;
-                const PagamentoIcon = pagamento?.icon || DollarSign;
+                // Usa pagamentos[] se disponível (multi-pagamento), senão fallback para formaPagamento
+                const temMultiPagamento = item.pagamentos && item.pagamentos.length > 1;
+                const pagamentoUnico = item.pagamentos && item.pagamentos.length === 1
+                  ? formaPagamentoConfig[item.pagamentos[0].tipo]
+                  : item.formaPagamento
+                    ? formaPagamentoConfig[item.formaPagamento]
+                    : null;
+                const PagamentoIcon = pagamentoUnico?.icon || DollarSign;
 
                 return (
                   <div
@@ -330,13 +341,28 @@ export default function HistoricoPage() {
 
                       {/* Right Side */}
                       <div className="flex items-center gap-3 sm:gap-4 shrink-0 self-end sm:self-auto">
-                        {/* Payment Method */}
-                        {pagamento && (
-                          <div className={`flex items-center gap-1.5 ${pagamento.color}`}>
-                            <PagamentoIcon size={16} />
-                            <span className="text-sm hidden md:inline">{pagamento.label}</span>
+                        {/* Payment Method(s) */}
+                        {temMultiPagamento ? (
+                          <div className="flex flex-col gap-0.5 items-end">
+                            {item.pagamentos!.map((pag, idx) => {
+                              const pagConfig = formaPagamentoConfig[pag.tipo];
+                              const Icon = pagConfig?.icon || DollarSign;
+                              return (
+                                <div key={idx} className={`flex items-center gap-1.5 ${pagConfig?.color || 'text-muted'}`}>
+                                  <Icon size={14} />
+                                  <span className="text-xs">
+                                    {pagConfig?.label || pag.tipo}: {formatCurrency(pag.valor)}
+                                  </span>
+                                </div>
+                              );
+                            })}
                           </div>
-                        )}
+                        ) : pagamentoUnico ? (
+                          <div className={`flex items-center gap-1.5 ${pagamentoUnico.color}`}>
+                            <PagamentoIcon size={16} />
+                            <span className="text-sm hidden md:inline">{pagamentoUnico.label}</span>
+                          </div>
+                        ) : null}
 
                         {/* Total */}
                         <div className="text-right">

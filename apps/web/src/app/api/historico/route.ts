@@ -59,6 +59,7 @@ export async function GET(request: NextRequest) {
           itensProduto: {
             include: { produto: { select: { nome: true } } },
           },
+          pagamentos: true,
         },
         orderBy: { dataConclusao: 'desc' },
       });
@@ -77,6 +78,10 @@ export async function GET(request: NextRequest) {
           ].slice(0, 3).join(', '),
           total: Number(o.total),
           formaPagamento: o.formaPagamento,
+          pagamentos: o.pagamentos.map(p => ({
+            tipo: p.tipo,
+            valor: Number(p.valor),
+          })),
           data: o.dataConclusao || o.createdAt,
           status: o.status,
         });
@@ -106,6 +111,7 @@ export async function GET(request: NextRequest) {
           itens: {
             include: { produto: { select: { nome: true } } },
           },
+          pagamentos: true,
         },
         orderBy: { createdAt: 'desc' },
       });
@@ -121,6 +127,10 @@ export async function GET(request: NextRequest) {
           itens: v.itens.map(i => i.produto.nome).slice(0, 3).join(', '),
           total: Number(v.total),
           formaPagamento: v.formaPagamento,
+          pagamentos: v.pagamentos.map(p => ({
+            tipo: p.tipo,
+            valor: Number(p.valor),
+          })),
           data: v.createdAt,
           status: null,
         });
