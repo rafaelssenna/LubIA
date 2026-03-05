@@ -321,7 +321,7 @@ const normalizeProductName = (name: string): string => {
   return words.join(' ').trim();
 };
 
-// Detecta se uma palavra é um código de produto (mix de letras e números, ex: FCD2066, WO920, PSL560)
+// Detecta se uma palavra é um código/especificação técnica (mix de letras e números, ex: FCD2066, WO920, 5W30, DOT4)
 const isProductCode = (word: string): boolean => /[a-z]/.test(word) && /\d/.test(word) && word.length >= 3;
 
 // Calcula similaridade entre duas strings (0 a 1)
@@ -332,24 +332,32 @@ const calculateSimilarity = (str1: string, str2: string): number => {
   if (s1 === s2) return 1;
   if (s1.length === 0 || s2.length === 0) return 0;
 
-  // Extrai códigos de produto de ambos os nomes
-  const words1 = s1.split(' ').filter(w => w.length > 2);
-  const words2 = s2.split(' ').filter(w => w.length > 2);
+  const words1 = s1.split(' ').filter(w => w.length > 1);
+  const words2 = s2.split(' ').filter(w => w.length > 1);
+
+  // Separa palavras comuns e códigos/especificações técnicas
   const codes1 = words1.filter(isProductCode);
   const codes2 = words2.filter(isProductCode);
+  const plainWords1 = words1.filter(w => !isProductCode(w));
+  const plainWords2 = words2.filter(w => !isProductCode(w));
 
-  // Se ambos têm códigos de produto, eles DEVEM coincidir exatamente
-  // Ex: FCD2066 vs FCD2093 = produtos diferentes, mesmo que o resto do nome seja igual
+  // Códigos/specs que existem em um mas NÃO no outro = produto diferente
+  // Ex: 15W40 vs 5W40, FCD2066 vs FCD2093, DOT4 vs DOT3, 24X1 vs 12X1
   if (codes1.length > 0 && codes2.length > 0) {
-    const hasMatchingCode = codes1.some(c1 => codes2.some(c2 => c1 === c2));
-    if (!hasMatchingCode) return 0; // Códigos diferentes = produto diferente
+    // Códigos exclusivos de cada lado (não encontrados no outro)
+    const uniqueCodes1 = codes1.filter(c1 => !codes2.includes(c1));
+    const uniqueCodes2 = codes2.filter(c2 => !codes1.includes(c2));
+    // Se existem códigos exclusivos em AMBOS os lados, são produtos diferentes
+    if (uniqueCodes1.length > 0 && uniqueCodes2.length > 0) return 0;
   }
 
-  // Verifica se um contém o outro
-  if (s1.includes(s2) || s2.includes(s1)) {
-    const shorter = s1.length < s2.length ? s1 : s2;
-    const longer = s1.length >= s2.length ? s1 : s2;
-    return shorter.length / longer.length;
+  // Palavras descritivas diferentes = produto diferente
+  // Ex: "verde" vs "rosa", "dianteiro" vs "traseiro", "III" vs "VI"
+  if (plainWords1.length > 0 && plainWords2.length > 0) {
+    const uniquePlain1 = plainWords1.filter(w => !plainWords2.includes(w));
+    const uniquePlain2 = plainWords2.filter(w => !plainWords1.includes(w));
+    // Se ambos os lados têm palavras exclusivas, são produtos diferentes
+    if (uniquePlain1.length > 0 && uniquePlain2.length > 0) return 0;
   }
 
   if (words1.length === 0 || words2.length === 0) return 0;
