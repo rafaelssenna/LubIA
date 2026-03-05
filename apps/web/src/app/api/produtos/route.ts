@@ -242,13 +242,18 @@ export async function POST(request: NextRequest) {
 
     // Busca produto existente com MESMO NOME (normalizado) na mesma empresa
     const nomeNormalizado = normalizeName(body.nome || '');
+    const palavrasChave = nomeNormalizado.split(' ').filter(w => w.length > 2);
     let existingByName = null;
-    if (nomeNormalizado.length > 3) {
+    if (nomeNormalizado.length > 3 && palavrasChave.length > 0) {
+      // Busca usando as primeiras 2 palavras significativas para reduzir candidatos
+      const searchTerms = palavrasChave.slice(0, 2);
       const candidatos = await prisma.produto.findMany({
         where: {
           empresaId: session.empresaId,
           ativo: true,
-          nome: { contains: nomeNormalizado.split(' ')[0], mode: 'insensitive' },
+          AND: searchTerms.map(term => ({
+            nome: { contains: term, mode: 'insensitive' as const },
+          })),
         },
       });
       existingByName = candidatos.find(p => normalizeName(p.nome) === nomeNormalizado);

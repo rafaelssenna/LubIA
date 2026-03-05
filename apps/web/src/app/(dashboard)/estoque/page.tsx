@@ -321,6 +321,9 @@ const normalizeProductName = (name: string): string => {
   return words.join(' ').trim();
 };
 
+// Detecta se uma palavra é um código de produto (mix de letras e números, ex: FCD2066, WO920, PSL560)
+const isProductCode = (word: string): boolean => /[a-z]/.test(word) && /\d/.test(word) && word.length >= 3;
+
 // Calcula similaridade entre duas strings (0 a 1)
 const calculateSimilarity = (str1: string, str2: string): number => {
   const s1 = normalizeProductName(str1);
@@ -329,6 +332,19 @@ const calculateSimilarity = (str1: string, str2: string): number => {
   if (s1 === s2) return 1;
   if (s1.length === 0 || s2.length === 0) return 0;
 
+  // Extrai códigos de produto de ambos os nomes
+  const words1 = s1.split(' ').filter(w => w.length > 2);
+  const words2 = s2.split(' ').filter(w => w.length > 2);
+  const codes1 = words1.filter(isProductCode);
+  const codes2 = words2.filter(isProductCode);
+
+  // Se ambos têm códigos de produto, eles DEVEM coincidir exatamente
+  // Ex: FCD2066 vs FCD2093 = produtos diferentes, mesmo que o resto do nome seja igual
+  if (codes1.length > 0 && codes2.length > 0) {
+    const hasMatchingCode = codes1.some(c1 => codes2.some(c2 => c1 === c2));
+    if (!hasMatchingCode) return 0; // Códigos diferentes = produto diferente
+  }
+
   // Verifica se um contém o outro
   if (s1.includes(s2) || s2.includes(s1)) {
     const shorter = s1.length < s2.length ? s1 : s2;
@@ -336,15 +352,11 @@ const calculateSimilarity = (str1: string, str2: string): number => {
     return shorter.length / longer.length;
   }
 
-  // Divide em palavras e verifica quantas são iguais
-  const words1 = s1.split(' ').filter(w => w.length > 2);
-  const words2 = s2.split(' ').filter(w => w.length > 2);
-
   if (words1.length === 0 || words2.length === 0) return 0;
 
   let matchingWords = 0;
   for (const w1 of words1) {
-    if (words2.some(w2 => w1 === w2 || w1.includes(w2) || w2.includes(w1))) {
+    if (words2.some(w2 => w1 === w2)) {
       matchingWords++;
     }
   }
@@ -356,7 +368,7 @@ const calculateSimilarity = (str1: string, str2: string): number => {
 const findBestMatch = (descricao: string, produtos: Produto[]): Produto | null => {
   let bestMatch: Produto | null = null;
   let bestScore = 0;
-  const threshold = 0.5; // Mínimo 50% de similaridade (antes era 60%)
+  const threshold = 0.6; // Mínimo 60% de similaridade
 
   for (const produto of produtos) {
     const score = calculateSimilarity(descricao, produto.nome);
