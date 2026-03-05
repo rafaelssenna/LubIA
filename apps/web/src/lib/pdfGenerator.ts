@@ -155,32 +155,37 @@ export function generateOrdemPDF(ordem: OrdemPDF, empresaConfig?: EmpresaConfig)
   const osColor = hexToRgb(empresaConfig?.pdfCorOS || '#22c55e');
 
   // ============ HEADER ============
-  const headerHeight = config.endereco ? 52 : 45;
+  const hasLogo = !!empresaConfig?.logo;
+  const logoHeight = hasLogo ? 38 : 0;
+  const textBarHeight = config.endereco ? 52 : 45;
+  const headerHeight = logoHeight + textBarHeight;
+
+  // Barra colorida ocupa todo o header (logo + texto)
   doc.setFillColor(osColor[0], osColor[1], osColor[2]);
   doc.rect(0, 0, pageWidth, headerHeight, 'F');
 
-  // Logo da empresa (se existir)
-  const hasLogo = !!empresaConfig?.logo;
-  const textStartX = hasLogo ? margin + 35 : margin;
-
+  // Logo centralizada no topo da barra
   if (hasLogo && empresaConfig?.logo) {
     try {
       const logoFormat = empresaConfig.logo.startsWith('data:image/png') ? 'PNG' : 'JPEG';
-      doc.addImage(empresaConfig.logo, logoFormat, margin, 4, 30, 30);
+      const logoSize = 34;
+      const logoX = (pageWidth - logoSize) / 2;
+      doc.addImage(empresaConfig.logo, logoFormat, logoX, 3, logoSize, logoSize);
     } catch {
       // Se a imagem falhar, ignora silenciosamente
     }
   }
 
-  // Nome da oficina
+  // Nome da oficina (abaixo da logo)
+  const textTop = logoHeight;
   doc.setTextColor(255, 255, 255);
-  doc.setFontSize(hasLogo ? 22 : 28);
+  doc.setFontSize(28);
   doc.setFont('helvetica', 'bold');
-  doc.text(config.nome, textStartX, 18);
+  doc.text(config.nome, margin, textTop + 18);
 
   doc.setFontSize(11);
   doc.setFont('helvetica', 'normal');
-  doc.text(config.subtitulo, textStartX, 26);
+  doc.text(config.subtitulo, margin, textTop + 26);
 
   // Dados da oficina no header
   doc.setFontSize(8);
@@ -189,29 +194,29 @@ export function generateOrdemPDF(ordem: OrdemPDF, empresaConfig?: EmpresaConfig)
     config.telefone ? `Tel: ${formatPhone(config.telefone)}` : '',
   ].filter(Boolean);
   if (infoParts.length > 0) {
-    doc.text(infoParts.join('  |  '), textStartX, 34);
+    doc.text(infoParts.join('  |  '), margin, textTop + 34);
   }
   if (config.endereco) {
-    doc.text(config.endereco, textStartX, 40);
+    doc.text(config.endereco, margin, textTop + 40);
   }
 
   // O.S. Number (lado direito)
   doc.setFontSize(11);
   doc.setFont('helvetica', 'bold');
-  doc.text('ORDEM DE SERVIÇO', pageWidth - margin, 14, { align: 'right' });
+  doc.text('ORDEM DE SERVIÇO', pageWidth - margin, textTop + 14, { align: 'right' });
 
   doc.setFontSize(20);
-  doc.text(`#${ordem.numero.slice(-8).toUpperCase()}`, pageWidth - margin, 26, { align: 'right' });
+  doc.text(`#${ordem.numero.slice(-8).toUpperCase()}`, pageWidth - margin, textTop + 26, { align: 'right' });
 
   // Status badge
   const statusText = statusLabels[ordem.status] || ordem.status;
   doc.setFontSize(10);
   doc.setFont('helvetica', 'normal');
-  doc.text(`Status: ${statusText}`, pageWidth - margin, 36, { align: 'right' });
+  doc.text(`Status: ${statusText}`, pageWidth - margin, textTop + 36, { align: 'right' });
 
   // Data de emissão
   doc.setFontSize(8);
-  doc.text(`Emitida: ${formatDateTime(ordem.createdAt)}`, pageWidth - margin, 42, { align: 'right' });
+  doc.text(`Emitida: ${formatDateTime(ordem.createdAt)}`, pageWidth - margin, textTop + 42, { align: 'right' });
 
   let yPos = headerHeight + 10;
 
@@ -586,33 +591,37 @@ export function generateOrcamentoPDF(orcamento: OrcamentoPDF, empresaConfig?: Em
   const orcColor = hexToRgb(empresaConfig?.pdfCorOrcamento || '#e85d04');
 
   // ============ HEADER ============
-  // Cor personalizada do orçamento
-  const orcHeaderHeight = config.endereco ? 52 : 45;
+  const orcHasLogo = !!empresaConfig?.logo;
+  const orcLogoHeight = orcHasLogo ? 38 : 0;
+  const orcTextBarHeight = config.endereco ? 52 : 45;
+  const orcHeaderHeight = orcLogoHeight + orcTextBarHeight;
+
+  // Barra colorida ocupa todo o header (logo + texto)
   doc.setFillColor(orcColor[0], orcColor[1], orcColor[2]);
   doc.rect(0, 0, pageWidth, orcHeaderHeight, 'F');
 
-  // Logo da empresa (se existir)
-  const orcHasLogo = !!empresaConfig?.logo;
-  const orcTextStartX = orcHasLogo ? margin + 35 : margin;
-
+  // Logo centralizada no topo da barra
   if (orcHasLogo && empresaConfig?.logo) {
     try {
       const orcLogoFormat = empresaConfig.logo.startsWith('data:image/png') ? 'PNG' : 'JPEG';
-      doc.addImage(empresaConfig.logo, orcLogoFormat, margin, 4, 30, 30);
+      const orcLogoSize = 34;
+      const orcLogoX = (pageWidth - orcLogoSize) / 2;
+      doc.addImage(empresaConfig.logo, orcLogoFormat, orcLogoX, 3, orcLogoSize, orcLogoSize);
     } catch {
       // Se a imagem falhar, ignora silenciosamente
     }
   }
 
-  // Nome da oficina
+  // Nome da oficina (abaixo da logo)
+  const orcTextTop = orcLogoHeight;
   doc.setTextColor(255, 255, 255);
-  doc.setFontSize(orcHasLogo ? 22 : 28);
+  doc.setFontSize(28);
   doc.setFont('helvetica', 'bold');
-  doc.text(config.nome, orcTextStartX, 18);
+  doc.text(config.nome, margin, orcTextTop + 18);
 
   doc.setFontSize(11);
   doc.setFont('helvetica', 'normal');
-  doc.text(config.subtitulo, orcTextStartX, 26);
+  doc.text(config.subtitulo, margin, orcTextTop + 26);
 
   // Dados da oficina no header
   doc.setFontSize(8);
@@ -621,29 +630,29 @@ export function generateOrcamentoPDF(orcamento: OrcamentoPDF, empresaConfig?: Em
     config.telefone ? `Tel: ${formatPhone(config.telefone)}` : '',
   ].filter(Boolean);
   if (orcInfoParts.length > 0) {
-    doc.text(orcInfoParts.join('  |  '), orcTextStartX, 34);
+    doc.text(orcInfoParts.join('  |  '), margin, orcTextTop + 34);
   }
   if (config.endereco) {
-    doc.text(config.endereco, orcTextStartX, 40);
+    doc.text(config.endereco, margin, orcTextTop + 40);
   }
 
   // Orçamento Number (lado direito)
   doc.setFontSize(11);
   doc.setFont('helvetica', 'bold');
-  doc.text('ORÇAMENTO', pageWidth - margin, 14, { align: 'right' });
+  doc.text('ORÇAMENTO', pageWidth - margin, orcTextTop + 14, { align: 'right' });
 
   doc.setFontSize(20);
-  doc.text(orcamento.numero, pageWidth - margin, 26, { align: 'right' });
+  doc.text(orcamento.numero, pageWidth - margin, orcTextTop + 26, { align: 'right' });
 
   // Status badge
   const statusText = statusOrcamentoLabels[orcamento.status] || orcamento.status;
   doc.setFontSize(10);
   doc.setFont('helvetica', 'normal');
-  doc.text(`Status: ${statusText}`, pageWidth - margin, 36, { align: 'right' });
+  doc.text(`Status: ${statusText}`, pageWidth - margin, orcTextTop + 36, { align: 'right' });
 
   // Data de emissão
   doc.setFontSize(8);
-  doc.text(`Emitido: ${formatDateTime(orcamento.createdAt)}`, pageWidth - margin, 42, { align: 'right' });
+  doc.text(`Emitido: ${formatDateTime(orcamento.createdAt)}`, pageWidth - margin, orcTextTop + 42, { align: 'right' });
 
   let yPos = orcHeaderHeight + 10;
 
