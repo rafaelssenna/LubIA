@@ -304,7 +304,7 @@ const detectVolume = (descricao: string): number | null => {
 };
 
 // Termos corporativos/irrelevantes que devem ser ignorados na comparação
-const IGNORE_TERMS = ['ltda', 'me', 'eireli', 'epp', 'sa', 's/a', 'ss', 'ltd', 'inc', 'cia', 'corp'];
+const IGNORE_TERMS = ['ltda', 'lt', 'me', 'eireli', 'epp', 'sa', 's/a', 'ss', 'ltd', 'inc', 'cia', 'corp'];
 
 // Normaliza nome do produto para comparação (remove caracteres especiais, espaços extras, etc.)
 const normalizeProductName = (name: string): string => {

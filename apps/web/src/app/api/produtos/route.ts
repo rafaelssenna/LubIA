@@ -232,7 +232,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Normaliza nome para comparação (remove acentos, termos corporativos, etc.)
-    const IGNORE_TERMS = ['ltda', 'me', 'eireli', 'epp', 'sa', 's/a', 'ss', 'ltd', 'inc', 'cia', 'corp'];
+    const IGNORE_TERMS = ['ltda', 'lt', 'me', 'eireli', 'epp', 'sa', 's/a', 'ss', 'ltd', 'inc', 'cia', 'corp'];
     const normalizeName = (n: string) => {
       const words = n.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '')
         .replace(/[-_]/g, ' ').replace(/\s+/g, ' ').replace(/[^a-z0-9\s]/g, '').trim()
