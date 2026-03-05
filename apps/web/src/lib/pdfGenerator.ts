@@ -156,28 +156,44 @@ export function generateOrdemPDF(ordem: OrdemPDF, empresaConfig?: EmpresaConfig)
 
   // ============ HEADER ============
   const hasLogo = !!empresaConfig?.logo;
-  const logoHeight = hasLogo ? 38 : 0;
+
+  // Calcula dimensões reais da logo para manter proporção
+  let logoDrawW = 0, logoDrawH = 0, logoAreaH = 0;
+  if (hasLogo && empresaConfig?.logo) {
+    try {
+      // Detecta dimensões reais da imagem via base64
+      const imgProps = doc.getImageProperties(empresaConfig.logo);
+      const maxLogoW = 60; // largura máxima generosa
+      const maxLogoH = 30; // altura máxima
+      const ratio = Math.min(maxLogoW / imgProps.width, maxLogoH / imgProps.height);
+      logoDrawW = imgProps.width * ratio;
+      logoDrawH = imgProps.height * ratio;
+      logoAreaH = logoDrawH + 8; // margem acima e abaixo
+    } catch {
+      logoAreaH = 0;
+    }
+  }
+
   const textBarHeight = config.endereco ? 52 : 45;
-  const headerHeight = logoHeight + textBarHeight;
+  const headerHeight = logoAreaH + textBarHeight;
 
   // Barra colorida ocupa todo o header (logo + texto)
   doc.setFillColor(osColor[0], osColor[1], osColor[2]);
   doc.rect(0, 0, pageWidth, headerHeight, 'F');
 
-  // Logo centralizada no topo da barra
-  if (hasLogo && empresaConfig?.logo) {
+  // Logo centralizada no topo da barra (proporção real)
+  if (hasLogo && empresaConfig?.logo && logoDrawW > 0) {
     try {
       const logoFormat = empresaConfig.logo.startsWith('data:image/png') ? 'PNG' : 'JPEG';
-      const logoSize = 34;
-      const logoX = (pageWidth - logoSize) / 2;
-      doc.addImage(empresaConfig.logo, logoFormat, logoX, 3, logoSize, logoSize);
+      const logoX = (pageWidth - logoDrawW) / 2;
+      doc.addImage(empresaConfig.logo, logoFormat, logoX, 4, logoDrawW, logoDrawH);
     } catch {
       // Se a imagem falhar, ignora silenciosamente
     }
   }
 
   // Nome da oficina (abaixo da logo)
-  const textTop = logoHeight;
+  const textTop = logoAreaH;
   doc.setTextColor(255, 255, 255);
   doc.setFontSize(28);
   doc.setFont('helvetica', 'bold');
@@ -592,28 +608,41 @@ export function generateOrcamentoPDF(orcamento: OrcamentoPDF, empresaConfig?: Em
 
   // ============ HEADER ============
   const orcHasLogo = !!empresaConfig?.logo;
-  const orcLogoHeight = orcHasLogo ? 38 : 0;
+
+  let orcLogoW = 0, orcLogoH = 0, orcLogoAreaH = 0;
+  if (orcHasLogo && empresaConfig?.logo) {
+    try {
+      const imgProps = doc.getImageProperties(empresaConfig.logo);
+      const maxW = 60, maxH = 30;
+      const ratio = Math.min(maxW / imgProps.width, maxH / imgProps.height);
+      orcLogoW = imgProps.width * ratio;
+      orcLogoH = imgProps.height * ratio;
+      orcLogoAreaH = orcLogoH + 8;
+    } catch {
+      orcLogoAreaH = 0;
+    }
+  }
+
   const orcTextBarHeight = config.endereco ? 52 : 45;
-  const orcHeaderHeight = orcLogoHeight + orcTextBarHeight;
+  const orcHeaderHeight = orcLogoAreaH + orcTextBarHeight;
 
   // Barra colorida ocupa todo o header (logo + texto)
   doc.setFillColor(orcColor[0], orcColor[1], orcColor[2]);
   doc.rect(0, 0, pageWidth, orcHeaderHeight, 'F');
 
-  // Logo centralizada no topo da barra
-  if (orcHasLogo && empresaConfig?.logo) {
+  // Logo centralizada no topo da barra (proporção real)
+  if (orcHasLogo && empresaConfig?.logo && orcLogoW > 0) {
     try {
       const orcLogoFormat = empresaConfig.logo.startsWith('data:image/png') ? 'PNG' : 'JPEG';
-      const orcLogoSize = 34;
-      const orcLogoX = (pageWidth - orcLogoSize) / 2;
-      doc.addImage(empresaConfig.logo, orcLogoFormat, orcLogoX, 3, orcLogoSize, orcLogoSize);
+      const orcLogoX = (pageWidth - orcLogoW) / 2;
+      doc.addImage(empresaConfig.logo, orcLogoFormat, orcLogoX, 4, orcLogoW, orcLogoH);
     } catch {
       // Se a imagem falhar, ignora silenciosamente
     }
   }
 
   // Nome da oficina (abaixo da logo)
-  const orcTextTop = orcLogoHeight;
+  const orcTextTop = orcLogoAreaH;
   doc.setTextColor(255, 255, 255);
   doc.setFontSize(28);
   doc.setFont('helvetica', 'bold');
