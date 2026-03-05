@@ -231,6 +231,58 @@ export async function POST(request: NextRequest) {
       }
     }
 
+    // Normaliza nome para comparação (remove acentos, termos corporativos, etc.)
+    const IGNORE_TERMS = ['ltda', 'me', 'eireli', 'epp', 'sa', 's/a', 'ss', 'ltd', 'inc', 'cia', 'corp'];
+    const normalizeName = (n: string) => {
+      const words = n.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+        .replace(/[-_]/g, ' ').replace(/\s+/g, ' ').replace(/[^a-z0-9\s]/g, '').trim()
+        .split(' ').filter(w => !IGNORE_TERMS.includes(w));
+      return words.join(' ').trim();
+    };
+
+    // Busca produto existente com MESMO NOME (normalizado) na mesma empresa
+    const nomeNormalizado = normalizeName(body.nome || '');
+    let existingByName = null;
+    if (nomeNormalizado.length > 3) {
+      const candidatos = await prisma.produto.findMany({
+        where: {
+          empresaId: session.empresaId,
+          ativo: true,
+          nome: { contains: nomeNormalizado.split(' ')[0], mode: 'insensitive' },
+        },
+      });
+      existingByName = candidatos.find(p => normalizeName(p.nome) === nomeNormalizado);
+    }
+
+    if (existingByName) {
+      // Produto com MESMO NOME já existe - atualizar quantidade
+      const novaQuantidade = Number(existingByName.quantidade) + (body.quantidade || 0);
+      const novoPrecoCompra = body.precoCompra > 0 ? body.precoCompra : Number(existingByName.precoCompraAtual);
+      const novoPrecoVenda = body.precoVenda > 0 ? body.precoVenda : Number(existingByName.precoVenda);
+
+      const produtoAtualizado = await prisma.produto.update({
+        where: { id: existingByName.id },
+        data: {
+          quantidade: novaQuantidade,
+          precoCompraAtual: novoPrecoCompra,
+          precoVenda: novoPrecoVenda,
+          ...(body.filialId && { filialId: body.filialId }),
+          ...(body.ncm && body.ncm !== existingByName.ncm && { ncm: body.ncm }),
+          ...(body.cfop && body.cfop !== existingByName.cfop && { cfop: body.cfop }),
+        },
+      });
+
+      console.log('[PRODUTOS API] Duplicado detectado por nome! Atualizado ID:', existingByName.id);
+      console.log('[PRODUTOS API] Nome normalizado:', nomeNormalizado);
+      console.log('[PRODUTOS API] Quantidade anterior:', Number(existingByName.quantidade), '-> Nova:', novaQuantidade);
+
+      return NextResponse.json({
+        data: produtoAtualizado,
+        atualizado: true,
+        mensagem: `Produto "${existingByName.nome}" já existe. Estoque atualizado: +${body.quantidade || 0} unidades`
+      }, { status: 200 });
+    }
+
     // Check if codigo already exists for this empresa
     if (body.codigo) {
       const existing = await prisma.produto.findFirst({
@@ -239,8 +291,8 @@ export async function POST(request: NextRequest) {
 
       if (existing) {
         // Verificar se o nome é igual (normaliza para comparação)
-        const nomeExistente = existing.nome?.toLowerCase().trim() || '';
-        const nomeNovo = body.nome?.toLowerCase().trim() || '';
+        const nomeExistente = normalizeName(existing.nome || '');
+        const nomeNovo = normalizeName(body.nome || '');
 
         if (nomeExistente === nomeNovo) {
           // Código E nome iguais - atualizar quantidade, preços e outros dados

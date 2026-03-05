@@ -303,9 +303,12 @@ const detectVolume = (descricao: string): number | null => {
   return null;
 };
 
+// Termos corporativos/irrelevantes que devem ser ignorados na comparação
+const IGNORE_TERMS = ['ltda', 'me', 'eireli', 'epp', 'sa', 's/a', 'ss', 'ltd', 'inc', 'cia', 'corp'];
+
 // Normaliza nome do produto para comparação (remove caracteres especiais, espaços extras, etc.)
 const normalizeProductName = (name: string): string => {
-  return name
+  let normalized = name
     .toLowerCase()
     .normalize('NFD')
     .replace(/[\u0300-\u036f]/g, '') // Remove acentos
@@ -313,6 +316,9 @@ const normalizeProductName = (name: string): string => {
     .replace(/\s+/g, ' ')            // Remove espaços múltiplos
     .replace(/[^a-z0-9\s]/g, '')     // Remove caracteres especiais
     .trim();
+  // Remove termos corporativos (LTDA, ME, etc.)
+  const words = normalized.split(' ').filter(w => !IGNORE_TERMS.includes(w));
+  return words.join(' ').trim();
 };
 
 // Calcula similaridade entre duas strings (0 a 1)
@@ -350,7 +356,7 @@ const calculateSimilarity = (str1: string, str2: string): number => {
 const findBestMatch = (descricao: string, produtos: Produto[]): Produto | null => {
   let bestMatch: Produto | null = null;
   let bestScore = 0;
-  const threshold = 0.6; // Mínimo 60% de similaridade
+  const threshold = 0.5; // Mínimo 50% de similaridade (antes era 60%)
 
   for (const produto of produtos) {
     const score = calculateSimilarity(descricao, produto.nome);
