@@ -1669,7 +1669,7 @@ function EstoquePageContent() {
                 const unidadeDetectada = detectUnidade(descricao, item.unidade);
                 const volumeDetectado = detectVolume(descricao);
 
-                // Check if product already exists using fuzzy matching
+                // Check if product already exists using fuzzy matching + IA validation
                 let existingProduct = null;
                 try {
                   // Busca por palavras-chave do produto
@@ -1678,7 +1678,31 @@ function EstoquePageContent() {
                   const searchData = await searchRes.json();
                   if (searchData.data?.length > 0) {
                     // Find best match using fuzzy matching
-                    existingProduct = findBestMatch(descricao, searchData.data);
+                    const fuzzyMatch = findBestMatch(descricao, searchData.data);
+                    if (fuzzyMatch) {
+                      // Validar com IA se é realmente o mesmo produto
+                      try {
+                        const iaRes = await fetch('/api/produtos/verificar-duplicado', {
+                          method: 'POST',
+                          headers: { 'Content-Type': 'application/json' },
+                          body: JSON.stringify({
+                            produtoNF: { nome: descricao, codigo: item.codigo, marca: data.fornecedor },
+                            produtoEstoque: { nome: fuzzyMatch.nome, codigo: fuzzyMatch.codigo, marca: fuzzyMatch.marca },
+                          }),
+                        });
+                        const iaData = await iaRes.json();
+                        if (iaData.mesmo) {
+                          existingProduct = fuzzyMatch;
+                          console.log(`[NF Import] IA confirmou match: "${descricao}" = "${fuzzyMatch.nome}" (${iaData.motivo})`);
+                        } else {
+                          console.log(`[NF Import] IA rejeitou match: "${descricao}" ≠ "${fuzzyMatch.nome}" (${iaData.motivo})`);
+                        }
+                      } catch (iaErr) {
+                        // Se IA falhar, usar o fuzzy match como fallback
+                        existingProduct = fuzzyMatch;
+                        console.warn('[NF Import] IA indisponível, usando fuzzy match como fallback');
+                      }
+                    }
                   }
                 } catch (err) {
                   console.error('Erro ao buscar produto existente:', err);
