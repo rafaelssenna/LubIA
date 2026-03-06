@@ -1672,13 +1672,31 @@ function EstoquePageContent() {
                 // Check if product already exists using fuzzy matching + IA validation
                 let existingProduct = null;
                 try {
-                  // Busca por palavras-chave do produto
-                  const keywords = normalizeProductName(descricao).split(' ').filter(w => w.length > 3).slice(0, 3).join(' ');
-                  const searchRes = await fetch(`/api/produtos?busca=${encodeURIComponent(keywords)}`);
-                  const searchData = await searchRes.json();
-                  if (searchData.data?.length > 0) {
+                  // Busca por múltiplas palavras-chave separadas para melhor cobertura
+                  const allWords = normalizeProductName(descricao).split(' ').filter(w => w.length > 1);
+                  // Pega as 3 palavras mais longas (mais específicas) para buscar
+                  const searchWords = [...allWords].sort((a, b) => b.length - a.length).slice(0, 3);
+
+                  // Faz múltiplas buscas em paralelo (cada palavra separada)
+                  const searchPromises = searchWords.map(w =>
+                    fetch(`/api/produtos?busca=${encodeURIComponent(w)}`).then(r => r.json()).catch(() => ({ data: [] }))
+                  );
+                  const searchResults = await Promise.all(searchPromises);
+
+                  // Junta todos os resultados e remove duplicados por ID
+                  const allProducts = new Map<number, Produto>();
+                  for (const result of searchResults) {
+                    if (result.data?.length > 0) {
+                      for (const p of result.data) {
+                        allProducts.set(p.id, p);
+                      }
+                    }
+                  }
+                  const candidates = Array.from(allProducts.values());
+
+                  if (candidates.length > 0) {
                     // Find best match using fuzzy matching
-                    const fuzzyMatch = findBestMatch(descricao, searchData.data);
+                    const fuzzyMatch = findBestMatch(descricao, candidates);
                     if (fuzzyMatch) {
                       // Validar com IA se é realmente o mesmo produto
                       try {
