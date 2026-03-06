@@ -332,8 +332,9 @@ const calculateSimilarity = (str1: string, str2: string): number => {
   if (s1 === s2) return 1;
   if (s1.length === 0 || s2.length === 0) return 0;
 
-  const words1 = s1.split(' ').filter(w => w.length > 1);
-  const words2 = s2.split(' ').filter(w => w.length > 1);
+  // Inclui todas as palavras (até números sozinhos como "3", "4" que diferenciam DOT 3 vs DOT 4)
+  const words1 = s1.split(' ').filter(w => w.length >= 1);
+  const words2 = s2.split(' ').filter(w => w.length >= 1);
 
   // Separa palavras comuns e códigos/especificações técnicas
   const codes1 = words1.filter(isProductCode);
