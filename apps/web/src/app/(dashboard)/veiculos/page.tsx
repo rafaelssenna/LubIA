@@ -307,13 +307,13 @@ function VeiculosPageContent() {
         {/* Toolbar */}
         <div className="flex flex-col md:flex-row flex-wrap gap-4 justify-between">
           <div className="relative flex-1 max-w-md">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-500" size={18} />
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-muted" size={18} />
             <input
               type="text"
               placeholder="Buscar por placa, marca ou modelo..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full bg-card border border-border rounded-xl pl-11 pr-4 py-3 text-sm text-foreground placeholder-zinc-500 focus:outline-none focus:border-purple-500/50 focus:ring-1 focus:ring-purple-500/20 transition-all duration-200"
+              className="w-full bg-card border border-border rounded-xl pl-11 pr-4 py-3 text-sm text-foreground placeholder-muted focus:outline-none focus:border-purple-500/50 focus:ring-1 focus:ring-purple-500/20 transition-all duration-200"
             />
           </div>
           <button
@@ -332,8 +332,8 @@ function VeiculosPageContent() {
         {/* Grid de Veiculos */}
         {veiculos.length === 0 ? (
           <div className="bg-card rounded-2xl border border-border p-12 text-center">
-            <div className="p-4 bg-zinc-800/50 rounded-full w-fit mx-auto mb-4">
-              <Car className="h-8 w-8 text-zinc-600" />
+            <div className="p-4 bg-background-secondary rounded-full w-fit mx-auto mb-4">
+              <Car className="h-8 w-8 text-muted" />
             </div>
             <p className="text-muted">Nenhum veículo encontrado</p>
             <button
@@ -397,7 +397,7 @@ function VeiculosPageContent() {
                   <div className="flex gap-1">
                     <button
                       onClick={() => openEditModal(veiculo)}
-                      className="p-2.5 hover:bg-zinc-800 rounded-xl text-zinc-500 hover:text-white transition-all duration-200"
+                      className="p-2.5 hover:bg-card-hover rounded-xl text-muted hover:text-white transition-all duration-200"
                       title="Editar"
                     >
                       <Edit size={16} />
@@ -407,7 +407,7 @@ function VeiculosPageContent() {
                         setSelectedVeiculo(veiculo);
                         setShowDeleteConfirm(true);
                       }}
-                      className="p-2.5 hover:bg-red-500/10 rounded-xl text-zinc-500 hover:text-red-400 transition-all duration-200"
+                      className="p-2.5 hover:bg-red-500/10 rounded-xl text-muted hover:text-red-400 transition-all duration-200"
                       title="Excluir"
                     >
                       <Trash2 size={16} />
@@ -429,7 +429,7 @@ function VeiculosPageContent() {
                 <h2 className="text-lg sm:text-xl font-semibold text-foreground">Novo Veículo</h2>
                 <p className="text-sm text-muted mt-1">Cadastre um novo veículo</p>
               </div>
-              <button onClick={() => setShowModal(false)} className="p-2 hover:bg-zinc-800 rounded-xl text-muted hover:text-foreground transition-all duration-200">
+              <button onClick={() => setShowModal(false)} className="p-2.5 hover:bg-card-hover rounded-xl text-muted hover:text-foreground transition-all duration-200">
                 <X size={20} />
               </button>
             </div>
@@ -439,7 +439,7 @@ function VeiculosPageContent() {
                 <select
                   value={form.clienteId}
                   onChange={(e) => setForm({ ...form, clienteId: e.target.value })}
-                  className="w-full bg-zinc-900 border border-border rounded-xl px-4 py-3 text-foreground focus:outline-none focus:border-purple-500/50 focus:ring-1 focus:ring-purple-500/20 transition-all duration-200"
+                  className="w-full bg-background border border-border rounded-xl px-4 py-3 text-foreground focus:outline-none focus:border-purple-500/50 focus:ring-1 focus:ring-purple-500/20 transition-all duration-200"
                 >
                   <option value="">Selecione o cliente</option>
                   {clientes.map((cliente) => (
@@ -455,7 +455,7 @@ function VeiculosPageContent() {
                     placeholder="ABC1D23 ou ABC1234"
                     value={form.placa}
                     onChange={(e) => setForm({ ...form, placa: formatPlateInput(e.target.value) })}
-                    className="flex-1 bg-zinc-900 border border-border rounded-xl px-4 py-3 text-foreground placeholder-zinc-600 focus:outline-none focus:border-purple-500/50 focus:ring-1 focus:ring-purple-500/20 uppercase font-mono transition-all duration-200"
+                    className="flex-1 bg-background border border-border rounded-xl px-4 py-3 text-foreground placeholder-muted focus:outline-none focus:border-purple-500/50 focus:ring-1 focus:ring-purple-500/20 uppercase font-mono transition-all duration-200"
                   />
                   <button
                     type="button"
@@ -476,7 +476,7 @@ function VeiculosPageContent() {
                     value={form.marca}
                     onChange={(e) => setForm({ ...form, marca: e.target.value })}
                     maxLength={50}
-                    className="w-full bg-zinc-900 border border-border rounded-xl px-4 py-3 text-foreground placeholder-zinc-600 focus:outline-none focus:border-purple-500/50 focus:ring-1 focus:ring-purple-500/20 transition-all duration-200"
+                    className="w-full bg-background border border-border rounded-xl px-4 py-3 text-foreground placeholder-muted focus:outline-none focus:border-purple-500/50 focus:ring-1 focus:ring-purple-500/20 transition-all duration-200"
                   />
                 </div>
                 <div>
@@ -487,7 +487,7 @@ function VeiculosPageContent() {
                     value={form.ano}
                     onChange={(e) => setForm({ ...form, ano: e.target.value })}
                     maxLength={4}
-                    className="w-full bg-zinc-900 border border-border rounded-xl px-4 py-3 text-foreground placeholder-zinc-600 focus:outline-none focus:border-purple-500/50 focus:ring-1 focus:ring-purple-500/20 transition-all duration-200"
+                    className="w-full bg-background border border-border rounded-xl px-4 py-3 text-foreground placeholder-muted focus:outline-none focus:border-purple-500/50 focus:ring-1 focus:ring-purple-500/20 transition-all duration-200"
                   />
                 </div>
               </div>
@@ -499,7 +499,7 @@ function VeiculosPageContent() {
                   value={form.modelo}
                   onChange={(e) => setForm({ ...form, modelo: e.target.value })}
                   maxLength={50}
-                  className="w-full bg-zinc-900 border border-border rounded-xl px-4 py-3 text-foreground placeholder-zinc-600 focus:outline-none focus:border-purple-500/50 focus:ring-1 focus:ring-purple-500/20 transition-all duration-200"
+                  className="w-full bg-background border border-border rounded-xl px-4 py-3 text-foreground placeholder-muted focus:outline-none focus:border-purple-500/50 focus:ring-1 focus:ring-purple-500/20 transition-all duration-200"
                 />
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
@@ -511,7 +511,7 @@ function VeiculosPageContent() {
                     value={form.cor}
                     onChange={(e) => setForm({ ...form, cor: e.target.value })}
                     maxLength={30}
-                    className="w-full bg-zinc-900 border border-border rounded-xl px-4 py-3 text-foreground placeholder-zinc-600 focus:outline-none focus:border-purple-500/50 focus:ring-1 focus:ring-purple-500/20 transition-all duration-200"
+                    className="w-full bg-background border border-border rounded-xl px-4 py-3 text-foreground placeholder-muted focus:outline-none focus:border-purple-500/50 focus:ring-1 focus:ring-purple-500/20 transition-all duration-200"
                   />
                 </div>
                 <div>
@@ -522,7 +522,7 @@ function VeiculosPageContent() {
                     value={form.cilindrada}
                     onChange={(e) => setForm({ ...form, cilindrada: e.target.value })}
                     maxLength={20}
-                    className="w-full bg-zinc-900 border border-border rounded-xl px-4 py-3 text-foreground placeholder-zinc-600 focus:outline-none focus:border-purple-500/50 focus:ring-1 focus:ring-purple-500/20 transition-all duration-200"
+                    className="w-full bg-background border border-border rounded-xl px-4 py-3 text-foreground placeholder-muted focus:outline-none focus:border-purple-500/50 focus:ring-1 focus:ring-purple-500/20 transition-all duration-200"
                   />
                 </div>
                 <div>
@@ -533,7 +533,7 @@ function VeiculosPageContent() {
                     value={form.kmAtual}
                     onChange={(e) => setForm({ ...form, kmAtual: e.target.value })}
                     maxLength={10}
-                    className="w-full bg-zinc-900 border border-border rounded-xl px-4 py-3 text-foreground placeholder-zinc-600 focus:outline-none focus:border-purple-500/50 focus:ring-1 focus:ring-purple-500/20 transition-all duration-200"
+                    className="w-full bg-background border border-border rounded-xl px-4 py-3 text-foreground placeholder-muted focus:outline-none focus:border-purple-500/50 focus:ring-1 focus:ring-purple-500/20 transition-all duration-200"
                   />
                 </div>
               </div>
@@ -541,7 +541,7 @@ function VeiculosPageContent() {
             <div className="p-4 sm:p-6 border-t border-border flex gap-3 justify-end">
               <button
                 onClick={() => setShowModal(false)}
-                className="px-6 py-3 border border-border rounded-xl text-muted hover:bg-zinc-800 transition-all duration-200"
+                className="px-6 py-3 border border-border rounded-xl text-muted hover:bg-card-hover transition-all duration-200"
               >
                 Cancelar
               </button>
@@ -566,7 +566,7 @@ function VeiculosPageContent() {
                 <h2 className="text-lg sm:text-xl font-semibold text-foreground">Editar Veículo</h2>
                 <p className="text-sm text-muted mt-1">Atualize as informações do veículo</p>
               </div>
-              <button onClick={() => setShowEditModal(false)} className="p-2 hover:bg-zinc-800 rounded-xl text-muted hover:text-foreground transition-all duration-200">
+              <button onClick={() => setShowEditModal(false)} className="p-2.5 hover:bg-card-hover rounded-xl text-muted hover:text-foreground transition-all duration-200">
                 <X size={20} />
               </button>
             </div>
@@ -576,7 +576,7 @@ function VeiculosPageContent() {
                 <select
                   value={form.clienteId}
                   onChange={(e) => setForm({ ...form, clienteId: e.target.value })}
-                  className="w-full bg-zinc-900 border border-border rounded-xl px-4 py-3 text-foreground focus:outline-none focus:border-purple-500/50 focus:ring-1 focus:ring-purple-500/20 transition-all duration-200"
+                  className="w-full bg-background border border-border rounded-xl px-4 py-3 text-foreground focus:outline-none focus:border-purple-500/50 focus:ring-1 focus:ring-purple-500/20 transition-all duration-200"
                 >
                   <option value="">Selecione o cliente</option>
                   {clientes.map((cliente) => (
@@ -591,7 +591,7 @@ function VeiculosPageContent() {
                   placeholder="ABC1D23 ou ABC1234"
                   value={form.placa}
                   onChange={(e) => setForm({ ...form, placa: formatPlateInput(e.target.value) })}
-                  className="w-full bg-zinc-900 border border-border rounded-xl px-4 py-3 text-foreground placeholder-zinc-600 focus:outline-none focus:border-purple-500/50 focus:ring-1 focus:ring-purple-500/20 uppercase font-mono transition-all duration-200"
+                  className="w-full bg-background border border-border rounded-xl px-4 py-3 text-foreground placeholder-muted focus:outline-none focus:border-purple-500/50 focus:ring-1 focus:ring-purple-500/20 uppercase font-mono transition-all duration-200"
                 />
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -601,7 +601,7 @@ function VeiculosPageContent() {
                     type="text"
                     value={form.marca}
                     onChange={(e) => setForm({ ...form, marca: e.target.value })}
-                    className="w-full bg-zinc-900 border border-border rounded-xl px-4 py-3 text-foreground focus:outline-none focus:border-purple-500/50 focus:ring-1 focus:ring-purple-500/20 transition-all duration-200"
+                    className="w-full bg-background border border-border rounded-xl px-4 py-3 text-foreground focus:outline-none focus:border-purple-500/50 focus:ring-1 focus:ring-purple-500/20 transition-all duration-200"
                   />
                 </div>
                 <div>
@@ -610,7 +610,7 @@ function VeiculosPageContent() {
                     type="text"
                     value={form.ano}
                     onChange={(e) => setForm({ ...form, ano: e.target.value })}
-                    className="w-full bg-zinc-900 border border-border rounded-xl px-4 py-3 text-foreground focus:outline-none focus:border-purple-500/50 focus:ring-1 focus:ring-purple-500/20 transition-all duration-200"
+                    className="w-full bg-background border border-border rounded-xl px-4 py-3 text-foreground focus:outline-none focus:border-purple-500/50 focus:ring-1 focus:ring-purple-500/20 transition-all duration-200"
                   />
                 </div>
               </div>
@@ -620,7 +620,7 @@ function VeiculosPageContent() {
                   type="text"
                   value={form.modelo}
                   onChange={(e) => setForm({ ...form, modelo: e.target.value })}
-                  className="w-full bg-zinc-900 border border-border rounded-xl px-4 py-3 text-foreground focus:outline-none focus:border-purple-500/50 focus:ring-1 focus:ring-purple-500/20 transition-all duration-200"
+                  className="w-full bg-background border border-border rounded-xl px-4 py-3 text-foreground focus:outline-none focus:border-purple-500/50 focus:ring-1 focus:ring-purple-500/20 transition-all duration-200"
                 />
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
@@ -630,7 +630,7 @@ function VeiculosPageContent() {
                     type="text"
                     value={form.cor}
                     onChange={(e) => setForm({ ...form, cor: e.target.value })}
-                    className="w-full bg-zinc-900 border border-border rounded-xl px-4 py-3 text-foreground focus:outline-none focus:border-purple-500/50 focus:ring-1 focus:ring-purple-500/20 transition-all duration-200"
+                    className="w-full bg-background border border-border rounded-xl px-4 py-3 text-foreground focus:outline-none focus:border-purple-500/50 focus:ring-1 focus:ring-purple-500/20 transition-all duration-200"
                   />
                 </div>
                 <div>
@@ -640,7 +640,7 @@ function VeiculosPageContent() {
                     placeholder="Ex: 1.0, 1.4, 2.0"
                     value={form.cilindrada}
                     onChange={(e) => setForm({ ...form, cilindrada: e.target.value })}
-                    className="w-full bg-zinc-900 border border-border rounded-xl px-4 py-3 text-foreground focus:outline-none focus:border-purple-500/50 focus:ring-1 focus:ring-purple-500/20 transition-all duration-200"
+                    className="w-full bg-background border border-border rounded-xl px-4 py-3 text-foreground focus:outline-none focus:border-purple-500/50 focus:ring-1 focus:ring-purple-500/20 transition-all duration-200"
                   />
                 </div>
                 <div>
@@ -649,7 +649,7 @@ function VeiculosPageContent() {
                     type="text"
                     value={form.kmAtual}
                     onChange={(e) => setForm({ ...form, kmAtual: e.target.value })}
-                    className="w-full bg-zinc-900 border border-border rounded-xl px-4 py-3 text-foreground focus:outline-none focus:border-purple-500/50 focus:ring-1 focus:ring-purple-500/20 transition-all duration-200"
+                    className="w-full bg-background border border-border rounded-xl px-4 py-3 text-foreground focus:outline-none focus:border-purple-500/50 focus:ring-1 focus:ring-purple-500/20 transition-all duration-200"
                   />
                 </div>
               </div>
@@ -657,7 +657,7 @@ function VeiculosPageContent() {
             <div className="p-4 sm:p-6 border-t border-border flex gap-3 justify-end">
               <button
                 onClick={() => setShowEditModal(false)}
-                className="px-6 py-3 border border-border rounded-xl text-muted hover:bg-zinc-800 transition-all duration-200"
+                className="px-6 py-3 border border-border rounded-xl text-muted hover:bg-card-hover transition-all duration-200"
               >
                 Cancelar
               </button>
@@ -700,7 +700,7 @@ function VeiculosPageContent() {
                   setShowDeleteConfirm(false);
                   setSelectedVeiculo(null);
                 }}
-                className="px-6 py-3 border border-border rounded-xl text-muted hover:bg-zinc-800 transition-all duration-200"
+                className="px-6 py-3 border border-border rounded-xl text-muted hover:bg-card-hover transition-all duration-200"
               >
                 Cancelar
               </button>

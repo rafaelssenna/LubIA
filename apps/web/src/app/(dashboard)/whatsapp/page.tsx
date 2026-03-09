@@ -314,11 +314,11 @@ export default function WhatsAppPage() {
               </div>
               <button
                 onClick={() => setAutoRefresh(!autoRefresh)}
-                className={`text-lg font-bold px-3 py-1.5 rounded-lg transition-all ${autoRefresh ? 'bg-emerald-500/20 text-emerald-400' : 'bg-zinc-800 text-zinc-400'}`}
+                className={`text-lg font-bold px-3 py-1.5 rounded-lg transition-all ${autoRefresh ? 'bg-emerald-500/20 text-emerald-400' : 'bg-background-secondary text-foreground-muted'}`}
               >
                 {autoRefresh ? 'Auto ON' : 'Auto OFF'}
               </button>
-              <p className="text-sm text-zinc-400 mt-2">atualização</p>
+              <p className="text-sm text-foreground-muted mt-2">atualização</p>
             </div>
           </div>
         </div>
@@ -329,18 +329,18 @@ export default function WhatsAppPage() {
           <div className={`w-full md:w-96 border-r border-border flex flex-col ${selectedConversation ? 'hidden md:flex' : 'flex'}`}>
             <div className="p-4 border-b border-border flex gap-2">
               <div className="relative group flex-1">
-                <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 text-zinc-500 group-focus-within:text-[#25D366] transition-colors" size={18} />
+                <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 text-muted group-focus-within:text-[#25D366] transition-colors" size={18} />
                 <input
                   type="text"
                   value={busca}
                   onChange={(e) => setBusca(e.target.value)}
                   placeholder="Buscar conversa..."
-                  className="w-full bg-zinc-900/50 border border-border rounded-xl pl-10 pr-4 py-3 text-sm text-foreground placeholder-zinc-500 focus:outline-none focus:border-[#25D366]/50 focus:ring-2 focus:ring-[#25D366]/20 transition-all"
+                  className="w-full bg-background border border-border rounded-xl pl-10 pr-4 py-3 text-sm text-foreground placeholder-muted focus:outline-none focus:border-[#25D366]/50 focus:ring-2 focus:ring-[#25D366]/20 transition-all"
                 />
               </div>
               <button
                 onClick={() => fetchConversas()}
-                className="p-3 bg-zinc-900/50 border border-border rounded-xl text-muted hover:border-[#25D366]/40 hover:text-[#25D366] transition-all"
+                className="p-3 bg-background border border-border rounded-xl text-muted hover:border-[#25D366]/40 hover:text-[#25D366] transition-all"
               >
                 <RefreshCw size={18} className={loading ? 'animate-spin' : ''} />
               </button>
@@ -398,7 +398,7 @@ export default function WhatsAppPage() {
                     className={`p-4 border-b border-border cursor-pointer transition-all duration-200 ${
                       selectedConversation?.id === conversa.id
                         ? 'bg-gradient-to-r from-[#25D366]/20 to-transparent border-l-4 border-l-[#25D366]'
-                        : 'hover:bg-zinc-800/30'
+                        : 'hover:bg-card-hover'
                     }`}
                   >
                     <div className="flex items-center gap-4">
@@ -437,11 +437,11 @@ export default function WhatsAppPage() {
             {selectedConversation ? (
               <>
                 {/* Header do Chat */}
-                <div className="p-4 border-b border-border flex items-center justify-between bg-zinc-900/50">
+                <div className="p-4 border-b border-border flex items-center justify-between bg-background">
                   <div className="flex items-center gap-2 sm:gap-4">
                     <button
                       onClick={() => setSelectedConversation(null)}
-                      className="md:hidden p-2 hover:bg-zinc-800 rounded-lg transition-all text-muted hover:text-foreground"
+                      className="md:hidden p-2 hover:bg-card-hover rounded-lg transition-all text-muted hover:text-foreground"
                     >
                       <ArrowLeft size={20} />
                     </button>
@@ -485,10 +485,10 @@ export default function WhatsAppPage() {
                         </>
                       )}
                     </button>
-                    <button className="p-2.5 hover:bg-zinc-800 rounded-lg transition-all text-muted hover:text-[#25D366]">
+                    <button className="p-2.5 hover:bg-card-hover rounded-lg transition-all text-muted hover:text-[#25D366]">
                       <Phone size={18} />
                     </button>
-                    <button className="p-2.5 hover:bg-zinc-800 rounded-lg transition-all text-muted hover:text-foreground">
+                    <button className="p-2.5 hover:bg-card-hover rounded-lg transition-all text-muted hover:text-foreground">
                       <Archive size={18} />
                     </button>
                   </div>
@@ -537,12 +537,12 @@ export default function WhatsAppPage() {
                           className={`max-w-[70%] p-4 rounded-2xl shadow-lg ${
                             msg.enviada
                               ? 'bg-gradient-to-br from-[#25D366] to-[#128C7E] text-white rounded-br-md shadow-[#25D366]/20'
-                              : 'bg-zinc-800/80 text-white rounded-bl-md border border-border/50'
+                              : 'bg-background-secondary text-white rounded-bl-md border border-border/50'
                           }`}
                         >
                           <p className="text-sm leading-relaxed whitespace-pre-wrap">{msg.conteudo}</p>
                           <div className={`flex items-center gap-1.5 mt-2 ${msg.enviada ? 'justify-end' : ''}`}>
-                            <span className={`text-xs ${msg.enviada ? 'text-white/70' : 'text-zinc-500'}`}>
+                            <span className={`text-xs ${msg.enviada ? 'text-white/70' : 'text-muted'}`}>
                               {formatTime(msg.dataEnvio)}
                             </span>
                             {msg.enviada && msg.lida && (
@@ -558,7 +558,7 @@ export default function WhatsAppPage() {
 
                 {/* Templates */}
                 {showTemplates && (
-                  <div className="p-4 border-t border-border bg-zinc-900/50">
+                  <div className="p-4 border-t border-border bg-background">
                     <p className="text-sm text-muted mb-3 flex items-center gap-2">
                       <Sparkles size={14} className="text-[#25D366]" />
                       Templates rápidos:
@@ -568,7 +568,7 @@ export default function WhatsAppPage() {
                         <button
                           key={template.id}
                           onClick={() => applyTemplate(template.texto)}
-                          className="flex items-center gap-2 px-4 py-2.5 bg-zinc-800/50 border border-border/50 rounded-xl text-muted hover:text-foreground hover:border-[#25D366]/50 hover:bg-[#25D366]/10 transition-all text-sm font-medium"
+                          className="flex items-center gap-2 px-4 py-2.5 bg-background-secondary border border-border/50 rounded-xl text-muted hover:text-foreground hover:border-[#25D366]/50 hover:bg-[#25D366]/10 transition-all text-sm font-medium"
                         >
                           <template.icon size={16} className="text-[#25D366]" />
                           {template.nome}
@@ -579,21 +579,21 @@ export default function WhatsAppPage() {
                 )}
 
                 {/* Input de Mensagem */}
-                <div className="p-2 sm:p-4 border-t border-border bg-zinc-900/50">
+                <div className="p-2 sm:p-4 border-t border-border bg-background">
                   <div className="flex items-center gap-1 sm:gap-2">
-                    <button className="hidden sm:block p-2.5 hover:bg-zinc-800 rounded-lg transition-all text-muted hover:text-amber-400">
+                    <button className="hidden sm:block p-2.5 hover:bg-card-hover rounded-lg transition-all text-muted hover:text-amber-400">
                       <Smile size={20} />
                     </button>
-                    <button className="hidden sm:block p-2.5 hover:bg-zinc-800 rounded-lg transition-all text-muted hover:text-foreground">
+                    <button className="hidden sm:block p-2.5 hover:bg-card-hover rounded-lg transition-all text-muted hover:text-foreground">
                       <Paperclip size={20} />
                     </button>
-                    <button className="hidden sm:block p-2.5 hover:bg-zinc-800 rounded-lg transition-all text-muted hover:text-blue-400">
+                    <button className="hidden sm:block p-2.5 hover:bg-card-hover rounded-lg transition-all text-muted hover:text-blue-400">
                       <Image size={20} />
                     </button>
                     <button
                       onClick={() => setShowTemplates(!showTemplates)}
                       className={`p-2.5 rounded-lg transition-all ${
-                        showTemplates ? 'bg-[#25D366] text-white shadow-lg shadow-[#25D366]/30' : 'hover:bg-zinc-800 text-zinc-400 hover:text-[#25D366]'
+                        showTemplates ? 'bg-[#25D366] text-white shadow-lg shadow-[#25D366]/30' : 'hover:bg-card-hover text-foreground-muted hover:text-[#25D366]'
                       }`}
                     >
                       <FileText size={20} />
@@ -605,7 +605,7 @@ export default function WhatsAppPage() {
                       onKeyDown={(e) => e.key === 'Enter' && !e.shiftKey && handleSend()}
                       placeholder="Digite uma mensagem..."
                       disabled={sending}
-                      className="flex-1 bg-zinc-900/50 border border-border rounded-xl px-4 py-3 text-foreground placeholder-zinc-500 focus:outline-none focus:border-[#25D366]/50 focus:ring-2 focus:ring-[#25D366]/20 transition-all disabled:opacity-50"
+                      className="flex-1 bg-background border border-border rounded-xl px-4 py-3 text-foreground placeholder-muted focus:outline-none focus:border-[#25D366]/50 focus:ring-2 focus:ring-[#25D366]/20 transition-all disabled:opacity-50"
                     />
                     <button
                       onClick={handleSend}

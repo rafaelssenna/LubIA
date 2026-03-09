@@ -25,7 +25,9 @@ export default function MainContent({ children }: MainContentProps) {
     <main
       className={`flex-1 min-w-0 transition-all duration-300 pt-14 md:pt-0 ${marginClass}`}
     >
-      {children}
+      <div className="max-w-[1600px] mx-auto w-full">
+        {children}
+      </div>
     </main>
   );
 }

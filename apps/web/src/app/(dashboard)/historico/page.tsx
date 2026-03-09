@@ -168,13 +168,13 @@ export default function HistoricoPage() {
           <div className="flex flex-col md:flex-row gap-4">
             {/* Search */}
             <div className="flex-1 relative">
-              <Search size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-500" />
+              <Search size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-muted" />
               <input
                 type="text"
                 placeholder="Buscar por número, cliente ou placa..."
                 value={busca}
                 onChange={(e) => setBusca(e.target.value)}
-                className="w-full pl-11 pr-4 py-3 bg-background-secondary border border-border rounded-xl text-foreground placeholder:text-zinc-500 focus:outline-none focus:border-emerald-500/50 transition-colors"
+                className="w-full pl-11 pr-4 py-3 bg-background-secondary border border-border rounded-xl text-foreground placeholder:text-muted focus:outline-none focus:border-emerald-500/50 transition-colors"
               />
             </div>
 

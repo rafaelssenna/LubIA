@@ -57,7 +57,7 @@ const statusConfig: Record<string, { label: string; color: string; icon: any; bg
   PENDENTE: { label: 'Pendente', color: 'text-amber-400', icon: Clock, bg: 'bg-amber-500/10', border: 'border-amber-500/30' },
   APROVADO: { label: 'Aprovado', color: 'text-emerald-400', icon: CheckCircle, bg: 'bg-emerald-500/10', border: 'border-emerald-500/30' },
   RECUSADO: { label: 'Recusado', color: 'text-red-400', icon: XCircle, bg: 'bg-red-500/10', border: 'border-red-500/30' },
-  EXPIRADO: { label: 'Expirado', color: 'text-muted', icon: AlertCircle, bg: 'bg-zinc-500/10', border: 'border-zinc-500/30' },
+  EXPIRADO: { label: 'Expirado', color: 'text-muted', icon: AlertCircle, bg: 'bg-muted/10', border: 'border-muted/30' },
   CONVERTIDO: { label: 'Convertido', color: 'text-blue-400', icon: TrendingUp, bg: 'bg-blue-500/10', border: 'border-blue-500/30' },
 };
 
@@ -627,7 +627,7 @@ function OrcamentosPageContent() {
               placeholder="Buscar por número, cliente ou telefone..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-12 pr-4 py-3 bg-background-secondary border border-border/50 rounded-xl text-foreground placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-[#E85D04]/50 focus:border-[#E85D04]/50 transition-all"
+              className="w-full pl-12 pr-4 py-3 bg-background-secondary border border-border/50 rounded-xl text-foreground placeholder-muted focus:outline-none focus:ring-2 focus:ring-[#E85D04]/50 focus:border-[#E85D04]/50 transition-all"
             />
           </div>
           <select
@@ -655,7 +655,7 @@ function OrcamentosPageContent() {
       {orcamentos.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-20 bg-card rounded-2xl border border-border">
           <div className="p-6 bg-background-secondary/50 rounded-full mb-6">
-            <FileText className="h-12 w-12 text-zinc-600" />
+            <FileText className="h-12 w-12 text-muted" />
           </div>
           <h3 className="text-xl font-semibold text-foreground mb-2">Nenhum orçamento encontrado</h3>
           <p className="text-muted mb-6">Comece criando seu primeiro orçamento</p>
@@ -883,7 +883,7 @@ function OrcamentosPageContent() {
                     value={nomeCliente}
                     onChange={(e) => setNomeCliente(e.target.value)}
                     placeholder="Nome (opcional)"
-                    className="w-full px-4 py-3 bg-background-secondary border border-border/50 rounded-xl text-foreground placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-[#E85D04]/50 focus:border-[#E85D04]/50 transition-all"
+                    className="w-full px-4 py-3 bg-background-secondary border border-border/50 rounded-xl text-foreground placeholder-muted focus:outline-none focus:ring-2 focus:ring-[#E85D04]/50 focus:border-[#E85D04]/50 transition-all"
                   />
                 </div>
                 <div>
@@ -896,7 +896,7 @@ function OrcamentosPageContent() {
                     value={telefoneCliente}
                     onChange={(e) => setTelefoneCliente(e.target.value)}
                     placeholder="(11) 99999-9999"
-                    className="w-full px-4 py-3 bg-background-secondary border border-border/50 rounded-xl text-foreground placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-[#E85D04]/50 focus:border-[#E85D04]/50 transition-all"
+                    className="w-full px-4 py-3 bg-background-secondary border border-border/50 rounded-xl text-foreground placeholder-muted focus:outline-none focus:ring-2 focus:ring-[#E85D04]/50 focus:border-[#E85D04]/50 transition-all"
                   />
                 </div>
               </div>
@@ -913,7 +913,7 @@ function OrcamentosPageContent() {
                     placeholder="Buscar produto..."
                     value={searchProduto}
                     onChange={(e) => setSearchProduto(e.target.value)}
-                    className="w-full pl-11 pr-4 py-3 bg-background-secondary border border-border/50 rounded-xl text-foreground placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-[#E85D04]/50 focus:border-[#E85D04]/50 transition-all"
+                    className="w-full pl-11 pr-4 py-3 bg-background-secondary border border-border/50 rounded-xl text-foreground placeholder-muted focus:outline-none focus:ring-2 focus:ring-[#E85D04]/50 focus:border-[#E85D04]/50 transition-all"
                   />
                 </div>
                 {searchProduto && (
@@ -995,14 +995,14 @@ function OrcamentosPageContent() {
                     placeholder="Descrição do serviço..."
                     value={novoServicoExtra.descricao}
                     onChange={(e) => setNovoServicoExtra({ ...novoServicoExtra, descricao: e.target.value })}
-                    className="flex-1 px-4 py-3 bg-background-secondary border border-border/50 rounded-xl text-foreground placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-[#E85D04]/50 focus:border-[#E85D04]/50 transition-all"
+                    className="flex-1 px-4 py-3 bg-background-secondary border border-border/50 rounded-xl text-foreground placeholder-muted focus:outline-none focus:ring-2 focus:ring-[#E85D04]/50 focus:border-[#E85D04]/50 transition-all"
                   />
                   <input
                     type="number"
                     placeholder="Valor"
                     value={novoServicoExtra.valor}
                     onChange={(e) => setNovoServicoExtra({ ...novoServicoExtra, valor: e.target.value })}
-                    className="w-32 px-4 py-3 bg-background-secondary border border-border/50 rounded-xl text-foreground placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-[#E85D04]/50 focus:border-[#E85D04]/50 transition-all"
+                    className="w-32 px-4 py-3 bg-background-secondary border border-border/50 rounded-xl text-foreground placeholder-muted focus:outline-none focus:ring-2 focus:ring-[#E85D04]/50 focus:border-[#E85D04]/50 transition-all"
                   />
                   <button
                     onClick={addServicoExtra}
@@ -1040,7 +1040,7 @@ function OrcamentosPageContent() {
                   value={observacoes}
                   onChange={(e) => setObservacoes(e.target.value)}
                   rows={3}
-                  className="w-full px-4 py-3 bg-background-secondary border border-border/50 rounded-xl text-foreground placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-[#E85D04]/50 focus:border-[#E85D04]/50 transition-all resize-none"
+                  className="w-full px-4 py-3 bg-background-secondary border border-border/50 rounded-xl text-foreground placeholder-muted focus:outline-none focus:ring-2 focus:ring-[#E85D04]/50 focus:border-[#E85D04]/50 transition-all resize-none"
                   placeholder="Observações adicionais (opcional)..."
                 />
               </div>
@@ -1318,7 +1318,7 @@ function OrcamentosPageContent() {
                         placeholder="Buscar por placa, modelo ou cliente..."
                         value={searchVeiculo}
                         onChange={(e) => setSearchVeiculo(e.target.value)}
-                        className="w-full pl-12 pr-4 py-3 bg-background-secondary border border-border rounded-xl text-foreground placeholder-zinc-500 focus:outline-none focus:border-purple-500"
+                        className="w-full pl-12 pr-4 py-3 bg-background-secondary border border-border rounded-xl text-foreground placeholder-muted focus:outline-none focus:border-purple-500"
                       />
                     </div>
                   </div>
@@ -1341,7 +1341,7 @@ function OrcamentosPageContent() {
                           className={`w-full p-4 rounded-xl border transition-all text-left ${
                             selectedVeiculoId === veiculo.id
                               ? 'bg-purple-500/20 border-purple-500'
-                              : 'bg-background-secondary border-border hover:border-zinc-600'
+                              : 'bg-background-secondary border-border hover:border-border'
                           }`}
                         >
                           <div className="flex items-center justify-between">
@@ -1384,7 +1384,7 @@ function OrcamentosPageContent() {
                           value={quickNome}
                           onChange={(e) => setQuickNome(e.target.value)}
                           placeholder="Nome do cliente"
-                          className="w-full px-4 py-2.5 bg-background-secondary border border-border rounded-xl text-foreground placeholder-zinc-500 focus:outline-none focus:border-emerald-500"
+                          className="w-full px-4 py-2.5 bg-background-secondary border border-border rounded-xl text-foreground placeholder-muted focus:outline-none focus:border-emerald-500"
                         />
                       </div>
                       <div>
@@ -1394,7 +1394,7 @@ function OrcamentosPageContent() {
                           value={quickTelefone}
                           onChange={(e) => setQuickTelefone(e.target.value)}
                           placeholder="(00) 00000-0000"
-                          className="w-full px-4 py-2.5 bg-background-secondary border border-border rounded-xl text-foreground placeholder-zinc-500 focus:outline-none focus:border-emerald-500"
+                          className="w-full px-4 py-2.5 bg-background-secondary border border-border rounded-xl text-foreground placeholder-muted focus:outline-none focus:border-emerald-500"
                         />
                       </div>
                     </div>
@@ -1415,7 +1415,7 @@ function OrcamentosPageContent() {
                           onChange={(e) => setQuickPlaca(e.target.value.toUpperCase())}
                           placeholder="ABC1234"
                           maxLength={7}
-                          className="w-full px-4 py-2.5 bg-background-secondary border border-border rounded-xl text-white placeholder-zinc-500 focus:outline-none focus:border-emerald-500 uppercase"
+                          className="w-full px-4 py-2.5 bg-background-secondary border border-border rounded-xl text-white placeholder-muted focus:outline-none focus:border-emerald-500 uppercase"
                         />
                       </div>
                       <div>
@@ -1425,7 +1425,7 @@ function OrcamentosPageContent() {
                           value={quickMarca}
                           onChange={(e) => setQuickMarca(e.target.value)}
                           placeholder="Fiat"
-                          className="w-full px-4 py-2.5 bg-background-secondary border border-border rounded-xl text-foreground placeholder-zinc-500 focus:outline-none focus:border-emerald-500"
+                          className="w-full px-4 py-2.5 bg-background-secondary border border-border rounded-xl text-foreground placeholder-muted focus:outline-none focus:border-emerald-500"
                         />
                       </div>
                       <div>
@@ -1435,7 +1435,7 @@ function OrcamentosPageContent() {
                           value={quickModelo}
                           onChange={(e) => setQuickModelo(e.target.value)}
                           placeholder="Uno"
-                          className="w-full px-4 py-2.5 bg-background-secondary border border-border rounded-xl text-foreground placeholder-zinc-500 focus:outline-none focus:border-emerald-500"
+                          className="w-full px-4 py-2.5 bg-background-secondary border border-border rounded-xl text-foreground placeholder-muted focus:outline-none focus:border-emerald-500"
                         />
                       </div>
                       <div>
@@ -1446,7 +1446,7 @@ function OrcamentosPageContent() {
                           onChange={(e) => setQuickCilindrada(e.target.value)}
                           placeholder="1.0"
                           maxLength={20}
-                          className="w-full px-4 py-2.5 bg-background-secondary border border-border rounded-xl text-foreground placeholder-zinc-500 focus:outline-none focus:border-emerald-500"
+                          className="w-full px-4 py-2.5 bg-background-secondary border border-border rounded-xl text-foreground placeholder-muted focus:outline-none focus:border-emerald-500"
                         />
                       </div>
                     </div>

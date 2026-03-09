@@ -365,13 +365,13 @@ function AssinaturaContent() {
 
                 {/* Método de pagamento salvo */}
                 {subscription.paymentMethod && (
-                  <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 p-3 sm:p-4 bg-zinc-500/5 border border-zinc-500/20 rounded-xl">
+                  <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 p-3 sm:p-4 bg-muted/5 border border-muted/20 rounded-xl">
                     <div className="flex items-center gap-3">
-                      <Wallet size={20} className="text-zinc-400" />
+                      <Wallet size={20} className="text-foreground-muted" />
                       <span className="text-foreground">Cartão cadastrado</span>
                     </div>
                     <div className="flex items-center gap-2">
-                      <CreditCard size={20} className="text-zinc-400" />
+                      <CreditCard size={20} className="text-foreground-muted" />
                       <span className="text-foreground font-semibold">
                         {getCardBrandName(subscription.paymentMethod.brand)} •••• {subscription.paymentMethod.last4}
                       </span>
@@ -411,13 +411,13 @@ function AssinaturaContent() {
 
                 {/* Método de pagamento */}
                 {subscription.paymentMethod && (
-                  <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 p-3 sm:p-4 bg-zinc-500/5 border border-zinc-500/20 rounded-xl">
+                  <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 p-3 sm:p-4 bg-muted/5 border border-muted/20 rounded-xl">
                     <div className="flex items-center gap-3">
-                      <Wallet size={20} className="text-zinc-400" />
+                      <Wallet size={20} className="text-foreground-muted" />
                       <span className="text-foreground">Forma de pagamento</span>
                     </div>
                     <div className="flex items-center gap-2">
-                      <CreditCard size={20} className="text-zinc-400" />
+                      <CreditCard size={20} className="text-foreground-muted" />
                       <span className="text-foreground font-semibold">
                         {getCardBrandName(subscription.paymentMethod.brand)} •••• {subscription.paymentMethod.last4}
                       </span>
@@ -470,7 +470,7 @@ function AssinaturaContent() {
                 <button
                   onClick={handlePortal}
                   disabled={processingPortal}
-                  className="flex-1 min-w-[200px] flex items-center justify-center gap-2 px-6 py-3 bg-zinc-800/50 border border-border hover:border-primary/50 rounded-xl text-foreground font-semibold transition-all disabled:opacity-50"
+                  className="flex-1 min-w-[200px] flex items-center justify-center gap-2 px-6 py-3 bg-background-secondary border border-border hover:border-primary/50 rounded-xl text-foreground font-semibold transition-all disabled:opacity-50"
                 >
                   {processingPortal ? (
                     <Loader2 className="animate-spin" size={20} />
@@ -545,7 +545,7 @@ function AssinaturaContent() {
                   <div className="flex flex-col-reverse sm:flex-row gap-3">
                     <button
                       onClick={() => setShowCancelConfirm(false)}
-                      className="flex-1 px-4 py-3 bg-zinc-800 border border-border rounded-xl text-foreground font-medium hover:bg-zinc-700 transition-colors"
+                      className="flex-1 px-4 py-3 bg-background-secondary border border-border rounded-xl text-foreground font-medium hover:bg-card-hover transition-colors"
                     >
                       Voltar
                     </button>
@@ -575,7 +575,7 @@ function AssinaturaContent() {
           </div>
 
           <div className="p-3 sm:p-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
-            <div className="p-4 bg-zinc-900/50 rounded-xl border border-border">
+            <div className="p-4 bg-background rounded-xl border border-border">
               <div className="p-2 bg-primary/10 rounded-lg w-fit mb-3">
                 <Sparkles size={20} className="text-primary" />
               </div>
@@ -585,7 +585,7 @@ function AssinaturaContent() {
               </p>
             </div>
 
-            <div className="p-4 bg-zinc-900/50 rounded-xl border border-border">
+            <div className="p-4 bg-background rounded-xl border border-border">
               <div className="p-2 bg-emerald-500/10 rounded-lg w-fit mb-3">
                 <Shield size={20} className="text-emerald-400" />
               </div>
@@ -595,7 +595,7 @@ function AssinaturaContent() {
               </p>
             </div>
 
-            <div className="p-4 bg-zinc-900/50 rounded-xl border border-border">
+            <div className="p-4 bg-background rounded-xl border border-border">
               <div className="p-2 bg-blue-500/10 rounded-lg w-fit mb-3">
                 <Zap size={20} className="text-blue-400" />
               </div>

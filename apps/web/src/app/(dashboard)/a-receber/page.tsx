@@ -168,13 +168,13 @@ export default function AReceberPage() {
           {/* Filters */}
           <div className="flex flex-col sm:flex-row gap-4 mb-6">
             <div className="relative flex-1">
-              <Search size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-500" />
+              <Search size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-muted" />
               <input
                 type="text"
                 placeholder="Buscar por cliente, número..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-12 pr-4 py-3 bg-card rounded-xl border border-border text-foreground placeholder:text-zinc-500 focus:outline-none focus:border-amber-500/50"
+                className="w-full pl-12 pr-4 py-3 bg-card rounded-xl border border-border text-foreground placeholder:text-muted focus:outline-none focus:border-amber-500/50"
               />
             </div>
             <div className="flex flex-wrap gap-2">
@@ -344,7 +344,7 @@ export default function AReceberPage() {
                       className={`p-3 min-h-[44px] rounded-xl border transition-all duration-200 flex items-center justify-center gap-2 ${
                         formaPagamento === method.value
                           ? 'bg-emerald-500/20 border-emerald-500 text-emerald-400'
-                          : 'bg-background border-border text-muted hover:border-zinc-600'
+                          : 'bg-background border-border text-muted hover:border-border-hover'
                       }`}
                     >
                       <span>{method.icon}</span>
@@ -361,7 +361,7 @@ export default function AReceberPage() {
                   setSelectedPendencia(null);
                   setFormaPagamento('');
                 }}
-                className="px-6 py-3 min-h-[44px] border border-border rounded-xl text-muted hover:bg-zinc-800 transition-all duration-200"
+                className="px-6 py-3 min-h-[44px] border border-border rounded-xl text-muted hover:bg-card-hover transition-all duration-200"
               >
                 Cancelar
               </button>

@@ -86,6 +86,7 @@ const menuItems: MenuItem[] = [
       { icon: FileText, label: 'Orçamentos', href: '/orcamentos', permission: 'orcamentos' },
       { icon: ShoppingCart, label: 'Vendas Rápidas', href: '/vendas-rapidas', permission: 'vendas-rapidas' },
       { icon: RotateCcw, label: 'Devoluções', href: '/devolucoes', permission: 'devolucoes' },
+      { icon: FileText, label: 'Notas Fiscais', href: '/notas-fiscais', permission: 'ordens' },
     ],
   },
   {

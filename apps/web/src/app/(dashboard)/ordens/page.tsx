@@ -5,7 +5,7 @@ import {
   Plus, Search, X, ClipboardList, Car, User, Calendar, Clock,
   Play, CheckCircle, Pause, XCircle, Truck, Filter, Eye, Edit,
   Trash2, Loader2, Package, Wrench, DollarSign, FileDown,
-  List, CalendarDays, ChevronLeft, ChevronRight, AlertCircle, Gauge
+  List, CalendarDays, ChevronLeft, ChevronRight, AlertCircle, Gauge, FileText
 } from 'lucide-react';
 import { useState, useEffect, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
@@ -108,6 +108,7 @@ function OrdensPageContent() {
   const [pagamentosConcluir, setPagamentosConcluir] = useState<PagamentoItem[]>([{ tipo: 'PIX', valor: 0 }]);
   const [descontoConcluir, setDescontoConcluir] = useState<string>('');
   const [saving, setSaving] = useState(false);
+  const [emitindoNfe, setEmitindoNfe] = useState(false);
 
   // Form states for new O.S.
   const [veiculos, setVeiculos] = useState<Veiculo[]>([]);
@@ -679,7 +680,7 @@ function OrdensPageContent() {
                 className={`p-2.5 rounded-lg transition-all duration-200 ${
                   viewMode === 'lista'
                     ? 'bg-gradient-to-r from-primary to-primary-dark text-white shadow-lg shadow-primary/25'
-                    : 'text-foreground-muted hover:text-white hover:bg-zinc-800'
+                    : 'text-foreground-muted hover:text-white hover:bg-card-hover'
                 }`}
                 title="Lista"
               >
@@ -690,7 +691,7 @@ function OrdensPageContent() {
                 className={`p-2.5 rounded-lg transition-all duration-200 ${
                   viewMode === 'calendario'
                     ? 'bg-gradient-to-r from-primary to-primary-dark text-white shadow-lg shadow-primary/25'
-                    : 'text-foreground-muted hover:text-white hover:bg-zinc-800'
+                    : 'text-foreground-muted hover:text-white hover:bg-card-hover'
                 }`}
                 title="Calendario"
               >
@@ -707,7 +708,7 @@ function OrdensPageContent() {
                     placeholder="Buscar por numero, placa ou cliente..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="w-full bg-card border border-border rounded-xl pl-11 pr-4 py-3 text-sm text-white placeholder-zinc-500 focus:outline-none focus:border-emerald-500/50 focus:ring-1 focus:ring-emerald-500/20 transition-all duration-200"
+                    className="w-full bg-card border border-border rounded-xl pl-11 pr-4 py-3 text-sm text-white placeholder-muted focus:outline-none focus:border-emerald-500/50 focus:ring-1 focus:ring-emerald-500/20 transition-all duration-200"
                   />
                 </div>
                 <select
@@ -718,7 +719,7 @@ function OrdensPageContent() {
                   <option value="">Todos os Status</option>
                   <option value="ATIVAS">Em Andamento</option>
                   <option value="HISTORICO">Histórico</option>
-                  <option disabled className="text-zinc-600">──────────</option>
+                  <option disabled className="text-muted">──────────</option>
                   {Object.entries(statusConfig).map(([key, config]) => (
                     <option key={key} value={key}>{config.label}</option>
                   ))}
@@ -836,7 +837,7 @@ function OrdensPageContent() {
                             openNewModalFromCalendar(date, hora);
                           }
                         }}
-                        className={`p-1 border-l border-border relative ${isTodayDate ? 'bg-emerald-500/5' : ''} hover:bg-zinc-800/30 transition-all duration-200 ${diaOrdens.length === 0 ? 'cursor-pointer group' : ''}`}
+                        className={`p-1 border-l border-border relative ${isTodayDate ? 'bg-emerald-500/5' : ''} hover:bg-card-hover transition-all duration-200 ${diaOrdens.length === 0 ? 'cursor-pointer group' : ''}`}
                       >
                         {diaOrdens.length === 0 && (
                           <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
@@ -875,8 +876,8 @@ function OrdensPageContent() {
         <div className="space-y-4">
           {ordens.length === 0 ? (
             <div className="bg-card border border-border rounded-2xl p-12 text-center">
-              <div className="p-4 bg-zinc-800/50 rounded-full w-fit mx-auto mb-4">
-                <ClipboardList className="h-8 w-8 text-zinc-600" />
+              <div className="p-4 bg-background-secondary rounded-full w-fit mx-auto mb-4">
+                <ClipboardList className="h-8 w-8 text-muted" />
               </div>
               <p className="text-muted">Nenhuma O.S. encontrada</p>
               <button
@@ -911,7 +912,7 @@ function OrdensPageContent() {
                           <span className="flex items-center gap-1.5">
                             <Car size={14} className="text-emerald-400" />
                             <span className="font-medium text-emerald-400">{formatPlate(ordem.veiculo.placa)}</span>
-                            <span className="text-zinc-600">-</span>
+                            <span className="text-muted">-</span>
                             {capitalize(ordem.veiculo.marca)} {capitalize(ordem.veiculo.modelo)}
                           </span>
                           <span className="flex items-center gap-1.5">
@@ -923,7 +924,7 @@ function OrdensPageContent() {
                           <span>{formatDateTime(ordem.createdAt)}</span>
                           {ordem.dataAgendada && (
                             <>
-                              <span className="text-zinc-700">|</span>
+                              <span className="text-muted">|</span>
                               <span>Agendada: {formatDate(ordem.dataAgendada)}</span>
                             </>
                           )}
@@ -1003,7 +1004,7 @@ function OrdensPageContent() {
                 <button
                   onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
                   disabled={currentPage === 1}
-                  className="p-2 bg-zinc-900 border border-border rounded-lg text-foreground-muted hover:text-white hover:border-emerald-500/30 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="p-2 bg-background border border-border rounded-lg text-foreground-muted hover:text-white hover:border-emerald-500/30 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   <ChevronLeft size={18} />
                 </button>
@@ -1013,7 +1014,7 @@ function OrdensPageContent() {
                 <button
                   onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
                   disabled={currentPage === totalPages}
-                  className="p-2 bg-zinc-900 border border-border rounded-lg text-foreground-muted hover:text-white hover:border-emerald-500/30 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="p-2 bg-background border border-border rounded-lg text-foreground-muted hover:text-white hover:border-emerald-500/30 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   <ChevronRight size={18} />
                 </button>
@@ -1033,7 +1034,7 @@ function OrdensPageContent() {
                 <h2 className="text-lg sm:text-xl font-semibold text-foreground">{editingOrdem ? 'Editar Ordem de Servico' : 'Nova Ordem de Servico'}</h2>
                 <p className="text-sm text-muted mt-1">Passo {step} de 3</p>
               </div>
-              <button onClick={() => { setShowModal(false); setEditingOrdem(null); }} className="p-2 hover:bg-zinc-800 rounded-xl text-muted hover:text-white transition-all duration-200">
+              <button onClick={() => { setShowModal(false); setEditingOrdem(null); }} className="p-2 hover:bg-card-hover rounded-xl text-muted hover:text-white transition-all duration-200">
                 <X size={20} />
               </button>
             </div>
@@ -1082,7 +1083,7 @@ function OrdensPageContent() {
                       <div className="space-y-2 max-h-[300px] overflow-y-auto">
                         {filteredVeiculos.length === 0 ? (
                           <div className="text-center py-8">
-                            <Car className="mx-auto h-10 w-10 text-zinc-600 mb-2" />
+                            <Car className="mx-auto h-10 w-10 text-muted mb-2" />
                             <p className="text-muted">Nenhum veículo encontrado</p>
                             <button
                               onClick={() => setModoNovoVeiculo(true)}
@@ -1638,6 +1639,36 @@ function OrdensPageContent() {
                   Editar
                 </button>
               )}
+              {(selectedOrdem.status === 'CONCLUIDO' || selectedOrdem.status === 'ENTREGUE') && (
+                <button
+                  onClick={async () => {
+                    setEmitindoNfe(true);
+                    try {
+                      const res = await fetch('/api/nfe/emitir', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ ordemServicoId: selectedOrdem.id }),
+                      });
+                      const data = await res.json();
+                      if (res.ok && data.success) {
+                        toast.success(`NF-e ${String(data.data.numero).padStart(6, '0')} emitida com sucesso!`);
+                        setShowDetailModal(false);
+                      } else {
+                        toast.error(data.error || 'Erro ao emitir NF-e');
+                      }
+                    } catch {
+                      toast.error('Erro ao emitir NF-e');
+                    } finally {
+                      setEmitindoNfe(false);
+                    }
+                  }}
+                  disabled={emitindoNfe}
+                  className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-500 to-blue-700 rounded-xl text-white font-medium hover:opacity-90 transition-opacity disabled:opacity-50"
+                >
+                  {emitindoNfe ? <Loader2 size={18} className="animate-spin" /> : <FileText size={18} />}
+                  {emitindoNfe ? 'Emitindo...' : 'Emitir NF-e'}
+                </button>
+              )}
               <button
                 onClick={() => downloadOrdemPDF(selectedOrdem, empresaConfig || undefined)}
                 className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-primary to-primary-dark rounded-xl text-white font-medium hover:opacity-90 transition-opacity"
@@ -1683,7 +1714,7 @@ function OrdensPageContent() {
                   setShowDeleteConfirm(false);
                   setSelectedOrdem(null);
                 }}
-                className="px-6 py-3 border border-border rounded-xl text-muted hover:bg-zinc-800 transition-all duration-200"
+                className="px-6 py-3 border border-border rounded-xl text-muted hover:bg-card-hover transition-all duration-200"
               >
                 Cancelar
               </button>
@@ -1808,7 +1839,7 @@ function OrdensPageContent() {
                   setPagamentosConcluir([{ tipo: 'PIX', valor: 0 }]);
                   setDescontoConcluir('');
                 }}
-                className="px-6 py-3 border border-border rounded-xl text-muted hover:bg-zinc-800 transition-all duration-200"
+                className="px-6 py-3 border border-border rounded-xl text-muted hover:bg-card-hover transition-all duration-200"
               >
                 Cancelar
               </button>

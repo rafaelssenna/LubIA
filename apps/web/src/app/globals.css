@@ -359,8 +359,9 @@ input:focus, select:focus, textarea:focus {
 /* Corrige cores hardcoded do dark mode para funcionar no light mode */
 
 /* Backgrounds escuros → claros */
-.light [class*="bg-zinc-900"] {
-  background-color: var(--input-bg) !important;
+.light [class*="bg-zinc-900"],
+.light [class*="bg-zinc-950"] {
+  background-color: var(--background) !important;
 }
 
 .light [class*="bg-zinc-800"] {
@@ -373,7 +374,8 @@ input:focus, select:focus, textarea:focus {
 
 /* Hover states */
 .light [class*="hover\:bg-zinc-800"]:hover,
-.light [class*="hover\:bg-zinc-700"]:hover {
+.light [class*="hover\:bg-zinc-700"]:hover,
+.light [class*="hover\:bg-zinc-900"]:hover {
   background-color: var(--card-hover) !important;
 }
 
@@ -384,6 +386,12 @@ input:focus, select:focus, textarea:focus {
 }
 
 /* Text colors que ficam invisíveis em light mode */
+.light [class*="text-zinc-100"],
+.light [class*="text-zinc-200"],
+.light [class*="text-zinc-300"] {
+  color: var(--foreground) !important;
+}
+
 .light [class*="text-zinc-400"],
 .light [class*="text-zinc-500"] {
   color: var(--muted) !important;
@@ -391,14 +399,30 @@ input:focus, select:focus, textarea:focus {
 
 /* Borders */
 .light [class*="border-zinc-600"],
-.light [class*="border-zinc-700"] {
+.light [class*="border-zinc-700"],
+.light [class*="border-zinc-800"] {
   border-color: var(--border) !important;
+}
+
+/* Dividers */
+.light [class*="divide-zinc"] > * + * {
+  border-color: var(--border) !important;
+}
+
+/* Ring/Focus */
+.light [class*="ring-zinc"] {
+  --tw-ring-color: var(--border) !important;
 }
 
 /* Select options legíveis em light mode */
 .light select option {
   background-color: var(--card);
   color: var(--foreground);
+}
+
+/* Focus-within borders */
+.light [class*="focus-within\:border-zinc"] {
+  border-color: var(--primary) !important;
 }
 
 /* ===== MOBILE LAYOUT ===== */

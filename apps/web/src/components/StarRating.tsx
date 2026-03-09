@@ -52,7 +52,7 @@ export default function StarRating({
               className={`transition-colors ${
                 isFilled
                   ? 'fill-amber-400 text-amber-400'
-                  : 'fill-transparent text-zinc-600'
+                  : 'fill-transparent text-muted'
               }`}
             />
           </button>

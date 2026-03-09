@@ -60,6 +60,8 @@ model Empresa {
   devolucoesVendaRapida DevolucaoVendaRapida[]
   pagamentos            Pagamento[]
   ideias                Ideia[]
+  notasFiscais          NotaFiscal[]
+  certificadoDigital    CertificadoDigital?
 
   @@map("empresas")
 }
@@ -108,6 +110,7 @@ model Cliente {
   telefone    String
   email       String?
   cpf         String?
+  cnpj        String?   // Para clientes PJ (Pessoa Jurídica)
   endereco    String?
   observacoes String?   // Preferências e observações do cliente (JSON)
   createdAt   DateTime  @default(now())
@@ -240,6 +243,7 @@ model OrdemServico {
   itensProduto   ItemOrdemProduto[]
   servicosExtras ServicoExtra[]
   pagamentos     Pagamento[]
+  notasFiscais   NotaFiscal[]
 
   @@unique([numero, empresaId])
   @@index([empresaId])
@@ -535,6 +539,15 @@ model Configuracao {
   chatbotFaq           String?  @db.Text
   // Configurações gerais
   lembreteAntecedencia Int      @default(7)
+  // NF-e - Nota Fiscal Eletrônica
+  nfeAmbiente         Int      @default(2)  // 1=Produção, 2=Homologação
+  nfeSerie            Int      @default(1)
+  nfeUltimoNumero     Int      @default(0)
+  inscricaoEstadual   String?
+  regimeTributario    Int      @default(1)  // 1=Simples Nacional, 2=Simples Excesso, 3=Regime Normal
+  nfeIdCSC            String?
+  nfeTokenCSC         String?
+  ufEmpresa           String?  @db.VarChar(2)
   updatedAt            DateTime @updatedAt
 
   empresa Empresa @relation(fields: [empresaId], references: [id], onDelete: Cascade)
@@ -664,6 +677,7 @@ model VendaRapida {
   itens      ItemVendaRapida[]
   devolucoes DevolucaoVendaRapida[]
   pagamentos Pagamento[]
+  notasFiscais NotaFiscal[]
 
   @@unique([numero, empresaId])
   @@index([empresaId])
@@ -857,6 +871,63 @@ model IdeiaAvaliacao {
   @@unique([ideiaId, avaliadorId]) // cada avaliador só avalia uma vez por ideia
   @@index([ideiaId])
   @@map("ideias_avaliacoes")
+}
+
+// =============================================
+// NOTA FISCAL ELETRÔNICA (NF-e)
+// =============================================
+
+// Status da NF-e
+enum StatusNFe {
+  PENDENTE
+  AUTORIZADA
+  REJEITADA
+  CANCELADA
+  INUTILIZADA
+}
+
+// Nota Fiscal Eletrônica emitida
+model NotaFiscal {
+  id                   Int        @id @default(autoincrement())
+  empresaId            Int
+  ordemServicoId       Int?
+  vendaRapidaId        Int?
+  numero               Int
+  serie                Int        @default(1)
+  chaveAcesso          String?    @db.VarChar(44)
+  protocolo            String?
+  status               StatusNFe  @default(PENDENTE)
+  xmlEnvio             String?    @db.Text
+  xmlRetorno           String?    @db.Text
+  danfePdf             String?    @db.Text
+  valorTotal           Decimal    @db.Decimal(10, 2)
+  valorProdutos        Decimal    @db.Decimal(10, 2)
+  valorServicos        Decimal?   @db.Decimal(10, 2)
+  motivoCancelamento   String?
+  createdAt            DateTime   @default(now())
+  updatedAt            DateTime   @updatedAt
+
+  empresa       Empresa        @relation(fields: [empresaId], references: [id], onDelete: Cascade)
+  ordemServico  OrdemServico?  @relation(fields: [ordemServicoId], references: [id])
+  vendaRapida   VendaRapida?   @relation(fields: [vendaRapidaId], references: [id])
+
+  @@index([empresaId])
+  @@index([chaveAcesso])
+  @@map("notas_fiscais")
+}
+
+// Certificado Digital A1 para assinatura de NF-e
+model CertificadoDigital {
+  id          Int      @id @default(autoincrement())
+  empresaId   Int      @unique
+  arquivo     Bytes
+  senha       String
+  validade    DateTime
+  criadoEm    DateTime @default(now())
+
+  empresa Empresa @relation(fields: [empresaId], references: [id], onDelete: Cascade)
+
+  @@map("certificados_digitais")
 }
 
 // =============================================

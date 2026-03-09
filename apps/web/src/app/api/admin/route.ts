@@ -22,7 +22,16 @@ export async function GET(request: NextRequest) {
   }
 
   try {
-    // Estatísticas gerais
+    // Empresas internas/teste (que têm usuários isSuperAdmin ou isInternal)
+    const empresasInternas = await prisma.usuario.findMany({
+      where: { OR: [{ isSuperAdmin: true }, { isInternal: true }] },
+      select: { empresaId: true },
+      distinct: ['empresaId'],
+    });
+    const idsInternos = empresasInternas.map((u) => u.empresaId);
+    const filtroExterno = { NOT: { id: { in: idsInternos } } };
+
+    // Estatísticas gerais (só empresas externas)
     const [
       totalEmpresas,
       empresasAtivas,
@@ -33,14 +42,15 @@ export async function GET(request: NextRequest) {
       totalIdeias,
       empresas,
     ] = await Promise.all([
-      prisma.empresa.count(),
-      prisma.empresa.count({ where: { ativo: true } }),
-      prisma.usuario.count(),
-      prisma.cliente.count(),
-      prisma.ordemServico.count(),
-      prisma.vendaRapida.count(),
-      prisma.ideia.count(),
+      prisma.empresa.count({ where: filtroExterno }),
+      prisma.empresa.count({ where: { ativo: true, ...filtroExterno } }),
+      prisma.usuario.count({ where: { empresaId: { notIn: idsInternos } } }),
+      prisma.cliente.count({ where: { empresaId: { notIn: idsInternos } } }),
+      prisma.ordemServico.count({ where: { empresaId: { notIn: idsInternos } } }),
+      prisma.vendaRapida.count({ where: { empresaId: { notIn: idsInternos } } }),
+      prisma.ideia.count({ where: { empresaId: { notIn: idsInternos } } }),
       prisma.empresa.findMany({
+        where: filtroExterno,
         select: {
           id: true,
           nome: true,
@@ -63,9 +73,25 @@ export async function GET(request: NextRequest) {
       }),
     ]);
 
-    // Ideias recentes (todas as empresas)
-    const ideiasRecentes = await prisma.ideia.findMany({
-      take: 10,
+    // Todos os usuários (só empresas externas)
+    const usuarios = await prisma.usuario.findMany({
+      where: { empresaId: { notIn: idsInternos } },
+      select: {
+        id: true,
+        nome: true,
+        email: true,
+        role: true,
+        ativo: true,
+        lastLoginAt: true,
+        createdAt: true,
+        empresa: { select: { nome: true } },
+      },
+      orderBy: { createdAt: 'desc' },
+    });
+
+    // Todas as ideias (só empresas externas)
+    const todasIdeias = await prisma.ideia.findMany({
+      where: { empresaId: { notIn: idsInternos } },
       orderBy: { createdAt: 'desc' },
       include: {
         usuario: { select: { nome: true } },
@@ -73,9 +99,10 @@ export async function GET(request: NextRequest) {
       },
     });
 
-    // Estatísticas de ideias por status
+    // Estatísticas de ideias por status (só empresas externas)
     const ideiasPorStatus = await prisma.ideia.groupBy({
       by: ['status'],
+      where: { empresaId: { notIn: idsInternos } },
       _count: { id: true },
     });
 
@@ -103,12 +130,25 @@ export async function GET(request: NextRequest) {
         vendas: e._count.vendasRapidas,
         ideias: e._count.ideias,
       })),
-      ideiasRecentes: ideiasRecentes.map((i) => ({
+      usuarios: usuarios.map((u) => ({
+        id: u.id,
+        nome: u.nome,
+        email: u.email,
+        role: u.role,
+        ativo: u.ativo,
+        lastLoginAt: u.lastLoginAt,
+        createdAt: u.createdAt,
+        empresa: u.empresa.nome,
+      })),
+      ideias: todasIdeias.map((i) => ({
         id: i.id,
         titulo: i.titulo,
+        descricao: i.descricao,
         status: i.status,
         categoria: i.categoria,
+        impacto: i.impacto,
         notaMedia: i.notaMedia ? Number(i.notaMedia) : null,
+        totalAvaliacoes: i.totalAvaliacoes,
         autor: i.usuario.nome,
         empresa: i.empresa.nome,
         createdAt: i.createdAt,

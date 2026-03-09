@@ -43,6 +43,15 @@ export async function GET() {
         logo: (config as any).logo,
         pdfCorOS: (config as any).pdfCorOS || '#22c55e',
         pdfCorOrcamento: (config as any).pdfCorOrcamento || '#e85d04',
+        // NF-e
+        nfeAmbiente: config.nfeAmbiente,
+        nfeSerie: config.nfeSerie,
+        nfeUltimoNumero: config.nfeUltimoNumero,
+        inscricaoEstadual: config.inscricaoEstadual,
+        regimeTributario: config.regimeTributario,
+        nfeIdCSC: config.nfeIdCSC,
+        nfeTokenCSC: config.nfeTokenCSC,
+        ufEmpresa: config.ufEmpresa,
       },
     });
   } catch (error: any) {
@@ -98,6 +107,15 @@ export async function PUT(request: NextRequest) {
     if (body.logo !== undefined) updateData.logo = body.logo;
     if (body.pdfCorOS !== undefined) updateData.pdfCorOS = body.pdfCorOS;
     if (body.pdfCorOrcamento !== undefined) updateData.pdfCorOrcamento = body.pdfCorOrcamento;
+
+    // NF-e
+    if (body.nfeAmbiente !== undefined) updateData.nfeAmbiente = parseInt(body.nfeAmbiente);
+    if (body.nfeSerie !== undefined) updateData.nfeSerie = parseInt(body.nfeSerie);
+    if (body.inscricaoEstadual !== undefined) updateData.inscricaoEstadual = body.inscricaoEstadual;
+    if (body.regimeTributario !== undefined) updateData.regimeTributario = parseInt(body.regimeTributario);
+    if (body.nfeIdCSC !== undefined) updateData.nfeIdCSC = body.nfeIdCSC;
+    if (body.nfeTokenCSC !== undefined) updateData.nfeTokenCSC = body.nfeTokenCSC;
+    if (body.ufEmpresa !== undefined) updateData.ufEmpresa = body.ufEmpresa;
 
     const config = await prisma.configuracao.update({
       where: { id: existing.id },

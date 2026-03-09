@@ -14,6 +14,8 @@ import {
   Receipt,
   Clock,
   RotateCcw,
+  FileText,
+  Loader2,
 } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
@@ -88,6 +90,7 @@ export default function VendasRapidasPage() {
   // Modal Detalhes
   const [showDetalhes, setShowDetalhes] = useState(false);
   const [vendaSelecionada, setVendaSelecionada] = useState<VendaRapida | null>(null);
+  const [emitindoNfe, setEmitindoNfe] = useState(false);
 
   // Carregar vendas
   const fetchVendas = async () => {
@@ -753,7 +756,34 @@ export default function VendasRapidasPage() {
                   <p className="text-muted text-sm">Total</p>
                   <p className="text-2xl font-bold text-emerald-400">{formatCurrency(vendaSelecionada.total)}</p>
                 </div>
-                <div className="flex gap-3">
+                <div className="flex flex-wrap gap-3">
+                  <button
+                    onClick={async () => {
+                      setEmitindoNfe(true);
+                      try {
+                        const res = await fetch('/api/nfe/emitir', {
+                          method: 'POST',
+                          headers: { 'Content-Type': 'application/json' },
+                          body: JSON.stringify({ vendaRapidaId: vendaSelecionada.id }),
+                        });
+                        const data = await res.json();
+                        if (res.ok && data.success) {
+                          showToast(`NF-e ${String(data.data.numero).padStart(6, '0')} emitida com sucesso!`, 'success');
+                        } else {
+                          showToast(data.error || 'Erro ao emitir NF-e', 'error');
+                        }
+                      } catch {
+                        showToast('Erro ao emitir NF-e', 'error');
+                      } finally {
+                        setEmitindoNfe(false);
+                      }
+                    }}
+                    disabled={emitindoNfe}
+                    className="px-4 py-3 bg-blue-500/20 text-blue-400 rounded-xl hover:bg-blue-500/30 transition-colors flex items-center gap-2 disabled:opacity-50"
+                  >
+                    {emitindoNfe ? <Loader2 size={18} className="animate-spin" /> : <FileText size={18} />}
+                    {emitindoNfe ? 'Emitindo...' : 'Emitir NF-e'}
+                  </button>
                   <button
                     onClick={() => {
                       setShowDetalhes(false);

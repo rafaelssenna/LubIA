@@ -28,6 +28,10 @@ import {
   Image,
   X,
   Palette,
+  FileText,
+  Shield,
+  Upload as UploadIcon,
+  Code,
 } from 'lucide-react';
 import { useState, useEffect, useRef } from 'react';
 
@@ -50,6 +54,15 @@ interface Config {
   logo: string | null;
   pdfCorOS: string;
   pdfCorOrcamento: string;
+  // NF-e
+  nfeAmbiente: number;
+  nfeSerie: number;
+  nfeUltimoNumero: number;
+  inscricaoEstadual: string | null;
+  regimeTributario: number;
+  nfeIdCSC: string | null;
+  nfeTokenCSC: string | null;
+  ufEmpresa: string | null;
 }
 
 interface FaqItem {
@@ -199,6 +212,21 @@ export default function ConfiguraçõesPage() {
   const [pdfCorOS, setPdfCorOS] = useState('#22c55e');
   const [pdfCorOrcamento, setPdfCorOrcamento] = useState('#e85d04');
 
+  // NF-e states
+  const [nfeDesbloqueado, setNfeDesbloqueado] = useState(false);
+  const [nfeSenhaInput, setNfeSenhaInput] = useState('');
+  const [nfeAmbiente, setNfeAmbiente] = useState(2);
+  const [nfeSerie, setNfeSerie] = useState(1);
+  const [inscricaoEstadual, setInscricaoEstadual] = useState('');
+  const [regimeTributario, setRegimeTributario] = useState(1);
+  const [nfeIdCSC, setNfeIdCSC] = useState('');
+  const [nfeTokenCSC, setNfeTokenCSC] = useState('');
+  const [ufEmpresa, setUfEmpresa] = useState('');
+  const [certStatus, setCertStatus] = useState<{ exists: boolean; validade?: string; expirado?: boolean } | null>(null);
+  const [uploadingCert, setUploadingCert] = useState(false);
+  const certInputRef = useRef<HTMLInputElement>(null);
+  const [certSenha, setCertSenha] = useState('');
+
   // Redimensionar imagem para logo (max 400x400, JPEG 0.8)
   const handleLogoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -345,6 +373,14 @@ export default function ConfiguraçõesPage() {
         setLogo(data.data.logo || null);
         setPdfCorOS(data.data.pdfCorOS || '#22c55e');
         setPdfCorOrcamento(data.data.pdfCorOrcamento || '#e85d04');
+        // NF-e
+        setNfeAmbiente(data.data.nfeAmbiente ?? 2);
+        setNfeSerie(data.data.nfeSerie ?? 1);
+        setInscricaoEstadual(data.data.inscricaoEstadual || '');
+        setRegimeTributario(data.data.regimeTributario ?? 1);
+        setNfeIdCSC(data.data.nfeIdCSC || '');
+        setNfeTokenCSC(data.data.nfeTokenCSC || '');
+        setUfEmpresa(data.data.ufEmpresa || '');
         // Carregar FAQ
         try {
           if (data.data.chatbotFaq) {
@@ -536,11 +572,53 @@ export default function ConfiguraçõesPage() {
     }
   };
 
+  // Certificado Digital
+  const fetchCertStatus = async () => {
+    try {
+      const res = await fetch('/api/certificado');
+      const data = await res.json();
+      if (data.data) setCertStatus(data.data);
+    } catch {}
+  };
+
+  const handleCertUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (!certSenha) {
+      toast.error('Informe a senha do certificado antes de enviar');
+      return;
+    }
+
+    setUploadingCert(true);
+    try {
+      const formData = new FormData();
+      formData.append('arquivo', file);
+      formData.append('senha', certSenha);
+
+      const res = await fetch('/api/certificado', { method: 'POST', body: formData });
+      const data = await res.json();
+
+      if (res.ok && data.success) {
+        toast.success('Certificado digital salvo com sucesso!');
+        setCertSenha('');
+        fetchCertStatus();
+      } else {
+        toast.error(data.error || 'Erro ao salvar certificado');
+      }
+    } catch {
+      toast.error('Erro ao enviar certificado');
+    } finally {
+      setUploadingCert(false);
+      if (certInputRef.current) certInputRef.current.value = '';
+    }
+  };
+
   useEffect(() => {
     fetchConfig();
     fetchServiços();
     fetchFiliais();
     checkWhatsAppStatus();
+    fetchCertStatus();
   }, []);
 
   // Polling para atualizar status quando conectando
@@ -583,6 +661,14 @@ export default function ConfiguraçõesPage() {
           logo,
           pdfCorOS,
           pdfCorOrcamento,
+          // NF-e
+          nfeAmbiente,
+          nfeSerie,
+          inscricaoEstadual,
+          regimeTributario,
+          nfeIdCSC,
+          nfeTokenCSC,
+          ufEmpresa,
         }),
       });
 
@@ -699,7 +785,7 @@ export default function ConfiguraçõesPage() {
                 value={nomeOficina}
                 onChange={(e) => setNomeOficina(e.target.value)}
                 placeholder="Ex: Auto Center Silva"
-                className="w-full bg-zinc-900/50 border border-border rounded-xl px-4 py-3 text-foreground placeholder-zinc-500 focus:outline-none focus:border-blue-500/50 focus:ring-2 focus:ring-blue-500/20 transition-all"
+                className="w-full bg-background border border-border rounded-xl px-4 py-3 text-foreground placeholder-muted focus:outline-none focus:border-blue-500/50 focus:ring-2 focus:ring-blue-500/20 transition-all"
               />
             </div>
             <div>
@@ -712,7 +798,7 @@ export default function ConfiguraçõesPage() {
                   value={cnpj}
                   onChange={(e) => handleCnpjChange(e.target.value)}
                   placeholder="00.000.000/0000-00"
-                  className="w-full bg-zinc-900/50 border border-border rounded-xl px-4 py-3 text-foreground placeholder-zinc-500 focus:outline-none focus:border-blue-500/50 focus:ring-2 focus:ring-blue-500/20 transition-all"
+                  className="w-full bg-background border border-border rounded-xl px-4 py-3 text-foreground placeholder-muted focus:outline-none focus:border-blue-500/50 focus:ring-2 focus:ring-blue-500/20 transition-all"
                 />
                 {buscandoCnpj && (
                   <div className="absolute right-3 top-1/2 -translate-y-1/2">
@@ -731,7 +817,7 @@ export default function ConfiguraçõesPage() {
                 value={telefone}
                 onChange={(e) => setTelefone(formatTelefone(e.target.value))}
                 placeholder="(00) 00000-0000"
-                className="w-full bg-zinc-900/50 border border-border rounded-xl px-4 py-3 text-foreground placeholder-zinc-500 focus:outline-none focus:border-blue-500/50 focus:ring-2 focus:ring-blue-500/20 transition-all"
+                className="w-full bg-background border border-border rounded-xl px-4 py-3 text-foreground placeholder-muted focus:outline-none focus:border-blue-500/50 focus:ring-2 focus:ring-blue-500/20 transition-all"
               />
             </div>
             <div>
@@ -741,7 +827,7 @@ export default function ConfiguraçõesPage() {
                 value={endereco}
                 onChange={(e) => setEndereço(e.target.value)}
                 placeholder="Rua, número, bairro"
-                className="w-full bg-zinc-900/50 border border-border rounded-xl px-4 py-3 text-foreground placeholder-zinc-500 focus:outline-none focus:border-blue-500/50 focus:ring-2 focus:ring-blue-500/20 transition-all"
+                className="w-full bg-background border border-border rounded-xl px-4 py-3 text-foreground placeholder-muted focus:outline-none focus:border-blue-500/50 focus:ring-2 focus:ring-blue-500/20 transition-all"
               />
             </div>
 
@@ -757,7 +843,7 @@ export default function ConfiguraçõesPage() {
                     <img
                       src={logo}
                       alt="Logo"
-                      className="w-24 h-24 object-contain bg-zinc-900/50 border border-border rounded-xl p-2"
+                      className="w-24 h-24 object-contain bg-background border border-border rounded-xl p-2"
                     />
                     <button
                       onClick={() => setLogo(null)}
@@ -770,7 +856,7 @@ export default function ConfiguraçõesPage() {
                 ) : (
                   <button
                     onClick={() => logoInputRef.current?.click()}
-                    className="w-24 h-24 flex flex-col items-center justify-center gap-2 bg-zinc-900/50 border-2 border-dashed border-border rounded-xl text-muted hover:border-blue-500/50 hover:text-blue-400 transition-all cursor-pointer"
+                    className="w-24 h-24 flex flex-col items-center justify-center gap-2 bg-background border-2 border-dashed border-border rounded-xl text-muted hover:border-blue-500/50 hover:text-blue-400 transition-all cursor-pointer"
                   >
                     <Upload size={20} />
                     <span className="text-xs">Enviar</span>
@@ -786,7 +872,7 @@ export default function ConfiguraçõesPage() {
                 {logo && (
                   <button
                     onClick={() => logoInputRef.current?.click()}
-                    className="px-3 py-2 bg-zinc-900/50 border border-border rounded-xl text-sm text-muted hover:text-foreground hover:border-blue-500/50 transition-all"
+                    className="px-3 py-2 bg-background border border-border rounded-xl text-sm text-muted hover:text-foreground hover:border-blue-500/50 transition-all"
                   >
                     Trocar
                   </button>
@@ -853,7 +939,7 @@ export default function ConfiguraçõesPage() {
                       <p className="text-white font-bold text-sm">#ABC12345</p>
                     </div>
                   </div>
-                  <div className="bg-zinc-900/50 p-3">
+                  <div className="bg-background p-3">
                     <div className="flex gap-4 text-[10px] text-muted">
                       <span>Cliente: João Silva</span>
                       <span>Veículo: Gol 2020</span>
@@ -877,7 +963,7 @@ export default function ConfiguraçõesPage() {
                       <p className="text-white font-bold text-sm">ORC-001</p>
                     </div>
                   </div>
-                  <div className="bg-zinc-900/50 p-3">
+                  <div className="bg-background p-3">
                     <div className="flex gap-4 text-[10px] text-muted">
                       <span>Cliente: Maria Santos</span>
                       <span>Veículo: HB20 2022</span>
@@ -902,6 +988,228 @@ export default function ConfiguraçõesPage() {
                 {saving ? 'Salvando...' : 'Salvar'}
               </button>
             </div>
+          </div>
+        </div>
+
+        {/* Nota Fiscal Eletrônica */}
+        <div className="bg-card border border-border rounded-2xl overflow-hidden relative">
+          <div className="p-4 sm:p-6 border-b border-border flex items-center gap-4">
+            <div className="p-3 bg-emerald-500/10 rounded-xl border border-emerald-500/20">
+              <FileText size={22} className="text-emerald-400" />
+            </div>
+            <div>
+              <h2 className="text-lg font-bold text-foreground">Nota Fiscal Eletrônica</h2>
+              <p className="text-sm text-muted">Certificado digital, regime tributário e configurações da NF-e</p>
+            </div>
+          </div>
+
+          {/* Overlay - Em desenvolvimento */}
+          {!nfeDesbloqueado && (
+            <div className="absolute inset-0 z-10 bg-card/95 backdrop-blur-sm flex flex-col items-center justify-center gap-4 rounded-2xl">
+              <div className="p-4 bg-amber-500/10 rounded-full border border-amber-500/20">
+                <Code size={32} className="text-amber-400" />
+              </div>
+              <h3 className="text-xl font-bold text-foreground">Em Desenvolvimento</h3>
+              <p className="text-sm text-muted text-center max-w-sm px-4">
+                O módulo de Nota Fiscal Eletrônica está em fase de desenvolvimento e será liberado em breve.
+              </p>
+              <div className="flex items-center gap-2 mt-2">
+                <input
+                  type="password"
+                  value={nfeSenhaInput}
+                  onChange={(e) => setNfeSenhaInput(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' && nfeSenhaInput === 'helsen2026') {
+                      setNfeDesbloqueado(true);
+                      setNfeSenhaInput('');
+                    }
+                  }}
+                  placeholder="Senha de acesso"
+                  className="px-4 py-2.5 bg-background border border-border rounded-xl text-foreground text-sm placeholder-muted focus:outline-none focus:ring-2 focus:ring-amber-500/50 w-48"
+                />
+                <button
+                  onClick={() => {
+                    if (nfeSenhaInput === 'helsen2026') {
+                      setNfeDesbloqueado(true);
+                      setNfeSenhaInput('');
+                    } else {
+                      toast.error('Senha incorreta');
+                    }
+                  }}
+                  className="px-4 py-2.5 bg-amber-600 hover:bg-amber-700 text-white rounded-xl text-sm font-medium transition-colors"
+                >
+                  Desbloquear
+                </button>
+              </div>
+            </div>
+          )}
+
+          <div className="p-3 sm:p-6 space-y-6">
+            {/* Certificado Digital */}
+            <div className="bg-background rounded-xl p-4 border border-border">
+              <div className="flex items-center gap-2 mb-4">
+                <Shield size={18} className="text-emerald-400" />
+                <h3 className="font-semibold text-foreground">Certificado Digital A1</h3>
+              </div>
+
+              {certStatus?.exists ? (
+                <div className={`flex items-center gap-3 p-3 rounded-lg border ${certStatus.expirado ? 'bg-red-500/10 border-red-500/30' : 'bg-emerald-500/10 border-emerald-500/30'}`}>
+                  {certStatus.expirado ? (
+                    <XCircle size={20} className="text-red-400" />
+                  ) : (
+                    <CheckCircle size={20} className="text-emerald-400" />
+                  )}
+                  <div>
+                    <p className={`font-medium ${certStatus.expirado ? 'text-red-400' : 'text-emerald-400'}`}>
+                      {certStatus.expirado ? 'Certificado expirado' : 'Certificado válido'}
+                    </p>
+                    <p className="text-xs text-muted">
+                      Validade: {new Date(certStatus.validade!).toLocaleDateString('pt-BR')}
+                    </p>
+                  </div>
+                </div>
+              ) : (
+                <div className="flex items-center gap-3 p-3 rounded-lg bg-amber-500/10 border border-amber-500/30">
+                  <Info size={20} className="text-amber-400" />
+                  <p className="text-sm text-amber-400">Nenhum certificado cadastrado</p>
+                </div>
+              )}
+
+              <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-xs font-medium text-muted mb-1">Senha do certificado</label>
+                  <input
+                    type="password"
+                    value={certSenha}
+                    onChange={(e) => setCertSenha(e.target.value)}
+                    placeholder="Senha do .pfx"
+                    className="w-full px-3 py-2 bg-background border border-border rounded-lg text-foreground text-sm placeholder-muted focus:outline-none focus:border-primary"
+                  />
+                </div>
+                <div className="flex items-end">
+                  <input
+                    ref={certInputRef}
+                    type="file"
+                    accept=".pfx,.p12"
+                    onChange={handleCertUpload}
+                    className="hidden"
+                  />
+                  <button
+                    onClick={() => {
+                      if (!certSenha) {
+                        toast.error('Informe a senha do certificado primeiro');
+                        return;
+                      }
+                      certInputRef.current?.click();
+                    }}
+                    disabled={uploadingCert}
+                    className="flex items-center gap-2 px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-sm font-medium transition-colors disabled:opacity-50"
+                  >
+                    {uploadingCert ? (
+                      <Loader2 size={16} className="animate-spin" />
+                    ) : (
+                      <UploadIcon size={16} />
+                    )}
+                    {uploadingCert ? 'Enviando...' : 'Enviar certificado (.pfx)'}
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            {/* Campos NF-e */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-xs font-medium text-muted mb-1">Inscrição Estadual</label>
+                <input
+                  type="text"
+                  value={inscricaoEstadual}
+                  onChange={(e) => setInscricaoEstadual(e.target.value)}
+                  placeholder="000.000.000.000"
+                  className="w-full px-3 py-2.5 bg-background border border-border rounded-lg text-foreground placeholder-muted focus:outline-none focus:border-primary"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-medium text-muted mb-1">UF da Empresa</label>
+                <select
+                  value={ufEmpresa}
+                  onChange={(e) => setUfEmpresa(e.target.value)}
+                  className="w-full px-3 py-2.5 bg-background border border-border rounded-lg text-foreground focus:outline-none focus:border-primary"
+                >
+                  <option value="">Selecione...</option>
+                  {['AC','AL','AM','AP','BA','CE','DF','ES','GO','MA','MG','MS','MT','PA','PB','PE','PI','PR','RJ','RN','RO','RR','RS','SC','SE','SP','TO'].map(uf => (
+                    <option key={uf} value={uf}>{uf}</option>
+                  ))}
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-xs font-medium text-muted mb-1">Regime Tributário</label>
+                <select
+                  value={regimeTributario}
+                  onChange={(e) => setRegimeTributario(parseInt(e.target.value))}
+                  className="w-full px-3 py-2.5 bg-background border border-border rounded-lg text-foreground focus:outline-none focus:border-primary"
+                >
+                  <option value={1}>Simples Nacional</option>
+                  <option value={2}>Simples Nacional - Excesso</option>
+                  <option value={3}>Regime Normal</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-xs font-medium text-muted mb-1">Ambiente</label>
+                <select
+                  value={nfeAmbiente}
+                  onChange={(e) => setNfeAmbiente(parseInt(e.target.value))}
+                  className="w-full px-3 py-2.5 bg-background border border-border rounded-lg text-foreground focus:outline-none focus:border-primary"
+                >
+                  <option value={2}>Homologação (Testes)</option>
+                  <option value={1}>Produção</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-xs font-medium text-muted mb-1">Série NF-e</label>
+                <input
+                  type="number"
+                  value={nfeSerie}
+                  onChange={(e) => setNfeSerie(parseInt(e.target.value) || 1)}
+                  min={1}
+                  className="w-full px-3 py-2.5 bg-background border border-border rounded-lg text-foreground placeholder-muted focus:outline-none focus:border-primary"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-medium text-muted mb-1">CSC ID (NFC-e)</label>
+                <input
+                  type="text"
+                  value={nfeIdCSC}
+                  onChange={(e) => setNfeIdCSC(e.target.value)}
+                  placeholder="Opcional"
+                  className="w-full px-3 py-2.5 bg-background border border-border rounded-lg text-foreground placeholder-muted focus:outline-none focus:border-primary"
+                />
+              </div>
+
+              <div className="sm:col-span-2">
+                <label className="block text-xs font-medium text-muted mb-1">Token CSC (NFC-e)</label>
+                <input
+                  type="text"
+                  value={nfeTokenCSC}
+                  onChange={(e) => setNfeTokenCSC(e.target.value)}
+                  placeholder="Opcional"
+                  className="w-full px-3 py-2.5 bg-background border border-border rounded-lg text-foreground placeholder-muted focus:outline-none focus:border-primary"
+                />
+              </div>
+            </div>
+
+            {nfeAmbiente === 1 && (
+              <div className="flex items-center gap-3 p-3 rounded-lg bg-amber-500/10 border border-amber-500/30">
+                <Info size={18} className="text-amber-400 shrink-0" />
+                <p className="text-sm text-amber-400">
+                  Ambiente de <strong>Produção</strong> ativo. As NF-e emitidas terão valor fiscal.
+                </p>
+              </div>
+            )}
           </div>
         </div>
 
@@ -939,8 +1247,8 @@ export default function ConfiguraçõesPage() {
                     key={filial.id}
                     className={`flex flex-col sm:flex-row sm:items-center justify-between p-3 sm:p-4 rounded-xl border transition-all gap-3 ${
                       filial.ativo
-                        ? 'bg-zinc-900/50 border-border hover:border-purple-500/30'
-                        : 'bg-zinc-900/30 border-border opacity-60'
+                        ? 'bg-background border-border hover:border-purple-500/30'
+                        : 'bg-background border-border opacity-60'
                     }`}
                   >
                     <div className="flex items-center gap-3 sm:gap-4">
@@ -960,14 +1268,14 @@ export default function ConfiguraçõesPage() {
                     <div className="flex items-center gap-1.5">
                       <button
                         onClick={() => openEditFilial(filial)}
-                        className="p-2 hover:bg-blue-500/10 rounded-lg text-zinc-400 hover:text-blue-400 transition-all"
+                        className="p-2 hover:bg-blue-500/10 rounded-lg text-foreground-muted hover:text-blue-400 transition-all"
                         title="Editar"
                       >
                         <Edit size={16} />
                       </button>
                       <button
                         onClick={() => handleDeleteFilial(filial)}
-                        className="p-2 hover:bg-red-500/10 rounded-lg text-zinc-400 hover:text-red-400 transition-all"
+                        className="p-2 hover:bg-red-500/10 rounded-lg text-foreground-muted hover:text-red-400 transition-all"
                         title="Excluir"
                       >
                         <Trash2 size={16} />
@@ -1007,7 +1315,7 @@ export default function ConfiguraçõesPage() {
                     value={filialForm.nome}
                     onChange={(e) => setFilialForm({ ...filialForm, nome: e.target.value })}
                     placeholder="Ex: Filial Centro"
-                    className="w-full bg-zinc-900/50 border border-border rounded-xl px-4 py-3 text-foreground placeholder-zinc-500 focus:outline-none focus:border-purple-500/50 focus:ring-2 focus:ring-purple-500/20 transition-all"
+                    className="w-full bg-background border border-border rounded-xl px-4 py-3 text-foreground placeholder-muted focus:outline-none focus:border-purple-500/50 focus:ring-2 focus:ring-purple-500/20 transition-all"
                   />
                 </div>
                 <div>
@@ -1017,7 +1325,7 @@ export default function ConfiguraçõesPage() {
                     value={filialForm.cnpj}
                     onChange={(e) => setFilialForm({ ...filialForm, cnpj: e.target.value })}
                     placeholder="00.000.000/0000-00"
-                    className="w-full bg-zinc-900/50 border border-border rounded-xl px-4 py-3 text-foreground placeholder-zinc-500 focus:outline-none focus:border-purple-500/50 focus:ring-2 focus:ring-purple-500/20 transition-all"
+                    className="w-full bg-background border border-border rounded-xl px-4 py-3 text-foreground placeholder-muted focus:outline-none focus:border-purple-500/50 focus:ring-2 focus:ring-purple-500/20 transition-all"
                   />
                 </div>
               </div>
@@ -1028,7 +1336,7 @@ export default function ConfiguraçõesPage() {
                     setEditingFilial(null);
                     setFilialForm({ nome: '', cnpj: '' });
                   }}
-                  className="px-6 py-3 min-h-[44px] border border-border rounded-xl text-muted hover:bg-zinc-800 transition-colors"
+                  className="px-6 py-3 min-h-[44px] border border-border rounded-xl text-muted hover:bg-card-hover transition-colors"
                 >
                   Cancelar
                 </button>
@@ -1067,7 +1375,7 @@ export default function ConfiguraçõesPage() {
                     value={servicoForm.nome}
                     onChange={(e) => setServicoForm({ ...servicoForm, nome: e.target.value })}
                     placeholder="Ex: Troca de Óleo"
-                    className="w-full bg-zinc-900/50 border border-border rounded-xl px-4 py-3 text-foreground placeholder-zinc-500 focus:outline-none focus:border-purple-500/50 focus:ring-2 focus:ring-purple-500/20 transition-all"
+                    className="w-full bg-background border border-border rounded-xl px-4 py-3 text-foreground placeholder-muted focus:outline-none focus:border-purple-500/50 focus:ring-2 focus:ring-purple-500/20 transition-all"
                   />
                 </div>
                 <div>
@@ -1075,7 +1383,7 @@ export default function ConfiguraçõesPage() {
                   <select
                     value={servicoForm.categoria}
                     onChange={(e) => setServicoForm({ ...servicoForm, categoria: e.target.value })}
-                    className="w-full bg-zinc-900/50 border border-border rounded-xl px-4 py-3 text-foreground focus:outline-none focus:border-purple-500/50 focus:ring-2 focus:ring-purple-500/20 transition-all"
+                    className="w-full bg-background border border-border rounded-xl px-4 py-3 text-foreground focus:outline-none focus:border-purple-500/50 focus:ring-2 focus:ring-purple-500/20 transition-all"
                   >
                     <option value="TROCA_OLEO">Trocas de Óleo</option>
                     <option value="FILTROS">Filtros</option>
@@ -1096,21 +1404,21 @@ export default function ConfiguraçõesPage() {
                     value={servicoForm.precoBase}
                     onChange={(e) => setServicoForm({ ...servicoForm, precoBase: e.target.value })}
                     placeholder="Ex: 180.00"
-                    className="w-full bg-zinc-900/50 border border-border rounded-xl px-4 py-3 text-foreground placeholder-zinc-500 focus:outline-none focus:border-purple-500/50 focus:ring-2 focus:ring-purple-500/20 transition-all"
+                    className="w-full bg-background border border-border rounded-xl px-4 py-3 text-foreground placeholder-muted focus:outline-none focus:border-purple-500/50 focus:ring-2 focus:ring-purple-500/20 transition-all"
                   />
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-muted mb-2">Intervalo para a próxima</label>
-                  <div className="grid grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
                       <input
                         type="number"
                         value={servicoForm.intervaloKm}
                         onChange={(e) => setServicoForm({ ...servicoForm, intervaloKm: e.target.value })}
                         placeholder="Ex: 10000"
-                        className="w-full bg-zinc-900/50 border border-border rounded-xl px-4 py-3 text-foreground placeholder-zinc-500 focus:outline-none focus:border-purple-500/50 focus:ring-2 focus:ring-purple-500/20 transition-all"
+                        className="w-full bg-background border border-border rounded-xl px-4 py-3 text-foreground placeholder-muted focus:outline-none focus:border-purple-500/50 focus:ring-2 focus:ring-purple-500/20 transition-all"
                       />
-                      <span className="text-xs text-zinc-500 mt-1 block">KM</span>
+                      <span className="text-xs text-muted mt-1 block">KM</span>
                     </div>
                     <div>
                       <input
@@ -1118,9 +1426,9 @@ export default function ConfiguraçõesPage() {
                         value={servicoForm.intervaloDias}
                         onChange={(e) => setServicoForm({ ...servicoForm, intervaloDias: e.target.value })}
                         placeholder="Ex: 180"
-                        className="w-full bg-zinc-900/50 border border-border rounded-xl px-4 py-3 text-foreground placeholder-zinc-500 focus:outline-none focus:border-purple-500/50 focus:ring-2 focus:ring-purple-500/20 transition-all"
+                        className="w-full bg-background border border-border rounded-xl px-4 py-3 text-foreground placeholder-muted focus:outline-none focus:border-purple-500/50 focus:ring-2 focus:ring-purple-500/20 transition-all"
                       />
-                      <span className="text-xs text-zinc-500 mt-1 block">Dias</span>
+                      <span className="text-xs text-muted mt-1 block">Dias</span>
                     </div>
                   </div>
                 </div>
@@ -1132,7 +1440,7 @@ export default function ConfiguraçõesPage() {
                     setEditingServico(null);
                     setServicoForm({ nome: '', categoria: 'TROCA_OLEO', precoBase: '', intervaloKm: '', intervaloDias: '' });
                   }}
-                  className="px-6 py-3 min-h-[44px] border border-border rounded-xl text-muted hover:bg-zinc-800 transition-colors"
+                  className="px-6 py-3 min-h-[44px] border border-border rounded-xl text-muted hover:bg-card-hover transition-colors"
                 >
                   Cancelar
                 </button>
@@ -1208,7 +1516,7 @@ export default function ConfiguraçõesPage() {
                 </div>
               </div>
             ) : qrCode ? (
-              <div className="bg-zinc-900/50 border border-border rounded-xl p-6 text-center">
+              <div className="bg-background border border-border rounded-xl p-6 text-center">
                 <p className="text-foreground font-semibold mb-4">Escaneie o QR Code com o WhatsApp</p>
                 <div className="inline-block p-4 bg-white rounded-xl mb-4">
                   <img src={qrCode} alt="QR Code" className="w-64 h-64" />
@@ -1254,7 +1562,7 @@ export default function ConfiguraçõesPage() {
                   <button
                     onClick={checkWhatsAppStatus}
                     disabled={checkingStatus}
-                    className="p-3 bg-zinc-900/50 border border-border rounded-xl text-muted hover:text-foreground hover:border-[#25D366]/50 transition-all"
+                    className="p-3 bg-background border border-border rounded-xl text-muted hover:text-foreground hover:border-[#25D366]/50 transition-all"
                     title="Verificar status"
                   >
                     <RefreshCw size={20} className={checkingStatus ? 'animate-spin' : ''} />
@@ -1280,7 +1588,7 @@ export default function ConfiguraçõesPage() {
             <button
               onClick={() => setChatbotEnabled(!chatbotEnabled)}
               className={`relative inline-flex h-7 w-12 items-center rounded-full transition-all duration-300 ${
-                chatbotEnabled ? 'bg-gradient-to-r from-primary to-primary-dark' : 'bg-zinc-700'
+                chatbotEnabled ? 'bg-gradient-to-r from-primary to-primary-dark' : 'bg-background-tertiary'
               }`}
             >
               <span
@@ -1300,19 +1608,19 @@ export default function ConfiguraçõesPage() {
                   value={chatbotNome}
                   onChange={(e) => setChatbotNome(e.target.value)}
                   placeholder="LoopIA"
-                  className="w-full bg-zinc-900/50 border border-border rounded-xl px-4 py-3 text-foreground placeholder-zinc-500 focus:outline-none focus:border-purple-500/50 focus:ring-2 focus:ring-purple-500/20 transition-all"
+                  className="w-full bg-background border border-border rounded-xl px-4 py-3 text-foreground placeholder-muted focus:outline-none focus:border-purple-500/50 focus:ring-2 focus:ring-purple-500/20 transition-all"
                 />
               </div>
 
               {/* Horário de Funcionamento */}
               <div>
                 <label className="block text-sm font-medium text-muted mb-2">Horário de Funcionamento</label>
-                <div className="bg-zinc-900/50 border border-border rounded-xl p-4 space-y-2">
+                <div className="bg-background border border-border rounded-xl p-4 space-y-2">
                   {DIAS_SEMANA.map((dia) => (
                     <div
                       key={dia.key}
                       className={`flex flex-wrap items-center gap-2 sm:gap-3 p-2 sm:p-2.5 rounded-lg transition-all ${
-                        chatbotHorário[dia.key].ativo ? 'bg-zinc-800/50' : 'bg-transparent opacity-50'
+                        chatbotHorário[dia.key].ativo ? 'bg-background-secondary' : 'bg-transparent opacity-50'
                       }`}
                     >
                       <button
@@ -1321,7 +1629,7 @@ export default function ConfiguraçõesPage() {
                         className={`w-5 h-5 rounded flex items-center justify-center border transition-all ${
                           chatbotHorário[dia.key].ativo
                             ? 'bg-primary border-primary'
-                            : 'bg-transparent border-zinc-600'
+                            : 'bg-transparent border-border'
                         }`}
                       >
                         {chatbotHorário[dia.key].ativo && (
@@ -1334,7 +1642,7 @@ export default function ConfiguraçõesPage() {
                           <select
                             value={chatbotHorário[dia.key].abertura}
                             onChange={(e) => updateHorárioDia(dia.key, 'abertura', e.target.value)}
-                            className="bg-zinc-800 border border-border rounded-lg px-2 py-1 text-sm text-foreground focus:outline-none focus:border-purple-500"
+                            className="bg-background-secondary border border-border rounded-lg px-2 py-1 text-sm text-foreground focus:outline-none focus:border-purple-500"
                           >
                             {HORARIOS.map((h) => (
                               <option key={h} value={h}>{h}</option>
@@ -1344,7 +1652,7 @@ export default function ConfiguraçõesPage() {
                           <select
                             value={chatbotHorário[dia.key].fechamento}
                             onChange={(e) => updateHorárioDia(dia.key, 'fechamento', e.target.value)}
-                            className="bg-zinc-800 border border-border rounded-lg px-2 py-1 text-sm text-foreground focus:outline-none focus:border-purple-500"
+                            className="bg-background-secondary border border-border rounded-lg px-2 py-1 text-sm text-foreground focus:outline-none focus:border-purple-500"
                           >
                             {HORARIOS.map((h) => (
                               <option key={h} value={h}>{h}</option>
@@ -1381,7 +1689,7 @@ export default function ConfiguraçõesPage() {
                     Novo Serviço
                   </button>
                 </div>
-                <div className="bg-zinc-900/50 border border-border rounded-xl p-4">
+                <div className="bg-background border border-border rounded-xl p-4">
                   {servicos.length > 0 ? (
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
                       {servicos.map((servico) => (
@@ -1389,8 +1697,8 @@ export default function ConfiguraçõesPage() {
                           key={servico.id}
                           className={`flex items-center justify-between p-3 rounded-lg border transition-all ${
                             servico.ativo
-                              ? 'bg-zinc-800/50 border-border/50 hover:border-purple-500/30'
-                              : 'bg-zinc-800/30 border-border/30 opacity-60'
+                              ? 'bg-background-secondary border-border/50 hover:border-purple-500/30'
+                              : 'bg-background-secondary border-border/30 opacity-60'
                           }`}
                         >
                           <div className="flex items-center gap-2 min-w-0 flex-1">
@@ -1400,14 +1708,14 @@ export default function ConfiguraçõesPage() {
                           <div className="flex items-center gap-1 shrink-0">
                             <button
                               onClick={() => openEditServico(servico)}
-                              className="p-1.5 hover:bg-blue-500/10 rounded-lg text-zinc-400 hover:text-blue-400 transition-all"
+                              className="p-1.5 hover:bg-blue-500/10 rounded-lg text-foreground-muted hover:text-blue-400 transition-all"
                               title="Editar"
                             >
                               <Edit size={14} />
                             </button>
                             <button
                               onClick={() => handleDeleteServico(servico)}
-                              className="p-1.5 hover:bg-red-500/10 rounded-lg text-zinc-400 hover:text-red-400 transition-all"
+                              className="p-1.5 hover:bg-red-500/10 rounded-lg text-foreground-muted hover:text-red-400 transition-all"
                               title="Excluir"
                             >
                               <Trash2 size={14} />
@@ -1418,7 +1726,7 @@ export default function ConfiguraçõesPage() {
                     </div>
                   ) : (
                     <div className="text-center py-4">
-                      <Wrench size={24} className="text-zinc-500 mx-auto mb-2" />
+                      <Wrench size={24} className="text-muted mx-auto mb-2" />
                       <p className="text-sm text-muted">Nenhum serviço cadastrado</p>
                       <p className="text-xs text-foreground-muted mt-1">
                         Clique em "Novo Serviço" para adicionar
@@ -1439,7 +1747,7 @@ export default function ConfiguraçõesPage() {
                   onChange={(e) => setChatbotBoasVindas(e.target.value)}
                   placeholder="Olá! Sou a LoopIA, assistente virtual da oficina..."
                   rows={2}
-                  className="w-full bg-zinc-900/50 border border-border rounded-xl px-4 py-3 text-foreground placeholder-zinc-500 focus:outline-none focus:border-purple-500/50 focus:ring-2 focus:ring-purple-500/20 transition-all resize-none"
+                  className="w-full bg-background border border-border rounded-xl px-4 py-3 text-foreground placeholder-muted focus:outline-none focus:border-purple-500/50 focus:ring-2 focus:ring-purple-500/20 transition-all resize-none"
                 />
               </div>
 
@@ -1454,7 +1762,7 @@ export default function ConfiguraçõesPage() {
                   onChange={(e) => setInformacoesNegocio(e.target.value)}
                   placeholder={"Ex: Trabalhamos com todas as marcas de veículos.\nAceitamos cartão, Pix e dinheiro.\nEstacionamento gratuito para clientes.\nTemos sala de espera com Wi-Fi e café."}
                   rows={4}
-                  className="w-full bg-zinc-900/50 border border-border rounded-xl px-4 py-3 text-foreground placeholder-zinc-500 focus:outline-none focus:border-purple-500/50 focus:ring-2 focus:ring-purple-500/20 transition-all resize-none"
+                  className="w-full bg-background border border-border rounded-xl px-4 py-3 text-foreground placeholder-muted focus:outline-none focus:border-purple-500/50 focus:ring-2 focus:ring-purple-500/20 transition-all resize-none"
                 />
                 <p className="mt-1.5 text-xs text-foreground-muted">
                   Informações gerais sobre a oficina que a IA usará nas conversas (formas de pagamento, diferenciais, etc.)
@@ -1479,7 +1787,7 @@ export default function ConfiguraçõesPage() {
                 <div className="space-y-3">
                   {faqItems.length > 0 ? (
                     faqItems.map((item, index) => (
-                      <div key={index} className="bg-zinc-900/50 border border-border rounded-xl p-4 space-y-3">
+                      <div key={index} className="bg-background border border-border rounded-xl p-4 space-y-3">
                         <div className="flex items-start justify-between gap-2">
                           <div className="flex-1 space-y-3">
                             <div>
@@ -1493,7 +1801,7 @@ export default function ConfiguraçõesPage() {
                                   setFaqItems(updated);
                                 }}
                                 placeholder="Ex: Vocês trabalham com qual marca de óleo?"
-                                className="w-full bg-zinc-800/50 border border-border rounded-lg px-3 py-2 text-sm text-foreground placeholder-zinc-500 focus:outline-none focus:border-purple-500/50 transition-all"
+                                className="w-full bg-background-secondary border border-border rounded-lg px-3 py-2 text-sm text-foreground placeholder-muted focus:outline-none focus:border-purple-500/50 transition-all"
                               />
                             </div>
                             <div>
@@ -1507,7 +1815,7 @@ export default function ConfiguraçõesPage() {
                                 }}
                                 placeholder="Ex: Trabalhamos com Mobil, Shell, Castrol e outras marcas premium."
                                 rows={2}
-                                className="w-full bg-zinc-800/50 border border-border rounded-lg px-3 py-2 text-sm text-foreground placeholder-zinc-500 focus:outline-none focus:border-purple-500/50 transition-all resize-none"
+                                className="w-full bg-background-secondary border border-border rounded-lg px-3 py-2 text-sm text-foreground placeholder-muted focus:outline-none focus:border-purple-500/50 transition-all resize-none"
                               />
                             </div>
                           </div>
@@ -1516,7 +1824,7 @@ export default function ConfiguraçõesPage() {
                               const updated = faqItems.filter((_, i) => i !== index);
                               setFaqItems(updated);
                             }}
-                            className="p-2 hover:bg-red-500/10 rounded-lg text-zinc-400 hover:text-red-400 transition-all mt-5"
+                            className="p-2 hover:bg-red-500/10 rounded-lg text-foreground-muted hover:text-red-400 transition-all mt-5"
                             title="Remover"
                           >
                             <Trash2 size={16} />
@@ -1525,8 +1833,8 @@ export default function ConfiguraçõesPage() {
                       </div>
                     ))
                   ) : (
-                    <div className="bg-zinc-900/50 border border-border rounded-xl p-6 text-center">
-                      <HelpCircle size={24} className="text-zinc-500 mx-auto mb-2" />
+                    <div className="bg-background border border-border rounded-xl p-6 text-center">
+                      <HelpCircle size={24} className="text-muted mx-auto mb-2" />
                       <p className="text-sm text-muted">Nenhuma pergunta cadastrada</p>
                       <p className="text-xs text-foreground-muted mt-1">
                         Adicione perguntas frequentes para a IA responder automaticamente
@@ -1553,8 +1861,8 @@ export default function ConfiguraçõesPage() {
 
           {!chatbotEnabled && (
             <div className="p-3 sm:p-6 text-center">
-              <div className="p-4 bg-zinc-800/50 rounded-2xl w-fit mx-auto mb-4">
-                <Power size={28} className="text-zinc-500" />
+              <div className="p-4 bg-background-secondary rounded-2xl w-fit mx-auto mb-4">
+                <Power size={28} className="text-muted" />
               </div>
               <p className="text-foreground font-medium">Chatbot desativado</p>
               <p className="text-sm text-muted mt-1">Ative para responder mensagens automaticamente</p>
@@ -1582,8 +1890,8 @@ export default function ConfiguraçõesPage() {
         <div className="bg-card border border-border rounded-2xl p-3 sm:p-6">
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
             <div className="flex items-center gap-3 sm:gap-4">
-              <div className="p-3 bg-zinc-800/50 rounded-xl border border-border/50">
-                <Settings size={24} className="text-zinc-400" />
+              <div className="p-3 bg-background-secondary rounded-xl border border-border/50">
+                <Settings size={24} className="text-foreground-muted" />
               </div>
               <div>
                 <h3 className="font-bold text-foreground">Sobre o LubIA</h3>

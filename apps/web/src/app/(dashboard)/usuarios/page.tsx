@@ -215,13 +215,13 @@ function UsuariosPageContent() {
         {/* Search and Actions */}
         <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
           <div className="relative flex-1 sm:max-w-md group">
-            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-5 w-5 text-zinc-500 group-focus-within:text-purple-400 transition-colors" />
+            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-5 w-5 text-muted group-focus-within:text-purple-400 transition-colors" />
             <input
               type="text"
               placeholder="Buscar por nome ou email..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-10 pr-4 py-3 bg-card border border-border rounded-xl text-foreground placeholder-zinc-500 focus:outline-none focus:border-purple-500/50 focus:ring-2 focus:ring-purple-500/20 transition-all"
+              className="w-full pl-10 pr-4 py-3 bg-card border border-border rounded-xl text-foreground placeholder-muted focus:outline-none focus:border-purple-500/50 focus:ring-2 focus:ring-purple-500/20 transition-all"
             />
           </div>
           <button
@@ -251,7 +251,7 @@ function UsuariosPageContent() {
           ) : (
             <div className="overflow-x-auto">
               <table className="w-full">
-                <thead className="bg-zinc-900/50 border-b border-border">
+                <thead className="bg-background border-b border-border">
                   <tr>
                     <th className="text-left px-3 sm:px-6 py-3 sm:py-4 text-xs font-semibold text-muted uppercase tracking-wider">Usuário</th>
                     <th className="text-left px-3 sm:px-6 py-3 sm:py-4 text-xs font-semibold text-muted uppercase tracking-wider">Nível</th>
@@ -260,12 +260,12 @@ function UsuariosPageContent() {
                     <th className="text-right px-3 sm:px-6 py-3 sm:py-4 text-xs font-semibold text-muted uppercase tracking-wider">Ações</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-zinc-800/50">
+                <tbody className="divide-y divide-border">
                   {filteredUsuarios.map((usuario) => {
                     const roleInfo = roleConfig[usuario.role];
 
                     return (
-                      <tr key={usuario.id} className="hover:bg-zinc-800/30 transition-colors group">
+                      <tr key={usuario.id} className="hover:bg-card-hover transition-colors group">
                         <td className="px-3 sm:px-6 py-3 sm:py-4">
                           <div className="flex items-center gap-3 sm:gap-4">
                             <div className="p-2 sm:p-2.5 bg-purple-500/10 rounded-xl border border-purple-500/20">
@@ -305,7 +305,7 @@ function UsuariosPageContent() {
                           <div className="flex items-center justify-end gap-1.5">
                             <button
                               onClick={() => openEditModal(usuario)}
-                              className="p-2 text-zinc-400 hover:text-blue-400 hover:bg-blue-500/10 rounded-lg transition-all"
+                              className="p-2 text-foreground-muted hover:text-blue-400 hover:bg-blue-500/10 rounded-lg transition-all"
                               title="Editar"
                             >
                               <Edit className="h-4 w-4" />
@@ -315,7 +315,7 @@ function UsuariosPageContent() {
                                 setSelectedUsuario(usuario);
                                 setShowDeleteConfirm(true);
                               }}
-                              className="p-2 text-zinc-400 hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-all"
+                              className="p-2 text-foreground-muted hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-all"
                               title="Excluir"
                             >
                               <Trash2 className="h-4 w-4" />
@@ -341,7 +341,7 @@ function UsuariosPageContent() {
               </h2>
               <button
                 onClick={() => setShowModal(false)}
-                className="p-2 hover:bg-zinc-800 rounded-lg text-muted hover:text-foreground transition-colors"
+                className="p-2 hover:bg-card-hover rounded-lg text-muted hover:text-foreground transition-colors"
               >
                 <X className="h-5 w-5" />
               </button>
@@ -358,7 +358,7 @@ function UsuariosPageContent() {
                   value={nome}
                   onChange={(e) => setNome(e.target.value)}
                   placeholder="Nome completo"
-                  className="w-full px-4 py-3 bg-zinc-900/50 border border-border rounded-xl text-foreground placeholder-zinc-500 focus:outline-none focus:border-purple-500/50 focus:ring-2 focus:ring-purple-500/20 transition-all"
+                  className="w-full px-4 py-3 bg-background border border-border rounded-xl text-foreground placeholder-muted focus:outline-none focus:border-purple-500/50 focus:ring-2 focus:ring-purple-500/20 transition-all"
                 />
               </div>
 
@@ -368,13 +368,13 @@ function UsuariosPageContent() {
                   Email
                 </label>
                 <div className="relative">
-                  <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-500" />
+                  <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted" />
                   <input
                     type="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="email@exemplo.com"
-                    className="w-full pl-10 pr-4 py-3 bg-zinc-900/50 border border-border rounded-xl text-foreground placeholder-zinc-500 focus:outline-none focus:border-purple-500/50 focus:ring-2 focus:ring-purple-500/20 transition-all"
+                    className="w-full pl-10 pr-4 py-3 bg-background border border-border rounded-xl text-foreground placeholder-muted focus:outline-none focus:border-purple-500/50 focus:ring-2 focus:ring-purple-500/20 transition-all"
                   />
                 </div>
               </div>
@@ -390,7 +390,7 @@ function UsuariosPageContent() {
                     value={senha}
                     onChange={(e) => setSenha(e.target.value)}
                     placeholder={editingUsuario ? '........' : 'Mínimo 6 caracteres'}
-                    className="w-full px-4 py-3 pr-10 bg-zinc-900/50 border border-border rounded-xl text-foreground placeholder-zinc-500 focus:outline-none focus:border-purple-500/50 focus:ring-2 focus:ring-purple-500/20 transition-all"
+                    className="w-full px-4 py-3 pr-10 bg-background border border-border rounded-xl text-foreground placeholder-muted focus:outline-none focus:border-purple-500/50 focus:ring-2 focus:ring-purple-500/20 transition-all"
                   />
                   <button
                     type="button"
@@ -413,7 +413,7 @@ function UsuariosPageContent() {
                     className={`flex items-start gap-3 p-3 rounded-xl border cursor-pointer transition-all ${
                       role === 'VENDEDOR'
                         ? 'bg-orange-500/10 border-orange-500/50'
-                        : 'bg-zinc-900/50 border-border hover:border-border'
+                        : 'bg-background border-border hover:border-border'
                     }`}
                   >
                     <input
@@ -422,7 +422,7 @@ function UsuariosPageContent() {
                       value="VENDEDOR"
                       checked={role === 'VENDEDOR'}
                       onChange={(e) => setRole(e.target.value as any)}
-                      className="mt-1 w-4 h-4 text-orange-500 bg-zinc-700 border-zinc-600 focus:ring-orange-500"
+                      className="mt-1 w-4 h-4 text-orange-500 bg-background-tertiary border-border focus:ring-orange-500"
                     />
                     <div className="flex-1">
                       <div className="flex items-center gap-2">
@@ -438,7 +438,7 @@ function UsuariosPageContent() {
                     className={`flex items-start gap-3 p-3 rounded-xl border cursor-pointer transition-all ${
                       role === 'ATENDENTE'
                         ? 'bg-emerald-500/10 border-emerald-500/50'
-                        : 'bg-zinc-900/50 border-border hover:border-border'
+                        : 'bg-background border-border hover:border-border'
                     }`}
                   >
                     <input
@@ -447,7 +447,7 @@ function UsuariosPageContent() {
                       value="ATENDENTE"
                       checked={role === 'ATENDENTE'}
                       onChange={(e) => setRole(e.target.value as any)}
-                      className="mt-1 w-4 h-4 text-emerald-500 bg-zinc-700 border-zinc-600 focus:ring-emerald-500"
+                      className="mt-1 w-4 h-4 text-emerald-500 bg-background-tertiary border-border focus:ring-emerald-500"
                     />
                     <div className="flex-1">
                       <div className="flex items-center gap-2">
@@ -463,7 +463,7 @@ function UsuariosPageContent() {
                     className={`flex items-start gap-3 p-3 rounded-xl border cursor-pointer transition-all ${
                       role === 'GERENTE'
                         ? 'bg-blue-500/10 border-blue-500/50'
-                        : 'bg-zinc-900/50 border-border hover:border-border'
+                        : 'bg-background border-border hover:border-border'
                     }`}
                   >
                     <input
@@ -472,7 +472,7 @@ function UsuariosPageContent() {
                       value="GERENTE"
                       checked={role === 'GERENTE'}
                       onChange={(e) => setRole(e.target.value as any)}
-                      className="mt-1 w-4 h-4 text-blue-500 bg-zinc-700 border-zinc-600 focus:ring-blue-500"
+                      className="mt-1 w-4 h-4 text-blue-500 bg-background-tertiary border-border focus:ring-blue-500"
                     />
                     <div className="flex-1">
                       <div className="flex items-center gap-2">
@@ -488,7 +488,7 @@ function UsuariosPageContent() {
                     className={`flex items-start gap-3 p-3 rounded-xl border cursor-pointer transition-all ${
                       role === 'ADMIN'
                         ? 'bg-purple-500/10 border-purple-500/50'
-                        : 'bg-zinc-900/50 border-border hover:border-border'
+                        : 'bg-background border-border hover:border-border'
                     }`}
                   >
                     <input
@@ -497,7 +497,7 @@ function UsuariosPageContent() {
                       value="ADMIN"
                       checked={role === 'ADMIN'}
                       onChange={(e) => setRole(e.target.value as any)}
-                      className="mt-1 w-4 h-4 text-purple-500 bg-zinc-700 border-zinc-600 focus:ring-purple-500"
+                      className="mt-1 w-4 h-4 text-purple-500 bg-background-tertiary border-border focus:ring-purple-500"
                     />
                     <div className="flex-1">
                       <div className="flex items-center gap-2">
@@ -512,13 +512,13 @@ function UsuariosPageContent() {
 
               {/* Ativo */}
               {editingUsuario && (
-                <div className="flex items-center gap-3 p-3 bg-zinc-900/50 rounded-xl border border-border">
+                <div className="flex items-center gap-3 p-3 bg-background rounded-xl border border-border">
                   <input
                     type="checkbox"
                     id="ativo"
                     checked={ativo}
                     onChange={(e) => setAtivo(e.target.checked)}
-                    className="w-4 h-4 text-emerald-500 bg-zinc-700 border-zinc-600 rounded focus:ring-emerald-500"
+                    className="w-4 h-4 text-emerald-500 bg-background-tertiary border-border rounded focus:ring-emerald-500"
                   />
                   <label htmlFor="ativo" className="text-sm text-muted">
                     Usuário ativo
@@ -530,7 +530,7 @@ function UsuariosPageContent() {
             <div className="p-3 sm:p-6 border-t border-border flex justify-end gap-3 sticky bottom-0 bg-card">
               <button
                 onClick={() => setShowModal(false)}
-                className="px-4 sm:px-6 py-2.5 sm:py-3 border border-border rounded-xl text-muted hover:bg-zinc-800 transition-colors"
+                className="px-4 sm:px-6 py-2.5 sm:py-3 border border-border rounded-xl text-muted hover:bg-card-hover transition-colors"
               >
                 Cancelar
               </button>
@@ -567,7 +567,7 @@ function UsuariosPageContent() {
                   setShowDeleteConfirm(false);
                   setSelectedUsuario(null);
                 }}
-                className="flex-1 px-4 sm:px-6 py-2.5 sm:py-3 border border-border text-muted rounded-xl hover:bg-zinc-800 transition-colors"
+                className="flex-1 px-4 sm:px-6 py-2.5 sm:py-3 border border-border text-muted rounded-xl hover:bg-card-hover transition-colors"
               >
                 Cancelar
               </button>

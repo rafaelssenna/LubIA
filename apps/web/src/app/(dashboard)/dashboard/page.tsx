@@ -247,7 +247,7 @@ export default function Dashboard() {
                 </div>
                 <span className="text-xs font-medium text-amber-400 bg-amber-500/10 px-2 py-1 rounded-full">Faturamento</span>
               </div>
-              <p className="text-xl sm:text-3xl font-bold text-foreground mb-1">{formatCurrency(stats?.faturamento || 0)}</p>
+              <p className="text-2xl sm:text-4xl font-bold text-foreground mb-1">{formatCurrency(stats?.faturamento || 0)}</p>
               <p className="text-sm text-muted">este mês</p>
             </div>
           </div>
@@ -283,7 +283,7 @@ export default function Dashboard() {
                   <p className="text-sm text-foreground-muted">Nenhum serviço hoje</p>
                 </div>
               ) : (
-                <div className="divide-y divide-zinc-800/50">
+                <div className="divide-y divide-border">
                   {servicosHoje.map((servico) => {
                     const statusCfg = getStatusConfig(servico.status);
                     const StatusIcon = statusCfg.icon;
@@ -291,7 +291,7 @@ export default function Dashboard() {
                       <Link
                         key={servico.id}
                         href={`/ordens?detail=${servico.id}`}
-                        className="block p-3 hover:bg-zinc-800/30 transition-all duration-200 group"
+                        className="block p-3 hover:bg-card-hover transition-all duration-200 group"
                       >
                         <div className="flex items-center gap-3">
                           <div className="text-center min-w-[50px] py-2 bg-background-secondary rounded-lg border border-border/50 group-hover:border-emerald-500/50 transition-all">
@@ -351,12 +351,12 @@ export default function Dashboard() {
                   <p className="text-sm text-foreground-muted">Nenhuma venda hoje</p>
                 </div>
               ) : (
-                <div className="divide-y divide-zinc-800/50">
+                <div className="divide-y divide-border">
                   {vendasHoje.itens.map((venda) => (
                     <Link
                       key={venda.id}
                       href={`/vendas-rapidas`}
-                      className="block p-3 hover:bg-zinc-800/30 transition-all duration-200 group"
+                      className="block p-3 hover:bg-card-hover transition-all duration-200 group"
                     >
                       <div className="flex items-center gap-3">
                         <div className="text-center min-w-[50px] py-2 bg-background-secondary rounded-lg border border-border/50 group-hover:border-blue-500/50 transition-all">
@@ -420,12 +420,12 @@ export default function Dashboard() {
                   <p className="text-sm text-foreground-muted">Nenhuma pendência!</p>
                 </div>
               ) : (
-                <div className="divide-y divide-zinc-800/50">
+                <div className="divide-y divide-border">
                   {aReceber.itens.map((pendencia) => (
                     <Link
                       key={`${pendencia.tipo}-${pendencia.id}`}
                       href={`/a-receber`}
-                      className="block p-3 hover:bg-zinc-800/30 transition-all duration-200 group"
+                      className="block p-3 hover:bg-card-hover transition-all duration-200 group"
                     >
                       <div className="flex items-center gap-3">
                         <div className={`p-2 rounded-lg ${pendencia.tipo === 'ORDEM' ? 'bg-purple-500/10' : 'bg-blue-500/10'}`}>

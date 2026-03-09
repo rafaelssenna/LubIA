@@ -1055,7 +1055,7 @@ function EstoquePageContent() {
                 placeholder="Buscar produto..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full bg-background-secondary border border-border rounded-xl pl-11 pr-4 py-3 text-sm text-foreground placeholder-zinc-500 focus:outline-none focus:border-amber-500/50 focus:ring-1 focus:ring-amber-500/20 transition-all duration-200"
+                className="w-full bg-background-secondary border border-border rounded-xl pl-11 pr-4 py-3 text-sm text-foreground placeholder-muted focus:outline-none focus:border-amber-500/50 focus:ring-1 focus:ring-amber-500/20 transition-all duration-200"
               />
             </div>
             <select

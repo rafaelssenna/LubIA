@@ -457,13 +457,13 @@ export default function LembretesPage() {
         <div className="flex flex-col md:flex-row gap-3 sm:gap-4 justify-between">
           <div className="flex gap-2 sm:gap-3 flex-1">
             <div className="relative flex-1 max-w-md group">
-              <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 text-zinc-500 group-focus-within:text-cyan-400 transition-colors" size={18} />
+              <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 text-muted group-focus-within:text-cyan-400 transition-colors" size={18} />
               <input
                 type="text"
                 placeholder="Buscar por cliente ou placa..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full bg-card border border-border rounded-xl pl-10 pr-4 py-3 text-sm text-foreground placeholder-zinc-500 focus:outline-none focus:border-cyan-500/50 focus:ring-2 focus:ring-cyan-500/20 transition-all duration-200"
+                className="w-full bg-card border border-border rounded-xl pl-10 pr-4 py-3 text-sm text-foreground placeholder-muted focus:outline-none focus:border-cyan-500/50 focus:ring-2 focus:ring-cyan-500/20 transition-all duration-200"
               />
             </div>
             <button
@@ -522,27 +522,27 @@ export default function LembretesPage() {
               <p className="text-muted text-sm mt-1">Crie um novo lembrete de manutenção</p>
             </div>
           ) : (
-            <div className="divide-y divide-zinc-800/50">
+            <div className="divide-y divide-border">
               {lembretes.map((lembrete) => {
                 const urgenciaConfig = getUrgenciaConfig(lembrete.urgencia);
 
                 return (
                   <div
                     key={lembrete.id}
-                    className="p-3 sm:p-4 hover:bg-zinc-800/30 transition-all duration-200 group"
+                    className="p-3 sm:p-4 hover:bg-card-hover transition-all duration-200 group"
                   >
                     <div className="flex items-start sm:items-center gap-3 sm:gap-4 flex-col sm:flex-row">
                       <div className={`w-full sm:w-1.5 h-1.5 sm:h-16 rounded-full ${urgenciaConfig.barColor}`}></div>
 
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-3 mb-1.5">
-                          <User size={16} className="text-zinc-500 flex-shrink-0" />
+                          <User size={16} className="text-muted flex-shrink-0" />
                           <span className="font-semibold text-foreground truncate">{capitalize(lembrete.veiculo.cliente.nome)}</span>
                           <span className="text-foreground-muted hidden sm:inline">-</span>
                           <span className="text-muted text-sm hidden sm:inline">{formatPhone(lembrete.veiculo.cliente.telefone)}</span>
                         </div>
                         <div className="flex items-center gap-3 mb-1.5">
-                          <Car size={16} className="text-zinc-500 flex-shrink-0" />
+                          <Car size={16} className="text-muted flex-shrink-0" />
                           <span className="text-muted text-sm truncate">
                             {capitalize(lembrete.veiculo.marca)} {capitalize(lembrete.veiculo.modelo)} {lembrete.veiculo.ano}
                           </span>
@@ -551,7 +551,7 @@ export default function LembretesPage() {
                           </span>
                         </div>
                         <div className="flex items-center gap-3">
-                          <Calendar size={16} className="text-zinc-500 flex-shrink-0" />
+                          <Calendar size={16} className="text-muted flex-shrink-0" />
                           <span className="text-foreground-muted text-sm truncate">
                             {tipoLabels[lembrete.tipo] || lembrete.tipo} - {formatDate(lembrete.dataLembrete)}
                             {lembrete.kmLembrete && ` ou ${lembrete.kmLembrete.toLocaleString()} km`}
@@ -579,7 +579,7 @@ export default function LembretesPage() {
                         )}
                       </div>
 
-                      <div className="flex gap-1.5 bg-zinc-900/50 rounded-xl p-1.5 border border-border flex-wrap sm:flex-nowrap">
+                      <div className="flex gap-1.5 bg-background rounded-xl p-1.5 border border-border flex-wrap sm:flex-nowrap">
                         <button
                           onClick={() => sendWhatsApp(lembrete)}
                           className="p-2.5 bg-[#25D366]/10 rounded-lg text-[#25D366] hover:bg-[#25D366]/20 transition-all duration-200"
@@ -632,7 +632,7 @@ export default function LembretesPage() {
           <div className="bg-card border border-border rounded-2xl w-full max-w-lg shadow-2xl shadow-black/50 max-h-[90vh] overflow-y-auto">
             <div className="p-3 sm:p-6 border-b border-border flex items-center justify-between">
               <h2 className="text-lg sm:text-xl font-bold text-foreground">Novo Lembrete</h2>
-              <button onClick={() => setShowModal(false)} className="p-2 hover:bg-zinc-800 rounded-lg text-muted hover:text-foreground transition-colors">
+              <button onClick={() => setShowModal(false)} className="p-2 hover:bg-card-hover rounded-lg text-muted hover:text-foreground transition-colors">
                 <X size={20} />
               </button>
             </div>
@@ -644,7 +644,7 @@ export default function LembretesPage() {
                 <select
                   value={selectedVeiculoId || ''}
                   onChange={(e) => setSelectedVeiculoId(parseInt(e.target.value))}
-                  className="w-full bg-zinc-900/50 border border-border rounded-xl px-4 py-3 text-foreground focus:outline-none focus:border-cyan-500/50 focus:ring-2 focus:ring-cyan-500/20 transition-all"
+                  className="w-full bg-background border border-border rounded-xl px-4 py-3 text-foreground focus:outline-none focus:border-cyan-500/50 focus:ring-2 focus:ring-cyan-500/20 transition-all"
                 >
                   <option value="">Selecione um veículo</option>
                   {veiculos.map((v) => (
@@ -661,7 +661,7 @@ export default function LembretesPage() {
                 <select
                   value={tipo}
                   onChange={(e) => setTipo(e.target.value)}
-                  className="w-full bg-zinc-900/50 border border-border rounded-xl px-4 py-3 text-foreground focus:outline-none focus:border-cyan-500/50 focus:ring-2 focus:ring-cyan-500/20 transition-all"
+                  className="w-full bg-background border border-border rounded-xl px-4 py-3 text-foreground focus:outline-none focus:border-cyan-500/50 focus:ring-2 focus:ring-cyan-500/20 transition-all"
                 >
                   {Object.entries(tipoLabels).map(([key, label]) => (
                     <option key={key} value={key}>{label}</option>
@@ -676,7 +676,7 @@ export default function LembretesPage() {
                   type="date"
                   value={dataLembrete}
                   onChange={(e) => setDataLembrete(e.target.value)}
-                  className="w-full bg-zinc-900/50 border border-border rounded-xl px-4 py-3 text-foreground focus:outline-none focus:border-cyan-500/50 focus:ring-2 focus:ring-cyan-500/20 transition-all [color-scheme:dark]"
+                  className="w-full bg-background border border-border rounded-xl px-4 py-3 text-foreground focus:outline-none focus:border-cyan-500/50 focus:ring-2 focus:ring-cyan-500/20 transition-all [color-scheme:dark]"
                 />
               </div>
 
@@ -689,7 +689,7 @@ export default function LembretesPage() {
                   onChange={(e) => setKmLembrete(e.target.value)}
                   placeholder="Ex: 60000"
                   max={9999999}
-                  className="w-full bg-zinc-900/50 border border-border rounded-xl px-4 py-3 text-white placeholder-zinc-500 focus:outline-none focus:border-cyan-500/50 focus:ring-2 focus:ring-cyan-500/20 transition-all"
+                  className="w-full bg-background border border-border rounded-xl px-4 py-3 text-white placeholder-muted focus:outline-none focus:border-cyan-500/50 focus:ring-2 focus:ring-cyan-500/20 transition-all"
                 />
               </div>
 
@@ -701,7 +701,7 @@ export default function LembretesPage() {
                   onChange={(e) => setMensagem(e.target.value)}
                   rows={2}
                   placeholder="Anotações sobre este lembrete..."
-                  className="w-full bg-zinc-900/50 border border-border rounded-xl px-4 py-3 text-white placeholder-zinc-500 focus:outline-none focus:border-cyan-500/50 focus:ring-2 focus:ring-cyan-500/20 transition-all resize-none"
+                  className="w-full bg-background border border-border rounded-xl px-4 py-3 text-white placeholder-muted focus:outline-none focus:border-cyan-500/50 focus:ring-2 focus:ring-cyan-500/20 transition-all resize-none"
                 />
               </div>
             </div>
@@ -709,7 +709,7 @@ export default function LembretesPage() {
             <div className="p-3 sm:p-6 border-t border-border flex gap-3 justify-end">
               <button
                 onClick={() => setShowModal(false)}
-                className="px-4 sm:px-6 py-2.5 sm:py-3 border border-border rounded-xl text-muted hover:bg-zinc-800 transition-colors"
+                className="px-4 sm:px-6 py-2.5 sm:py-3 border border-border rounded-xl text-muted hover:bg-card-hover transition-colors"
               >
                 Cancelar
               </button>
@@ -742,7 +742,7 @@ export default function LembretesPage() {
             <div className="p-4 sm:p-6 border-t border-border flex gap-3">
               <button
                 onClick={() => { setShowDeleteConfirm(false); setDeletingLembrete(null); }}
-                className="flex-1 px-4 sm:px-6 py-2.5 sm:py-3 border border-border rounded-xl text-muted hover:bg-zinc-800 transition-colors"
+                className="flex-1 px-4 sm:px-6 py-2.5 sm:py-3 border border-border rounded-xl text-muted hover:bg-card-hover transition-colors"
               >
                 Cancelar
               </button>

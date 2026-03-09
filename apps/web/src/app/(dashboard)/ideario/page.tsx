@@ -271,13 +271,13 @@ export default function IdearioPage() {
           <div className="flex flex-col sm:flex-row flex-wrap gap-2 sm:gap-4 mb-4 sm:mb-6">
             {/* Busca */}
             <div className="relative flex-1">
-              <Search size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-500" />
+              <Search size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-muted" />
               <input
                 type="text"
                 placeholder="Buscar ideias..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-12 pr-4 py-3 bg-card rounded-xl border border-border text-foreground placeholder:text-zinc-500 focus:outline-none focus:border-purple-500/50"
+                className="w-full pl-12 pr-4 py-3 bg-card rounded-xl border border-border text-foreground placeholder:text-muted focus:outline-none focus:border-purple-500/50"
               />
             </div>
 
@@ -429,7 +429,7 @@ export default function IdearioPage() {
                   onChange={(e) => setFormTitulo(e.target.value)}
                   placeholder="Título da sua ideia"
                   maxLength={200}
-                  className="w-full px-4 py-3 bg-background rounded-xl border border-border text-foreground placeholder:text-zinc-500 focus:outline-none focus:border-purple-500/50"
+                  className="w-full px-4 py-3 bg-background rounded-xl border border-border text-foreground placeholder:text-muted focus:outline-none focus:border-purple-500/50"
                 />
               </div>
 
@@ -441,7 +441,7 @@ export default function IdearioPage() {
                   onChange={(e) => setFormDescricao(e.target.value)}
                   placeholder="Descreva sua ideia em detalhes..."
                   rows={4}
-                  className="w-full px-4 py-3 bg-background rounded-xl border border-border text-foreground placeholder:text-zinc-500 focus:outline-none focus:border-purple-500/50 resize-none"
+                  className="w-full px-4 py-3 bg-background rounded-xl border border-border text-foreground placeholder:text-muted focus:outline-none focus:border-purple-500/50 resize-none"
                 />
               </div>
 
@@ -476,7 +476,7 @@ export default function IdearioPage() {
             <div className="p-3 sm:p-6 border-t border-border flex flex-col-reverse sm:flex-row gap-3 justify-end">
               <button
                 onClick={() => setShowNovaIdeia(false)}
-                className="px-6 py-3 border border-border rounded-xl text-muted hover:bg-zinc-800 transition-all"
+                className="px-6 py-3 border border-border rounded-xl text-muted hover:bg-card-hover transition-all"
               >
                 Cancelar
               </button>
@@ -569,7 +569,7 @@ export default function IdearioPage() {
                           onChange={(e) => setComentarioAvaliacao(e.target.value)}
                           placeholder="Deixe um comentário..."
                           rows={2}
-                          className="w-full px-4 py-3 bg-card rounded-xl border border-border text-foreground placeholder:text-zinc-500 focus:outline-none focus:border-purple-500/50 resize-none"
+                          className="w-full px-4 py-3 bg-card rounded-xl border border-border text-foreground placeholder:text-muted focus:outline-none focus:border-purple-500/50 resize-none"
                         />
                       </div>
                       <button
