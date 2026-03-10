@@ -1,7 +1,7 @@
-const ZOHO_CLIENT_ID = process.env.ZOHO_CLIENT_ID || '';
-const ZOHO_CLIENT_SECRET = process.env.ZOHO_CLIENT_SECRET || '';
-const ZOHO_REFRESH_TOKEN = process.env.ZOHO_REFRESH_TOKEN || '';
-const ZOHO_ACCOUNT_ID = process.env.ZOHO_ACCOUNT_ID || '';
+const ZOHO_CLIENT_ID = process.env.ZOHO_CLIENT_ID || '1000.VWGEL6T86FJMTV8WEB12VCR4YIFR8X';
+const ZOHO_CLIENT_SECRET = process.env.ZOHO_CLIENT_SECRET || '61a30fc5d723142cf286a364b0b877a9e59bf844a3';
+const ZOHO_REFRESH_TOKEN = process.env.ZOHO_REFRESH_TOKEN || '1000.9347b45f0b5127de817bcc5ae797d071.ef024d5983f7f36b5d2cacbbd09edec9';
+const ZOHO_ACCOUNT_ID = process.env.ZOHO_ACCOUNT_ID || '4418641000000008002';
 const ZOHO_EMAIL = process.env.ZOHO_EMAIL || 'engenharia@helsenia.com.br';
 
 let cachedAccessToken = '';

@@ -50,42 +50,26 @@ export async function POST(request: NextRequest) {
     });
 
     // Enviar email com código
-    console.log('[FORGOT-PASSWORD] Enviando código para:', usuario.email);
-    console.log('[FORGOT-PASSWORD] ZOHO_CLIENT_ID existe:', !!process.env.ZOHO_CLIENT_ID);
-    console.log('[FORGOT-PASSWORD] ZOHO_ACCOUNT_ID existe:', !!process.env.ZOHO_ACCOUNT_ID);
-    console.log('[FORGOT-PASSWORD] ZOHO_REFRESH_TOKEN existe:', !!process.env.ZOHO_REFRESH_TOKEN);
-
     const emailResult = await sendPasswordResetEmail({
       to: usuario.email,
       userName: usuario.nome,
       resetCode,
     });
 
-    console.log('[FORGOT-PASSWORD] Resultado email:', JSON.stringify(emailResult));
-
     if (!emailResult.success) {
       console.error('[FORGOT-PASSWORD] Erro ao enviar email:', emailResult.error);
     } else {
-      console.log('[FORGOT-PASSWORD] Código enviado com sucesso para:', usuario.email);
+      console.log('[FORGOT-PASSWORD] Código enviado para:', usuario.email);
     }
 
     return NextResponse.json({
       success: true,
-      message: 'Se o email estiver cadastrado, você receberá um código de recuperação.',
-      _debug: {
-        emailSent: emailResult.success,
-        emailError: emailResult.error || null,
-        zohoClientId: !!process.env.ZOHO_CLIENT_ID,
-        zohoAccountId: !!process.env.ZOHO_ACCOUNT_ID,
-        zohoRefreshToken: !!process.env.ZOHO_REFRESH_TOKEN,
-        zohoEmail: process.env.ZOHO_EMAIL || 'NOT SET',
-      }
+      message: 'Se o email estiver cadastrado, você receberá um código de recuperação.'
     });
   } catch (error: any) {
     console.error('[FORGOT-PASSWORD] Erro:', error?.message);
     return NextResponse.json({
-      error: 'Erro interno do servidor',
-      _debug: { errorMessage: error?.message }
+      error: 'Erro interno do servidor'
     }, { status: 500 });
   }
 }
