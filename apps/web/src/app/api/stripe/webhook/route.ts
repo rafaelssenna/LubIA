@@ -52,35 +52,8 @@ export async function POST(request: NextRequest) {
         const session = event.data.object as any;
         const customerId = session.customer as string;
         const empresaId = session.metadata?.empresaId;
-        const paymentType = session.metadata?.paymentType;
 
-        console.log('[STRIPE WEBHOOK] Checkout completed for customer:', customerId, 'empresaId:', empresaId, 'mode:', session.mode, 'paymentType:', paymentType);
-
-        // Pagamento avulso via PIX - ativar por 30 dias
-        if (session.mode === 'payment' && paymentType === 'pix_monthly') {
-          const eid = empresaId ? parseInt(empresaId) : null;
-          let empresa = eid ? await prisma.empresa.findUnique({ where: { id: eid } }) : null;
-
-          if (!empresa) {
-            empresa = await prisma.empresa.findFirst({ where: { stripeCustomerId: customerId } });
-          }
-
-          if (empresa) {
-            const subscriptionEndsAt = new Date();
-            subscriptionEndsAt.setDate(subscriptionEndsAt.getDate() + 30);
-
-            await prisma.empresa.update({
-              where: { id: empresa.id },
-              data: {
-                stripeCustomerId: customerId,
-                subscriptionStatus: 'ACTIVE',
-                subscriptionEndsAt,
-              },
-            });
-            console.log('[STRIPE WEBHOOK] PIX payment - empresa ativada por 30 dias:', empresa.id);
-          }
-          break;
-        }
+        console.log('[STRIPE WEBHOOK] Checkout completed for customer:', customerId, 'empresaId:', empresaId);
 
         // Checkout de subscription normal (cartão/boleto)
         if (!empresaId) {
