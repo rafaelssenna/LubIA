@@ -321,7 +321,7 @@ export default function CadastroPage() {
               ) : (
                 <UserPlus size={20} />
               )}
-              {loading ? 'Criando conta...' : 'Criar Conta e Assinar'}
+              {loading ? 'Criando conta...' : 'Criar Conta'}
             </button>
 
             <p className="text-xs text-center text-muted mt-3">
