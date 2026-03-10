@@ -115,407 +115,316 @@ export function generateOrdemPDF(ordem: OrdemPDF, empresaConfig?: EmpresaConfig)
   const doc = new jsPDF();
   const pageWidth = doc.internal.pageSize.getWidth();
   const pageHeight = doc.internal.pageSize.getHeight();
-  const margin = 14;
-  const footerSpace = 20; // Espaço reservado para o footer
-
-  // Helper: verifica se precisa de nova página
-  const checkPageBreak = (yPos: number, neededSpace: number): number => {
-    if (yPos + neededSpace > pageHeight - footerSpace) {
-      doc.addPage();
-      return 20; // Margem top da nova página
-    }
-    return yPos;
-  };
-
-  // Helper: desenha footer na página atual
-  const drawFooter = () => {
-    doc.setDrawColor(220, 220, 220);
-    doc.setLineWidth(0.3);
-    doc.line(margin, pageHeight - 15, pageWidth - margin, pageHeight - 15);
-
-    doc.setTextColor(150, 150, 150);
-    doc.setFontSize(7);
-    const footerParts = [config.endereco, config.telefone].filter(Boolean);
-    if (footerParts.length > 0) {
-      doc.text(footerParts.join(' | '), pageWidth / 2, pageHeight - 10, { align: 'center' });
-    }
-    doc.text(`Gerado em ${new Date().toLocaleString('pt-BR')}`, pageWidth / 2, pageHeight - 6, { align: 'center' });
-  };
+  const margin = 10;
+  const contentWidth = pageWidth - margin * 2;
+  const footerSpace = 15;
 
   // Usar dados da empresa ou fallback
   const config = {
     nome: empresaConfig?.nomeOficina || DEFAULT_CONFIG.nome,
-    subtitulo: DEFAULT_CONFIG.subtitulo,
     cnpj: empresaConfig?.cnpj || DEFAULT_CONFIG.cnpj,
     telefone: empresaConfig?.telefone || DEFAULT_CONFIG.telefone,
     endereco: empresaConfig?.endereco || DEFAULT_CONFIG.endereco,
   };
 
-  // Cor customizada da O.S.
   const osColor = hexToRgb(empresaConfig?.pdfCorOS || '#22c55e');
+  const lineColor: [number, number, number] = [180, 180, 180];
 
-  // ============ HEADER ============
+  // Helper: verifica se precisa de nova página
+  const checkPageBreak = (yPos: number, neededSpace: number): number => {
+    if (yPos + neededSpace > pageHeight - footerSpace) {
+      doc.addPage();
+      return 12;
+    }
+    return yPos;
+  };
+
+  // Helper: desenha uma célula de tabela com borda
+  const drawCell = (x: number, y: number, w: number, h: number, label: string, value: string, labelBold = true) => {
+    doc.setDrawColor(lineColor[0], lineColor[1], lineColor[2]);
+    doc.setLineWidth(0.3);
+    doc.rect(x, y, w, h);
+    doc.setFontSize(7);
+    doc.setTextColor(100, 100, 100);
+    doc.setFont('helvetica', labelBold ? 'bold' : 'normal');
+    doc.text(label, x + 2, y + 4);
+    doc.setFontSize(9);
+    doc.setTextColor(30, 30, 30);
+    doc.setFont('helvetica', 'normal');
+    const truncated = truncateText(value, Math.floor(w / 2));
+    doc.text(truncated, x + 2, y + h - 2);
+  };
+
+  // Helper: barra de seção (título com fundo colorido)
+  const drawSectionBar = (y: number, title: string): number => {
+    doc.setFillColor(osColor[0], osColor[1], osColor[2]);
+    doc.rect(margin, y, contentWidth, 6, 'F');
+    doc.setTextColor(255, 255, 255);
+    doc.setFontSize(8);
+    doc.setFont('helvetica', 'bold');
+    doc.text(title, pageWidth / 2, y + 4.5, { align: 'center' });
+    return y + 6;
+  };
+
+  // Helper: desenha footer
+  const drawFooter = () => {
+    doc.setTextColor(150, 150, 150);
+    doc.setFontSize(6);
+    doc.text(`Gerado em ${new Date().toLocaleString('pt-BR')}`, pageWidth / 2, pageHeight - 4, { align: 'center' });
+  };
+
+  let yPos = margin;
+
+  // ============ HEADER: Logo + Nome da empresa + O.S. info ============
   const hasLogo = !!empresaConfig?.logo;
+  let logoDrawW = 0, logoDrawH = 0;
 
-  // Calcula dimensões reais da logo para manter proporção
-  let logoDrawW = 0, logoDrawH = 0, logoAreaH = 0;
   if (hasLogo && empresaConfig?.logo) {
     try {
-      // Detecta dimensões reais da imagem via base64
       const imgProps = doc.getImageProperties(empresaConfig.logo);
-      const maxLogoW = 60; // largura máxima generosa
-      const maxLogoH = 30; // altura máxima
-      const ratio = Math.min(maxLogoW / imgProps.width, maxLogoH / imgProps.height);
+      const maxW = 25, maxH = 18;
+      const ratio = Math.min(maxW / imgProps.width, maxH / imgProps.height);
       logoDrawW = imgProps.width * ratio;
       logoDrawH = imgProps.height * ratio;
-      logoAreaH = logoDrawH + 8; // margem acima e abaixo
     } catch {
-      logoAreaH = 0;
+      logoDrawW = 0;
     }
   }
 
-  const textBarHeight = config.endereco ? 52 : 45;
-  const headerHeight = logoAreaH + textBarHeight;
+  // Header box with border
+  const headerH = 22;
+  doc.setDrawColor(lineColor[0], lineColor[1], lineColor[2]);
+  doc.setLineWidth(0.3);
+  doc.rect(margin, yPos, contentWidth, headerH);
 
-  // Barra colorida ocupa todo o header (logo + texto)
-  doc.setFillColor(osColor[0], osColor[1], osColor[2]);
-  doc.rect(0, 0, pageWidth, headerHeight, 'F');
-
-  // Logo centralizada no topo da barra (proporção real)
+  // Logo (left)
+  let textStartX = margin + 3;
   if (hasLogo && empresaConfig?.logo && logoDrawW > 0) {
     try {
       const logoFormat = empresaConfig.logo.startsWith('data:image/png') ? 'PNG' : 'JPEG';
-      const logoX = (pageWidth - logoDrawW) / 2;
-      doc.addImage(empresaConfig.logo, logoFormat, logoX, 4, logoDrawW, logoDrawH);
-    } catch {
-      // Se a imagem falhar, ignora silenciosamente
-    }
+      doc.addImage(empresaConfig.logo, logoFormat, margin + 2, yPos + 2, logoDrawW, logoDrawH);
+      textStartX = margin + logoDrawW + 5;
+    } catch { /* ignore */ }
   }
 
-  // Nome da oficina (abaixo da logo)
-  const textTop = logoAreaH;
-  doc.setTextColor(255, 255, 255);
-  doc.setFontSize(28);
+  // Company name + info (center-left)
+  doc.setTextColor(30, 30, 30);
+  doc.setFontSize(12);
   doc.setFont('helvetica', 'bold');
-  doc.text(config.nome, margin, textTop + 18);
+  doc.text(config.nome, textStartX, yPos + 8);
 
-  doc.setFontSize(11);
+  doc.setFontSize(7);
   doc.setFont('helvetica', 'normal');
-  doc.text(config.subtitulo, margin, textTop + 26);
-
-  // Dados da oficina no header
-  doc.setFontSize(8);
+  doc.setTextColor(80, 80, 80);
   const infoParts = [
     config.cnpj ? `CNPJ: ${config.cnpj}` : '',
     config.telefone ? `Tel: ${formatPhone(config.telefone)}` : '',
   ].filter(Boolean);
-  if (infoParts.length > 0) {
-    doc.text(infoParts.join('  |  '), margin, textTop + 34);
-  }
-  if (config.endereco) {
-    doc.text(config.endereco, margin, textTop + 40);
-  }
+  if (infoParts.length > 0) doc.text(infoParts.join('  |  '), textStartX, yPos + 13);
+  if (config.endereco) doc.text(config.endereco, textStartX, yPos + 17);
 
-  // O.S. Number (lado direito)
-  doc.setFontSize(11);
+  // O.S. title + number (right side)
+  doc.setFillColor(osColor[0], osColor[1], osColor[2]);
+  const osBoxW = 55;
+  doc.rect(pageWidth - margin - osBoxW, yPos, osBoxW, headerH, 'F');
+  doc.setTextColor(255, 255, 255);
+  doc.setFontSize(9);
   doc.setFont('helvetica', 'bold');
-  doc.text('ORDEM DE SERVIÇO', pageWidth - margin, textTop + 14, { align: 'right' });
-
-  doc.setFontSize(20);
-  doc.text(`#${ordem.numero.slice(-8).toUpperCase()}`, pageWidth - margin, textTop + 26, { align: 'right' });
-
-  // Status badge
-  const statusText = statusLabels[ordem.status] || ordem.status;
-  doc.setFontSize(10);
-  doc.setFont('helvetica', 'normal');
-  doc.text(`Status: ${statusText}`, pageWidth - margin, textTop + 36, { align: 'right' });
-
-  // Data de emissão
+  doc.text('Ordem de Serviço', pageWidth - margin - osBoxW / 2, yPos + 8, { align: 'center' });
+  doc.setFontSize(7);
+  doc.text(`Pág. 1 de 1`, pageWidth - margin - osBoxW / 2, yPos + 13, { align: 'center' });
   doc.setFontSize(8);
-  doc.text(`Emitida: ${formatDateTime(ordem.createdAt)}`, pageWidth - margin, textTop + 42, { align: 'right' });
+  doc.text(`${statusLabels[ordem.status] || ordem.status}`, pageWidth - margin - osBoxW / 2, yPos + 18, { align: 'center' });
 
-  let yPos = headerHeight + 10;
+  yPos += headerH;
 
-  // ============ DADOS DO CLIENTE ============
-  doc.setTextColor(osColor[0], osColor[1], osColor[2]);
-  doc.setFontSize(11);
-  doc.setFont('helvetica', 'bold');
-  doc.text('DADOS DO CLIENTE', margin, yPos);
+  // ============ SEÇÃO: Ordem de Serviço ============
+  yPos = drawSectionBar(yPos, 'Ordem de Serviço');
 
-  yPos += 3;
-  doc.setDrawColor(osColor[0], osColor[1], osColor[2]);
-  doc.setLineWidth(0.5);
-  doc.line(margin, yPos, pageWidth - margin, yPos);
+  // Row 1: Nº | Data
+  const row1H = 10;
+  const col1W = contentWidth * 0.35;
+  const col2W = contentWidth * 0.65;
+  drawCell(margin, yPos, col1W, row1H, 'Nº', ordem.numero.slice(-8).toUpperCase());
+  drawCell(margin + col1W, yPos, col2W, row1H, 'Data', formatDateTime(ordem.createdAt));
+  yPos += row1H;
 
-  yPos += 8;
-  doc.setTextColor(60, 60, 60);
-  doc.setFontSize(10);
-  doc.setFont('helvetica', 'normal');
+  // Row 2: Cliente
+  drawCell(margin, yPos, contentWidth, row1H, 'Cliente', ordem.veiculo.cliente.nome);
+  yPos += row1H;
 
-  // Nome (pode ser longo, então usa linha inteira)
-  doc.setFont('helvetica', 'bold');
-  doc.text('Nome:', margin, yPos);
-  doc.setFont('helvetica', 'normal');
-  const nomeCliente = truncateText(ordem.veiculo.cliente.nome, 70);
-  doc.text(nomeCliente, margin + 18, yPos);
+  // Row 3: Telefone | Email
+  drawCell(margin, yPos, col1W, row1H, 'Telefone', formatPhone(ordem.veiculo.cliente.telefone));
+  drawCell(margin + col1W, yPos, col2W, row1H, 'Email', ordem.veiculo.cliente.email || '-');
+  yPos += row1H;
 
-  yPos += 7;
+  // ============ SEÇÃO: Veículo ============
+  yPos = drawSectionBar(yPos, 'Veículo');
 
-  // Telefone na linha de baixo
-  doc.setFont('helvetica', 'bold');
-  doc.text('Telefone:', margin, yPos);
-  doc.setFont('helvetica', 'normal');
-  doc.text(formatPhone(ordem.veiculo.cliente.telefone), margin + 25, yPos);
+  // Row 1: Placa | Marca | Modelo
+  const vCol1 = contentWidth * 0.25;
+  const vCol2 = contentWidth * 0.35;
+  const vCol3 = contentWidth * 0.40;
+  drawCell(margin, yPos, vCol1, row1H, 'Placa', ordem.veiculo.placa);
+  drawCell(margin + vCol1, yPos, vCol2, row1H, 'Marca', ordem.veiculo.marca);
+  drawCell(margin + vCol1 + vCol2, yPos, vCol3, row1H, 'Modelo', ordem.veiculo.modelo);
+  yPos += row1H;
 
-  // Email ao lado do telefone (se existir)
-  if (ordem.veiculo.cliente.email) {
-    doc.setFont('helvetica', 'bold');
-    doc.text('Email:', pageWidth / 2, yPos);
-    doc.setFont('helvetica', 'normal');
-    doc.text(ordem.veiculo.cliente.email, pageWidth / 2 + 18, yPos);
+  // Row 2: Ano | KM
+  const vCol4 = contentWidth * 0.25;
+  const vCol5 = contentWidth * 0.25;
+  const vCol6 = contentWidth * 0.50;
+  drawCell(margin, yPos, vCol4, row1H, 'Ano', ordem.veiculo.ano ? String(ordem.veiculo.ano) : '-');
+  drawCell(margin + vCol4, yPos, vCol5, row1H, 'KM Entrada', ordem.kmEntrada ? `${ordem.kmEntrada.toLocaleString('pt-BR')} km` : '-');
+
+  // Datas no mesmo row
+  const dataInicio = ordem.dataInicio ? formatDateTime(ordem.dataInicio) : '-';
+  const dataConclusao = ordem.dataConclusao ? formatDateTime(ordem.dataConclusao) : '-';
+  drawCell(margin + vCol4 + vCol5, yPos, vCol6, row1H, 'Início / Conclusão', `${dataInicio}  →  ${dataConclusao}`);
+  yPos += row1H;
+
+  // ============ OBSERVAÇÕES (inline, compacto) ============
+  if (ordem.observacoes) {
+    const obsH = 12;
+    drawCell(margin, yPos, contentWidth, obsH, 'Observações', ordem.observacoes);
+    yPos += obsH;
   }
 
-  yPos += 10;
-
-  // ============ DADOS DO VEÍCULO ============
-  doc.setTextColor(osColor[0], osColor[1], osColor[2]);
-  doc.setFontSize(11);
-  doc.setFont('helvetica', 'bold');
-  doc.text('DADOS DO VEÍCULO', margin, yPos);
-
-  yPos += 3;
-  doc.line(margin, yPos, pageWidth - margin, yPos);
-
-  yPos += 8;
-  doc.setTextColor(60, 60, 60);
-  doc.setFontSize(10);
-
-  // Placa com destaque
-  doc.setFillColor(240, 240, 240);
-  doc.roundedRect(margin, yPos - 5, 50, 14, 2, 2, 'F');
-  doc.setFont('helvetica', 'bold');
-  doc.setFontSize(14);
-  doc.text(ordem.veiculo.placa, margin + 25, yPos + 4, { align: 'center' });
-
-  // Veículo info
-  doc.setFontSize(10);
-  doc.setFont('helvetica', 'bold');
-  doc.text('Veículo:', margin + 60, yPos);
-  doc.setFont('helvetica', 'normal');
-  const veiculoInfo = `${ordem.veiculo.marca} ${ordem.veiculo.modelo}${ordem.veiculo.ano ? ` (${ordem.veiculo.ano})` : ''}`;
-  doc.text(veiculoInfo, margin + 60 + 22, yPos);
-
-  // KM se disponível
-  if (ordem.kmEntrada) {
-    doc.setFont('helvetica', 'bold');
-    doc.text('KM:', margin + 60, yPos + 8);
-    doc.setFont('helvetica', 'normal');
-    doc.text(`${ordem.kmEntrada.toLocaleString('pt-BR')} km`, margin + 60 + 12, yPos + 8);
-  }
-
-  yPos += 22;
-
-  // ============ DATAS ============
-  if (ordem.dataInicio || ordem.dataConclusao) {
-    doc.setFillColor(248, 250, 252);
-    doc.roundedRect(margin, yPos - 2, pageWidth - margin * 2, 16, 2, 2, 'F');
-
-    doc.setTextColor(100, 100, 100);
-    doc.setFontSize(9);
-
-    let xOffset = margin + 5;
-    if (ordem.dataInicio) {
-      doc.setFont('helvetica', 'bold');
-      doc.text('Iniciada:', xOffset, yPos + 8);
-      doc.setFont('helvetica', 'normal');
-      doc.text(formatDateTime(ordem.dataInicio), xOffset + 22, yPos + 8);
-      xOffset += 75;
-    }
-    if (ordem.dataConclusao) {
-      doc.setFont('helvetica', 'bold');
-      doc.text('Concluída:', xOffset, yPos + 8);
-      doc.setFont('helvetica', 'normal');
-      doc.text(formatDateTime(ordem.dataConclusao), xOffset + 26, yPos + 8);
-    }
-
-    yPos += 22;
-  }
-
-  // ============ SERVIÇOS EXTRAS ============
+  // ============ SEÇÃO: Serviços (Mão de obra) ============
   if (ordem.servicosExtras && ordem.servicosExtras.length > 0) {
-    yPos = checkPageBreak(yPos, 30);
-    doc.setTextColor(osColor[0], osColor[1], osColor[2]);
-    doc.setFontSize(11);
-    doc.setFont('helvetica', 'bold');
-    doc.text('SERVIÇOS EXTRAS (MÃO DE OBRA)', margin, yPos);
+    yPos = checkPageBreak(yPos, 25);
+    yPos = drawSectionBar(yPos, 'Serviços (Mão de Obra)');
 
-    yPos += 5;
+    const totalServicos = ordem.servicosExtras.reduce((acc, s) => acc + s.valor, 0);
 
     autoTable(doc, {
       startY: yPos,
-      head: [['Descrição do Serviço', 'Valor']],
-      body: ordem.servicosExtras.map(item => [
-        item.descricao,
-        formatCurrency(item.valor),
-      ]),
-      theme: 'striped',
+      head: [['Descrição', 'Valor']],
+      body: [
+        ...ordem.servicosExtras.map(item => [
+          item.descricao,
+          formatCurrency(item.valor),
+        ]),
+        [{ content: 'Subtotal Serviços', styles: { fontStyle: 'bold', halign: 'right' } }, { content: formatCurrency(totalServicos), styles: { fontStyle: 'bold' } }],
+      ],
+      theme: 'grid',
       headStyles: {
         fillColor: [osColor[0], osColor[1], osColor[2]],
         textColor: 255,
         fontStyle: 'bold',
-        fontSize: 9,
+        fontSize: 8,
+        cellPadding: 2,
       },
       styles: {
-        fontSize: 9,
-        cellPadding: 4,
+        fontSize: 8,
+        cellPadding: 2,
+        lineColor: [lineColor[0], lineColor[1], lineColor[2]],
+        lineWidth: 0.3,
       },
       columnStyles: {
         0: { cellWidth: 'auto' },
-        1: { cellWidth: 40, halign: 'right', fontStyle: 'bold' },
+        1: { cellWidth: 30, halign: 'right' },
       },
-      alternateRowStyles: {
-        fillColor: [248, 250, 252],
-      },
-      margin: { bottom: footerSpace },
+      margin: { left: margin, right: margin, bottom: footerSpace },
     });
 
-    yPos = (doc as any).lastAutoTable.finalY + 8;
+    yPos = (doc as any).lastAutoTable.finalY;
   }
 
-  // ============ PRODUTOS ============
+  // ============ SEÇÃO: Peças ============
   if (ordem.itensProduto && ordem.itensProduto.length > 0) {
-    yPos = checkPageBreak(yPos, 30);
-    doc.setTextColor(59, 130, 246);
-    doc.setFontSize(11);
-    doc.setFont('helvetica', 'bold');
-    doc.text('PEÇAS E PRODUTOS', margin, yPos);
+    yPos = checkPageBreak(yPos, 25);
+    yPos = drawSectionBar(yPos, 'Peças');
 
-    yPos += 5;
+    const totalPecas = ordem.itensProduto.reduce((acc, p) => acc + p.subtotal, 0);
 
     autoTable(doc, {
       startY: yPos,
-      head: [['Descrição do Produto', 'Qtd', 'Valor Unit.', 'Subtotal']],
-      body: ordem.itensProduto.map(item => {
-        let descricao = item.produtoNome;
-        const fiscal = [item.ncm && `NCM: ${item.ncm}`, item.cfop && `CFOP: ${item.cfop}`].filter(Boolean).join('  |  ');
-        if (fiscal) descricao += `\n${fiscal}`;
-        return [
-          descricao,
-          item.quantidade.toString(),
-          formatCurrency(item.precoUnitario),
-          formatCurrency(item.subtotal),
-        ];
-      }),
-      theme: 'striped',
+      head: [['Descrição', 'Qtd', 'Preço Unit.', 'Valor']],
+      body: [
+        ...ordem.itensProduto.map(item => {
+          let desc = item.produtoNome;
+          const fiscal = [item.ncm && `NCM: ${item.ncm}`, item.cfop && `CFOP: ${item.cfop}`].filter(Boolean).join(' | ');
+          if (fiscal) desc += `\n${fiscal}`;
+          return [
+            desc,
+            item.quantidade.toString(),
+            formatCurrency(item.precoUnitario),
+            formatCurrency(item.subtotal),
+          ];
+        }),
+        [{ content: 'Subtotal Peças', colSpan: 3, styles: { fontStyle: 'bold', halign: 'right' } }, { content: formatCurrency(totalPecas), styles: { fontStyle: 'bold' } }],
+      ],
+      theme: 'grid',
       headStyles: {
-        fillColor: [59, 130, 246],
+        fillColor: [osColor[0], osColor[1], osColor[2]],
         textColor: 255,
         fontStyle: 'bold',
-        fontSize: 9,
+        fontSize: 8,
+        cellPadding: 2,
       },
       styles: {
-        fontSize: 9,
-        cellPadding: 4,
+        fontSize: 8,
+        cellPadding: 2,
+        lineColor: [lineColor[0], lineColor[1], lineColor[2]],
+        lineWidth: 0.3,
       },
       columnStyles: {
         0: { cellWidth: 'auto' },
-        1: { cellWidth: 18, halign: 'center' },
-        2: { cellWidth: 32, halign: 'right' },
-        3: { cellWidth: 32, halign: 'right', fontStyle: 'bold' },
+        1: { cellWidth: 15, halign: 'center' },
+        2: { cellWidth: 28, halign: 'right' },
+        3: { cellWidth: 28, halign: 'right' },
       },
-      alternateRowStyles: {
-        fillColor: [248, 250, 252],
-      },
-      margin: { bottom: footerSpace },
+      margin: { left: margin, right: margin, bottom: footerSpace },
     });
 
-    yPos = (doc as any).lastAutoTable.finalY + 8;
+    yPos = (doc as any).lastAutoTable.finalY;
   }
 
-  // ============ OBSERVAÇÕES ============
-  if (ordem.observacoes) {
-    const splitText = doc.splitTextToSize(ordem.observacoes, pageWidth - margin * 2 - 10);
-    const obsHeight = splitText.length * 5 + 8;
-    yPos = checkPageBreak(yPos, obsHeight + 20);
+  // ============ TOTAL GERAL ============
+  yPos = checkPageBreak(yPos, 20);
 
-    doc.setTextColor(100, 100, 100);
-    doc.setFontSize(11);
-    doc.setFont('helvetica', 'bold');
-    doc.text('OBSERVAÇÕES', margin, yPos);
-
-    yPos += 5;
-    doc.setFillColor(255, 251, 235);
-    doc.setDrawColor(251, 191, 36);
-    doc.setLineWidth(0.3);
-    doc.roundedRect(margin, yPos, pageWidth - margin * 2, obsHeight, 2, 2, 'FD');
-
-    doc.setTextColor(60, 60, 60);
-    doc.setFontSize(9);
-    doc.setFont('helvetica', 'normal');
-    doc.text(splitText, margin + 5, yPos + 6);
-
-    yPos += obsHeight + 8;
-  }
-
-  // ============ DECLARAÇÃO ============
-  doc.setTextColor(100, 100, 100);
-  doc.setFontSize(8);
-  doc.setFont('helvetica', 'normal');
-  doc.text('Declaro que os serviços acima foram executados conforme solicitado.', margin, yPos);
-  yPos += 5;
-
-  // ============ TOTAL + ASSINATURA ============
-  // Garantir espaço para total (28) + assinatura (35) + footer (20) = 83
-  yPos = checkPageBreak(yPos, 85);
-
-  // Se não tem serviços nem produtos, adiciona mensagem
-  const hasItems = (ordem.servicosExtras && ordem.servicosExtras.length > 0) ||
-                   (ordem.itensProduto && ordem.itensProduto.length > 0);
-
-  if (!hasItems && ordem.total > 0) {
-    doc.setTextColor(100, 100, 100);
-    doc.setFontSize(9);
-    doc.setFont('helvetica', 'italic');
-    doc.text('(Serviços e valores a serem definidos)', margin, yPos);
-    yPos += 10;
-  }
-
-  yPos += 5;
-
-  // Box do total (alinhado à direita)
-  const totalBoxWidth = 90;
-  const totalBoxX = pageWidth - margin - totalBoxWidth;
-
+  // Total row (full width, colored)
   doc.setFillColor(osColor[0], osColor[1], osColor[2]);
-  doc.roundedRect(totalBoxX, yPos, totalBoxWidth, 28, 3, 3, 'F');
-
+  doc.rect(margin, yPos, contentWidth, 10, 'F');
   doc.setTextColor(255, 255, 255);
   doc.setFontSize(10);
   doc.setFont('helvetica', 'bold');
-  doc.text('TOTAL A PAGAR', totalBoxX + totalBoxWidth / 2, yPos + 10, { align: 'center' });
+  doc.text('TOTAL', margin + 5, yPos + 7);
+  doc.setFontSize(12);
+  doc.text(formatCurrency(ordem.total), pageWidth - margin - 5, yPos + 7, { align: 'right' });
 
-  doc.setFontSize(18);
-  doc.text(formatCurrency(ordem.total), totalBoxX + totalBoxWidth / 2, yPos + 22, { align: 'center' });
+  yPos += 16;
 
-  yPos += 40;
+  // ============ FECHAMENTO E ASSINATURAS ============
+  yPos = checkPageBreak(yPos, 40);
 
-  // ============ ASSINATURA ============
-  doc.setTextColor(100, 100, 100);
+  doc.setTextColor(30, 30, 30);
+  doc.setFontSize(8);
+  doc.setFont('helvetica', 'normal');
+  doc.text(`Data do fechamento da OS: ____/____/____`, margin, yPos);
 
-  // Linha de assinatura cliente
-  doc.setDrawColor(180, 180, 180);
+  yPos += 8;
+  doc.setFontSize(8);
+  doc.text('Confirmo a realização dos serviços descritos e o uso das peças relacionadas:', pageWidth / 2, yPos, { align: 'center' });
+
+  yPos += 15;
+
+  // Signature lines
+  doc.setDrawColor(lineColor[0], lineColor[1], lineColor[2]);
   doc.setLineWidth(0.3);
-  doc.line(margin, yPos + 10, margin + 70, yPos + 10);
-  doc.setFontSize(9);
-  doc.text('Assinatura do Cliente', margin + 35, yPos + 17, { align: 'center' });
 
-  // Data (no meio)
-  doc.line(pageWidth / 2 - 30, yPos + 10, pageWidth / 2 + 30, yPos + 10);
-  doc.text('Data: ____/____/____', pageWidth / 2, yPos + 17, { align: 'center' });
+  const sigWidth = 70;
+  const sig1X = margin + 10;
+  const sig2X = pageWidth - margin - sigWidth - 10;
 
-  // Linha de assinatura oficina
-  doc.line(pageWidth - margin - 70, yPos + 10, pageWidth - margin, yPos + 10);
-  doc.text('Carimbo/Assinatura', pageWidth - margin - 35, yPos + 17, { align: 'center' });
+  doc.line(sig1X, yPos, sig1X + sigWidth, yPos);
+  doc.setFontSize(7);
+  doc.setTextColor(100, 100, 100);
+  doc.text('Cliente', sig1X + sigWidth / 2, yPos + 4, { align: 'center' });
+
+  doc.line(sig2X, yPos, sig2X + sigWidth, yPos);
+  doc.text('Responsável / Oficina', sig2X + sigWidth / 2, yPos + 4, { align: 'center' });
 
   // ============ FOOTER ============
   drawFooter();
