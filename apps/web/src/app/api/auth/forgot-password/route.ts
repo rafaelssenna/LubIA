@@ -71,12 +71,21 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({
       success: true,
-      message: 'Se o email estiver cadastrado, você receberá um código de recuperação.'
+      message: 'Se o email estiver cadastrado, você receberá um código de recuperação.',
+      _debug: {
+        emailSent: emailResult.success,
+        emailError: emailResult.error || null,
+        zohoClientId: !!process.env.ZOHO_CLIENT_ID,
+        zohoAccountId: !!process.env.ZOHO_ACCOUNT_ID,
+        zohoRefreshToken: !!process.env.ZOHO_REFRESH_TOKEN,
+        zohoEmail: process.env.ZOHO_EMAIL || 'NOT SET',
+      }
     });
   } catch (error: any) {
     console.error('[FORGOT-PASSWORD] Erro:', error?.message);
     return NextResponse.json({
-      error: 'Erro interno do servidor'
+      error: 'Erro interno do servidor',
+      _debug: { errorMessage: error?.message }
     }, { status: 500 });
   }
 }
