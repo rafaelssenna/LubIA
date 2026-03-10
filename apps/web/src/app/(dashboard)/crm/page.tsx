@@ -45,6 +45,7 @@ interface Stats {
   demoScheduled: number;
   agents: Record<string, number>;
   recentToday: number;
+  scoreCounts?: { qualified: number; interested: number; new_lead: number };
 }
 
 type ScoreFilter = 'all' | 'qualified' | 'interested' | 'new_lead';
@@ -175,12 +176,12 @@ export default function CrmPage() {
   }, [searchTerm]);
 
   return (
-    <div className="space-y-8">
+    <div className="flex flex-col h-[calc(100vh-64px)]">
       <Header title="CRM" subtitle="Leads LoopIA - Prospecção" />
 
-      <div className="px-3 sm:px-4 lg:px-8 space-y-8">
+      <div className="px-3 sm:px-4 lg:px-8 flex flex-col flex-1 overflow-hidden py-4 space-y-4">
         {/* ── Stats Cards ── */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 shrink-0">
           <div className="group relative overflow-hidden bg-gradient-to-br from-primary/20 to-primary/5 rounded-2xl p-6 border border-primary/20 hover:border-primary/40 transition-all duration-300">
             <div className="absolute top-0 right-0 w-32 h-32 bg-primary/10 rounded-full blur-3xl group-hover:scale-150 transition-transform duration-500" />
             <div className="relative">
@@ -238,13 +239,13 @@ export default function CrmPage() {
         </div>
 
         {/* ── Filtros ── */}
-        <div className="flex flex-col sm:flex-row gap-4">
+        <div className="flex flex-col sm:flex-row gap-4 shrink-0">
           <div className="flex gap-2 flex-wrap">
             {([
-              { key: 'all' as ScoreFilter, label: 'Todos', count: counts.total },
-              { key: 'qualified' as ScoreFilter, label: 'Qualificados', count: counts.qualified },
-              { key: 'interested' as ScoreFilter, label: 'Interessados', count: counts.interested },
-              { key: 'new_lead' as ScoreFilter, label: 'Novos', count: counts.new_lead },
+              { key: 'all' as ScoreFilter, label: 'Todos', count: stats?.total || 0 },
+              { key: 'qualified' as ScoreFilter, label: 'Qualificados', count: stats?.scoreCounts?.qualified || 0 },
+              { key: 'interested' as ScoreFilter, label: 'Interessados', count: stats?.scoreCounts?.interested || 0 },
+              { key: 'new_lead' as ScoreFilter, label: 'Novos', count: stats?.scoreCounts?.new_lead || 0 },
             ]).map(f => (
               <button
                 key={f.key}
@@ -273,7 +274,7 @@ export default function CrmPage() {
         </div>
 
         {/* ── Layout Principal: Lista + Detalhe ── */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6" style={{ minHeight: '600px' }}>
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 flex-1 min-h-0">
           {/* Lista de Leads */}
           <div className="lg:col-span-1 bg-card border border-border rounded-2xl overflow-hidden flex flex-col">
             <div className="flex-1 overflow-y-auto">
@@ -454,7 +455,7 @@ export default function CrmPage() {
                   )}
                 </div>
 
-                <div className="flex-1 overflow-y-auto p-6 space-y-3" style={{ maxHeight: '500px' }}>
+                <div className="flex-1 overflow-y-auto p-6 space-y-3">
                   {selectedLead.messages?.map((msg: any, i: number) => (
                     <div
                       key={i}

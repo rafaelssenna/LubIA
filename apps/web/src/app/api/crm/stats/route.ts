@@ -14,6 +14,12 @@ export async function GET(request: NextRequest) {
       getScheduledDemos(),
     ]);
 
+    // Contadores globais de score (baseados em dados do banco)
+    // demoScheduled = qualified, activeWithManyMessages ~= interested, resto = new_lead
+    const qualifiedCount = stats.demoScheduled;
+    const interestedCount = stats.activeWithManyMessages;
+    const newLeadCount = stats.total - qualifiedCount - interestedCount;
+
     return NextResponse.json({
       success: true,
       data: {
@@ -22,6 +28,11 @@ export async function GET(request: NextRequest) {
         demoScheduled: stats.demoScheduled,
         agents: stats.agents,
         recentToday: stats.recentToday,
+        scoreCounts: {
+          qualified: qualifiedCount,
+          interested: interestedCount,
+          new_lead: newLeadCount,
+        },
         demos: demos.map(d => ({
           id: d.id,
           phone: d.phone,

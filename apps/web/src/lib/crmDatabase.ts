@@ -101,15 +101,18 @@ export async function getStats(): Promise<{
   demoScheduled: number;
   agents: Record<string, number>;
   recentToday: number;
+  activeWithManyMessages: number;
 }> {
   const base = `WHERE ${LOOPIA_FILTER}`;
 
-  const [totalR, activatedR, demoR, agentsR, todayR] = await Promise.all([
+  const [totalR, activatedR, demoR, agentsR, todayR, activeInterestR] = await Promise.all([
     pool.query(`SELECT count(*)::int as c FROM conversations ${base}`),
     pool.query(`SELECT count(*)::int as c FROM conversations ${base} AND activated = true`),
     pool.query(`SELECT count(*)::int as c FROM conversations ${base} AND demo_scheduled = true`),
     pool.query(`SELECT agent_id, count(*)::int as c FROM conversations ${base} GROUP BY agent_id`),
     pool.query(`SELECT count(*)::int as c FROM conversations ${base} AND last_message_at >= CURRENT_DATE`),
+    // Leads ativos com 5+ mensagens (potencialmente interessados)
+    pool.query(`SELECT count(*)::int as c FROM conversations ${base} AND activated = true AND message_count >= 5 AND demo_scheduled = false`),
   ]);
 
   const agents: Record<string, number> = {};
@@ -121,6 +124,7 @@ export async function getStats(): Promise<{
     demoScheduled: demoR.rows[0].c,
     agents,
     recentToday: todayR.rows[0].c,
+    activeWithManyMessages: activeInterestR.rows[0].c,
   };
 }
 
