@@ -45,6 +45,7 @@ export async function GET() {
       amount: number | null;
       currency: string | null;
       paymentMethod: {
+        type: string; // 'card' | 'boleto' | 'pix'
         brand: string | null;
         last4: string | null;
       } | null;
@@ -99,15 +100,18 @@ export async function GET() {
 
             pm = customer.invoice_settings?.default_payment_method;
 
-            // Se ainda não tiver, tentar listar payment methods
+            // Se ainda não tiver, tentar listar payment methods (card, boleto)
             if (!pm) {
-              const paymentMethods = await stripe.paymentMethods.list({
-                customer: empresa.stripeCustomerId,
-                type: 'card',
-                limit: 1,
-              });
-              if (paymentMethods.data.length > 0) {
-                pm = paymentMethods.data[0];
+              for (const pmType of ['card', 'boleto'] as const) {
+                const paymentMethods = await stripe.paymentMethods.list({
+                  customer: empresa.stripeCustomerId,
+                  type: pmType,
+                  limit: 1,
+                });
+                if (paymentMethods.data.length > 0) {
+                  pm = paymentMethods.data[0];
+                  break;
+                }
               }
             }
           } catch (e) {
@@ -115,11 +119,32 @@ export async function GET() {
           }
         }
 
-        if (pm && typeof pm !== 'string' && pm.card) {
-          stripeDetails.paymentMethod = {
-            brand: pm.card.brand,
-            last4: pm.card.last4,
-          };
+        if (pm && typeof pm !== 'string') {
+          if (pm.card) {
+            stripeDetails.paymentMethod = {
+              type: 'card',
+              brand: pm.card.brand,
+              last4: pm.card.last4,
+            };
+          } else if (pm.type === 'boleto') {
+            stripeDetails.paymentMethod = {
+              type: 'boleto',
+              brand: null,
+              last4: null,
+            };
+          } else if (pm.type === 'pix') {
+            stripeDetails.paymentMethod = {
+              type: 'pix',
+              brand: null,
+              last4: null,
+            };
+          } else {
+            stripeDetails.paymentMethod = {
+              type: pm.type || 'unknown',
+              brand: null,
+              last4: null,
+            };
+          }
         }
       } catch (stripeError: any) {
         console.error('[STRIPE STATUS] Erro ao buscar detalhes:', stripeError?.message);

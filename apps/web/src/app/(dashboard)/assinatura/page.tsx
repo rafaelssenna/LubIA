@@ -33,6 +33,7 @@ interface SubscriptionData {
   amount: number | null;
   currency: string | null;
   paymentMethod: {
+    type: string; // 'card' | 'boleto' | 'pix'
     brand: string | null;
     last4: string | null;
   } | null;
@@ -62,6 +63,17 @@ function getCardBrandName(brand: string | null): string {
   return brands[brand.toLowerCase()] || brand;
 }
 
+// Helper para nome do método de pagamento
+function getPaymentMethodLabel(pm: { type: string; brand: string | null; last4: string | null }): string {
+  if (pm.type === 'boleto') return 'Boleto Bancário';
+  if (pm.type === 'pix') return 'PIX';
+  if (pm.type === 'card') {
+    const brand = getCardBrandName(pm.brand);
+    return pm.last4 ? `${brand} •••• ${pm.last4}` : brand;
+  }
+  return 'Outro';
+}
+
 // Componente que usa useSearchParams (precisa de Suspense)
 function AssinaturaContent() {
   const toast = useToast();
@@ -71,6 +83,7 @@ function AssinaturaContent() {
   const [loading, setLoading] = useState(true);
   const [subscription, setSubscription] = useState<SubscriptionData | null>(null);
   const [processingCheckout, setProcessingCheckout] = useState(false);
+  const [processingPix, setProcessingPix] = useState(false);
   const [processingPortal, setProcessingPortal] = useState(false);
   const [processingCancel, setProcessingCancel] = useState(false);
   const [syncing, setSyncing] = useState(false);
@@ -134,6 +147,27 @@ function AssinaturaContent() {
       toast.error('Erro ao iniciar checkout');
     } finally {
       setProcessingCheckout(false);
+    }
+  };
+
+  const handlePixCheckout = async () => {
+    setProcessingPix(true);
+    try {
+      const res = await fetch('/api/stripe/pix-checkout', { method: 'POST' });
+      if (res.status === 401) {
+        window.location.href = '/login';
+        return;
+      }
+      const data = await res.json();
+      if (data.url) {
+        window.location.href = data.url;
+      } else {
+        toast.error(data.error || 'Erro ao iniciar checkout PIX');
+      }
+    } catch (error) {
+      toast.error('Erro ao iniciar checkout PIX');
+    } finally {
+      setProcessingPix(false);
     }
   };
 
@@ -287,23 +321,45 @@ function AssinaturaContent() {
                 ? 'Seu período de teste de 7 dias terminou. Assine agora para continuar usando o sistema.'
                 : 'Sua assinatura está inativa. Ative agora para continuar usando todas as funcionalidades.'}
             </p>
-            <button
-              onClick={handleCheckout}
-              disabled={processingCheckout}
-              className="px-8 py-4 bg-gradient-to-r from-primary to-primary-dark rounded-xl text-white font-bold text-lg hover:opacity-90 disabled:opacity-50 transition-all shadow-lg shadow-primary/25"
-            >
-              {processingCheckout ? (
-                <span className="flex items-center gap-2">
-                  <Loader2 className="animate-spin" size={20} />
-                  Processando...
-                </span>
-              ) : (
-                <span className="flex items-center gap-2">
-                  <CreditCard size={20} />
-                  Ativar Assinatura
-                </span>
-              )}
-            </button>
+            <div className="flex flex-col sm:flex-row gap-3 justify-center">
+              <button
+                onClick={handleCheckout}
+                disabled={processingCheckout}
+                className="px-8 py-4 bg-gradient-to-r from-primary to-primary-dark rounded-xl text-white font-bold text-lg hover:opacity-90 disabled:opacity-50 transition-all shadow-lg shadow-primary/25"
+              >
+                {processingCheckout ? (
+                  <span className="flex items-center gap-2">
+                    <Loader2 className="animate-spin" size={20} />
+                    Processando...
+                  </span>
+                ) : (
+                  <span className="flex items-center gap-2">
+                    <CreditCard size={20} />
+                    Cartão / Boleto
+                  </span>
+                )}
+              </button>
+              <button
+                onClick={handlePixCheckout}
+                disabled={processingPix}
+                className="px-8 py-4 bg-[#32BCAD] hover:bg-[#2aa89b] rounded-xl text-white font-bold text-lg disabled:opacity-50 transition-all shadow-lg"
+              >
+                {processingPix ? (
+                  <span className="flex items-center gap-2">
+                    <Loader2 className="animate-spin" size={20} />
+                    Processando...
+                  </span>
+                ) : (
+                  <span className="flex items-center gap-2">
+                    <DollarSign size={20} />
+                    Pagar com PIX
+                  </span>
+                )}
+              </button>
+            </div>
+            <p className="text-xs text-muted mt-3">
+              Cartão e Boleto: assinatura recorrente mensal. PIX: pagamento avulso de 1 mês.
+            </p>
           </div>
         )}
 
@@ -368,12 +424,12 @@ function AssinaturaContent() {
                   <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 p-3 sm:p-4 bg-muted/5 border border-muted/20 rounded-xl">
                     <div className="flex items-center gap-3">
                       <Wallet size={20} className="text-foreground-muted" />
-                      <span className="text-foreground">Cartão cadastrado</span>
+                      <span className="text-foreground">Forma de pagamento</span>
                     </div>
                     <div className="flex items-center gap-2">
                       <CreditCard size={20} className="text-foreground-muted" />
                       <span className="text-foreground font-semibold">
-                        {getCardBrandName(subscription.paymentMethod.brand)} •••• {subscription.paymentMethod.last4}
+                        {getPaymentMethodLabel(subscription.paymentMethod)}
                       </span>
                     </div>
                   </div>
@@ -419,7 +475,7 @@ function AssinaturaContent() {
                     <div className="flex items-center gap-2">
                       <CreditCard size={20} className="text-foreground-muted" />
                       <span className="text-foreground font-semibold">
-                        {getCardBrandName(subscription.paymentMethod.brand)} •••• {subscription.paymentMethod.last4}
+                        {getPaymentMethodLabel(subscription.paymentMethod)}
                       </span>
                     </div>
                   </div>
@@ -450,20 +506,34 @@ function AssinaturaContent() {
 
             {/* Botões de Ação */}
             <div className="flex flex-col sm:flex-row flex-wrap gap-3 sm:gap-4 pt-4">
-              {/* Botão Assinar - só aparece quando precisa reativar (UNPAID, CANCELED, PAST_DUE) */}
+              {/* Botões Assinar - só aparece quando precisa reativar (UNPAID, CANCELED, PAST_DUE) */}
               {(subscription?.status === 'UNPAID' || subscription?.status === 'CANCELED' || subscription?.status === 'PAST_DUE') && (
-                <button
-                  onClick={handleCheckout}
-                  disabled={processingCheckout}
-                  className="flex-1 min-w-[200px] flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-primary to-primary-dark hover:from-primary-dark hover:to-primary rounded-xl text-white font-semibold transition-all duration-300 shadow-lg shadow-primary/25 disabled:opacity-50"
-                >
-                  {processingCheckout ? (
-                    <Loader2 className="animate-spin" size={20} />
-                  ) : (
-                    <CreditCard size={20} />
-                  )}
-                  Reativar Assinatura
-                </button>
+                <>
+                  <button
+                    onClick={handleCheckout}
+                    disabled={processingCheckout}
+                    className="flex-1 min-w-[200px] flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-primary to-primary-dark hover:from-primary-dark hover:to-primary rounded-xl text-white font-semibold transition-all duration-300 shadow-lg shadow-primary/25 disabled:opacity-50"
+                  >
+                    {processingCheckout ? (
+                      <Loader2 className="animate-spin" size={20} />
+                    ) : (
+                      <CreditCard size={20} />
+                    )}
+                    Cartão / Boleto
+                  </button>
+                  <button
+                    onClick={handlePixCheckout}
+                    disabled={processingPix}
+                    className="flex-1 min-w-[200px] flex items-center justify-center gap-2 px-6 py-3 bg-[#32BCAD] hover:bg-[#2aa89b] rounded-xl text-white font-semibold transition-all duration-300 shadow-lg disabled:opacity-50"
+                  >
+                    {processingPix ? (
+                      <Loader2 className="animate-spin" size={20} />
+                    ) : (
+                      <DollarSign size={20} />
+                    )}
+                    Pagar com PIX
+                  </button>
+                </>
               )}
 
               {subscription?.hasStripeCustomer && (

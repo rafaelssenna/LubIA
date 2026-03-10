@@ -20,6 +20,8 @@ export const stripe = {
   get subscriptions() { return getStripe().subscriptions; },
   get billingPortal() { return getStripe().billingPortal; },
   get webhooks() { return getStripe().webhooks; },
+  get prices() { return getStripe().prices; },
+  get paymentMethods() { return getStripe().paymentMethods; },
 };
 
 // ID do preço da assinatura mensal (configurar no Stripe Dashboard)

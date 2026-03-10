@@ -3,7 +3,7 @@ import { getSession } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import { stripe, SUBSCRIPTION_PRICE_ID, APP_URL } from '@/lib/stripe';
 
-// POST - Criar sessão de checkout Stripe
+// POST - Criar sessão de pagamento avulso via PIX (1 mês)
 export async function POST(request: NextRequest) {
   try {
     const session = await getSession();
@@ -37,44 +37,59 @@ export async function POST(request: NextRequest) {
       });
       customerId = customer.id;
 
-      // Salvar o customerId no banco
       await prisma.empresa.update({
         where: { id: empresa.id },
         data: { stripeCustomerId: customerId },
       });
     }
 
-    // Criar sessão de checkout (sem trial - o trial já foi gratuito no banco)
-    // Aceitar cartão, boleto e PIX como formas de pagamento
+    // Buscar o preço da assinatura para usar o mesmo valor
+    const stripeInstance = stripe;
+    const price = await stripeInstance.prices.retrieve(SUBSCRIPTION_PRICE_ID);
+    const amount = price.unit_amount;
+
+    if (!amount) {
+      return NextResponse.json({ error: 'Preço não configurado' }, { status: 500 });
+    }
+
+    // Criar sessão de checkout com PIX (pagamento avulso - 1 mês)
     const checkoutSession = await stripe.checkout.sessions.create({
       customer: customerId,
-      mode: 'subscription',
-      payment_method_types: ['card', 'boleto'],
+      mode: 'payment',
+      payment_method_types: ['pix'],
       line_items: [
         {
-          price: SUBSCRIPTION_PRICE_ID,
+          price_data: {
+            currency: 'brl',
+            unit_amount: amount,
+            product_data: {
+              name: 'LoopIA - Mensalidade (1 mês)',
+              description: 'Pagamento via PIX - acesso por 30 dias',
+            },
+          },
           quantity: 1,
         },
       ],
-      success_url: `${APP_URL}/assinatura?success=true`,
+      success_url: `${APP_URL}/assinatura?success=true&pix=true`,
       cancel_url: `${APP_URL}/assinatura?canceled=true`,
       metadata: {
         empresaId: empresa.id.toString(),
+        paymentType: 'pix_monthly',
       },
-      subscription_data: {
+      payment_intent_data: {
         metadata: {
           empresaId: empresa.id.toString(),
+          paymentType: 'pix_monthly',
         },
       },
       locale: 'pt-BR',
-      allow_promotion_codes: true,
     });
 
     return NextResponse.json({ url: checkoutSession.url });
   } catch (error: any) {
-    console.error('[STRIPE CHECKOUT] Erro:', error?.message);
+    console.error('[STRIPE PIX CHECKOUT] Erro:', error?.message);
     return NextResponse.json(
-      { error: 'Erro ao criar sessão de checkout' },
+      { error: 'Erro ao criar sessão de checkout PIX' },
       { status: 500 }
     );
   }
