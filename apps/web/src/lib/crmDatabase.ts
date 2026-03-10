@@ -55,8 +55,9 @@ export async function getConversations(opts: {
   page: number;
   limit: number;
   search?: string;
+  scoreFilter?: string;
 }): Promise<{ conversations: CrmConversation[]; total: number }> {
-  const { page, limit, search } = opts;
+  const { page, limit, search, scoreFilter } = opts;
   const offset = (page - 1) * limit;
   const conditions: string[] = [LOOPIA_FILTER];
   const params: any[] = [];
@@ -66,6 +67,15 @@ export async function getConversations(opts: {
     conditions.push(`(phone ILIKE $${paramIndex} OR name ILIKE $${paramIndex} OR whatsapp_name ILIKE $${paramIndex})`);
     params.push(`%${search}%`);
     paramIndex++;
+  }
+
+  // Filtros de score mapeados para condições SQL
+  if (scoreFilter === 'qualified') {
+    conditions.push('demo_scheduled = true');
+  } else if (scoreFilter === 'interested') {
+    conditions.push('activated = true AND message_count >= 5 AND demo_scheduled = false');
+  } else if (scoreFilter === 'new_lead') {
+    conditions.push('(demo_scheduled = false AND (activated = false OR message_count < 5))');
   }
 
   const where = `WHERE ${conditions.join(' AND ')}`;

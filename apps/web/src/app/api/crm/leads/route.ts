@@ -16,7 +16,11 @@ export async function GET(request: NextRequest) {
     const search = searchParams.get('search') || '';
     const scoreFilter = searchParams.get('score') || 'all';
 
-    const { conversations, total } = await getConversations({ page, limit, search });
+    // Filtro de score agora é aplicado no SQL (não mais client-side)
+    const { conversations, total } = await getConversations({
+      page, limit, search,
+      scoreFilter: scoreFilter !== 'all' ? scoreFilter : undefined,
+    });
 
     // Classificar cada conversa
     const data = conversations.map(c => {
@@ -46,23 +50,9 @@ export async function GET(request: NextRequest) {
       };
     });
 
-    // Filtrar por score client-side (score é calculado, não está no banco)
-    const filtered = scoreFilter === 'all' ? data : data.filter(d => d.score === scoreFilter);
-
-    // Contadores da página atual
-    const qualified = data.filter(c => c.score === 'qualified').length;
-    const interested = data.filter(c => c.score === 'interested').length;
-    const newLead = data.filter(c => c.score === 'new_lead').length;
-
     return NextResponse.json({
       success: true,
-      data: filtered,
-      counts: {
-        qualified,
-        interested,
-        new_lead: newLead,
-        total,
-      },
+      data,
       pagination: {
         page,
         limit,

@@ -96,7 +96,6 @@ export default function CrmPage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
-  const [counts, setCounts] = useState({ qualified: 0, interested: 0, new_lead: 0, total: 0 });
 
   const fetchLeads = useCallback(async () => {
     try {
@@ -111,7 +110,6 @@ export default function CrmPage() {
 
       if (json.success) {
         setLeads(json.data);
-        setCounts(json.counts);
         setTotalPages(json.pagination.totalPages);
       }
     } catch (error) {
