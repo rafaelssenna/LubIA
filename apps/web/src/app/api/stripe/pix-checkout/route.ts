@@ -87,9 +87,9 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({ url: checkoutSession.url });
   } catch (error: any) {
-    console.error('[STRIPE PIX CHECKOUT] Erro:', error?.message);
+    console.error('[STRIPE PIX CHECKOUT] Erro:', error?.message, error?.type, error?.code);
     return NextResponse.json(
-      { error: 'Erro ao criar sessão de checkout PIX' },
+      { error: 'Erro ao criar sessão de checkout PIX', _debug: error?.message },
       { status: 500 }
     );
   }
