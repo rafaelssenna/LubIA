@@ -12,9 +12,7 @@
     "prettier": "^3.2.5",
     "turbo": "^2.3.0"
   },
-  "pnpm": {
-    "neverBuiltDependencies": ["libxmljs2", "xsd-schema-validator"]
-  },
+  "pnpm": {},
   "packageManager": "pnpm@9.0.0",
   "engines": {
     "node": ">=18"
