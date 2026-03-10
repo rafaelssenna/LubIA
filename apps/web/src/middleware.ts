@@ -12,8 +12,12 @@ const publicPaths = [
   '/login',
   '/cadastro',
   '/consulta',
+  '/forgot-password',
+  '/reset-password',
   '/api/auth/login',
   '/api/auth/register',
+  '/api/auth/forgot-password',
+  '/api/auth/reset-password',
 ];
 
 // Rotas de API que devem permanecer públicas (webhooks externos, cron jobs)
