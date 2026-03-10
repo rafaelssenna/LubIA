@@ -370,103 +370,89 @@ export default function CrmPage() {
               </div>
             ) : (
               <>
-                <div className="p-6 border-b border-border">
+                {/* Header compacto */}
+                <div className="px-4 py-3 border-b border-border shrink-0">
                   <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-4">
-                      <div className={`w-14 h-14 rounded-full flex items-center justify-center text-xl font-bold ${
+                    <div className="flex items-center gap-3">
+                      <div className={`w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold ${
                         scoreColors[selectedLead.score] || 'bg-gray-500/20 text-gray-400'
                       }`}>
                         {(selectedLead.name || selectedLead.phone).charAt(0).toUpperCase()}
                       </div>
                       <div>
-                        <h2 className="text-xl font-bold text-foreground">
+                        <h2 className="text-base font-bold text-foreground leading-tight">
                           {selectedLead.name || formatPhone(selectedLead.phone)}
                         </h2>
-                        <div className="flex items-center gap-3 text-sm text-muted flex-wrap">
-                          <span className="flex items-center gap-1">
-                            <Phone size={14} />
-                            {formatPhone(selectedLead.phone)}
-                          </span>
-                          <span className={`px-2 py-0.5 rounded-full border text-xs ${scoreColors[selectedLead.score]}`}>
+                        <div className="flex items-center gap-2 text-xs text-muted">
+                          <Phone size={12} />
+                          {formatPhone(selectedLead.phone)}
+                          <span className={`px-1.5 py-0.5 rounded-full border text-[10px] ${scoreColors[selectedLead.score]}`}>
                             {selectedLead.scoreLabel.emoji} {selectedLead.scoreLabel.label}
                           </span>
-                          <span className="flex items-center gap-1 text-xs">
-                            <Bot size={12} />
+                          {selectedLead.demoScheduled && (
+                            <span className="px-1.5 py-0.5 rounded bg-green-500/20 text-green-400 text-[10px]">DEMO</span>
+                          )}
+                          <span className="flex items-center gap-1">
+                            <Bot size={10} />
                             {selectedLead.agentId}
                           </span>
                         </div>
                       </div>
                     </div>
 
-                    <button
-                      onClick={handleReclassify}
-                      disabled={reclassifying}
-                      className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-primary to-primary-light hover:from-primary-light hover:to-primary text-white rounded-xl transition-all text-sm disabled:opacity-50"
-                    >
-                      {reclassifying ? (
-                        <Loader2 className="animate-spin" size={16} />
-                      ) : (
-                        <RefreshCw size={16} />
-                      )}
-                      Reclassificar IA
-                    </button>
-                  </div>
-
-                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mt-4">
-                    <div className="bg-background rounded-xl p-3 text-center">
-                      <p className="text-2xl font-bold text-foreground">{selectedLead.confidence}%</p>
-                      <p className="text-xs text-muted">Confianca</p>
-                    </div>
-                    <div className="bg-background rounded-xl p-3 text-center">
-                      <p className="text-2xl font-bold text-foreground">{selectedLead.messageCount}</p>
-                      <p className="text-xs text-muted">Mensagens</p>
-                    </div>
-                    <div className="bg-background rounded-xl p-3 text-center">
-                      <p className="text-2xl font-bold text-foreground">
-                        {selectedLead.demoScheduled ? 'Sim' : 'Nao'}
-                      </p>
-                      <p className="text-xs text-muted">Demo</p>
-                    </div>
-                    <div className="bg-background rounded-xl p-3 text-center">
-                      <p className="text-2xl font-bold text-foreground">{selectedLead.followUpStep || 0}</p>
-                      <p className="text-xs text-muted">Follow-ups</p>
+                    <div className="flex items-center gap-3">
+                      <div className="hidden sm:flex items-center gap-3 text-xs text-muted">
+                        <span title="Confianca"><span className="text-foreground font-semibold">{selectedLead.confidence}%</span> conf.</span>
+                        <span title="Mensagens"><span className="text-foreground font-semibold">{selectedLead.messageCount}</span> msgs</span>
+                        <span title="Follow-ups"><span className="text-foreground font-semibold">{selectedLead.followUpStep || 0}</span> follow</span>
+                      </div>
+                      <button
+                        onClick={handleReclassify}
+                        disabled={reclassifying}
+                        className="flex items-center gap-1.5 px-3 py-1.5 bg-gradient-to-r from-primary to-primary-light hover:from-primary-light hover:to-primary text-white rounded-lg transition-all text-xs disabled:opacity-50"
+                      >
+                        {reclassifying ? (
+                          <Loader2 className="animate-spin" size={14} />
+                        ) : (
+                          <RefreshCw size={14} />
+                        )}
+                        Reclassificar
+                      </button>
                     </div>
                   </div>
 
+                  {/* Analise IA - compacta */}
                   {selectedLead.reasons?.length > 0 && (
-                    <div className="mt-4 p-3 bg-background rounded-xl">
-                      <p className="text-xs font-medium text-muted mb-2">Analise da IA:</p>
-                      <ul className="space-y-1">
-                        {selectedLead.reasons.map((r: string, i: number) => (
-                          <li key={i} className="text-sm text-foreground flex items-start gap-2">
-                            <span className="text-primary mt-0.5">•</span>
-                            {r}
-                          </li>
-                        ))}
-                      </ul>
+                    <div className="mt-2 flex flex-wrap gap-1.5 items-center">
+                      {selectedLead.reasons.map((r: string, i: number) => (
+                        <span key={i} className="text-[11px] px-2 py-0.5 rounded-full bg-background border border-border text-muted">
+                          {r}
+                        </span>
+                      ))}
                       {selectedLead.suggestedAction && (
-                        <p className="mt-2 text-sm text-primary font-medium">
-                          Acao sugerida: {selectedLead.suggestedAction}
-                        </p>
+                        <span className="text-[11px] px-2 py-0.5 rounded-full bg-primary/10 border border-primary/20 text-primary font-medium">
+                          {selectedLead.suggestedAction}
+                        </span>
                       )}
                     </div>
                   )}
                 </div>
 
-                <div className="flex-1 overflow-y-auto p-6 space-y-3">
+                {/* Mensagens - area principal com mais espaco */}
+                <div className="flex-1 overflow-y-auto px-4 py-4 space-y-2.5">
                   {selectedLead.messages?.map((msg: any, i: number) => (
                     <div
                       key={i}
-                      className={`flex ${msg.role === 'assistant' ? 'justify-end' : 'justify-start'}`}
+                      className={`flex ${msg.role === 'assistant' || msg.role === 'model' ? 'justify-end' : 'justify-start'}`}
                     >
                       <div
-                        className={`max-w-[75%] rounded-2xl px-4 py-2.5 text-sm ${
-                          msg.role === 'assistant'
-                            ? 'bg-primary/20 text-foreground rounded-br-md'
-                            : 'bg-background border border-border text-foreground rounded-bl-md'
+                        className={`max-w-[80%] rounded-2xl px-3.5 py-2 text-[13px] leading-relaxed ${
+                          msg.role === 'assistant' || msg.role === 'model'
+                            ? 'bg-primary/15 text-foreground rounded-br-sm'
+                            : 'bg-background border border-border text-foreground rounded-bl-sm'
                         }`}
                       >
-                        <p className="whitespace-pre-wrap">{msg.content}</p>
+                        <p className="whitespace-pre-wrap break-words">{msg.content}</p>
                       </div>
                     </div>
                   ))}
