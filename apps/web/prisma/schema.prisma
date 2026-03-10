@@ -474,12 +474,21 @@ model Conversa {
   createdAt      DateTime   @default(now())
   updatedAt      DateTime   @updatedAt
 
+  // CRM - Lead Scoring
+  leadScore              String?
+  leadScoreConfidence    Int?
+  leadScoreReasons       String?    @db.Text
+  leadScoreSuggestedAction String?  @db.Text
+  leadScoreUpdatedAt     DateTime?
+
   empresa        Empresa    @relation(fields: [empresaId], references: [id], onDelete: Cascade)
   cliente        Cliente?   @relation(fields: [clienteId], references: [id], onDelete: SetNull)
   mensagens      Mensagem[]
 
   @@unique([telefone, empresaId])
   @@index([empresaId])
+  @@index([leadScore])
+  @@index([leadScoreUpdatedAt])
   @@map("conversas")
 }
 

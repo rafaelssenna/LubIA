@@ -32,6 +32,7 @@ import {
   Shield,
   Menu,
   X,
+  Target,
 } from 'lucide-react';
 import { useSidebar } from '@/contexts/SidebarContext';
 import { useAuth } from '@/contexts/AuthContext';
@@ -407,20 +408,34 @@ export default function Sidebar() {
           </Link>
         )}
 
-        {/* Painel Admin - apenas para Super Admin (Helsen IA) */}
+        {/* Painel Admin + CRM - apenas para Super Admin (Helsen IA) */}
         {isSuperAdmin && (
-          <Link
-            href="/admin"
-            className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-300 group ${
-              pathname === '/admin'
-                ? 'bg-gradient-to-r from-amber-500/20 to-orange-500/20 text-amber-400 shadow-lg shadow-amber-500/10 ring-1 ring-amber-500/30'
-                : 'text-amber-400 hover:bg-amber-500/10'
-            } ${collapsed ? 'justify-center px-3' : ''}`}
-            title={collapsed ? 'Painel Admin' : undefined}
-          >
-            <Shield size={20} className="group-hover:scale-110 transition-transform" />
-            {!collapsed && <span className="font-medium">Painel Admin</span>}
-          </Link>
+          <>
+            <Link
+              href="/admin"
+              className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-300 group ${
+                pathname === '/admin'
+                  ? 'bg-gradient-to-r from-amber-500/20 to-orange-500/20 text-amber-400 shadow-lg shadow-amber-500/10 ring-1 ring-amber-500/30'
+                  : 'text-amber-400 hover:bg-amber-500/10'
+              } ${collapsed ? 'justify-center px-3' : ''}`}
+              title={collapsed ? 'Painel Admin' : undefined}
+            >
+              <Shield size={20} className="group-hover:scale-110 transition-transform" />
+              {!collapsed && <span className="font-medium">Painel Admin</span>}
+            </Link>
+            <Link
+              href="/crm"
+              className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-300 group ${
+                pathname === '/crm'
+                  ? 'bg-gradient-to-r from-amber-500/20 to-orange-500/20 text-amber-400 shadow-lg shadow-amber-500/10 ring-1 ring-amber-500/30'
+                  : 'text-amber-400 hover:bg-amber-500/10'
+              } ${collapsed ? 'justify-center px-3' : ''}`}
+              title={collapsed ? 'CRM' : undefined}
+            >
+              <Target size={20} className="group-hover:scale-110 transition-transform" />
+              {!collapsed && <span className="font-medium">CRM</span>}
+            </Link>
+          </>
         )}
 
         {/* Financial Toggle */}
