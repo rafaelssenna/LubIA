@@ -13,9 +13,9 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Buscar usuário
-    const usuario = await prisma.usuario.findUnique({
-      where: { email: email.toLowerCase().trim() },
+    // Buscar usuário (case-insensitive)
+    const usuario = await prisma.usuario.findFirst({
+      where: { email: { equals: email.trim(), mode: 'insensitive' } },
       include: { empresa: true },
     });
 
