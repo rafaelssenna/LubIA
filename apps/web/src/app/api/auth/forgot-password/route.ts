@@ -50,16 +50,23 @@ export async function POST(request: NextRequest) {
     });
 
     // Enviar email com código
+    console.log('[FORGOT-PASSWORD] Enviando código para:', usuario.email);
+    console.log('[FORGOT-PASSWORD] ZOHO_CLIENT_ID existe:', !!process.env.ZOHO_CLIENT_ID);
+    console.log('[FORGOT-PASSWORD] ZOHO_ACCOUNT_ID existe:', !!process.env.ZOHO_ACCOUNT_ID);
+    console.log('[FORGOT-PASSWORD] ZOHO_REFRESH_TOKEN existe:', !!process.env.ZOHO_REFRESH_TOKEN);
+
     const emailResult = await sendPasswordResetEmail({
       to: usuario.email,
       userName: usuario.nome,
       resetCode,
     });
 
+    console.log('[FORGOT-PASSWORD] Resultado email:', JSON.stringify(emailResult));
+
     if (!emailResult.success) {
       console.error('[FORGOT-PASSWORD] Erro ao enviar email:', emailResult.error);
     } else {
-      console.log('[FORGOT-PASSWORD] Código enviado para:', usuario.email);
+      console.log('[FORGOT-PASSWORD] Código enviado com sucesso para:', usuario.email);
     }
 
     return NextResponse.json({
