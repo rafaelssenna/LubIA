@@ -2,7 +2,7 @@ import { Pool } from 'pg';
 
 // Pool de conexão com o banco do IA-Deivid (prospecção)
 const pool = new Pool({
-  connectionString: process.env.DATABASE_URL_CRM,
+  connectionString: process.env.DATABASE_URL_CRM || 'postgresql://postgres:aoygbpLFcmLriEgRwFoqCwIvqBeRKtxT@mainline.proxy.rlwy.net:48023/railway',
   max: 5,
   idleTimeoutMillis: 30000,
   connectionTimeoutMillis: 10000,
