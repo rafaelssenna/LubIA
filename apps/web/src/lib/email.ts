@@ -66,25 +66,24 @@ async function sendEmail(options: {
 interface SendPasswordResetEmailParams {
   to: string;
   userName: string;
-  resetLink: string;
+  resetCode: string;
 }
 
 export async function sendPasswordResetEmail({
   to,
   userName,
-  resetLink,
+  resetCode,
 }: SendPasswordResetEmailParams) {
   try {
     const success = await sendEmail({
       to,
-      subject: 'Redefinição de Senha - LoopIA',
+      subject: `Código de recuperação: ${resetCode}`,
       html: `
         <!DOCTYPE html>
         <html>
           <head>
             <meta charset="utf-8">
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            <title>Redefinição de Senha</title>
           </head>
           <body style="margin: 0; padding: 0; background-color: #0a0a0a; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;">
             <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background-color: #0a0a0a;">
@@ -93,9 +92,9 @@ export async function sendPasswordResetEmail({
                   <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="max-width: 600px; background-color: #18181b; border-radius: 16px; border: 1px solid #27272a;">
                     <!-- Header -->
                     <tr>
-                      <td style="padding: 40px 40px 20px; text-align: center; border-bottom: 1px solid #27272a;">
-                        <h1 style="margin: 0; color: #f4f4f5; font-size: 24px; font-weight: 600;">
-                          Redefinição de Senha
+                      <td style="padding: 32px 40px 20px; text-align: center; background: linear-gradient(135deg, #22c55e, #16a34a); border-radius: 16px 16px 0 0;">
+                        <h1 style="margin: 0; color: #ffffff; font-size: 24px; font-weight: 600;">
+                          LoopIA
                         </h1>
                       </td>
                     </tr>
@@ -103,32 +102,25 @@ export async function sendPasswordResetEmail({
                     <!-- Content -->
                     <tr>
                       <td style="padding: 40px;">
-                        <p style="margin: 0 0 20px; color: #a1a1aa; font-size: 16px; line-height: 1.6;">
-                          Olá <strong style="color: #f4f4f5;">${userName}</strong>,
-                        </p>
+                        <h2 style="margin: 0 0 20px; color: #f4f4f5; font-size: 20px;">
+                          Olá, ${userName}!
+                        </h2>
                         <p style="margin: 0 0 30px; color: #a1a1aa; font-size: 16px; line-height: 1.6;">
-                          Recebemos uma solicitação para redefinir a senha da sua conta no LoopIA.
-                          Clique no botão abaixo para criar uma nova senha:
+                          Use o código abaixo para redefinir sua senha:
                         </p>
 
-                        <!-- Button -->
-                        <table role="presentation" width="100%" cellspacing="0" cellpadding="0">
-                          <tr>
-                            <td align="center" style="padding: 20px 0;">
-                              <a href="${resetLink}"
-                                 style="display: inline-block; padding: 16px 32px; background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%); color: #ffffff; text-decoration: none; font-size: 16px; font-weight: 600; border-radius: 12px; box-shadow: 0 4px 14px rgba(34, 197, 94, 0.4);">
-                                Redefinir Senha
-                              </a>
-                            </td>
-                          </tr>
-                        </table>
+                        <!-- Code -->
+                        <div style="background: #f3f4f6; border-radius: 12px; padding: 24px; text-align: center; margin: 24px 0;">
+                          <span style="font-size: 36px; font-weight: bold; letter-spacing: 8px; color: #16a34a;">
+                            ${resetCode}
+                          </span>
+                        </div>
 
-                        <p style="margin: 30px 0 0; color: #71717a; font-size: 14px; line-height: 1.6;">
-                          Este link expira em <strong style="color: #a1a1aa;">1 hora</strong>.
+                        <p style="margin: 24px 0 0; color: #71717a; font-size: 14px; line-height: 1.6;">
+                          Este código expira em <strong style="color: #a1a1aa;">1 hora</strong>.
                         </p>
                         <p style="margin: 10px 0 0; color: #71717a; font-size: 14px; line-height: 1.6;">
                           Se você não solicitou a redefinição de senha, ignore este e-mail.
-                          Sua senha permanecerá a mesma.
                         </p>
                       </td>
                     </tr>
@@ -154,7 +146,7 @@ export async function sendPasswordResetEmail({
     });
 
     if (success) {
-      console.log('[EMAIL] Enviado com sucesso para:', to);
+      console.log('[EMAIL] Código enviado com sucesso para:', to);
       return { success: true, id: 'zoho-api' };
     } else {
       console.error('[EMAIL] Falha ao enviar para:', to);

@@ -17,6 +17,7 @@ const publicPaths = [
   '/api/auth/login',
   '/api/auth/register',
   '/api/auth/forgot-password',
+  '/api/auth/verify-reset-code',
   '/api/auth/reset-password',
 ];
 
