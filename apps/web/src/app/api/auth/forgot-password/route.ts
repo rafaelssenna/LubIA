@@ -12,9 +12,9 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Email é obrigatório' }, { status: 400 });
     }
 
-    // Buscar usuário pelo email
-    const usuario = await prisma.usuario.findUnique({
-      where: { email: email.toLowerCase().trim() },
+    // Buscar usuário pelo email (case-insensitive)
+    const usuario = await prisma.usuario.findFirst({
+      where: { email: { equals: email.trim(), mode: 'insensitive' } },
       select: { id: true, nome: true, email: true, ativo: true }
     });
 

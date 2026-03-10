@@ -1,25 +1,67 @@
-import nodemailer from 'nodemailer';
+const ZOHO_CLIENT_ID = process.env.ZOHO_CLIENT_ID || '';
+const ZOHO_CLIENT_SECRET = process.env.ZOHO_CLIENT_SECRET || '';
+const ZOHO_REFRESH_TOKEN = process.env.ZOHO_REFRESH_TOKEN || '';
+const ZOHO_ACCOUNT_ID = process.env.ZOHO_ACCOUNT_ID || '';
+const ZOHO_EMAIL = process.env.ZOHO_EMAIL || 'engenharia@helsenia.com.br';
 
-// Lazy initialize transporter to avoid build errors
-let transporter: nodemailer.Transporter | null = null;
+let cachedAccessToken = '';
+let tokenExpiresAt = 0;
 
-function getTransporter() {
-  if (!transporter) {
-    transporter = nodemailer.createTransport({
-      host: 'smtp.zoho.com',
-      port: 465,
-      secure: true, // SSL
-      auth: {
-        user: process.env.ZOHO_EMAIL,
-        pass: process.env.ZOHO_PASSWORD,
-      },
-    });
+async function getAccessToken(): Promise<string> {
+  if (cachedAccessToken && Date.now() < tokenExpiresAt) {
+    return cachedAccessToken;
   }
-  return transporter;
+
+  const params = new URLSearchParams({
+    refresh_token: ZOHO_REFRESH_TOKEN,
+    grant_type: 'refresh_token',
+    client_id: ZOHO_CLIENT_ID,
+    client_secret: ZOHO_CLIENT_SECRET,
+  });
+
+  const response = await fetch(
+    `https://accounts.zoho.com/oauth/v2/token?${params.toString()}`,
+    { method: 'POST' }
+  );
+
+  const data = await response.json();
+  if (data.error) {
+    throw new Error(`Zoho OAuth error: ${data.error}`);
+  }
+
+  cachedAccessToken = data.access_token;
+  tokenExpiresAt = Date.now() + (data.expires_in - 300) * 1000;
+  return cachedAccessToken;
 }
 
-const FROM_EMAIL = process.env.ZOHO_EMAIL || 'engenharia@helsenia.com.br';
-const FROM_NAME = process.env.FROM_NAME || 'LubIA - Helsen IA';
+async function sendEmail(options: {
+  to: string;
+  subject: string;
+  html: string;
+}): Promise<boolean> {
+  const token = await getAccessToken();
+
+  const response = await fetch(
+    `https://mail.zoho.com/api/accounts/${ZOHO_ACCOUNT_ID}/messages`,
+    {
+      method: 'POST',
+      headers: {
+        Authorization: `Zoho-oauthtoken ${token}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        fromAddress: ZOHO_EMAIL,
+        toAddress: options.to,
+        subject: options.subject,
+        content: options.html,
+        mailFormat: 'html',
+      }),
+    }
+  );
+
+  const data = await response.json();
+  return data.status?.code === 200;
+}
 
 interface SendPasswordResetEmailParams {
   to: string;
@@ -27,12 +69,15 @@ interface SendPasswordResetEmailParams {
   resetLink: string;
 }
 
-export async function sendPasswordResetEmail({ to, userName, resetLink }: SendPasswordResetEmailParams) {
+export async function sendPasswordResetEmail({
+  to,
+  userName,
+  resetLink,
+}: SendPasswordResetEmailParams) {
   try {
-    const info = await getTransporter().sendMail({
-      from: `"${FROM_NAME}" <${FROM_EMAIL}>`,
-      to: to,
-      subject: 'Redefinição de Senha - LubIA',
+    const success = await sendEmail({
+      to,
+      subject: 'Redefinição de Senha - LoopIA',
       html: `
         <!DOCTYPE html>
         <html>
@@ -50,7 +95,7 @@ export async function sendPasswordResetEmail({ to, userName, resetLink }: SendPa
                     <tr>
                       <td style="padding: 40px 40px 20px; text-align: center; border-bottom: 1px solid #27272a;">
                         <h1 style="margin: 0; color: #f4f4f5; font-size: 24px; font-weight: 600;">
-                          🔐 Redefinição de Senha
+                          Redefinição de Senha
                         </h1>
                       </td>
                     </tr>
@@ -62,7 +107,7 @@ export async function sendPasswordResetEmail({ to, userName, resetLink }: SendPa
                           Olá <strong style="color: #f4f4f5;">${userName}</strong>,
                         </p>
                         <p style="margin: 0 0 30px; color: #a1a1aa; font-size: 16px; line-height: 1.6;">
-                          Recebemos uma solicitação para redefinir a senha da sua conta no LubIA.
+                          Recebemos uma solicitação para redefinir a senha da sua conta no LoopIA.
                           Clique no botão abaixo para criar uma nova senha:
                         </p>
 
@@ -71,7 +116,7 @@ export async function sendPasswordResetEmail({ to, userName, resetLink }: SendPa
                           <tr>
                             <td align="center" style="padding: 20px 0;">
                               <a href="${resetLink}"
-                                 style="display: inline-block; padding: 16px 32px; background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%); color: #ffffff; text-decoration: none; font-size: 16px; font-weight: 600; border-radius: 12px; box-shadow: 0 4px 14px rgba(59, 130, 246, 0.4);">
+                                 style="display: inline-block; padding: 16px 32px; background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%); color: #ffffff; text-decoration: none; font-size: 16px; font-weight: 600; border-radius: 12px; box-shadow: 0 4px 14px rgba(34, 197, 94, 0.4);">
                                 Redefinir Senha
                               </a>
                             </td>
@@ -92,7 +137,7 @@ export async function sendPasswordResetEmail({ to, userName, resetLink }: SendPa
                     <tr>
                       <td style="padding: 30px 40px; border-top: 1px solid #27272a; text-align: center;">
                         <p style="margin: 0; color: #52525b; font-size: 12px;">
-                          LubIA - Sistema de Gestão de Oficinas
+                          LoopIA - Sistema de Gestão de Oficinas
                         </p>
                         <p style="margin: 5px 0 0; color: #52525b; font-size: 12px;">
                           Powered by Helsen IA
@@ -108,8 +153,13 @@ export async function sendPasswordResetEmail({ to, userName, resetLink }: SendPa
       `,
     });
 
-    console.log('[EMAIL] Enviado com sucesso:', info.messageId);
-    return { success: true, id: info.messageId };
+    if (success) {
+      console.log('[EMAIL] Enviado com sucesso para:', to);
+      return { success: true, id: 'zoho-api' };
+    } else {
+      console.error('[EMAIL] Falha ao enviar para:', to);
+      return { success: false, error: 'Falha ao enviar email via Zoho API' };
+    }
   } catch (error: any) {
     console.error('[EMAIL] Erro ao enviar:', error?.message);
     return { success: false, error: error?.message || 'Erro ao enviar email' };
