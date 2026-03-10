@@ -440,8 +440,8 @@ function EstoquePageContent() {
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(10);
 
-  // Low stock filter
-  const [showOnlyLowStock, setShowOnlyLowStock] = useState(false);
+  // Stock filter: 'todos' | 'baixo' | 'comEstoque'
+  const [stockFilter, setStockFilter] = useState<'todos' | 'baixo' | 'comEstoque'>('todos');
 
   // Active filter: 'todos' | 'ativos' | 'inativos'
   const [ativoFilter, setAtivoFilter] = useState<'todos' | 'ativos' | 'inativos'>('ativos');
@@ -534,7 +534,7 @@ function EstoquePageContent() {
   // Reset to page 1 when filters change
   useEffect(() => {
     setCurrentPage(1);
-  }, [searchTerm, categoriaFilter, showOnlyLowStock, sortBy, sortOrder, ativoFilter, filialFilter]);
+  }, [searchTerm, categoriaFilter, stockFilter, sortBy, sortOrder, ativoFilter, filialFilter]);
 
   // Handle URL id parameter from global search
   useEffect(() => {
@@ -586,7 +586,7 @@ function EstoquePageContent() {
 
   // Sort and filter products
   const processedProducts = [...produtos]
-    .filter(p => !showOnlyLowStock || p.estoqueBaixo)
+    .filter(p => stockFilter === 'todos' ? true : stockFilter === 'baixo' ? p.estoqueBaixo : p.quantidade > 0)
     .sort((a, b) => {
       let comparison = 0;
       switch (sortBy) {
@@ -1022,7 +1022,7 @@ function EstoquePageContent() {
         </div>
 
         {/* Low Stock Alert Banner */}
-        {estoqueBaixoCount > 0 && !showOnlyLowStock && (
+        {estoqueBaixoCount > 0 && stockFilter !== 'baixo' && (
           <div className="bg-gradient-to-r from-red-500/10 to-red-500/5 border border-red-500/20 rounded-2xl p-4 flex items-center justify-between">
             <div className="flex items-center gap-3">
               <div className="p-3 bg-red-500/10 rounded-xl border border-red-500/20">
@@ -1036,7 +1036,7 @@ function EstoquePageContent() {
               </div>
             </div>
             <button
-              onClick={() => setShowOnlyLowStock(true)}
+              onClick={() => setStockFilter('baixo')}
               className="px-4 py-2 bg-red-500/10 hover:bg-red-500/20 border border-red-500/20 rounded-xl text-red-400 text-sm font-medium transition-all duration-200"
             >
               Ver produtos
@@ -1067,21 +1067,21 @@ function EstoquePageContent() {
                 <option key={cat.value} value={cat.value}>{cat.label}</option>
               ))}
             </select>
-            <button
-              onClick={() => setShowOnlyLowStock(!showOnlyLowStock)}
-              className={`flex items-center gap-2 px-4 py-3 rounded-xl transition-all duration-200 ${
-                showOnlyLowStock
-                  ? 'bg-red-500/10 border border-red-500/50 text-red-400'
-                  : 'border border-border text-foreground-muted hover:bg-background-secondary hover:text-foreground'
+            <select
+              value={stockFilter}
+              onChange={(e) => setStockFilter(e.target.value as 'todos' | 'baixo' | 'comEstoque')}
+              className={`bg-background-secondary border rounded-xl px-4 py-3 focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/20 transition-all duration-200 ${
+                stockFilter === 'baixo'
+                  ? 'border-red-500/50 text-red-400'
+                  : stockFilter === 'comEstoque'
+                    ? 'border-green-500/50 text-green-400'
+                    : 'border-border text-foreground'
               }`}
-              title="Filtrar estoque baixo"
             >
-              <AlertTriangle size={18} />
-              <span className="hidden md:inline">Estoque Baixo</span>
-              {showOnlyLowStock && (
-                <X size={14} className="ml-1" />
-              )}
-            </button>
+              <option value="todos">Estoque: Todos</option>
+              <option value="baixo">Estoque Baixo</option>
+              <option value="comEstoque">Com Estoque</option>
+            </select>
             <select
               value={ativoFilter}
               onChange={(e) => setAtivoFilter(e.target.value as 'todos' | 'ativos' | 'inativos')}
@@ -1212,7 +1212,7 @@ function EstoquePageContent() {
                 ) : paginatedProducts.length === 0 ? (
                   <tr>
                     <td colSpan={7} className="text-center py-8 text-muted">
-                      {showOnlyLowStock ? 'Nenhum produto com estoque baixo' : 'Nenhum produto encontrado'}
+                      {stockFilter === 'baixo' ? 'Nenhum produto com estoque baixo' : stockFilter === 'comEstoque' ? 'Nenhum produto com estoque' : 'Nenhum produto encontrado'}
                     </td>
                   </tr>
                 ) : (
