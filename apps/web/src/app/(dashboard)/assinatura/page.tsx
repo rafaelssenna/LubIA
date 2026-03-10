@@ -285,10 +285,10 @@ function AssinaturaContent() {
     <div className="space-y-8">
       <Header title="Assinatura" subtitle="Gerencie seu plano" />
 
-      <div className="px-3 sm:px-4 lg:px-8 space-y-6 sm:space-y-8 max-w-4xl mx-auto">
+      <div className="px-3 sm:px-4 lg:px-8 space-y-6 max-w-4xl mx-auto">
         {/* Alerta de Bloqueio */}
         {(isBlocked || isTrialExpired) && (
-          <div className="bg-red-500/10 border border-red-500/30 rounded-2xl p-4 sm:p-8 text-center">
+          <div className="bg-red-500/10 border border-red-500/30 rounded-2xl p-6 sm:p-8 text-center">
             <XCircle size={48} className="text-red-400 mx-auto mb-4" />
             <h2 className="text-2xl font-bold text-foreground mb-2">
               {isTrialExpired ? 'Período de Teste Expirado' : 'Sistema Bloqueado'}
@@ -320,7 +320,7 @@ function AssinaturaContent() {
 
         {/* Status Card */}
         <div className="bg-card border border-border rounded-2xl overflow-hidden">
-          <div className="p-3 sm:p-6 border-b border-border flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+          <div className="p-4 sm:p-6 border-b border-border flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
             <div className="flex items-center gap-3 sm:gap-4">
               <div className={`p-2 sm:p-3 bg-${statusDisplay.color}-500/10 rounded-xl border border-${statusDisplay.color}-500/20`}>
                 <StatusIcon size={22} className={`text-${statusDisplay.color}-400`} />
@@ -335,7 +335,7 @@ function AssinaturaContent() {
             </span>
           </div>
 
-          <div className="p-3 sm:p-6 space-y-4">
+          <div className="p-4 sm:p-6 space-y-4">
             {subscription?.status === 'TRIAL' && (
               <>
                 <div className="flex items-center justify-between p-4 bg-blue-500/5 border border-blue-500/20 rounded-xl">
@@ -526,7 +526,7 @@ function AssinaturaContent() {
             {/* Modal de Confirmação de Cancelamento */}
             {showCancelConfirm && (
               <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-                <div className="bg-card border border-border rounded-2xl p-3 sm:p-6 max-w-md w-full max-h-[90vh] overflow-y-auto">
+                <div className="bg-card border border-border rounded-2xl p-4 sm:p-6 max-w-md w-full max-h-[90vh] overflow-y-auto">
                   <div className="flex items-center gap-3 mb-4">
                     <div className="p-3 bg-red-500/10 rounded-xl">
                       <AlertTriangle size={24} className="text-red-400" />
@@ -581,11 +581,11 @@ function AssinaturaContent() {
 
         {/* Benefícios */}
         <div className="bg-card border border-border rounded-2xl overflow-hidden">
-          <div className="p-3 sm:p-6 border-b border-border">
+          <div className="p-4 sm:p-6 border-b border-border">
             <h2 className="text-lg font-bold text-foreground">O que está incluído</h2>
           </div>
 
-          <div className="p-3 sm:p-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
+          <div className="p-4 sm:p-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
             <div className="p-4 bg-background rounded-xl border border-border">
               <div className="p-2 bg-primary/10 rounded-lg w-fit mb-3">
                 <Sparkles size={20} className="text-primary" />

@@ -1,6 +1,5 @@
 @import "tailwindcss";
 
-/* ===== DARK THEME (default) ===== */
 :root,
 .dark {
   --background: #121212;
@@ -43,6 +42,20 @@
   --sidebar-text-active: #FFFFFF;
   --sidebar-hover: rgba(255, 255, 255, 0.1);
   --sidebar-active: rgba(255, 255, 255, 0.2);
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.25rem;
+  --space-6: 1.5rem;
+  --space-8: 2rem;
+  --space-10: 2.5rem;
+  --space-12: 3rem;
+  --space-16: 4rem;
+  --radius-sm: 0.5rem;
+  --radius-md: 0.75rem;
+  --radius-lg: 1rem;
+  --radius-xl: 1.25rem;
 }
 
 /* ===== LIGHT THEME (estilo dashboard limpo) ===== */
@@ -103,31 +116,24 @@
 }
 
 @theme inline {
-  /* Backgrounds */
   --color-background: var(--background);
   --color-background-secondary: var(--background-secondary);
   --color-background-tertiary: var(--background-tertiary);
-  /* Foregrounds */
   --color-foreground: var(--foreground);
   --color-foreground-secondary: var(--foreground-secondary);
   --color-foreground-muted: var(--foreground-muted);
-  /* Cards */
   --color-card: var(--card);
   --color-card-hover: var(--card-hover);
   --color-card-elevated: var(--card-elevated);
-  /* Borders */
   --color-border: var(--border);
   --color-border-light: var(--border-light);
   --color-border-hover: var(--border-hover);
-  /* Primary */
   --color-primary: var(--primary);
   --color-primary-dark: var(--primary-dark);
   --color-primary-light: var(--primary-light);
   --color-primary-foreground: var(--primary-foreground);
-  /* Secondary */
   --color-secondary: var(--secondary);
   --color-secondary-foreground: var(--secondary-foreground);
-  /* Semantic */
   --color-accent: var(--accent);
   --color-muted: var(--muted);
   --color-muted-foreground: var(--muted-foreground);
@@ -139,16 +145,13 @@
   --color-success-foreground: var(--success-foreground);
   --color-info: var(--info);
   --color-info-foreground: var(--info-foreground);
-  /* Input */
   --color-input-bg: var(--input-bg);
   --color-input-border: var(--input-border);
-  /* Sidebar */
   --color-sidebar-bg: var(--sidebar-bg);
   --color-sidebar-text: var(--sidebar-text);
   --color-sidebar-text-active: var(--sidebar-text-active);
   --color-sidebar-hover: var(--sidebar-hover);
   --color-sidebar-active: var(--sidebar-active);
-  /* Fonts */
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
@@ -166,10 +169,14 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: var(--font-sans), system-ui, -apple-system, sans-serif;
+  font-size: clamp(0.875rem, 0.85rem + 0.1vw, 1rem);
+  line-height: 1.5;
   min-height: 100vh;
   overflow-x: hidden;
   width: 100%;
   transition: background-color 0.3s ease, color 0.3s ease;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 /* Scrollbar personalizada */
@@ -355,80 +362,61 @@ input:focus, select:focus, textarea:focus {
   background: #43A047;
 }
 
-/* ===== LIGHT MODE OVERRIDES ===== */
-/* Corrige cores hardcoded do dark mode para funcionar no light mode */
-
-/* Backgrounds escuros → claros */
-.light [class*="bg-zinc-900"],
-.light [class*="bg-zinc-950"] {
-  background-color: var(--background) !important;
+:where(.light) [class*="bg-zinc-900"],
+:where(.light) [class*="bg-zinc-950"] {
+  background-color: var(--background);
 }
 
-.light [class*="bg-zinc-800"] {
-  background-color: var(--background-secondary) !important;
+:where(.light) [class*="bg-zinc-800"] {
+  background-color: var(--background-secondary);
 }
 
-.light [class*="bg-zinc-700"] {
-  background-color: var(--background-tertiary) !important;
+:where(.light) [class*="bg-zinc-700"] {
+  background-color: var(--background-tertiary);
 }
 
-/* Hover states */
-.light [class*="hover\:bg-zinc-800"]:hover,
-.light [class*="hover\:bg-zinc-700"]:hover,
-.light [class*="hover\:bg-zinc-900"]:hover {
-  background-color: var(--card-hover) !important;
+:where(.light) [class*="hover\:bg-zinc-800"]:hover,
+:where(.light) [class*="hover\:bg-zinc-700"]:hover,
+:where(.light) [class*="hover\:bg-zinc-900"]:hover {
+  background-color: var(--card-hover);
 }
 
-/* Placeholders */
-.light input::placeholder,
-.light textarea::placeholder {
-  color: var(--muted) !important;
+:where(.light) input::placeholder,
+:where(.light) textarea::placeholder {
+  color: var(--muted);
 }
 
-/* Text colors que ficam invisíveis em light mode */
-.light [class*="text-zinc-100"],
-.light [class*="text-zinc-200"],
-.light [class*="text-zinc-300"] {
-  color: var(--foreground) !important;
+:where(.light) [class*="text-zinc-100"],
+:where(.light) [class*="text-zinc-200"],
+:where(.light) [class*="text-zinc-300"] {
+  color: var(--foreground);
 }
 
-.light [class*="text-zinc-400"],
-.light [class*="text-zinc-500"] {
-  color: var(--muted) !important;
+:where(.light) [class*="text-zinc-400"],
+:where(.light) [class*="text-zinc-500"] {
+  color: var(--muted);
 }
 
-/* Borders */
-.light [class*="border-zinc-600"],
-.light [class*="border-zinc-700"],
-.light [class*="border-zinc-800"] {
-  border-color: var(--border) !important;
+:where(.light) [class*="border-zinc-600"],
+:where(.light) [class*="border-zinc-700"],
+:where(.light) [class*="border-zinc-800"] {
+  border-color: var(--border);
 }
 
-/* Dividers */
-.light [class*="divide-zinc"] > * + * {
-  border-color: var(--border) !important;
+:where(.light) [class*="divide-zinc"] > * + * {
+  border-color: var(--border);
 }
 
-/* Ring/Focus */
-.light [class*="ring-zinc"] {
-  --tw-ring-color: var(--border) !important;
+:where(.light) [class*="ring-zinc"] {
+  --tw-ring-color: var(--border);
 }
 
-/* Select options legíveis em light mode */
-.light select option {
+:where(.light) select option {
   background-color: var(--card);
   color: var(--foreground);
 }
 
-/* Focus-within borders */
-.light [class*="focus-within\:border-zinc"] {
-  border-color: var(--primary) !important;
+:where(.light) [class*="focus-within\:border-zinc"] {
+  border-color: var(--primary);
 }
 
-/* ===== MOBILE LAYOUT ===== */
-@media (max-width: 767px) {
-  /* Mobile header space */
-  .mobile-content {
-    padding-top: 56px;
-  }
-}

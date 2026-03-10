@@ -95,7 +95,7 @@ export default function Header({ title, subtitle }: HeaderProps) {
   };
 
   return (
-    <header className="bg-card border-b border-border px-3 sm:px-4 md:px-8 py-3 sm:py-5">
+    <header className="bg-card border-b border-border px-3 sm:px-4 lg:px-8 py-3 sm:py-4">
       <div className="flex items-center justify-between gap-3 sm:gap-4">
         {/* Title */}
         <div className="animate-fade-in min-w-0">

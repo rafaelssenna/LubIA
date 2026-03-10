@@ -372,7 +372,7 @@ export default function LembretesPage() {
 
       <div className="px-3 sm:px-4 lg:px-8 space-y-6 sm:space-y-8">
         {/* Stats */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 sm:gap-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 sm:gap-6">
           {/* Vencidos */}
           <div
             onClick={() => setFilterStatus(filterStatus === 'vencido' ? '' : 'vencido')}

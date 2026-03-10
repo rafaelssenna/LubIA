@@ -240,7 +240,7 @@ export default function Sidebar() {
       </button>
 
       {/* Menu */}
-      <nav className="flex-1 p-4 space-y-1.5 overflow-y-auto custom-scrollbar">
+      <nav className="flex-1 p-4 space-y-1 overflow-y-auto custom-scrollbar">
         {filteredMenuItems.map((item, index) => {
           const hasSubItems = item.subItems && item.subItems.length > 0;
           const isActive = hasSubItems ? isSubMenuActive(item) : pathname === item.href;
@@ -257,7 +257,7 @@ export default function Sidebar() {
                       setExpandedMenu(isExpanded ? null : item.label);
                     }
                   }}
-                  className={`flex items-center gap-3 px-4 py-3.5 rounded-xl transition-all duration-300 group relative overflow-hidden w-full ${
+                  className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-300 group relative overflow-hidden w-full ${
                     isActive
                       ? 'bg-sidebar-active text-sidebar-text-active shadow-lg shadow-black/10 ring-1 ring-primary/30'
                       : 'text-sidebar-text hover:bg-sidebar-hover hover:text-sidebar-text-active'
@@ -293,7 +293,7 @@ export default function Sidebar() {
                         <Link
                           key={subItem.href}
                           href={subItem.href}
-                          className={`flex items-center gap-2 px-3 py-2.5 rounded-lg transition-all duration-200 text-sm ${
+                          className={`flex items-center gap-2 px-3 py-2 rounded-lg transition-all duration-200 text-sm ${
                             isSubActive
                               ? 'bg-sidebar-active text-sidebar-text-active'
                               : 'text-sidebar-text hover:bg-sidebar-hover hover:text-sidebar-text-active'
@@ -314,7 +314,7 @@ export default function Sidebar() {
             <Link
               key={item.href}
               href={item.href}
-              className={`flex items-center gap-3 px-4 py-3.5 rounded-xl transition-all duration-300 group relative overflow-hidden ${
+              className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-300 group relative overflow-hidden ${
                 isActive
                   ? 'bg-sidebar-active text-sidebar-text-active shadow-lg shadow-black/10 ring-1 ring-primary/30'
                   : 'text-sidebar-text hover:bg-sidebar-hover hover:text-sidebar-text-active'
@@ -343,7 +343,7 @@ export default function Sidebar() {
       </nav>
 
       {/* Footer */}
-      <div className="p-4 border-t border-border space-y-1.5">
+      <div className="p-4 border-t border-border space-y-1">
         {/* Usuários e Configurações - apenas para ADMIN */}
         {isAdmin && (
           <>

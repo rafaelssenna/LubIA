@@ -559,7 +559,7 @@ function OrcamentosPageContent() {
 
       {/* Stats Banner */}
       <div className="px-3 sm:px-4 lg:px-8 space-y-8">
-      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 sm:gap-8">
+      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 sm:gap-6">
         <div className="group relative overflow-hidden bg-gradient-to-br from-[#E85D04]/20 to-[#E85D04]/5 rounded-2xl p-6 border border-[#E85D04]/20 hover:border-[#E85D04]/40 transition-all duration-300">
           <div className="absolute top-0 right-0 w-32 h-32 bg-[#E85D04]/10 rounded-full blur-3xl group-hover:scale-150 transition-transform duration-500"></div>
           <div className="relative">
