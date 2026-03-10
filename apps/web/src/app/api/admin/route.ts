@@ -65,6 +65,7 @@ export async function GET(request: NextRequest) {
               clientes: true,
               ordens: true,
               vendasRapidas: true,
+              produtos: true,
               ideias: true,
             },
           },
@@ -128,6 +129,7 @@ export async function GET(request: NextRequest) {
         clientes: e._count.clientes,
         ordens: e._count.ordens,
         vendas: e._count.vendasRapidas,
+        produtos: e._count.produtos,
         ideias: e._count.ideias,
       })),
       usuarios: usuarios.map((u) => ({

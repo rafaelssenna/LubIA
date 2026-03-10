@@ -35,6 +35,7 @@ interface Empresa {
   clientes: number;
   ordens: number;
   vendas: number;
+  produtos: number;
   ideias: number;
 }
 
@@ -360,7 +361,7 @@ export default function AdminPage() {
                           </span>
                         </div>
                       </div>
-                      <div className="grid grid-cols-2 sm:grid-cols-5 gap-2 text-xs text-muted">
+                      <div className="grid grid-cols-3 sm:grid-cols-6 gap-2 text-xs text-muted">
                         <div>
                           <span className="text-foreground font-medium">{empresa.usuarios}</span> usuarios
                         </div>
@@ -372,6 +373,9 @@ export default function AdminPage() {
                         </div>
                         <div>
                           <span className="text-foreground font-medium">{empresa.vendas}</span> vendas
+                        </div>
+                        <div>
+                          <span className="text-foreground font-medium">{empresa.produtos}</span> produtos
                         </div>
                         <div>
                           <span className="text-foreground font-medium">{empresa.ideias}</span> ideias
