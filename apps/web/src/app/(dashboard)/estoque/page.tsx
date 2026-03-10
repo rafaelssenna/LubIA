@@ -1732,10 +1732,21 @@ function EstoquePageContent() {
                 // semVolume = true apenas se unidade NÃO for LITRO/KG/METRO e não tem volume
                 const semVolume = !volumeFinal && !['LITRO', 'KG', 'METRO'].includes(unidadeDetectada);
 
+                // Gerar código automático a partir da descrição se OCR não extraiu
+                const codigoAutoGerado = !item.codigo;
+                let codigoFinal = item.codigo;
+                if (!codigoFinal) {
+                  // Gera código com iniciais da descrição + sequencial
+                  const palavras = descricao.toUpperCase().replace(/[^A-Z0-9\s]/g, '').split(/\s+/).filter((w: string) => w.length > 1);
+                  const iniciais = palavras.slice(0, 4).map((w: string) => w.substring(0, 3)).join('');
+                  codigoFinal = `${iniciais || 'PROD'}${String(index + 1).padStart(2, '0')}`;
+                }
+
                 return {
                   ...item,
                   selected: true,
-                  codigo: item.codigo || `NF-${data.numeroNF || 'AUTO'}-${index + 1}`,
+                  codigo: codigoFinal,
+                  codigoAutoGerado,
                   categoria: categoriaDetectada,
                   unidade: unidadeDetectada,
                   volumeUnidade: volumeFinal,
@@ -1933,16 +1944,23 @@ function EstoquePageContent() {
                           )}
                         </div>
                         <div>
-                          <label className="block text-xs text-muted mb-1">Código</label>
+                          <label className={`block text-xs mb-1 ${item.codigoAutoGerado ? 'text-amber-400' : 'text-muted'}`}>
+                            Código {item.codigoAutoGerado && <span className="text-amber-400" title="Código gerado automaticamente - verifique">(auto)</span>}
+                          </label>
                           <input
                             type="text"
                             value={item.codigo}
                             onChange={(e) => {
                               const newItems = [...ocrItems];
                               newItems[index].codigo = e.target.value;
+                              newItems[index].codigoAutoGerado = false;
                               setOcrItems(newItems);
                             }}
-                            className="w-full bg-card border border-border rounded-lg px-3 py-2 text-foreground text-sm focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/20 transition-all duration-200"
+                            className={`w-full bg-card rounded-lg px-3 py-2 text-sm focus:outline-none transition-all duration-200 ${
+                              item.codigoAutoGerado
+                                ? 'border-2 border-amber-500/50 text-amber-300 focus:border-amber-500'
+                                : 'border border-border text-foreground focus:border-primary/50 focus:ring-1 focus:ring-primary/20'
+                            }`}
                           />
                         </div>
                       </div>

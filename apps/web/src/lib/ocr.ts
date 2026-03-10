@@ -173,7 +173,7 @@ Se for uma nota fiscal válida, responda no formato:
   "itens": [
     {
       "descricao": "Nome do produto",
-      "codigo": "código",
+      "codigo": "ABC123",
       "ncm": "00000000",
       "cfop": "0000",
       "quantidade": 1,
@@ -193,7 +193,8 @@ Regras:
 - Se não conseguir ler algum campo, omita-o
 - Para óleos, identifique a viscosidade (5W30, 10W40, etc)
 - NCM é o código de 8 dígitos (Nomenclatura Comum do Mercosul)
-- CFOP é o código de 4 dígitos (Código Fiscal de Operações)`;
+- CFOP é o código de 4 dígitos (Código Fiscal de Operações)
+- CÓDIGO DO PRODUTO: Este campo é MUITO IMPORTANTE. Procure o código/referência do produto na coluna "Código" ou "Cód. Prod." da nota fiscal. Geralmente é um código alfanumérico do fornecedor (ex: "WB0513", "LF0125", "PH6017"). NÃO invente códigos - extraia exatamente o que está escrito na NF. Se não encontrar, omita o campo.`;
 
     console.log('[OCR extractInvoiceData] Enviando requisição para Gemini...');
     const result = await model.generateContent([
